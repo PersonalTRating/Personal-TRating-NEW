@@ -1,0 +1,19 @@
+{
+  "name": "ptranking",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/tailwind": "^5.1.4",
+    "@supabase/supabase-js": "^2.107.0",
+    "astro": "^4.16.18",
+    "tailwindcss": "^3.4.17"
+  }
+}

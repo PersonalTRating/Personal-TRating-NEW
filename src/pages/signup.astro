@@ -1,0 +1,590 @@
+---
+// PT / Client Sign Up — Personal TRating
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Join Personal TRating</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #3ab54a; --green-dark: #2a9438; --green-light: #eaf7ec;
+    --border: #e0e8e1; --text: #0d1a0e; --muted: #7a8f7c; --off: #f7f9f7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; display:flex; }
+
+  /* ── Left panel ── */
+  .auth-left {
+    width:380px; flex-shrink:0;
+    background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);
+    display:flex; flex-direction:column; justify-content:space-between;
+    padding:3rem 2.5rem; position:sticky; top:0; height:100vh; overflow:hidden;
+  }
+  .auth-left::before {
+    content:''; position:absolute; bottom:-80px; right:-80px;
+    width:300px; height:300px;
+    background:radial-gradient(circle,rgba(58,181,74,0.2) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .auth-left-logo img { height:73px; width:auto; object-fit:contain; }
+  .auth-left-panel {
+    display:flex; flex-direction:column; justify-content:space-between;
+    height:calc(100% - 56px - 3rem);
+  }
+  .auth-left-copy { position:relative; z-index:1; }
+  .auth-left-copy h2 {
+    font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900;
+    color:white; line-height:1.2; margin-bottom:1rem;
+  }
+  .auth-left-copy p { font-size:0.875rem; color:rgba(255,255,255,0.55); line-height:1.8; }
+  .auth-perks { display:flex; flex-direction:column; gap:0.875rem; position:relative; z-index:1; }
+  .auth-perk  { display:flex; align-items:flex-start; gap:0.75rem; }
+  .auth-perk-icon {
+    width:32px; height:32px; border-radius:8px; flex-shrink:0;
+    background:rgba(58,181,74,0.15); display:flex; align-items:center;
+    justify-content:center; font-size:0.9rem; margin-top:0.1rem;
+  }
+  .auth-perk-text { font-size:0.8rem; color:rgba(255,255,255,0.6); line-height:1.55; }
+  .auth-perk-text strong { color:white; display:block; margin-bottom:0.1rem; }
+
+  /* ── Right panel ── */
+  .auth-right {
+    flex:1; padding:3rem 2.5rem; overflow-y:auto;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  .auth-form-wrap { width:100%; max-width:560px; }
+
+  /* ── Role selection ── */
+  .role-select-title {
+    font-family:'Playfair Display',serif; font-size:2rem; font-weight:900;
+    margin-bottom:0.4rem;
+  }
+  .role-select-sub { font-size:0.875rem; color:var(--muted); margin-bottom:2.5rem; }
+  .role-cards { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:2rem; }
+  .role-card {
+    background:white; border:2px solid var(--border); border-radius:14px;
+    padding:2rem 1.25rem; cursor:pointer; text-align:left;
+    transition:border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    font-family:'Manrope',sans-serif; width:100%;
+  }
+  .role-card:hover {
+    border-color:var(--green);
+    box-shadow:0 4px 20px rgba(58,181,74,0.15);
+    transform:translateY(-2px);
+  }
+  .role-card-icon  { font-size:2rem; margin-bottom:0.875rem; display:block; }
+  .role-card-title { font-weight:800; font-size:0.95rem; color:var(--text); margin-bottom:0.4rem; }
+  .role-card-desc  { font-size:0.78rem; color:var(--muted); line-height:1.6; }
+  .role-card-arrow { display:inline-block; margin-top:1rem; font-size:0.8rem; color:var(--green); font-weight:700; }
+
+  /* ── Form shared ── */
+  .auth-form-wrap h1 {
+    font-family:'Playfair Display',serif; font-size:2rem; font-weight:900;
+    margin-bottom:0.4rem;
+  }
+  .auth-sub  { font-size:0.875rem; color:var(--muted); margin-bottom:2.5rem; }
+  .free-tag {
+    display:inline-block; background:var(--green-light); color:var(--green-dark);
+    padding:0.3rem 0.85rem; border-radius:20px; font-size:0.72rem; font-weight:700;
+    letter-spacing:1px; text-transform:uppercase; margin-bottom:1rem;
+  }
+  .section-divider {
+    font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:var(--green); margin:2rem 0 1.25rem; padding-bottom:0.5rem;
+    border-bottom:2px solid var(--green-light);
+  }
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+  .form-group { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0; }
+  .form-group.full { grid-column:1 / -1; }
+  .form-label { font-size:0.78rem; font-weight:700; color:var(--text); }
+  .form-hint  { font-size:0.7rem; color:var(--muted); }
+  .form-input, .form-select {
+    padding:0.8rem 1rem; border:1.5px solid var(--border); border-radius:8px;
+    font-family:'Manrope',sans-serif; font-size:0.875rem; color:var(--text);
+    background:white; transition:border-color 0.2s, box-shadow 0.2s; outline:none;
+  }
+  .form-input:focus, .form-select:focus {
+    border-color:var(--green); box-shadow:0 0 0 3px rgba(58,181,74,0.1);
+  }
+  .auth-error {
+    background:#fdecea; border:1px solid #f5c6c6; color:#c62828;
+    padding:0.75rem 1rem; border-radius:8px; font-size:0.82rem;
+    margin-bottom:1.25rem; display:none;
+  }
+  .auth-success {
+    background:var(--green-light); border:1px solid #a8ddb5; color:var(--green-dark);
+    padding:1rem 1.25rem; border-radius:10px; font-size:0.88rem; font-weight:600;
+    margin-bottom:1.25rem; display:none; line-height:1.6;
+  }
+  .auth-btn {
+    width:100%; padding:0.95rem; background:var(--green); color:white;
+    border:none; border-radius:8px; font-family:'Manrope',sans-serif;
+    font-weight:700; font-size:0.95rem; cursor:pointer;
+    transition:background 0.2s; margin-top:1.75rem;
+    box-shadow:0 4px 16px rgba(58,181,74,0.3);
+  }
+  .auth-btn:hover    { background:var(--green-dark); }
+  .auth-btn:disabled { opacity:0.65; cursor:not-allowed; }
+  .auth-footer { text-align:center; margin-top:1.5rem; font-size:0.83rem; color:var(--muted); }
+  .auth-footer a { color:var(--green); font-weight:700; text-decoration:none; }
+  .auth-footer a:hover { text-decoration:underline; }
+  .password-rules { font-size:0.72rem; color:var(--muted); margin-top:0.25rem; }
+  .back-link {
+    display:inline-flex; align-items:center; gap:0.35rem;
+    font-size:0.8rem; color:var(--muted); cursor:pointer;
+    margin-bottom:1.75rem; background:none; border:none;
+    font-family:'Manrope',sans-serif; padding:0;
+  }
+  .back-link:hover { color:var(--green); }
+
+  @media (max-width: 768px) {
+    .auth-left  { display:none; }
+    .auth-right { padding:1.5rem; }
+    .form-grid  { grid-template-columns:1fr; }
+    .role-cards { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Left panel -->
+<div class="auth-left">
+  <div class="auth-left-logo">
+    <img src="/images/logo.png" alt="Personal TRating" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+  </div>
+
+  <!-- Default: before role is chosen -->
+  <div id="left-default" class="auth-left-panel">
+    <div class="auth-left-copy">
+      <h2>Join the UK's PT ranking platform.</h2>
+      <p>Whether you're a trainer building your reputation or a client searching for the perfect PT — you're in the right place.</p>
+    </div>
+    <div class="auth-perks">
+      <div class="auth-perk">
+        <div class="auth-perk-icon">💪</div>
+        <div class="auth-perk-text"><strong>For Personal Trainers</strong>Get ranked, collect verified reviews and grow your client base.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">🔍</div>
+        <div class="auth-perk-text"><strong>For Clients</strong>Find verified, highly-rated PTs near you.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">🆓</div>
+        <div class="auth-perk-text"><strong>Always free</strong>No credit card, no commitment, no catch.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trainer: after PT selected -->
+  <div id="left-trainer" class="auth-left-panel" style="display:none">
+    <div class="auth-left-copy">
+      <h2>Build your reputation online.</h2>
+      <p>Create your free profile, collect verified client reviews, and climb the UK leaderboard.</p>
+    </div>
+    <div class="auth-perks">
+      <div class="auth-perk">
+        <div class="auth-perk-icon">🆓</div>
+        <div class="auth-perk-text"><strong>100% free to join</strong>No credit card, no commitment.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">⭐</div>
+        <div class="auth-perk-text"><strong>Verified reviews only</strong>You send the link — clients can't fake it.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">📊</div>
+        <div class="auth-perk-text"><strong>Live BMP score</strong>Your ranking updates as reviews come in.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">📍</div>
+        <div class="auth-perk-text"><strong>City-level rankings</strong>Rank locally and nationally across 120+ UK cities.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Client: after client selected -->
+  <div id="left-client" class="auth-left-panel" style="display:none">
+    <div class="auth-left-copy">
+      <h2>Find the UK's top personal trainers.</h2>
+      <p>Browse verified PT profiles, read real client reviews, and leave feedback for your own trainer.</p>
+    </div>
+    <div class="auth-perks">
+      <div class="auth-perk">
+        <div class="auth-perk-icon">🔍</div>
+        <div class="auth-perk-text"><strong>Browse local PTs</strong>Search by city, specialty and rating.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">⭐</div>
+        <div class="auth-perk-text"><strong>Verified reviews</strong>Real feedback from real clients — no fakes.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">📝</div>
+        <div class="auth-perk-text"><strong>Leave your review</strong>Rate your PT and help others find the best.</div>
+      </div>
+      <div class="auth-perk">
+        <div class="auth-perk-icon">🆓</div>
+        <div class="auth-perk-text"><strong>Always free</strong>No credit card, no commitment.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Right panel -->
+<div class="auth-right">
+  <div class="auth-form-wrap">
+
+    <!-- Step 1: Role selection -->
+    <div id="step-role">
+      <h1 class="role-select-title">Join Personal TRating</h1>
+      <p class="role-select-sub">Tell us who you are to get started.</p>
+
+      <div class="role-cards">
+        <button class="role-card" onclick="selectRole('trainer')">
+          <span class="role-card-icon">💪</span>
+          <div class="role-card-title">I'm a Personal Trainer</div>
+          <div class="role-card-desc">Create your free profile, get ranked and start collecting verified client reviews.</div>
+          <span class="role-card-arrow">Get started →</span>
+        </button>
+        <button class="role-card" onclick="selectRole('client')">
+          <span class="role-card-icon">⭐</span>
+          <div class="role-card-title">I Rate Personal Trainers</div>
+          <div class="role-card-desc">I rate their craft, am looking to find a PT or review my current trainer.</div>
+          <span class="role-card-arrow">Get started →</span>
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        Already have an account? <a href="/login">Sign in</a>
+      </div>
+      <div class="auth-footer" style="margin-top:0.5rem;">
+        <a href="/">← Back to Personal TRating</a>
+      </div>
+    </div>
+
+    <!-- Step 2a: Trainer signup form -->
+    <div id="step-trainer" style="display:none">
+      <button class="back-link" onclick="goBack()">← Back</button>
+      <div class="free-tag">Free to Join</div>
+      <h1>Create your free profile</h1>
+      <p class="auth-sub">Takes 2 minutes — start collecting reviews today.</p>
+
+      <div class="auth-error"   id="t-error-msg"></div>
+      <div class="auth-success" id="t-success-msg"></div>
+
+      <form id="trainer-signup-form">
+        <div class="section-divider">Your Account</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="t-first-name">First Name</label>
+            <input class="form-input" type="text" id="t-first-name" placeholder="James" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="t-last-name">Last Name</label>
+            <input class="form-input" type="text" id="t-last-name" placeholder="Mitchell" required>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="t-email">Email Address</label>
+            <input class="form-input" type="email" id="t-email" placeholder="you@example.com" required autocomplete="email">
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="t-password">Password</label>
+            <input class="form-input" type="password" id="t-password" placeholder="At least 8 characters" required autocomplete="new-password">
+            <span class="password-rules">Minimum 8 characters.</span>
+          </div>
+        </div>
+
+        <div class="section-divider">Your PT Profile</div>
+        <div class="form-grid">
+          <div class="form-group full">
+            <label class="form-label" for="t-business-name">Business / Trading Name <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
+            <input class="form-input" type="text" id="t-business-name" placeholder="e.g. Mitchell Fitness, Peak PT Studio">
+            <span class="form-hint">Leave blank if you train under your own name.</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="t-city">City</label>
+            <input class="form-input" type="text" id="t-city" placeholder="London" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="t-postcode">Postcode / Area</label>
+            <input class="form-input" type="text" id="t-postcode" placeholder="SW1">
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="t-specialty">Primary Specialty</label>
+            <select class="form-select" id="t-specialty" required>
+              <option value="">Select your main specialty…</option>
+              <option value="Strength & Conditioning">💪 Strength &amp; Conditioning</option>
+              <option value="Weight Loss">🔥 Weight Loss</option>
+              <option value="HIIT & Cardio">⚡ HIIT &amp; Cardio</option>
+              <option value="Rehabilitation">🧘 Rehabilitation</option>
+              <option value="Nutrition Coaching">🥗 Nutrition Coaching</option>
+              <option value="Sports Performance">🏃 Sports Performance</option>
+              <option value="Powerlifting">🏋️ Powerlifting</option>
+              <option value="Functional Fitness">🤸 Functional Fitness</option>
+              <option value="other">Other…</option>
+            </select>
+          </div>
+          <div class="form-group full" id="t-specialty-other-wrap" style="display:none;">
+            <label class="form-label" for="t-specialty-other">Please specify your specialty</label>
+            <input class="form-input" type="text" id="t-specialty-other" placeholder="e.g. Pre/Postnatal, Boxing Fitness…">
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="t-cert">Primary Qualification</label>
+            <select class="form-select" id="t-cert" required>
+              <option value="">Select your qualification…</option>
+              <option value="REPs Level 3">REPs Level 3 Personal Trainer</option>
+              <option value="REPs Level 4">REPs Level 4</option>
+              <option value="REPs Level 2">REPs Level 2</option>
+              <option value="CIMSPA">CIMSPA</option>
+              <option value="NASM CPT">NASM CPT</option>
+              <option value="ACE CPT">ACE CPT</option>
+              <option value="Nutrition Diploma">Nutrition Diploma</option>
+              <option value="Physiotherapy Cert.">Physiotherapy Certificate</option>
+              <option value="other">Other…</option>
+            </select>
+          </div>
+          <div class="form-group full" id="t-cert-other-wrap" style="display:none;">
+            <label class="form-label" for="t-cert-other">Please specify your qualification</label>
+            <input class="form-input" type="text" id="t-cert-other" placeholder="e.g. YMCA Level 3, Premier Training…">
+          </div>
+        </div>
+
+        <button class="auth-btn" type="submit" id="t-submit-btn">
+          Create My Free Profile →
+        </button>
+      </form>
+
+      <div class="auth-footer" style="margin-top:2rem;">
+        Already have an account? <a href="/login">Sign in</a>
+      </div>
+    </div>
+
+    <!-- Step 2b: Client signup form -->
+    <div id="step-client" style="display:none">
+      <button class="back-link" onclick="goBack()">← Back</button>
+      <div class="free-tag">Free to Join</div>
+      <h1>Create your account</h1>
+      <p class="auth-sub">Browse top-rated PTs and leave verified reviews.</p>
+
+      <div class="auth-error"   id="c-error-msg"></div>
+      <div class="auth-success" id="c-success-msg"></div>
+
+      <form id="client-signup-form">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label" for="c-first-name">First Name</label>
+            <input class="form-input" type="text" id="c-first-name" placeholder="Sarah" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="c-last-name">Last Name</label>
+            <input class="form-input" type="text" id="c-last-name" placeholder="Clarke" required>
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="c-email">Email Address</label>
+            <input class="form-input" type="email" id="c-email" placeholder="you@example.com" required autocomplete="email">
+          </div>
+          <div class="form-group full">
+            <label class="form-label" for="c-password">Password</label>
+            <input class="form-input" type="password" id="c-password" placeholder="At least 8 characters" required autocomplete="new-password">
+            <span class="password-rules">Minimum 8 characters.</span>
+          </div>
+        </div>
+
+        <button class="auth-btn" type="submit" id="c-submit-btn">
+          Create My Account →
+        </button>
+      </form>
+
+      <div class="auth-footer" style="margin-top:2rem;">
+        Already have an account? <a href="/login">Sign in</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // ── Session check ──────────────────────────────────────────────────────────
+  (async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+    if (trainer) { window.location.href = '/dashboard'; return; }
+    const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
+    if (client) { window.location.href = '/account'; return; }
+  })();
+
+  // ── Role selection ─────────────────────────────────────────────────────────
+  (window as any).selectRole = (role: string) => {
+    document.getElementById('step-role')!.style.display    = 'none';
+    document.getElementById('left-default')!.style.display = 'none';
+    if (role === 'trainer') {
+      document.getElementById('step-trainer')!.style.display = '';
+      document.getElementById('left-trainer')!.style.display = '';
+    } else {
+      document.getElementById('step-client')!.style.display  = '';
+      document.getElementById('left-client')!.style.display  = '';
+    }
+  };
+
+  (window as any).goBack = () => {
+    document.getElementById('step-trainer')!.style.display = 'none';
+    document.getElementById('step-client')!.style.display  = 'none';
+    document.getElementById('left-trainer')!.style.display = 'none';
+    document.getElementById('left-client')!.style.display  = 'none';
+    document.getElementById('step-role')!.style.display    = '';
+    document.getElementById('left-default')!.style.display = '';
+  };
+
+  // ── Trainer specialty "other" toggle ──────────────────────────────────────
+  const tSpecialtySelect     = document.getElementById('t-specialty')             as HTMLSelectElement;
+  const tSpecialtyOtherWrap  = document.getElementById('t-specialty-other-wrap')  as HTMLDivElement;
+  const tSpecialtyOtherInput = document.getElementById('t-specialty-other')       as HTMLInputElement;
+  tSpecialtySelect.addEventListener('change', () => {
+    const isOther = tSpecialtySelect.value === 'other';
+    tSpecialtyOtherWrap.style.display = isOther ? 'flex' : 'none';
+    tSpecialtyOtherInput.required     = isOther;
+  });
+
+  // ── Trainer cert "other" toggle ────────────────────────────────────────────
+  const tCertSelect     = document.getElementById('t-cert')            as HTMLSelectElement;
+  const tCertOtherWrap  = document.getElementById('t-cert-other-wrap') as HTMLDivElement;
+  const tCertOtherInput = document.getElementById('t-cert-other')      as HTMLInputElement;
+  tCertSelect.addEventListener('change', () => {
+    const isOther = tCertSelect.value === 'other';
+    tCertOtherWrap.style.display = isOther ? 'flex' : 'none';
+    tCertOtherInput.required     = isOther;
+  });
+
+  // ── Resend helpers ─────────────────────────────────────────────────────────
+  let _tEmail = '';
+  let _cEmail = '';
+
+  async function resendEmail(email: string, feedbackId: string) {
+    const el = document.getElementById(feedbackId) as HTMLElement;
+    el.textContent = 'Sending…';
+    const { error } = await supabase.auth.resend({ type: 'signup', email });
+    el.textContent = error ? '❌ Could not resend — try again shortly.' : '✅ Email resent! Check your inbox.';
+  }
+
+  (window as any)._resendTrainer = () => resendEmail(_tEmail, 't-resend-feedback');
+  (window as any)._resendClient  = () => resendEmail(_cEmail, 'c-resend-feedback');
+
+  // ── Trainer signup ─────────────────────────────────────────────────────────
+  document.getElementById('trainer-signup-form')!.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorMsg   = document.getElementById('t-error-msg')   as HTMLDivElement;
+    const successMsg = document.getElementById('t-success-msg') as HTMLDivElement;
+    const submitBtn  = document.getElementById('t-submit-btn')  as HTMLButtonElement;
+
+    errorMsg.style.display   = 'none';
+    successMsg.style.display = 'none';
+    submitBtn.textContent    = 'Creating your profile…';
+    submitBtn.disabled       = true;
+
+    const firstName    = (document.getElementById('t-first-name')    as HTMLInputElement).value.trim();
+    const lastName     = (document.getElementById('t-last-name')     as HTMLInputElement).value.trim();
+    const businessName = (document.getElementById('t-business-name') as HTMLInputElement).value.trim();
+    const email        = (document.getElementById('t-email')         as HTMLInputElement).value.trim();
+    const password     = (document.getElementById('t-password')      as HTMLInputElement).value;
+    const city         = (document.getElementById('t-city')          as HTMLInputElement).value.trim();
+    const postcode     = (document.getElementById('t-postcode')      as HTMLInputElement).value.trim().toUpperCase();
+    const specialtyRaw = (document.getElementById('t-specialty')     as HTMLSelectElement).value;
+    const specialty    = specialtyRaw === 'other'
+                          ? (document.getElementById('t-specialty-other') as HTMLInputElement).value.trim()
+                          : specialtyRaw;
+    const certRaw      = (document.getElementById('t-cert')          as HTMLSelectElement).value;
+    const cert         = certRaw === 'other'
+                          ? (document.getElementById('t-cert-other') as HTMLInputElement).value.trim()
+                          : certRaw;
+
+    const { data, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: {
+          role:          'trainer',
+          first_name:    firstName,
+          last_name:     lastName,
+          business_name: businessName || '',
+          city,
+          postcode,
+          specialty,
+          cert,
+        },
+      },
+    });
+
+    if (authError) {
+      errorMsg.textContent   = authError.message;
+      errorMsg.style.display = 'block';
+      submitBtn.textContent  = 'Create My Free Profile →';
+      submitBtn.disabled     = false;
+      return;
+    }
+
+    if (data.session) {
+      window.location.href = '/dashboard';
+    } else {
+      _tEmail = email;
+      successMsg.innerHTML     = `✅ <strong>Almost there!</strong> We've sent a confirmation email to <strong>${email}</strong>. Click the link to activate your account, then <a href="/login" style="color:var(--green-dark)">sign in here</a>.<br><br><span id="t-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendTrainer()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
+      successMsg.style.display = 'block';
+      submitBtn.textContent    = 'Check your email ✉️';
+    }
+  });
+
+  // ── Client signup ──────────────────────────────────────────────────────────
+  document.getElementById('client-signup-form')!.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorMsg   = document.getElementById('c-error-msg')   as HTMLDivElement;
+    const successMsg = document.getElementById('c-success-msg') as HTMLDivElement;
+    const submitBtn  = document.getElementById('c-submit-btn')  as HTMLButtonElement;
+
+    errorMsg.style.display   = 'none';
+    successMsg.style.display = 'none';
+    submitBtn.textContent    = 'Creating your account…';
+    submitBtn.disabled       = true;
+
+    const firstName = (document.getElementById('c-first-name') as HTMLInputElement).value.trim();
+    const lastName  = (document.getElementById('c-last-name')  as HTMLInputElement).value.trim();
+    const email     = (document.getElementById('c-email')      as HTMLInputElement).value.trim();
+    const password  = (document.getElementById('c-password')   as HTMLInputElement).value;
+
+    const { data, error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        data: {
+          role:       'client',
+          first_name: firstName,
+          last_name:  lastName,
+        },
+      },
+    });
+
+    if (authError) {
+      errorMsg.textContent   = authError.message;
+      errorMsg.style.display = 'block';
+      submitBtn.textContent  = 'Create My Account →';
+      submitBtn.disabled     = false;
+      return;
+    }
+
+    if (data.session) {
+      window.location.href = '/account';
+    } else {
+      _cEmail = email;
+      successMsg.innerHTML     = `✅ <strong>Account created!</strong> We've sent a confirmation email to <strong>${email}</strong>. Click the link to activate your account, then <a href="/login" style="color:var(--green-dark)">sign in here</a>.<br><br><span id="c-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendClient()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
+      successMsg.style.display = 'block';
+      submitBtn.textContent    = 'Check your email ✉️';
+    }
+  });
+</script>

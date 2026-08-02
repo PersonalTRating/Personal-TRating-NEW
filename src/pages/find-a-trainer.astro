@@ -1,0 +1,581 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+
+const { data: trainersData } = await supabase
+  .from('trainers')
+  .select('id, name, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, gyms')
+  .eq('is_active', true)
+  .order('bmp_score', { ascending: false })
+  .limit(500);
+
+const raw = trainersData || [];
+
+const dbSvg = (filled: boolean): string => {
+  const c  = filled ? '#FFB800' : '#d4dbd5';
+  const sk = filled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
+  return `<svg viewBox="0 0 28 12" width="15" height="7" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/></svg>`;
+};
+const makeDumbbells = (bmp: number) => {
+  const n = bmp > 0 ? Math.min(5, Math.ceil(bmp / 20)) : 0;
+  return Array.from({ length: 5 }, (_, i) => dbSvg(i < n)).join('');
+};
+const rankClr = (r: number) =>
+  r === 0 ? '#b8860b' : r === 1 ? '#888888' : r === 2 ? '#b07040' : '#8a8f8a';
+
+interface Gym { name: string; location: string; }
+
+const allTrainers = raw.map((t: any, i: number) => ({
+  id:         t.id,
+  name:       t.name || '',
+  city:       t.city || t.location || '',
+  spec:       t.specialty || '',
+  cert:       t.cert || '',
+  bmp:        t.bmp_score ?? 0,
+  revCount:   t.review_count || 0,
+  rank:       i + 1,
+  rankColor:  rankClr(i),
+  avatar:     t.avatar_url
+    ? `<img src="${t.avatar_url}" alt="" class="fpc-av" width="72" height="72" style="width:72px;min-width:72px;height:72px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:3px solid #e8f0e9;"/>`
+    : `<div class="fpc-av fpc-av-init" style="background:${t.avatar_bg||'#eaf7ec'};color:${t.avatar_color||'#2a9438'};">${t.avatar_initials||'?'}</div>`,
+  dbs:        makeDumbbells(t.bmp_score || 0),
+  bioSnip:    t.bio ? String(t.bio).replace(/<[^>]+>/g,'').trim().slice(0,120) : '',
+  bioLong:    t.bio ? String(t.bio).replace(/<[^>]+>/g,'').trim().length > 120 : false,
+  gyms:       (Array.isArray(t.gyms) ? t.gyms : []) as Gym[],
+}));
+
+const totalReviews = allTrainers.reduce((s, t) => s + t.revCount, 0);
+const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning','HIIT','Rehabilitation','Nutrition','Sports Performance','Yoga & Pilates','Boxing','Running'];
+---
+
+<Layout
+  title="Find a Personal Trainer · Personal TRating"
+  description="Browse UK personal trainers ranked by real client reviews. Search by city, region or specialty and view full profiles with BMP scores."
+>
+
+<!-- ── NAV ── -->
+<nav style="position:sticky;top:0;z-index:200;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:84px;">
+    <a href="/" style="text-decoration:none;">
+      <img src="/images/logo.png" alt="Personal TRating" style="height:68px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center;">
+      <a href="/" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
+         onmouseover="this.style.color='#111311'" onmouseout="this.style.color='#8a8f8a'">
+        ← Home
+      </a>
+      <a href="/account" id="nav-account" style="display:none;color:#111311;text-decoration:none;font-size:0.875rem;font-weight:600;">My Account</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="fat-hero">
+  <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(58,181,74,0.14) 0%,transparent 68%);pointer-events:none;"></div>
+  <div style="max-width:860px;margin:0 auto;padding:0 2rem;text-align:center;position:relative;">
+
+    <div class="fat-hero-eyebrow">UK Personal Trainer Directory</div>
+    <h1 class="fat-hero-h1">Find Your Perfect<br/><span style="color:#3ab54a;">Personal Trainer</span></h1>
+    <p class="fat-hero-sub">Ranked by verified client reviews. Real results, no guesswork.</p>
+
+    <!-- Search -->
+    <div class="fat-search-wrap">
+      <span style="font-size:1.1rem;flex-shrink:0;">🔍</span>
+      <div style="position:relative;flex:1;min-width:0;overflow:hidden;">
+        <input
+          id="fat-search"
+          type="text"
+          placeholder=""
+          autocomplete="off"
+          style="width:100%;border:none;outline:none;font-size:0.95rem;font-family:'Manrope',sans-serif;background:transparent;color:#111311;min-width:0;"
+        />
+        <div id="fat-ph" style="position:absolute;inset:0;display:flex;align-items:center;overflow:hidden;pointer-events:none;">
+          <span id="fat-ph-span" style="display:inline-block;white-space:nowrap;color:rgba(0,0,0,0.35);font-size:0.95rem;font-family:'Manrope',sans-serif;">Search by name, city or region…</span>
+        </div>
+      </div>
+      <button onclick="doSearch()" class="fat-search-btn">Search</button>
+    </div>
+
+    <!-- Stats strip -->
+    <div class="fat-stats">
+      <div class="fat-stat">
+        <div class="fat-stat-num">{allTrainers.length}</div>
+        <div class="fat-stat-lbl">Trainers Ranked</div>
+      </div>
+      <div class="fat-stat-div"></div>
+      <div class="fat-stat">
+        <div class="fat-stat-num">{totalReviews}</div>
+        <div class="fat-stat-lbl">Verified Reviews</div>
+      </div>
+      <div class="fat-stat-div"></div>
+      <div class="fat-stat">
+        <div class="fat-stat-num">UK</div>
+        <div class="fat-stat-lbl">Wide Coverage</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── STICKY FILTER BAR ── -->
+<div class="fat-filters" id="fat-filters">
+  <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
+
+    <!-- Specialty chips -->
+    <div class="fat-chips" id="fat-chips">
+      <button class="chip chip-active" data-spec="" onclick="setSpec(this,'')">All</button>
+      {specialties.map(s => (
+        <button class="chip" data-spec={s.toLowerCase()} onclick={"setSpec(this,'" + s.toLowerCase().replace(/'/g,"\\'") + "')"}>{s}</button>
+      ))}
+    </div>
+
+    <!-- Sort + view toggle -->
+    <div class="fat-bar-bottom">
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span style="font-size:0.78rem;color:#8a8f8a;white-space:nowrap;">Sort by:</span>
+        <select id="fat-sort" onchange="doSort()" class="fat-sort-sel">
+          <option value="bmp">BMP Score</option>
+          <option value="reviews">Most Reviews</option>
+          <option value="alpha">A — Z</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.85rem;">
+        <span id="fat-count-txt" style="font-size:0.8rem;color:#8a8f8a;"></span>
+        <div class="vt-wrap">
+          <button id="btn-list" class="vt-btn vt-active" onclick="setView('list')">≡ List</button>
+          <button id="btn-map"  class="vt-btn"           onclick="setView('map')">◎ Map</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── LIST VIEW ── -->
+<div id="fat-list-view" style="background:#f5f7f5;min-height:60vh;padding:2rem 0 5rem;">
+  <div style="max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:1rem;" id="fat-list-inner">
+
+    {allTrainers.map(t => (
+      <div
+        class="fpc"
+        data-bmp={String(t.bmp)}
+        data-reviews={String(t.revCount)}
+        data-name={t.name.toLowerCase()}
+        data-city={t.city.toLowerCase()}
+        data-spec={t.spec.toLowerCase()}
+      >
+        <!-- LEFT: rank + photo -->
+        <div class="fpc-left">
+          <div class="fpc-rank">{String(t.rank).padStart(2, '0')}</div>
+          <Fragment set:html={t.avatar} />
+        </div>
+
+        <!-- MID: all text info -->
+        <div class="fpc-mid">
+          <div class="fpc-name-row">
+            <span class="fpc-name">{t.name}</span>
+            {t.cert && <span class="fpc-cert">{t.cert}</span>}
+          </div>
+          {(t.city || t.spec) && (
+            <div class="fpc-meta">
+              {t.city && <span>📍 {t.city}</span>}
+              {t.city && t.spec && <span style="color:#d4dbd5;">·</span>}
+              {t.spec && <span>🏋 {t.spec}</span>}
+            </div>
+          )}
+          {t.bioSnip && (
+            <div class="fpc-bio">"{t.bioSnip}{t.bioLong ? '…' : ''}"</div>
+          )}
+          {t.gyms.length > 0 && (
+            <div class="fpc-gyms">
+              {t.gyms.slice(0, 2).map((g: any) => (
+                <span class="fpc-gym">🏢 {g.name}{g.location ? ' · ' + g.location : ''}</span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <!-- RIGHT: BMP + CTA -->
+        <div class="fpc-right">
+          <div class="fpc-bmp-wrap">
+            {t.revCount === 0 ? (
+              <div style="font-size:0.72rem;font-weight:700;color:#3ab54a;line-height:1.3;margin-bottom:0.25rem;">Be first<br/>to review</div>
+            ) : (
+              <div class="fpc-bmp-num">{t.bmp || '—'}</div>
+            )}
+            <div class="fpc-bmp-lbl">BMP Score</div>
+            <div class="fpc-dbs"><Fragment set:html={t.dbs} /></div>
+            <div class="fpc-rev">{t.revCount === 0 ? '0 reviews' : `${t.revCount} ${t.revCount === 1 ? 'review' : 'reviews'}`}</div>
+          </div>
+          <a href={"/trainers/" + t.id} class="fpc-cta">View Profile →</a>
+        </div>
+      </div>
+    ))}
+
+    <!-- Empty state -->
+    <div id="fat-empty" style="display:none;text-align:center;padding:5rem 2rem;color:#8a8f8a;">
+      <div style="font-size:2.5rem;margin-bottom:1rem;">🔍</div>
+      <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.4rem;color:#111311;">No trainers found</div>
+      <div style="font-size:0.88rem;">Try a different city, region or specialty</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── MAP VIEW ── -->
+<div id="fat-map-view" style="display:none;">
+  <div id="fat-map" style="height:70vh;min-height:480px;width:100%;"></div>
+  <div id="fat-map-note" style="text-align:center;padding:0.75rem;font-size:0.78rem;color:#8a8f8a;background:#f5f7f5;border-top:1px solid #e0e8e1;">
+    Showing trainers matched to known UK cities. Click a pin to view.
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer style="background:#111311;padding:2.5rem 2rem;text-align:center;">
+  <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;">
+    <img src="/images/logo.png" alt="Personal TRating" style="height:40px;width:auto;object-fit:contain;opacity:0.5;" />
+    <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);margin:0;">© 2026 Personal TRating · Built in the UK 🇬🇧</p>
+  </div>
+</footer>
+
+</Layout>
+
+<style>
+  /* ── Hero ── */
+  .fat-hero { background:#111311; padding:4.5rem 0 3.5rem; position:relative; overflow:hidden; }
+  .fat-hero-eyebrow { display:inline-block; background:rgba(58,181,74,0.15); border:1px solid rgba(58,181,74,0.3); color:#3ab54a; font-size:0.7rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; padding:0.4rem 1.1rem; border-radius:20px; margin-bottom:1.4rem; }
+  .fat-hero-h1 { font-family:'Playfair Display',serif; font-size:3.2rem; font-weight:900; color:white; margin:0 0 1rem; line-height:1.1; }
+  .fat-hero-sub { color:rgba(255,255,255,0.55); font-size:1rem; margin:0 0 2.5rem; line-height:1.6; }
+
+  /* Search bar */
+  .fat-search-wrap { background:white; border-radius:50px; display:flex; align-items:center; max-width:640px; margin:0 auto; padding:0.45rem 0.45rem 0.45rem 1.4rem; box-shadow:0 8px 40px rgba(0,0,0,0.35); gap:0.75rem; }
+  .fat-search-btn  { background:#3ab54a; color:white; border:none; padding:0.65rem 1.6rem; border-radius:30px; font-weight:700; font-size:0.9rem; cursor:pointer; font-family:'Manrope',sans-serif; flex-shrink:0; transition:background 0.2s; }
+  .fat-search-btn:hover { background:#2a9438; }
+  @keyframes fat-scroll {
+    from { transform: translateX(var(--fs-from)); }
+    to   { transform: translateX(var(--fs-to)); }
+  }
+
+  /* Stats strip */
+  .fat-stats    { display:flex; align-items:center; justify-content:center; gap:2.5rem; margin-top:2.25rem; flex-wrap:wrap; }
+  .fat-stat     { text-align:center; }
+  .fat-stat-num { font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900; color:white; line-height:1; }
+  .fat-stat-lbl { font-size:0.68rem; color:rgba(255,255,255,0.4); letter-spacing:1.5px; text-transform:uppercase; margin-top:0.25rem; }
+  .fat-stat-div { width:1px; height:40px; background:rgba(255,255,255,0.1); }
+
+  /* Filter bar */
+  .fat-filters { background:white; border-bottom:1px solid #e0e8e1; position:sticky; top:72px; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,0.04); }
+  .fat-chips   { display:flex; gap:0.45rem; overflow-x:auto; scrollbar-width:none; padding:0.85rem 0 0.5rem; }
+  .fat-chips::-webkit-scrollbar { display:none; }
+  .fat-bar-bottom { display:flex; align-items:center; justify-content:space-between; padding:0.5rem 0 0.75rem; gap:1rem; flex-wrap:wrap; }
+  .fat-sort-sel { border:1.5px solid #e0e8e1; border-radius:20px; padding:0.3rem 0.85rem; font-size:0.8rem; font-family:'Manrope',sans-serif; color:#111311; background:white; cursor:pointer; outline:none; }
+
+  /* Chips */
+  .chip { flex-shrink:0; padding:0.38rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:600; border:1.5px solid #e0e8e1; background:white; color:#5a6b5c; cursor:pointer; transition:all 0.15s; white-space:nowrap; font-family:'Manrope',sans-serif; }
+  .chip:hover { border-color:#3ab54a; color:#2a9438; }
+  .chip-active { background:#3ab54a; border-color:#3ab54a; color:white; }
+
+  /* View toggle */
+  .vt-wrap { display:flex; background:#f0f4f0; border-radius:20px; padding:0.2rem; gap:0.1rem; }
+  .vt-btn  { padding:0.28rem 0.85rem; border-radius:16px; border:none; background:transparent; font-size:0.78rem; font-weight:600; color:#8a8f8a; cursor:pointer; transition:all 0.15s; font-family:'Manrope',sans-serif; white-space:nowrap; }
+  .vt-active { background:white; color:#111311; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+
+  /* ── Profile card ── */
+  .fpc { background:white; border:1px solid #e0e8e1; border-left:4px solid #3ab54a; border-radius:16px; padding:1.5rem; display:flex; align-items:flex-start; gap:1.5rem; transition:box-shadow 0.2s, transform 0.15s; }
+  .fpc:hover { box-shadow:0 6px 28px rgba(0,0,0,0.08); transform:translateY(-2px); }
+
+  .fpc-left { display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex-shrink:0; }
+  .fpc-rank { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900; white-space:nowrap; color:#3ab54a; }
+  .fpc-av   { width:72px; min-width:72px; height:72px; border-radius:50%; object-fit:cover; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; flex-shrink:0; }
+  .fpc-av-init { }
+
+  .fpc-mid  { flex:1; min-width:0; }
+  .fpc-name-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.3rem; }
+  .fpc-name { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:#111311; }
+  .fpc-cert { font-size:0.68rem; font-weight:700; color:#2a9438; background:#eaf7ec; padding:0.18rem 0.55rem; border-radius:10px; border:1px solid #c3e6c8; white-space:nowrap; }
+  .fpc-meta { font-size:0.82rem; color:#8a8f8a; display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem; }
+  .fpc-bio  { font-size:0.83rem; color:#5a6b5c; font-style:italic; line-height:1.55; padding:0.55rem 0.75rem; background:#f4f9f5; border-left:3px solid #c3e6c8; border-radius:0 6px 6px 0; margin-bottom:0.5rem; }
+  .fpc-gyms { display:flex; flex-wrap:wrap; gap:0.35rem; }
+  .fpc-gym  { font-size:0.74rem; color:#5a6b5c; background:#f0f7f1; border:1px solid #d4e8d6; padding:0.2rem 0.6rem; border-radius:20px; }
+
+  .fpc-right     { display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between; gap:1rem; flex-shrink:0; text-align:right; min-width:130px; }
+  .fpc-bmp-wrap  { }
+  .fpc-bmp-num   { font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:900; color:#111311; line-height:1; }
+  .fpc-bmp-lbl   { font-size:0.58rem; color:#8a8f8a; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; margin-top:0.1rem; }
+  .fpc-dbs       { display:flex; gap:2px; justify-content:flex-end; margin-top:0.3rem; }
+  .fpc-rev       { font-size:0.7rem; color:#8a8f8a; margin-top:0.2rem; }
+  .fpc-cta       { background:#3ab54a; color:white; font-weight:700; font-size:0.85rem; padding:0.65rem 1.5rem; border-radius:25px; text-decoration:none; white-space:nowrap; transition:background 0.2s; }
+  .fpc-cta:hover { background:#2a9438; }
+
+  /* Mobile cards */
+  @media (max-width:620px) {
+    .fat-hero-h1  { font-size:2.2rem; }
+    .fat-stats    { gap:1.5rem; }
+    .fat-hero > div { padding-left:1.25rem !important; padding-right:1.25rem !important; }
+    .fat-search-wrap { border-radius:14px; padding:0.35rem 0.35rem 0.35rem 1rem; gap:0.5rem; }
+    .fat-search-btn  { padding:0.65rem 1.1rem; font-size:0.85rem; }
+    .fat-stat-div { display:none; }
+    .fpc         { flex-direction:column; gap:0.8rem; padding:1.1rem; }
+    .fpc-left    { flex-direction:row; align-items:center; gap:0.75rem; }
+    .fpc-right   { flex-direction:row; align-items:center; justify-content:space-between; text-align:left; min-width:0; width:100%; padding-top:0.75rem; border-top:1px solid #e8f0e9; gap:0.75rem; }
+    .fpc-bmp-num { font-size:1.8rem; }
+    .fpc-dbs     { justify-content:flex-start; }
+    .fpc-cta     { padding:0.6rem 1.2rem; font-size:0.8rem; }
+  }
+</style>
+
+<script is:inline>
+(function () {
+  // Animated placeholder: hide on focus/type, restore on blur if empty
+  var fatInput = document.getElementById('fat-search');
+  var fatPh    = document.getElementById('fat-ph');
+  if (fatInput && fatPh) {
+    fatInput.addEventListener('focus', function () { fatPh.style.display = 'none'; });
+    fatInput.addEventListener('input', function () { fatPh.style.display = fatInput.value ? 'none' : 'flex'; });
+    fatInput.addEventListener('blur',  function () { if (!fatInput.value) fatPh.style.display = 'flex'; });
+  }
+  var fatSpan = document.getElementById('fat-ph-span');
+  if (fatSpan && fatPh) {
+    var cw = fatPh.offsetWidth;
+    var sw = fatSpan.offsetWidth;
+    fatSpan.style.setProperty('--fs-from', (cw + 20) + 'px');
+    fatSpan.style.setProperty('--fs-to',   (-sw - 20) + 'px');
+    fatSpan.style.animation = 'fat-scroll 10s linear infinite';
+  }
+})();
+
+(function () {
+  var activeSpec   = '';
+  var activeSort   = 'bmp';
+  var activeSearch = '';
+  var mapInited    = false;
+
+  var searchEl  = document.getElementById('fat-search');
+  var sortEl    = document.getElementById('fat-sort');
+  var countEl   = document.getElementById('fat-count-txt');
+  var emptyEl   = document.getElementById('fat-empty');
+  var listView  = document.getElementById('fat-list-view');
+  var mapView   = document.getElementById('fat-map-view');
+  var listInner = document.getElementById('fat-list-inner');
+  var cards     = Array.from(document.querySelectorAll('.fpc'));
+
+  var regionMap = {
+    'scotland':        ['glasgow','edinburgh','aberdeen','dundee','inverness','stirling','perth','falkirk','ayr','paisley','hamilton','livingston','greenock','kirkcaldy','dunfermline','motherwell'],
+    'scottish':        ['glasgow','edinburgh','aberdeen','dundee','inverness','stirling','perth','falkirk','ayr','paisley','hamilton','livingston','greenock','kirkcaldy','dunfermline','motherwell'],
+    'wales':           ['cardiff','swansea','newport','bangor','wrexham','barry','bridgend','merthyr','rhyl','aberystwyth','llandudno','cwmbran','pontypridd'],
+    'welsh':           ['cardiff','swansea','newport','bangor','wrexham','barry','bridgend','merthyr','rhyl','aberystwyth','llandudno','cwmbran','pontypridd'],
+    'northern ireland':['belfast','derry','londonderry','lisburn','newry','armagh','omagh','ballymena','antrim','bangor'],
+    'north west':      ['manchester','liverpool','preston','bolton','wigan','blackpool','chester','carlisle','warrington','oldham','salford','rochdale','bury','stockport','burnley','lancaster'],
+    'north east':      ['newcastle','sunderland','middlesbrough','durham','gateshead','hartlepool','darlington','stockton','south shields'],
+    'yorkshire':       ['leeds','sheffield','bradford','hull','york','halifax','huddersfield','wakefield','doncaster','rotherham','harrogate','scarborough','barnsley'],
+    'midlands':        ['birmingham','coventry','leicester','nottingham','derby','wolverhampton','stoke','stafford','walsall','northampton','shrewsbury','worcester','hereford'],
+    'west midlands':   ['birmingham','coventry','wolverhampton','walsall','west bromwich','lichfield','solihull','dudley','redditch'],
+    'east midlands':   ['nottingham','derby','leicester','lincoln','northampton','peterborough','mansfield','loughborough'],
+    'east of england': ['norwich','cambridge','ipswich','peterborough','colchester','chelmsford','luton','southend','bury st edmunds'],
+    'south east':      ['brighton','southampton','portsmouth','oxford','reading','milton keynes','guildford','canterbury','maidstone','eastbourne','hastings','worthing','crawley','basingstoke'],
+    'south west':      ['bristol','exeter','plymouth','bath','gloucester','truro','swindon','cheltenham','bournemouth','poole','salisbury','torquay','yeovil','taunton'],
+    'london':          ['london'],
+  };
+
+  /* ── Specialty chip ── */
+  function setSpec(btn, spec) {
+    activeSpec = spec;
+    document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('chip-active'); });
+    btn.classList.add('chip-active');
+    applyFilters();
+  }
+  window.setSpec = setSpec;
+
+  /* ── Search ── */
+  function doSearch() {
+    activeSearch = searchEl ? searchEl.value.trim().toLowerCase() : '';
+    applyFilters();
+  }
+  window.doSearch = doSearch;
+
+  /* ── Sort ── */
+  function doSort() {
+    activeSort = sortEl ? sortEl.value : 'bmp';
+    applySortDOM();
+  }
+  window.doSort = doSort;
+
+  /* ── View toggle ── */
+  function setView(v) {
+    document.getElementById('btn-list').classList.toggle('vt-active', v === 'list');
+    document.getElementById('btn-map').classList.toggle('vt-active',  v === 'map');
+    listView.style.display = v === 'list' ? '' : 'none';
+    mapView.style.display  = v === 'map'  ? '' : 'none';
+    if (v === 'map') initMap();
+  }
+  window.setView = setView;
+
+  /* ── Core filter ── */
+  function applyFilters() {
+    var regionCities = activeSearch ? (regionMap[activeSearch] || null) : null;
+    var visible = 0;
+    cards.forEach(function (card) {
+      var name = card.getAttribute('data-name') || '';
+      var city = card.getAttribute('data-city') || '';
+      var spec = card.getAttribute('data-spec') || '';
+      var mQ = true;
+      if (activeSearch) {
+        if (regionCities) {
+          mQ = regionCities.some(function (c) { return city.indexOf(c) !== -1; });
+        } else {
+          mQ = name.indexOf(activeSearch) !== -1 || city.indexOf(activeSearch) !== -1;
+        }
+      }
+      var mS = !activeSpec || spec.indexOf(activeSpec) !== -1;
+      var show = mQ && mS;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (countEl) countEl.textContent = visible + ' trainer' + (visible !== 1 ? 's' : '');
+    if (emptyEl) emptyEl.style.display = visible === 0 ? '' : 'none';
+    applySortDOM();
+  }
+
+  /* ── Sort DOM ── */
+  function applySortDOM() {
+    if (!listInner) return;
+    var visible = cards.filter(function (c) { return c.style.display !== 'none'; });
+    visible.sort(function (a, b) {
+      if (activeSort === 'bmp')     return parseFloat(b.getAttribute('data-bmp') || '0') - parseFloat(a.getAttribute('data-bmp') || '0');
+      if (activeSort === 'reviews') return parseInt(b.getAttribute('data-reviews') || '0') - parseInt(a.getAttribute('data-reviews') || '0');
+      return (a.getAttribute('data-name') || '').localeCompare(b.getAttribute('data-name') || '');
+    });
+    visible.forEach(function (c) { listInner.appendChild(c); });
+    listInner.appendChild(emptyEl);
+  }
+
+  /* ── Leaflet map ── */
+  function initMap() {
+    if (mapInited) return;
+    mapInited = true;
+    var cityCoords = {
+      'london':[51.5074,-0.1278],'manchester':[53.4808,-2.2426],'birmingham':[52.4862,-1.8904],
+      'leeds':[53.8008,-1.5491],'glasgow':[55.8642,-4.2518],'edinburgh':[55.9533,-3.1883],
+      'liverpool':[53.4084,-2.9916],'bristol':[51.4545,-2.5879],'sheffield':[53.3811,-1.4701],
+      'newcastle':[54.9783,-1.6178],'cardiff':[51.4816,-3.1791],'belfast':[54.5973,-5.9301],
+      'nottingham':[52.9548,-1.1581],'leicester':[52.6369,-1.1398],'coventry':[52.4068,-1.5197],
+      'bradford':[53.7960,-1.7594],'exeter':[50.7184,-3.5339],'plymouth':[50.3755,-4.1427],
+      'southampton':[50.9097,-1.4044],'portsmouth':[50.8198,-1.0880],'brighton':[50.8225,-0.1372],
+      'oxford':[51.7520,-1.2577],'cambridge':[52.2053,0.1218],'norwich':[52.6309,1.2974],
+      'reading':[51.4543,-0.9781],'derby':[52.9225,-1.4746],'stoke':[53.0027,-2.1794],
+      'wolverhampton':[52.5869,-2.1288],'sunderland':[54.9069,-1.3838],'middlesbrough':[54.5752,-1.2349],
+      'hull':[53.7457,-0.3367],'york':[53.9590,-1.0815],'aberdeen':[57.1497,-2.0943],
+      'dundee':[56.4620,-2.9707],'inverness':[57.4778,-4.2247],'swansea':[51.6214,-3.9436],
+      'newport':[51.5842,-2.9977],'bath':[51.3758,-2.3599],'cheltenham':[51.9000,-2.0830],
+      'gloucester':[51.8642,-2.2380],'bournemouth':[50.7192,-1.8808],'poole':[50.7155,-1.9871],
+      'bolton':[53.5780,-2.4282],'wigan':[53.5450,-2.6370],'blackpool':[53.8142,-3.0503],
+      'preston':[53.7632,-2.7031],'burnley':[53.7890,-2.2494],'oldham':[53.5409,-2.1114],
+      'salford':[53.4875,-2.2901],'stockport':[53.4106,-2.1575],'warrington':[53.3900,-2.5970],
+      'chester':[53.1905,-2.8910],'bury':[53.5933,-2.2986],'huddersfield':[53.6458,-1.7850],
+      'wakefield':[53.6830,-1.4977],'doncaster':[53.5228,-1.1286],'rotherham':[53.4326,-1.3635],
+      'harrogate':[53.9922,-1.5378],'barnsley':[53.5547,-1.4791],'salisbury':[51.0693,-1.7957],
+      'truro':[50.2632,-5.0510],'torquay':[50.4619,-3.5253],'yeovil':[50.9425,-2.6303],
+      'taunton':[51.0152,-3.1007],'shrewsbury':[52.7080,-2.7545],'worcester':[52.1920,-2.2200],
+      'hereford':[52.0564,-2.7162],'stafford':[52.8053,-2.1189],'walsall':[52.5850,-1.9820],
+      'northampton':[52.2405,-0.9027],'peterborough':[52.5695,-0.2405],'lincoln':[53.2307,-0.5406],
+      'ipswich':[52.0567,1.1482],'colchester':[51.8959,0.8919],'chelmsford':[51.7356,0.4685],
+      'luton':[51.8787,-0.4200],'southend':[51.5459,0.7077],'guildford':[51.2362,-0.5704],
+      'maidstone':[51.2720,0.5291],'eastbourne':[50.7688,0.2845],'crawley':[51.1092,-0.1872],
+      'basingstoke':[51.2665,-1.0872],'swindon':[51.5558,-1.7797],'bangor':[53.2274,-4.1277],
+      'wrexham':[53.0482,-2.9919],'rhyl':[53.3188,-3.4876],'llandudno':[53.3248,-3.8267],
+      'dundee':[56.4620,-2.9707],'stirling':[56.1165,-3.9369],'perth':[56.3950,-3.4312],
+      'falkirk':[56.0019,-3.7839],'ayr':[55.4587,-4.6292],'paisley':[55.8456,-4.4237],
+      'hamilton':[55.7770,-4.0393],'livingston':[55.8830,-3.5262],'motherwell':[55.7940,-4.0011],
+      'derry':[54.9966,-7.3086],'lisburn':[54.5161,-6.0484],'newry':[54.1754,-6.3402],
+      'armagh':[54.3503,-6.6528],'ballymena':[54.8645,-6.2772],'antrim':[54.7194,-6.2094],
+    };
+    var ukBounds = L.latLngBounds(L.latLng(49.0,-11.0), L.latLng(61.5,3.5));
+    var map = L.map('fat-map', {
+      scrollWheelZoom: false,
+      attributionControl: false,
+      maxBounds: ukBounds,
+      maxBoundsViscosity: 1.0,
+      minZoom: 5,
+      maxZoom: 13
+    }).setView([54.2, -2.5], 6);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 19
+    }).addTo(map);
+    var placed = 0;
+    cards.forEach(function (card) {
+      var cityRaw = (card.getAttribute('data-city') || '').toLowerCase().trim();
+      var coords = cityCoords[cityRaw];
+      if (!coords) {
+        var keys = Object.keys(cityCoords);
+        for (var i = 0; i < keys.length; i++) {
+          if (cityRaw.indexOf(keys[i]) !== -1 || keys[i].indexOf(cityRaw) !== -1) {
+            coords = cityCoords[keys[i]]; break;
+          }
+        }
+      }
+      if (!coords) return;
+      placed++;
+      var bmp  = card.getAttribute('data-bmp') || '—';
+      var name = (card.getAttribute('data-name') || '').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+      var ctaEl = card.querySelector('.fpc-cta');
+      var href  = ctaEl ? ctaEl.getAttribute('href') : '#';
+      var jitter = [(Math.random()-0.5)*0.04, (Math.random()-0.5)*0.08];
+      var icon = L.divIcon({
+        className: '',
+        html: '<div style="background:#3ab54a;color:white;font-weight:800;font-size:0.62rem;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 10px rgba(0,0,0,0.25);line-height:1;">' + bmp + '</div>',
+        iconSize:[34,34], iconAnchor:[17,17],
+      });
+      L.marker([coords[0]+jitter[0], coords[1]+jitter[1]], { icon: icon }).addTo(map)
+        .bindPopup('<div style="font-family:Manrope,sans-serif;min-width:160px;padding:0.25rem 0;"><div style="font-weight:700;font-size:0.92rem;margin-bottom:0.25rem;">' + name + '</div><div style="font-size:0.75rem;color:#888;margin-bottom:0.5rem;">BMP Score: ' + bmp + '</div><a href="' + href + '" style="display:block;background:#3ab54a;color:white;text-align:center;padding:0.35rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.78rem;">View Profile →</a></div>');
+    });
+    var noteEl = document.getElementById('fat-map-note');
+    if (noteEl) noteEl.textContent = placed + ' trainer' + (placed !== 1 ? 's' : '') + ' shown on map. Click a pin to view their profile.';
+  }
+
+  /* ── Debounced search input ── */
+  var deb;
+  if (searchEl) {
+    searchEl.addEventListener('input', function () { clearTimeout(deb); deb = setTimeout(doSearch, 240); });
+    searchEl.addEventListener('keydown', function (e) { if (e.key === 'Enter') doSearch(); });
+  }
+
+  /* ── Read URL params on load ── */
+  (function () {
+    var params = new URLSearchParams(window.location.search);
+    var q    = params.get('q');
+    var spec = params.get('spec');
+    if (q && searchEl) {
+      searchEl.value = q;
+      activeSearch   = q.toLowerCase();
+      var ph = document.getElementById('fat-ph');
+      if (ph) ph.style.display = 'none';
+    }
+    if (spec) {
+      var chip = document.querySelector('.chip[data-spec="' + spec.toLowerCase() + '"]');
+      if (chip) setSpec(chip, spec.toLowerCase());
+    }
+  })();
+
+  /* ── Init ── */
+  applyFilters();
+})();
+</script>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { data: trainerRow } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+    if (trainerRow) {
+      const accountEl = document.getElementById('nav-account')! as HTMLAnchorElement;
+      accountEl.href        = '/dashboard';
+      accountEl.textContent = 'My Dashboard →';
+      accountEl.style.display = '';
+    } else {
+      const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
+      if (client) document.getElementById('nav-account')!.style.display = '';
+    }
+  }
+</script>
+

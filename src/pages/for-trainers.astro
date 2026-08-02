@@ -1,0 +1,471 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+
+const { count: totalTrainers } = await supabase
+  .from('trainers')
+  .select('*', { count: 'exact', head: true })
+  .eq('is_active', true);
+
+const { count: totalReviews } = await supabase
+  .from('reviews')
+  .select('*', { count: 'exact', head: true })
+  .eq('is_verified', true);
+---
+
+<Layout
+  title="For Personal Trainers · Personal TRating"
+  description="List your profile free on the UK's only verified PT ranking platform. Collect verified client reviews, earn your BMP score and climb the national leaderboard."
+>
+
+<style is:global>
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  .ft-anim-1 { animation:fadeUp 0.6s 0.00s ease both; }
+  .ft-anim-2 { animation:fadeUp 0.6s 0.10s ease both; }
+  .ft-anim-3 { animation:fadeUp 0.6s 0.20s ease both; }
+  .ft-anim-4 { animation:fadeUp 0.6s 0.30s ease both; }
+
+  .ft-step-grid    { display:grid; grid-template-columns:repeat(3,1fr); gap:2rem; }
+  .ft-feature-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+  .ft-proof-grid   { display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; }
+
+  .ft-step {
+    background:white; border:1px solid #e0e8e1; border-radius:16px;
+    padding:2rem 1.75rem; position:relative; overflow:hidden;
+  }
+  .ft-step::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:#3ab54a;
+  }
+  .ft-step-num {
+    font-size:0.65rem; font-weight:800; color:#3ab54a; letter-spacing:2px;
+    border:1.5px solid #3ab54a; padding:0.2rem 0.55rem;
+    border-radius:20px; display:inline-block; margin-bottom:1.1rem;
+  }
+  .ft-step-icon  { font-size:1.75rem; margin-bottom:0.75rem; }
+  .ft-step-title { font-weight:800; font-size:1rem; color:#111311; margin-bottom:0.5rem; line-height:1.3; }
+  .ft-step-desc  { font-size:0.85rem; color:#7a8f7c; line-height:1.75; }
+
+  .ft-feature {
+    background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
+    border-radius:14px; padding:1.75rem;
+  }
+  .ft-feature-icon  { font-size:1.6rem; margin-bottom:0.85rem; }
+  .ft-feature-title { font-weight:700; font-size:0.95rem; color:white; margin-bottom:0.4rem; }
+  .ft-feature-desc  { font-size:0.82rem; color:rgba(255,255,255,0.52); line-height:1.72; }
+
+  .ft-proof {
+    background:white; border-radius:14px; padding:1.75rem;
+    border:1px solid #c3e6c8; display:flex; flex-direction:column;
+    box-shadow:0 4px 20px rgba(58,181,74,0.08);
+  }
+  .ft-proof-text { font-size:0.875rem; line-height:1.78; color:#111311; font-style:italic; flex:1; margin-bottom:1.25rem; }
+  .ft-proof-foot { display:flex; align-items:center; gap:0.75rem; padding-top:1rem; border-top:1px solid #e0e8e1; }
+  .ft-proof-av   { width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.78rem; flex-shrink:0; }
+  .ft-proof-name { font-weight:700; font-size:0.83rem; color:#111311; }
+  .ft-proof-info { font-size:0.7rem; color:#8a8f8a; margin-top:0.1rem; }
+
+  .ft-nav-link { color:#8a8f8a; text-decoration:none; font-size:0.875rem; font-weight:500; transition:color 0.2s; }
+  .ft-nav-link:hover { color:#111311; }
+
+  @media (max-width:900px) {
+    .ft-step-grid    { grid-template-columns:1fr !important; }
+    .ft-feature-grid { grid-template-columns:1fr 1fr !important; }
+    .ft-proof-grid   { grid-template-columns:1fr !important; }
+  }
+  @media (max-width:600px) {
+    .ft-hero-h1      { font-size:2.4rem !important; }
+    .ft-trust-bar    { flex-direction:column; gap:1rem !important; }
+    .ft-feature-grid { grid-template-columns:1fr !important; }
+    section { padding-left:1.25rem !important; padding-right:1.25rem !important; }
+    section > div[style*="max-width"] { padding-left:0 !important; padding-right:0 !important; }
+  }
+</style>
+
+<!-- ── NAV ── -->
+<nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
+    <a href="/" style="text-decoration:none;display:flex;align-items:center;">
+      <img src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    </a>
+    <div style="display:flex;gap:2rem;align-items:center;">
+      <a href="/find-a-trainer" class="ft-nav-link">Find a Trainer</a>
+      <a href="#how-it-works"   class="ft-nav-link">How It Works</a>
+      <a href="#features"       class="ft-nav-link">Features</a>
+      <a href="/login" class="ft-nav-link" id="ft-nav-signin">Sign In</a>
+      <a href="/signup" id="ft-nav-cta"
+        style="background:#3ab54a;color:white;padding:0.6rem 1.4rem;border-radius:6px;font-weight:700;font-size:0.875rem;text-decoration:none;transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        List Your Profile Free
+      </a>
+      <button id="ft-nav-signout"
+        style="display:none;background:none;border:1.5px solid #d0d8d1;border-radius:6px;padding:0.55rem 1.1rem;font-size:0.875rem;font-weight:700;color:#5a6b5c;cursor:pointer;transition:all 0.2s;font-family:inherit;"
+        onmouseover="this.style.borderColor='#e05555';this.style.color='#e05555'" onmouseout="this.style.borderColor='#d0d8d1';this.style.color='#5a6b5c'">
+        Sign Out
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section style="background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);padding:5.5rem 0 4.5rem;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background-image:url('/images/hero-bg.png');background-size:cover;background-position:center 30%;opacity:0.12;pointer-events:none;"></div>
+  <div style="position:absolute;top:-120px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(58,181,74,0.18) 0%,transparent 65%);pointer-events:none;"></div>
+
+  <div style="max-width:860px;margin:0 auto;padding:0 2.5rem;position:relative;z-index:1;">
+
+    <div class="ft-anim-1" style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(58,181,74,0.18);color:#7de88a;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:0.45rem 1rem;border-radius:20px;margin-bottom:1.75rem;border:1px solid rgba(58,181,74,0.3);">
+      For Personal Trainers
+    </div>
+
+    <h1 class="ft-anim-2 ft-hero-h1" style="font-family:'Playfair Display',serif;font-size:3.6rem;font-weight:900;line-height:1.1;color:white;margin-bottom:1.5rem;">
+      Your results speak<br/>for themselves.<br/><em style="font-style:normal;color:#3ab54a;">Now prove it.</em>
+    </h1>
+
+    <p class="ft-anim-3" style="font-size:1.05rem;color:rgba(255,255,255,0.72);line-height:1.8;margin-bottom:2.75rem;max-width:580px;">
+      Personal TRating is the UK's only verified PT ranking platform. Collect real reviews from your clients, earn your BMP score, and get found by people actively searching for a trainer.
+    </p>
+
+    <div class="ft-anim-4" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem;">
+      <a href="/signup" id="ft-hero-cta"
+        style="background:#3ab54a;color:white;padding:1rem 2.25rem;border-radius:8px;font-weight:700;font-size:0.95rem;text-decoration:none;box-shadow:0 4px 20px rgba(58,181,74,0.4);transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        List Your Profile Free →
+      </a>
+      <a href="#how-it-works"
+        style="border:1.5px solid rgba(255,255,255,0.35);color:white;padding:1rem 2.25rem;border-radius:8px;font-weight:600;font-size:0.95rem;text-decoration:none;transition:all 0.2s;"
+        onmouseover="this.style.borderColor='#3ab54a';this.style.background='rgba(58,181,74,0.12)'"
+        onmouseout="this.style.borderColor='rgba(255,255,255,0.35)';this.style.background='transparent'">
+        See How It Works →
+      </a>
+    </div>
+
+    <div class="ft-trust-bar" style="display:flex;gap:2.5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1);">
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
+        🆓 <strong style="color:#fff;font-size:0.9rem;">Always free</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
+        🚫 <strong style="color:#fff;font-size:0.9rem;">No paid rankings</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
+        ✅ <strong style="color:#fff;font-size:0.9rem;">Verified clients only</strong>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
+        📍 <strong style="color:#fff;font-size:0.9rem;">UK-wide visibility</strong>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PT BENEFITS ── -->
+<section style="padding:6rem 0;background:white;border-top:3px solid #3ab54a;">
+  <div style="max-width:1100px;margin:0 auto;padding:0 2.5rem;">
+    <div style="text-align:center;max-width:620px;margin:0 auto 4rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">Why Join?</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Everything you stand to gain.</h2>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">Personal TRating is built around one idea: the best PTs should rise to the top. Here's what that means for you.</p>
+    </div>
+    <div class="ft-feature-grid">
+      {[
+        { icon:'🆓', title:'Completely free — always', desc:'List your profile, collect reviews and appear in local rankings at zero cost. No subscription, no commission, no hidden tiers. Every PT gets the same tools.' },
+        { icon:'🏆', title:'Rise on merit, not budget', desc:'The ranking algorithm cares about one thing: what your clients actually say. Solid coaches rise naturally. You cannot buy your way to the top.' },
+        { icon:'🔗', title:'Keep your existing tools', desc:'Link your Instagram, booking system, and website directly from your profile. Personal TRating works alongside your current setup — not instead of it.' },
+        { icon:'✨', title:'Show off your highlights', desc:'Add your specialty, certifications, and bio. Let your verified reviews speak for themselves. Clients in your area will see you at your best.' },
+        { icon:'📈', title:'Get found by serious clients', desc:'People searching Personal TRating are actively looking to hire a PT. A strong profile puts you in front of motivated, ready-to-commit clients.' },
+        { icon:'🌊', title:'Grow with the platform', desc:'As Personal TRating expands across the UK, every PT benefits. The more clients discover the platform, the more opportunities flow to top-ranked trainers.' },
+      ].map(f => (
+        <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:14px;padding:1.75rem;">
+          <div style="font-size:1.75rem;margin-bottom:0.85rem;">{f.icon}</div>
+          <div style="font-weight:800;font-size:0.95rem;color:#111311;margin-bottom:0.5rem;line-height:1.3;">{f.title}</div>
+          <div style="font-size:0.82rem;color:#7a8f7c;line-height:1.75;">{f.desc}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ── HOW IT WORKS ── -->
+<section id="how-it-works" style="padding:5.5rem 0;background:#f7f9f7;border-top:3px solid #3ab54a;">
+  <div style="max-width:960px;margin:0 auto;padding:0 2.5rem;">
+
+    <div style="text-align:center;margin-bottom:3.5rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Simple &amp; Fast</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;line-height:1.15;">Up and running in minutes</h2>
+      <p style="font-size:0.95rem;color:#7a8f7c;margin-top:0.75rem;max-width:500px;margin-left:auto;margin-right:auto;line-height:1.7;">No tech skills needed. No credit card. No catch.</p>
+    </div>
+
+    <div class="ft-step-grid">
+      <div class="ft-step">
+        <div class="ft-step-num">01</div>
+        <div class="ft-step-icon">👤</div>
+        <div class="ft-step-title">Create your free profile</div>
+        <div class="ft-step-desc">Add your name, city, specialty and qualification. Your public profile goes live immediately — searchable by anyone looking for a PT in your area.</div>
+      </div>
+      <div class="ft-step">
+        <div class="ft-step-num">02</div>
+        <div class="ft-step-icon">🔗</div>
+        <div class="ft-step-title">Share your unique review link</div>
+        <div class="ft-step-desc">After every session, send your client a personalised review link via WhatsApp, text or email. Only your real clients can leave a review — no anonymous ratings, ever.</div>
+      </div>
+      <div class="ft-step">
+        <div class="ft-step-num">03</div>
+        <div class="ft-step-icon">📈</div>
+        <div class="ft-step-title">Climb the UK rankings</div>
+        <div class="ft-step-desc">Every verified review updates your BMP score and your position on the national leaderboard. The more consistent you are, the higher you rank.</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── BMP EXPLAINED ── -->
+<section style="padding:6rem 0;background:white;border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
+  <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
+    <div style="text-align:center;margin-bottom:4rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">The BMP Score</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Your ranking, explained.</h2>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;max-width:580px;margin:0 auto;">BMP (Body Muscle %) is your 0–100 trust score on Personal TRating. It's designed to reward PTs who are consistently excellent — not just occasionally lucky.</p>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3.5rem;" class="ft-step-grid">
+      <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+          <div style="background:#eaf7ec;color:#2a9438;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #c3e6c8;">UP TO 80 PTS</div>
+          <div style="font-weight:800;font-size:1rem;color:#111311;">Quality Score</div>
+        </div>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">The majority of your BMP score comes from your <strong style="color:#111311;">average star rating</strong> across all verified reviews. A trainer with consistently high ratings will always rank near the top.</p>
+      </div>
+      <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+          <div style="background:#e8f0f7;color:#1a4b6b;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #b3cce0;">UP TO 20 PTS</div>
+          <div style="font-weight:800;font-size:1rem;color:#111311;">Volume Score</div>
+        </div>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">A small bonus based on the <strong style="color:#111311;">number of verified reviews</strong> you've collected — anonymous or named, they all count. It rewards trainers who build a consistent track record over time.</p>
+      </div>
+    </div>
+
+    <div style="background:#0d1a0e;border-radius:16px;padding:2.5rem;margin-bottom:3rem;">
+      <div style="font-weight:800;font-size:1.1rem;color:white;margin-bottom:1.5rem;text-align:center;">What this means for you as a PT</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="ft-proof-grid">
+        {[
+          { icon:'🎯', title:'A fair playing field', desc:'Every PT starts at zero. Your score grows purely through verified client feedback — no pay-to-win, no favouritism.' },
+          { icon:'📈', title:'Keep improving', desc:'One bad review won\'t ruin you. Consistent quality over time is what drives your score up — the formula rewards the long game.' },
+          { icon:'🔍', title:'Full transparency', desc:'You can see exactly how your BMP is calculated at any time. No black box — just your average rating and your review count.' },
+        ].map(w => (
+          <div style="text-align:center;">
+            <div style="font-size:1.75rem;margin-bottom:0.65rem;">{w.icon}</div>
+            <div style="font-weight:700;font-size:0.9rem;color:white;margin-bottom:0.4rem;">{w.title}</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.7;">{w.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;">
+      {[
+        { range:'75–100', label:'Elite',       color:'#b8860b', bg:'#fdf6e3', desc:'Consistently outstanding' },
+        { range:'50–74',  label:'Strong',      color:'#2a9438', bg:'#eaf7ec', desc:'Above average, solid volume' },
+        { range:'25–49',  label:'Developing',  color:'#1a4b6b', bg:'#e8f0f7', desc:'Early stage or mixed history' },
+        { range:'0–24',   label:'Rising',      color:'#6b1a6b', bg:'#f5e8f7', desc:'New — building reputation' },
+      ].map(b => (
+        <div style={`background:${b.bg};border-radius:12px;padding:1.25rem 0.75rem;`}>
+          <div style={`font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:${b.color};line-height:1;margin-bottom:0.3rem;`}>{b.range}</div>
+          <div style={`font-weight:800;font-size:0.78rem;color:${b.color};margin-bottom:0.4rem;`}>{b.label}</div>
+          <div style="font-size:0.72rem;color:#7a8f7c;line-height:1.5;">{b.desc}</div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features" style="padding:5.5rem 0;background:#0d1a0e;border-top:3px solid #3ab54a;">
+  <div style="max-width:960px;margin:0 auto;padding:0 2.5rem;">
+
+    <div style="text-align:center;margin-bottom:3.5rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Everything You Get</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:white;line-height:1.15;">Built for working PTs</h2>
+    </div>
+
+    <div class="ft-feature-grid">
+      {[
+        { icon:'🌐', title:'Public Profile',          desc:'A clean, professional profile page showing your BMP score, reviews, bio, specialty, certifications and where you train.' },
+        { icon:'🔗', title:'Review Link Generator',   desc:'Create a unique client review link from your dashboard in one click. Share it however you like — WhatsApp, email, Instagram DM.' },
+        { icon:'📊', title:'Live BMP Score',          desc:'Your Body Muscle % score updates automatically with every verified review. It\'s transparent, formula-based and impossible to game.' },
+        { icon:'🏆', title:'UK Leaderboard',          desc:'Rank nationally and locally by city. Clients browsing your area will see you ranked against other PTs — rising as your reviews grow.' },
+        { icon:'📋', title:'PT Dashboard',            desc:'See all your reviews, track your BMP score history, manage your profile, and generate review links — all in one place.' },
+        { icon:'🚫', title:'Zero Fake Reviews',       desc:'Reviews only arrive through a link you send to a real client. There\'s no way to leave an anonymous review on your profile.' },
+      ].map(f => (
+        <div class="ft-feature">
+          <div class="ft-feature-icon">{f.icon}</div>
+          <div class="ft-feature-title">{f.title}</div>
+          <div class="ft-feature-desc">{f.desc}</div>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<!-- ── SOCIAL PROOF ── -->
+<section style="padding:5.5rem 0;background:#f4f6f4;border-top:3px solid #3ab54a;">
+  <div style="max-width:960px;margin:0 auto;padding:0 2.5rem;">
+
+    <div style="text-align:center;margin-bottom:3.5rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">From the Platform</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;">What trainers on the platform say</h2>
+    </div>
+
+    <div class="ft-proof-grid">
+      {[
+        { initials:'JM', bg:'#eaf7ec', color:'#2a9438', name:'James M.', info:'Personal Trainer · Edinburgh',
+          text:'"I was sceptical at first but within a week I had three verified reviews and two new enquiries from people who found me on the leaderboard. It genuinely works."' },
+        { initials:'SC', bg:'#e8f0f7', color:'#1a4b6b', name:'Sarah C.', info:'Personal Trainer · Manchester',
+          text:'"The review link is so easy to use. I send it straight after a session and clients actually fill it in. My BMP score has gone up every month since I joined."' },
+        { initials:'RO', bg:'#fdf6e3', color:'#b8860b', name:'Ryan O.', info:'Personal Trainer · Nottingham',
+          text:'"What I love is that the ranking is completely honest. There are no paid spots, no shortcuts — if you\'re ranked highly it\'s because your clients rate you highly."' },
+      ].map(p => (
+        <div class="ft-proof">
+          <p class="ft-proof-text">{p.text}</p>
+          <div class="ft-proof-foot">
+            <div class="ft-proof-av" style={`background:${p.bg};color:${p.color};`}>{p.initials}</div>
+            <div>
+              <div class="ft-proof-name">{p.name}</div>
+              <div class="ft-proof-info">{p.info}</div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<!-- ── OBJECTION BUSTERS ── -->
+<section style="padding:5rem 0;background:white;border-top:3px solid #3ab54a;">
+  <div style="max-width:720px;margin:0 auto;padding:0 2.5rem;">
+
+    <div style="text-align:center;margin-bottom:3rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Common Questions</div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#111311;">Straight answers</h2>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      {[
+        { q:'Is it really free?',
+          a:'Yes, completely. There are no subscription tiers, no premium listings, no credit card required. Every PT gets the same profile, the same tools, and the same shot at the top of the leaderboard.' },
+        { q:'What is the BMP score?',
+          a:'BMP (Body Muscle %) is our 0–100 ranking score. It combines review quality (up to 70 points) with review volume (up to 30 points). It\'s formula-driven, transparent, and cannot be bought or gamed.' },
+        { q:'How do I stop fake reviews?',
+          a:'You can\'t receive a review unless you send the link yourself. There\'s no public review button on your profile. Every review is tied to a real person who received a link directly from you.' },
+        { q:'What if I get a bad review?',
+          a:'Every review counts towards your BMP score fairly. One lower-rated review won\'t destroy your ranking — consistent quality over time is what drives you up the leaderboard.' },
+        { q:'How quickly does my profile appear in searches?',
+          a:'Immediately. As soon as your profile is live, you\'re visible in the find-a-trainer directory, searchable by city and specialty, and eligible to appear on the leaderboard once you have reviews.' },
+      ].map(item => (
+        <div style="background:#f4f6f4;border-radius:12px;padding:1.5rem 1.75rem;border:1px solid #e0e8e1;">
+          <div style="font-weight:800;font-size:0.95rem;color:#111311;margin-bottom:0.5rem;">{item.q}</div>
+          <div style="font-size:0.875rem;color:#5a6b5c;line-height:1.8;">{item.a}</div>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<!-- ── FINAL CTA ── -->
+<section style="padding:6rem 0;background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);text-align:center;border-top:3px solid #3ab54a;">
+  <div style="max-width:560px;margin:0 auto;padding:0 2.5rem;">
+    <div id="ft-bottom-cta-inner">
+      <div style="display:inline-block;background:rgba(58,181,74,0.2);color:#7de88a;padding:0.4rem 1rem;border-radius:20px;font-size:0.72rem;font-weight:700;margin-bottom:1.5rem;letter-spacing:1.5px;text-transform:uppercase;border:1px solid rgba(58,181,74,0.3);">
+        Free to Join
+      </div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:white;margin-bottom:1rem;line-height:1.15;">
+        Ready to get ranked?
+      </h2>
+      <p style="color:rgba(255,255,255,0.55);font-size:0.95rem;margin-bottom:2.5rem;line-height:1.8;max-width:440px;margin-left:auto;margin-right:auto;">
+        Join the UK's only verified PT ranking platform. Your first review could be live today.
+      </p>
+      <a href="/signup"
+        style="display:inline-block;background:#3ab54a;color:white;padding:1.1rem 2.75rem;border-radius:8px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 4px 24px rgba(58,181,74,0.4);transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        List Your Profile Free →
+      </a>
+      <div style="margin-top:1rem;font-size:0.78rem;color:rgba(255,255,255,0.3);">Takes 2 minutes · No credit card · Always free</div>
+    </div>
+    <div id="ft-bottom-cta-loggedin" style="display:none;">
+      <div style="display:inline-block;background:rgba(58,181,74,0.2);color:#7de88a;padding:0.4rem 1rem;border-radius:20px;font-size:0.72rem;font-weight:700;margin-bottom:1.5rem;letter-spacing:1.5px;text-transform:uppercase;border:1px solid rgba(58,181,74,0.3);">
+        You're listed
+      </div>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:white;margin-bottom:1rem;line-height:1.15;">
+        Your profile is live.
+      </h2>
+      <p style="color:rgba(255,255,255,0.55);font-size:0.95rem;margin-bottom:2.5rem;line-height:1.8;max-width:440px;margin-left:auto;margin-right:auto;">
+        Head to your dashboard to manage your profile, generate review links and track your BMP score.
+      </p>
+      <a href="/dashboard"
+        style="display:inline-block;background:#3ab54a;color:white;padding:1.1rem 2.75rem;border-radius:8px;font-weight:700;font-size:1rem;text-decoration:none;box-shadow:0 4px 24px rgba(58,181,74,0.4);transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        Go to My Dashboard →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <img src="/images/logo.png" alt="Personal TRating" style="height:44px;width:auto;object-fit:contain;opacity:0.55;" />
+    <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 Personal TRating · Built in the UK 🇬🇧</p>
+  </div>
+  <div style="display:flex;gap:2rem;">
+    {[['Home','/'],['Find a Trainer','/find-a-trainer'],['Privacy','/privacy'],['Terms','/terms']].map(([label,href]) => (
+      <a href={href} style="color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.8rem;font-weight:500;transition:color 0.2s;"
+        onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
+        {label}
+      </a>
+    ))}
+  </div>
+</footer>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+    if (trainer) {
+      // Nav: swap "Sign In" + "List Your Profile Free" for "My Dashboard" + sign out
+      const navSignin  = document.getElementById('ft-nav-signin');
+      const navCta     = document.getElementById('ft-nav-cta');
+      const navSignout = document.getElementById('ft-nav-signout');
+      if (navSignin) navSignin.style.display = 'none';
+      if (navCta) {
+        navCta.textContent  = 'My Dashboard →';
+        (navCta as HTMLAnchorElement).href = '/dashboard';
+      }
+      if (navSignout) navSignout.style.display = '';
+      // Hero: swap signup CTA for dashboard link
+      const heroCta = document.getElementById('ft-hero-cta') as HTMLAnchorElement | null;
+      if (heroCta) {
+        heroCta.textContent = 'Go to My Dashboard →';
+        heroCta.href        = '/dashboard';
+      }
+      // Bottom CTA: swap entire block
+      const ctaGuest    = document.getElementById('ft-bottom-cta-inner');
+      const ctaLoggedIn = document.getElementById('ft-bottom-cta-loggedin');
+      if (ctaGuest)    ctaGuest.style.display    = 'none';
+      if (ctaLoggedIn) ctaLoggedIn.style.display = 'block';
+    }
+  }
+
+  document.getElementById('ft-nav-signout')?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  });
+</script>
+
+</Layout>
+

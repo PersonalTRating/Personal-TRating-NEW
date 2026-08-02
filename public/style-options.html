@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Section Style Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Manrope', sans-serif; background: #e8ece8; padding: 2rem; }
+
+    .page-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.5rem; font-weight: 900;
+      color: #111311; text-align: center;
+      margin-bottom: 0.4rem;
+    }
+    .page-sub {
+      text-align: center; color: #8a8f8a;
+      font-size: 0.85rem; margin-bottom: 2.5rem;
+    }
+
+    .option-wrap {
+      max-width: 860px; margin: 0 auto 2.5rem;
+    }
+    .option-label {
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 2px;
+      text-transform: uppercase; color: #3ab54a;
+      margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .option-label span {
+      background: #3ab54a; color: white;
+      width: 22px; height: 22px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 900; flex-shrink: 0;
+    }
+
+    /* ── Shared mock section shell ── */
+    .mock-section {
+      background: white;
+      padding: 2.5rem 2.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .mock-eyebrow {
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 2.5px;
+      text-transform: uppercase; color: #3ab54a; margin-bottom: 0.4rem;
+    }
+    .mock-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.9rem; font-weight: 900; color: #111311;
+      margin-bottom: 0.4rem;
+    }
+    .mock-sub { color: #8a8f8a; font-size: 0.85rem; margin-bottom: 1.75rem; }
+
+    /* Mock leaderboard row */
+    .mock-rows { display: flex; flex-direction: column; gap: 0.65rem; }
+    .mock-row {
+      background: #f7f8f7; border-radius: 10px;
+      padding: 1rem 1.25rem; display: flex; align-items: center; gap: 1.1rem;
+      border: 1px solid #e0e8e1;
+    }
+    .mock-rank { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 900; width: 2.2rem; flex-shrink: 0; }
+    .r1 { color: #b8860b; } .r2 { color: #888; } .r3 { color: #b07040; }
+    .mock-avatar { width: 42px; height: 42px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 0.8rem; flex-shrink: 0; }
+    .mock-info { flex: 1; }
+    .mock-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; font-weight: 700; color: #111311; }
+    .mock-meta { font-size: 0.75rem; color: #8a8f8a; margin-top: 0.15rem; }
+    .mock-pill { font-size: 0.65rem; font-weight: 700; padding: 0.18rem 0.55rem; border-radius: 20px; margin-left: 0.4rem; }
+    .mock-bmp { text-align: right; flex-shrink: 0; }
+    .mock-bmp-val { font-size: 1.5rem; font-weight: 800; color: #111311; line-height: 1; }
+    .mock-bmp-lbl { font-size: 0.58rem; color: #8a8f8a; letter-spacing: 1px; text-transform: uppercase; }
+    .mock-stars { font-size: 0.65rem; color: #b8860b; margin-top: 0.1rem; }
+
+    /* ════════════════════════════════════
+       OPTION 1 — Green left-edge bar
+    ════════════════════════════════════ */
+    .opt1 { border-left: 5px solid #3ab54a; }
+
+    /* ════════════════════════════════════
+       OPTION 2 — Top & bottom green rules
+    ════════════════════════════════════ */
+    .opt2 {
+      border-top: 3px solid #3ab54a;
+      border-bottom: 3px solid #3ab54a;
+    }
+    .opt2 .mock-eyebrow {
+      display: inline-block;
+      border-bottom: 2px solid #3ab54a;
+      padding-bottom: 0.2rem;
+    }
+
+    /* ════════════════════════════════════
+       OPTION 3 — Soft green side wash
+    ════════════════════════════════════ */
+    .opt3::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; bottom: 0;
+      width: 120px;
+      background: linear-gradient(to right, #eaf7ec, transparent);
+      pointer-events: none;
+    }
+
+    /* ════════════════════════════════════
+       OPTION 4 — Faint dot-grid background
+    ════════════════════════════════════ */
+    .opt4 {
+      background-image: radial-gradient(circle, #c8e6c9 1px, transparent 1px);
+      background-size: 20px 20px;
+      background-color: white;
+    }
+    .opt4 .mock-row { background: rgba(255,255,255,0.92); }
+
+    /* ════════════════════════════════════
+       OPTION 5 — Corner bracket accents
+    ════════════════════════════════════ */
+    .opt5::before,
+    .opt5::after {
+      content: '';
+      position: absolute;
+      width: 28px; height: 28px;
+    }
+    .opt5::before {
+      top: 14px; left: 14px;
+      border-top: 3px solid #3ab54a;
+      border-left: 3px solid #3ab54a;
+      border-radius: 2px 0 0 0;
+    }
+    .opt5::after {
+      bottom: 14px; right: 14px;
+      border-bottom: 3px solid #3ab54a;
+      border-right: 3px solid #3ab54a;
+      border-radius: 0 0 2px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <p class="page-title">Section Decoration Options</p>
+  <p class="page-sub">5 styles for the white sections — same content, different treatment</p>
+
+  <!-- OPTION 1 -->
+  <div class="option-wrap">
+    <div class="option-label"><span>1</span> Green Left-Edge Bar</div>
+    <div class="mock-section opt1">
+      <div class="mock-eyebrow">National Rankings</div>
+      <div class="mock-title">Top Rated PTs</div>
+      <div class="mock-sub">Ranked by Body Muscle Percentage (BMP) score</div>
+      <div class="mock-rows">
+        <div class="mock-row">
+          <div class="mock-rank r1">01</div>
+          <div class="mock-avatar" style="background:#fdf6e3;color:#b8860b;">JM</div>
+          <div class="mock-info">
+            <div class="mock-name">James Mitchell <span class="mock-pill" style="background:#fdf6e3;color:#b8860b;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 London, SW1 · 💪 Strength & Conditioning</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">98.4</div><div class="mock-stars">★★★★★ 5.0</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r2">02</div>
+          <div class="mock-avatar" style="background:#e8f7ee;color:#1a6b3d;">SC</div>
+          <div class="mock-info">
+            <div class="mock-name">Sarah Clarke <span class="mock-pill" style="background:#e8f7ee;color:#1a6b3d;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Manchester, M1 · 🔥 Weight Loss</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">96.1</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r3">03</div>
+          <div class="mock-avatar" style="background:#eaf7ec;color:#2a9438;">DP</div>
+          <div class="mock-info">
+            <div class="mock-name">Daniel Park <span class="mock-pill" style="background:#eaf7ec;color:#2a9438;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Birmingham, B1 · ⚡ HIIT & Cardio</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">94.8</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 2 -->
+  <div class="option-wrap">
+    <div class="option-label"><span>2</span> Top & Bottom Green Rules</div>
+    <div class="mock-section opt2">
+      <div class="mock-eyebrow">National Rankings</div>
+      <div class="mock-title">Top Rated PTs</div>
+      <div class="mock-sub">Ranked by Body Muscle Percentage (BMP) score</div>
+      <div class="mock-rows">
+        <div class="mock-row">
+          <div class="mock-rank r1">01</div>
+          <div class="mock-avatar" style="background:#fdf6e3;color:#b8860b;">JM</div>
+          <div class="mock-info">
+            <div class="mock-name">James Mitchell <span class="mock-pill" style="background:#fdf6e3;color:#b8860b;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 London, SW1 · 💪 Strength & Conditioning</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">98.4</div><div class="mock-stars">★★★★★ 5.0</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r2">02</div>
+          <div class="mock-avatar" style="background:#e8f7ee;color:#1a6b3d;">SC</div>
+          <div class="mock-info">
+            <div class="mock-name">Sarah Clarke <span class="mock-pill" style="background:#e8f7ee;color:#1a6b3d;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Manchester, M1 · 🔥 Weight Loss</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">96.1</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r3">03</div>
+          <div class="mock-avatar" style="background:#eaf7ec;color:#2a9438;">DP</div>
+          <div class="mock-info">
+            <div class="mock-name">Daniel Park <span class="mock-pill" style="background:#eaf7ec;color:#2a9438;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Birmingham, B1 · ⚡ HIIT & Cardio</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">94.8</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 3 -->
+  <div class="option-wrap">
+    <div class="option-label"><span>3</span> Soft Green Side Wash</div>
+    <div class="mock-section opt3">
+      <div class="mock-eyebrow">National Rankings</div>
+      <div class="mock-title">Top Rated PTs</div>
+      <div class="mock-sub">Ranked by Body Muscle Percentage (BMP) score</div>
+      <div class="mock-rows">
+        <div class="mock-row">
+          <div class="mock-rank r1">01</div>
+          <div class="mock-avatar" style="background:#fdf6e3;color:#b8860b;">JM</div>
+          <div class="mock-info">
+            <div class="mock-name">James Mitchell <span class="mock-pill" style="background:#fdf6e3;color:#b8860b;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 London, SW1 · 💪 Strength & Conditioning</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">98.4</div><div class="mock-stars">★★★★★ 5.0</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r2">02</div>
+          <div class="mock-avatar" style="background:#e8f7ee;color:#1a6b3d;">SC</div>
+          <div class="mock-info">
+            <div class="mock-name">Sarah Clarke <span class="mock-pill" style="background:#e8f7ee;color:#1a6b3d;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Manchester, M1 · 🔥 Weight Loss</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">96.1</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r3">03</div>
+          <div class="mock-avatar" style="background:#eaf7ec;color:#2a9438;">DP</div>
+          <div class="mock-info">
+            <div class="mock-name">Daniel Park <span class="mock-pill" style="background:#eaf7ec;color:#2a9438;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Birmingham, B1 · ⚡ HIIT & Cardio</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">94.8</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 4 -->
+  <div class="option-wrap">
+    <div class="option-label"><span>4</span> Faint Dot-Grid Background</div>
+    <div class="mock-section opt4">
+      <div class="mock-eyebrow">National Rankings</div>
+      <div class="mock-title">Top Rated PTs</div>
+      <div class="mock-sub">Ranked by Body Muscle Percentage (BMP) score</div>
+      <div class="mock-rows">
+        <div class="mock-row">
+          <div class="mock-rank r1">01</div>
+          <div class="mock-avatar" style="background:#fdf6e3;color:#b8860b;">JM</div>
+          <div class="mock-info">
+            <div class="mock-name">James Mitchell <span class="mock-pill" style="background:#fdf6e3;color:#b8860b;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 London, SW1 · 💪 Strength & Conditioning</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">98.4</div><div class="mock-stars">★★★★★ 5.0</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r2">02</div>
+          <div class="mock-avatar" style="background:#e8f7ee;color:#1a6b3d;">SC</div>
+          <div class="mock-info">
+            <div class="mock-name">Sarah Clarke <span class="mock-pill" style="background:#e8f7ee;color:#1a6b3d;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Manchester, M1 · 🔥 Weight Loss</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">96.1</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r3">03</div>
+          <div class="mock-avatar" style="background:#eaf7ec;color:#2a9438;">DP</div>
+          <div class="mock-info">
+            <div class="mock-name">Daniel Park <span class="mock-pill" style="background:#eaf7ec;color:#2a9438;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Birmingham, B1 · ⚡ HIIT & Cardio</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">94.8</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPTION 5 -->
+  <div class="option-wrap">
+    <div class="option-label"><span>5</span> Corner Bracket Accents</div>
+    <div class="mock-section opt5">
+      <div class="mock-eyebrow">National Rankings</div>
+      <div class="mock-title">Top Rated PTs</div>
+      <div class="mock-sub">Ranked by Body Muscle Percentage (BMP) score</div>
+      <div class="mock-rows">
+        <div class="mock-row">
+          <div class="mock-rank r1">01</div>
+          <div class="mock-avatar" style="background:#fdf6e3;color:#b8860b;">JM</div>
+          <div class="mock-info">
+            <div class="mock-name">James Mitchell <span class="mock-pill" style="background:#fdf6e3;color:#b8860b;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 London, SW1 · 💪 Strength & Conditioning</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">98.4</div><div class="mock-stars">★★★★★ 5.0</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r2">02</div>
+          <div class="mock-avatar" style="background:#e8f7ee;color:#1a6b3d;">SC</div>
+          <div class="mock-info">
+            <div class="mock-name">Sarah Clarke <span class="mock-pill" style="background:#e8f7ee;color:#1a6b3d;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Manchester, M1 · 🔥 Weight Loss</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">96.1</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+        <div class="mock-row">
+          <div class="mock-rank r3">03</div>
+          <div class="mock-avatar" style="background:#eaf7ec;color:#2a9438;">DP</div>
+          <div class="mock-info">
+            <div class="mock-name">Daniel Park <span class="mock-pill" style="background:#eaf7ec;color:#2a9438;">REPs Level 3</span></div>
+            <div class="mock-meta">📍 Birmingham, B1 · ⚡ HIIT & Cardio</div>
+          </div>
+          <div class="mock-bmp"><div class="mock-bmp-lbl">BMP Score</div><div class="mock-bmp-val">94.8</div><div class="mock-stars">★★★★★ 4.9</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

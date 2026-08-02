@@ -1,0 +1,1259 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+import { supabase } from '../lib/supabase';
+
+// Fetch ranked trainers — enough to filter by location client-side
+const { data: topTrainers } = await supabase
+  .from('trainers')
+  .select('id, name, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url')
+  .eq('is_active', true)
+  .gt('bmp_score', 0)
+  .order('bmp_score', { ascending: false })
+  .limit(200);
+
+const leaderboard = topTrainers || [];
+const heroRankings = leaderboard.slice(0, 4).map((t, i) => ({ ...t, rank: i + 1 }));
+
+// Real platform stats
+const { count: totalTrainers } = await supabase
+  .from('trainers')
+  .select('*', { count: 'exact', head: true })
+  .eq('is_active', true);
+
+const { count: totalReviews } = await supabase
+  .from('reviews')
+  .select('*', { count: 'exact', head: true })
+  .eq('is_verified', true);
+
+const { data: cityRows } = await supabase
+  .from('trainers')
+  .select('city, location')
+  .eq('is_active', true);
+
+const distinctCities = new Set(
+  (cityRows || [])
+    .map(t => (t.city || t.location || '').split(',')[0].trim().toLowerCase())
+    .filter(Boolean)
+).size;
+
+// Dumbbell SVG helpers (consistent with trainer profile page)
+const db = (filled: boolean, w = 18): string => {
+  const c  = filled ? '#FFB800' : '#d4dbd5';
+  const sk = filled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
+  const h  = Math.round(w * 0.46);
+  return `<svg viewBox="0 0 28 12" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/></svg>`;
+};
+const dumbbells = (rating: number, w = 18): string => {
+  const n = Math.min(5, Math.max(0, Math.round(rating ?? 0)));
+  return Array.from({ length: 5 }, (_, i) => db(i < n, w)).join('');
+};
+
+const rankColor = (r: number) =>
+  r === 1 ? '#b8860b' : r === 2 ? '#888888' : r === 3 ? '#b07040' : '#8a8f8a';
+
+const previewTrainers = leaderboard.slice(0, 3).map((t: any, i: number) => {
+  const bmp    = t.bmp_score ?? 0;
+  const filled = bmp > 0 ? Math.min(5, Math.ceil(bmp / 20)) : 0;
+  const dbs    = Array.from({ length: 5 }, (_: any, j: number) => db(j < filled, 13)).join('');
+  const avatar = t.avatar_url
+    ? `<img src="${t.avatar_url}" width="44" height="44" style="width:44px;min-width:44px;height:44px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="" />`
+    : `<div style="width:44px;min-width:44px;height:44px;border-radius:50%;background:rgba(58,181,74,0.15);color:#3ab54a;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.82rem;flex-shrink:0;">${t.avatar_initials || '?'}</div>`;
+  return { id: t.id, name: t.name as string, city: (t.city || t.location || '') as string, specialty: (t.specialty || '') as string, bmp, rank: i + 1, avatar, dbs };
+});
+
+const cbg = (id: string): string => {
+  const cx = 240, cy = 240;
+  // Chamfered-octagon polygon: r=reach from centre, wf=chamfer ratio (0=pure diamond, 0.35=full octagon)
+  const oct = (r: number, wf: number) => {
+    const w = r * wf;
+    return `${cx-w},${cy-r} ${cx+w},${cy-r} ${cx+r},${cy-w} ${cx+r},${cy+w} ${cx+w},${cy+r} ${cx-w},${cy+r} ${cx-r},${cy+w} ${cx-r},${cy-w}`;
+  };
+  // Inner band: 5 pure diamonds r=24..36 (wf=0 collapses octagon to 4-pointed diamond)
+  const iB = Array.from({length:5}, (_:any, i:number) =>
+    `<polygon points="${oct(24+i*3, 0)}" fill="none" stroke="#3ab54a" stroke-width="1.2"/>`
+  ).join('');
+  // Outer band: 14 growing-chamfer octagons r=96..135 (wf grows 0.18→0.32 so inner looks diamond, outer looks octagon)
+  const oB = Array.from({length:14}, (_:any, i:number) => {
+    const r = 96 + i*3; const wf = 0.18 + i*0.011;
+    return `<polygon points="${oct(r, wf)}" fill="none" stroke="#3ab54a" stroke-width="1.2"/>`;
+  }).join('');
+  // Hollow pad: outer ring + centre dot
+  const pad = (x:number, y:number, r:number=4) =>
+    `<circle cx="${x}" cy="${y}" r="${r}" fill="white" stroke="#3ab54a" stroke-width="1.2"/>` +
+    `<circle cx="${x}" cy="${y}" r="1.8" fill="#3ab54a" stroke="none"/>`;
+  // Outermost octagon reference (r=135, wf≈0.323): top side at y=105 from x≈197 to x≈283, right side at x=375 from y≈197 to y≈283
+  // TOP FAN — 7 straight traces + L-bends from top side (y=105) to top edge (y=0)
+  const topFan =
+    Array.from({length:7}, (_:any, i:number) => { const x=203+i*13; return `<line x1="${x}" y1="105" x2="${x}" y2="0"/>` + pad(x,0,3.5); }).join('') +
+    `<polyline points="197,108 172,83 172,0"/>` + pad(172,0) +
+    `<polyline points="199,106 168,75 140,75 140,0"/>` + pad(140,0,3) +
+    `<polyline points="201,104 162,65 108,65 108,0"/>` + pad(108,0,3) +
+    `<polyline points="283,108 308,83 308,0"/>` + pad(308,0) +
+    `<polyline points="281,106 312,75 340,75 340,0"/>` + pad(340,0,3) +
+    `<polyline points="279,104 318,65 372,65 372,0"/>` + pad(372,0,3);
+  // BOTTOM FAN
+  const botFan =
+    Array.from({length:7}, (_:any, i:number) => { const x=203+i*13; return `<line x1="${x}" y1="375" x2="${x}" y2="480"/>` + pad(x,480,3.5); }).join('') +
+    `<polyline points="197,372 172,397 172,480"/>` + pad(172,480) +
+    `<polyline points="199,374 168,405 140,405 140,480"/>` + pad(140,480,3) +
+    `<polyline points="201,376 162,415 108,415 108,480"/>` + pad(108,480,3) +
+    `<polyline points="283,372 308,397 308,480"/>` + pad(308,480) +
+    `<polyline points="281,374 312,405 340,405 340,480"/>` + pad(340,480,3) +
+    `<polyline points="279,376 318,415 372,415 372,480"/>` + pad(372,480,3);
+  // RIGHT FAN
+  const rgtFan =
+    Array.from({length:7}, (_:any, i:number) => { const y=203+i*13; return `<line x1="375" y1="${y}" x2="480" y2="${y}"/>` + pad(480,y,3.5); }).join('') +
+    `<polyline points="372,197 397,172 480,172"/>` + pad(480,172) +
+    `<polyline points="374,199 405,168 405,140 480,140"/>` + pad(480,140,3) +
+    `<polyline points="376,201 415,162 415,108 480,108"/>` + pad(480,108,3) +
+    `<polyline points="372,283 397,308 480,308"/>` + pad(480,308) +
+    `<polyline points="374,281 405,312 405,340 480,340"/>` + pad(480,340,3) +
+    `<polyline points="376,279 415,318 415,372 480,372"/>` + pad(480,372,3);
+  // LEFT FAN
+  const lftFan =
+    Array.from({length:7}, (_:any, i:number) => { const y=203+i*13; return `<line x1="105" y1="${y}" x2="0" y2="${y}"/>` + pad(0,y,3.5); }).join('') +
+    `<polyline points="108,197 83,172 0,172"/>` + pad(0,172) +
+    `<polyline points="106,199 75,168 75,140 0,140"/>` + pad(0,140,3) +
+    `<polyline points="104,201 65,162 65,108 0,108"/>` + pad(0,108,3) +
+    `<polyline points="108,283 83,308 0,308"/>` + pad(0,308) +
+    `<polyline points="106,281 75,312 75,340 0,340"/>` + pad(0,340,3) +
+    `<polyline points="104,279 65,318 65,372 0,372"/>` + pad(0,372,3);
+  // CORNER TRACES — from each 45° chamfer outward to tile corner edges (4 per corner)
+  const trC =
+    `<polyline points="311,132 334,109 334,0"/>` + pad(334,0) +
+    `<polyline points="302,123 355,70 480,70"/>` + pad(480,70) +
+    `<polyline points="348,169 410,107 410,0"/>` + pad(410,0) +
+    `<polyline points="357,178 420,115 480,115"/>` + pad(480,115);
+  const tlC =
+    `<polyline points="169,132 146,109 146,0"/>` + pad(146,0) +
+    `<polyline points="178,123 125,70 0,70"/>` + pad(0,70) +
+    `<polyline points="132,169 70,107 70,0"/>` + pad(70,0) +
+    `<polyline points="123,178 60,115 0,115"/>` + pad(0,115);
+  const brC =
+    `<polyline points="311,348 334,371 334,480"/>` + pad(334,480) +
+    `<polyline points="302,357 355,410 480,410"/>` + pad(480,410) +
+    `<polyline points="348,311 410,373 410,480"/>` + pad(410,480) +
+    `<polyline points="357,302 420,365 480,365"/>` + pad(480,365);
+  const blC =
+    `<polyline points="169,348 146,371 0,371"/>` + pad(0,371) +
+    `<polyline points="178,357 125,410 0,410"/>` + pad(0,410) +
+    `<polyline points="132,311 70,373 70,480"/>` + pad(70,480) +
+    `<polyline points="123,302 60,365 0,365"/>` + pad(0,365);
+  const inner =
+    `<rect width="480" height="480" fill="white"/>` +
+    `<g fill="none" stroke="#3ab54a" stroke-width="1.2" opacity="0.35">` +
+    iB + oB + topFan + botFan + rgtFan + lftFan + trC + tlC + brC + blC +
+    `</g>`;
+  return `<svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="${id}" width="480" height="480" patternUnits="userSpaceOnUse" patternTransform="scale(0.18)">${inner}</pattern></defs><rect width="100%" height="100%" fill="url(#${id})"/></svg>`;
+};
+
+// Placeholder reviews (social proof) — will be replaced by real reviews as platform grows
+const reviews = [
+  { initials: 'TW', bg: '#fdf6e3', color: '#b8860b',
+    name: 'Tom W.', info: 'Verified Client · London', trainer: 'Personal TRating',
+    text: '"I\'d tried a few generic PT directories before but they were all the same. PTranking actually lets you filter by specialism — I found someone focused on powerlifting within minutes. Completely different experience."' },
+  { initials: 'ER', bg: '#e8f7ee', color: '#1a6b3d',
+    name: 'Emma R.', info: 'Verified Client · Manchester', trainer: 'Personal TRating',
+    text: '"The location search is brilliant. I could see every highly-rated trainer within a few miles of me, compare their reviews side by side, and reach out directly. Found the perfect match without any back and forth."' },
+  { initials: 'RK', bg: '#eaf7ec', color: '#2a9438',
+    name: 'Ryan K.', info: 'Verified Client · Birmingham', trainer: 'Personal TRating',
+    text: '"What sold me was being able to read verified client reviews before committing to anything. You can actually compare trainers honestly — specialisms, location, ratings — all in one place. Made the decision so easy."' },
+  { initials: 'PJ', bg: '#f5e8f7', color: '#6b1a6b',
+    name: 'Priya J.', info: 'Verified Client · Leeds', trainer: 'Personal TRating',
+    text: '"I needed someone who specialised in post-injury rehabilitation — a very specific niche. PTranking had a filter for exactly that. I found a qualified specialist nearby in under 10 minutes and messaged them straight from the profile."' },
+  { initials: 'CB', bg: '#e8f0f7', color: '#1a4b6b',
+    name: 'Claire B.', info: 'Verified Client · Edinburgh', trainer: 'Personal TRating',
+    text: '"The site is genuinely simple to use. I searched my area, filtered by goal, read a few reviews and had a trainer booked within the same evening. No confusing sign-up process, no middleman — just direct contact."' },
+  { initials: 'MF', bg: '#f8f7f4', color: '#665544',
+    name: 'Marcus F.', info: 'Verified Client · Bristol', trainer: 'Personal TRating',
+    text: '"I\'d never used a PT before and didn\'t know where to start. Being able to compare trainers by reviews, location and specialism gave me the confidence to actually take the first step. Booked within a week and haven\'t looked back."' },
+];
+---
+
+<Layout title="Personal TRating – Find the UK's Top Personal Trainers">
+
+<style is:global>
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .anim-1 { animation: fadeUp 0.6s 0.00s ease both; }
+  .anim-2 { animation: fadeUp 0.6s 0.10s ease both; }
+  .anim-3 { animation: fadeUp 0.6s 0.20s ease both; }
+  .anim-4 { animation: fadeUp 0.6s 0.30s ease both; }
+  .anim-5 { animation: fadeUp 0.7s 0.20s ease both; }
+
+  /* ── Green button glow — applies to all green buttons via attribute selector ── */
+  a[style*="3ab54a"], button[style*="3ab54a"] {
+    box-shadow: 0 0 16px rgba(58,181,74,0.28), 0 4px 14px rgba(58,181,74,0.18) !important;
+    transition: background 0.2s ease, box-shadow 0.25s ease !important;
+  }
+  a[style*="3ab54a"]:hover, button[style*="3ab54a"]:hover {
+    box-shadow: 0 0 26px rgba(58,181,74,0.48), 0 6px 20px rgba(58,181,74,0.28) !important;
+  }
+
+  /* ── Leaderboard card ── */
+  .lb-card {
+    display:flex; align-items:center; gap:1.25rem;
+    background:white; border-radius:14px; padding:1.1rem 1.4rem;
+    border:1px solid #e0e8e1; border-left:4px solid #3ab54a;
+    text-decoration:none; color:inherit;
+    transition:box-shadow 0.2s, transform 0.2s;
+  }
+  .lb-card:hover { box-shadow:0 6px 24px rgba(0,0,0,0.08); transform:translateY(-2px); }
+  .lbc-rank  { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:900; width:2.5rem; flex-shrink:0; line-height:1; color:#3ab54a; }
+  .lbc-av    { width:42px; min-width:42px; height:42px; border-radius:50%; flex-shrink:0; object-fit:cover; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; border:2px solid rgba(0,0,0,0.06); }
+  .lbc-mid   { flex:1; min-width:0; }
+  .lbc-top   { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.3rem; }
+  .lbc-name  { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:#111311; }
+  .lbc-cert  { font-size:0.68rem; font-weight:600; color:#2a9438; background:#eaf7ec; padding:0.15rem 0.5rem; border-radius:10px; border:1px solid #c3e6c8; white-space:nowrap; }
+  .lbc-detail { font-size:0.78rem; color:#8a8f8a; margin-top:0.18rem; display:flex; align-items:center; gap:0.35rem; }
+  .lbc-bmp   { text-align:right; flex-shrink:0; }
+  .lbc-bmp-label  { font-size:0.58rem; color:#8a8f8a; letter-spacing:1.2px; text-transform:uppercase; }
+  .lbc-bmp-score  { font-size:1.7rem; font-weight:800; color:#111311; line-height:1.1; }
+  .lbc-bmp-dbs   { display:flex; gap:2px; justify-content:flex-end; margin-top:0.2rem; }
+  .lbc-bmp-rev   { font-size:0.7rem; color:#8a8f8a; margin-top:0.15rem; }
+
+  @media (max-width:600px) {
+    #lb-list .lb-card:nth-child(n+4) { display:none; }
+    .lb-card {
+      flex-direction:column; align-items:stretch; gap:0.3rem;
+      padding:1.1rem 1.1rem 1rem;
+      border:2px solid #7defa0 !important;
+      border-left:2px solid #7defa0 !important;
+      box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important;
+      border-radius:16px !important;
+    }
+    .lbc-rank  { display:none; }
+    .lbc-bmp   { text-align:left; display:flex; align-items:center; gap:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(58,181,74,0.2); margin-top:0.35rem; }
+    .lbc-bmp-score { font-size:1.3rem; }
+    .lbc-bmp-dbs   { justify-content:flex-start; margin-top:0; }
+    .lbc-bmp-rev   { margin-top:0; }
+    #lb-list > div { display:flex; flex-direction:column; gap:1rem; }
+    #find-preview a[href^="/trainers/"] {
+      border:2px solid #7defa0 !important;
+      border-left:2px solid #7defa0 !important;
+      background:rgba(255,255,255,0.06) !important;
+      border-radius:16px !important;
+      box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important;
+    }
+    #find-preview > div > div[style*="flex-direction:column"] { gap:1rem !important; }
+  }
+
+  .pt-marker { width:36px; height:36px; background:#3ab54a; border:2.5px solid #2a9438; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; cursor:pointer; box-shadow:0 2px 8px rgba(58,181,74,0.4); transition:transform 0.15s, box-shadow 0.15s; }
+  .pt-marker:hover { transform:scale(1.25); box-shadow:0 4px 16px rgba(58,181,74,0.55); }
+  .leaflet-container { font-family:'Manrope',sans-serif; }
+
+  #reviews { position:relative; }
+  #reviews::before {
+    content:''; position:absolute; inset:0;
+    background-image:url('/images/logo.png');
+    background-repeat:no-repeat; background-position:center; background-size:70%;
+    opacity:0.06; pointer-events:none; z-index:0;
+  }
+  #reviews > * { position:relative; z-index:1; }
+
+  .eyebrow { display:inline-block; border-bottom:2px solid #3ab54a; padding-bottom:3px; }
+
+  /* BMP explanation chip + tooltip */
+  .bmp-chip-tip {
+    display:none; position:absolute; bottom:calc(100% + 10px); left:0;
+    width:260px; background:#0d1a0e; color:rgba(255,255,255,0.8);
+    font-size:0.72rem; line-height:1.65; padding:0.75rem 0.9rem;
+    border-radius:10px; border:1px solid rgba(58,181,74,0.25);
+    box-shadow:0 6px 24px rgba(0,0,0,0.4); z-index:20; cursor:default;
+    font-weight:400;
+  }
+  .bmp-chip-tip::after {
+    content:''; position:absolute; top:100%; left:1.2rem;
+    border:6px solid transparent; border-top-color:#0d1a0e;
+  }
+  .bmp-chip:hover .bmp-chip-tip { display:block; }
+  @keyframes fp-scroll {
+    from { transform: translateX(var(--fps-from)); }
+    to   { transform: translateX(var(--fps-to)); }
+  }
+
+  .nav-link { color:#8a8f8a; text-decoration:none; font-size:0.875rem; font-weight:500; transition:color 0.2s; }
+  .nav-link:hover { color:#111311; }
+
+  /* Hero rankings card — dark glass overrides */
+  .hero-card .lb-card { background:rgba(255,255,255,0.07); border-color:rgba(255,255,255,0.13); border-left-color:#3ab54a; }
+  .hero-card .lb-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.35); transform:translateY(-1px); }
+  .hero-card .lbc-name { color:#ffffff; }
+  .hero-card .lbc-detail { color:rgba(255,255,255,0.52); }
+  .hero-card .lbc-bmp-score { color:#ffffff; }
+  .hero-card .lbc-bmp-label, .hero-card .lbc-bmp-rev { color:rgba(255,255,255,0.45); }
+
+  /* Leaderboard section — white cards on dark green */
+  #leaderboard .lb-card { box-shadow:0 4px 20px rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.08); }
+  #leaderboard .lb-card:hover { box-shadow:0 8px 32px rgba(0,0,0,0.4); transform:translateY(-2px); }
+  #leaderboard p { color:rgba(255,255,255,0.5); }
+
+  /* Review card hover */
+  .rev-card { background:white; border-radius:14px; padding:1.75rem; border:1px solid #c3e6c8; display:flex; flex-direction:column; transition:box-shadow 0.2s, transform 0.2s; box-shadow:0 4px 20px rgba(58,181,74,0.13); }
+  .rev-card:hover { box-shadow:0 8px 32px rgba(58,181,74,0.28); transform:translateY(-2px); }
+
+  /* Mobile hamburger */
+  .mob-ham { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:0.5rem; background:none; border:none; }
+  .mob-ham span { display:block; width:22px; height:2px; background:#111311; border-radius:2px; transition:transform 0.25s, opacity 0.25s; }
+  .mob-ham.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .mob-ham.open span:nth-child(2) { opacity:0; }
+  .mob-ham.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  /* Dropdown nav */
+  .mob-nav {
+    position:fixed; top:80px; left:0; right:0; z-index:499;
+    background:white;
+    box-shadow:0 8px 24px rgba(0,0,0,0.10);
+    flex-direction:column; align-items:stretch;
+    overflow:hidden; max-height:0;
+    transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+    display:none;
+  }
+  .mob-nav.open { max-height:440px; border-bottom:2px solid #3ab54a; }
+  .mob-nav a {
+    font-size:1rem; font-weight:600; color:#111311; text-decoration:none;
+    padding:1rem 1.5rem; border-bottom:1px solid #f0f4f0;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mob-nav a:active { background:#f7fbf7; }
+  .mob-nav .mob-nav-btns {
+    display:flex; gap:0.75rem; padding:1rem 1.5rem;
+  }
+
+  @media (max-width:900px) {
+    .hero-grid   { grid-template-columns:1fr !important; }
+    .hero-card   { display:none !important; }
+    .about-grid  { grid-template-columns:1fr !important; }
+    .about-stats-grid    { grid-template-columns:repeat(2,1fr) !important; }
+    .about-steps-grid    { grid-template-columns:1fr !important; }
+    .about-features-grid { grid-template-columns:repeat(2,1fr) !important; }
+    .rev-grid    { grid-template-columns:1fr 1fr !important; }
+    /* Tighten section padding */
+    section { padding-left:1.25rem !important; padding-right:1.25rem !important; }
+    section > div[style*="max-width"] { padding-left:0 !important; padding-right:0 !important; }
+  }
+  @media (max-width:600px) {
+    nav > div    { height:64px !important; padding:0 1.25rem !important; }
+    nav img      { height:46px !important; }
+    .mob-nav     { top:64px; }
+    .rev-grid    { grid-template-columns:1fr !important; }
+    .trust-bar   { flex-direction:column; gap:1rem !important; }
+    .nav-links-desktop { display:none !important; }
+    .mob-ham     { display:flex !important; }
+    .mob-nav     { display:flex; }
+
+    .about-features-grid { grid-template-columns:1fr !important; }
+    .about-stats-grid    { grid-template-columns:repeat(2,1fr) !important; }
+    /* Hero heading */
+    #top h1 { font-size:2.15rem !important; line-height:1.15 !important; }
+    #top .hero-grid { padding:3rem 1.25rem !important; }
+    /* Keep find-preview inner div padded so form doesn't overflow */
+    #find-preview > div { padding-left:1.25rem !important; padding-right:1.25rem !important; }
+  }
+</style>
+
+<!-- ── NAV ── -->
+<nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
+    <a href="#top" style="text-decoration:none;display:flex;align-items:center;">
+      <img src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    </a>
+    <ul class="nav-links-desktop" style="display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;">
+      {[['Leaderboard','#leaderboard'],['Reviews','#reviews'],['Map','#map'],['About','#about']].map(([label,href]) => (
+        <li><a href={href} class="nav-link">{label}</a></li>
+      ))}
+    </ul>
+    <div style="display:flex;gap:1rem;align-items:center;">
+      <a href="/login" id="nav-signin" class="nav-links-desktop" style="color:#111311;text-decoration:none;font-size:0.875rem;font-weight:600;">Sign In</a>
+      <a href="/signup" id="nav-signup" class="nav-links-desktop" style="background:#3ab54a;color:white;padding:0.6rem 1.4rem;border-radius:6px;font-weight:600;font-size:0.875rem;text-decoration:none;transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        List Your Profile
+      </a>
+      <a href="/account" id="nav-account" class="nav-links-desktop" style="display:none;background:#3ab54a;color:white;padding:0.6rem 1.4rem;border-radius:6px;font-weight:600;font-size:0.875rem;text-decoration:none;transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        My Account
+      </a>
+      <button id="nav-signout" class="nav-links-desktop" style="display:none;background:none;border:1.5px solid #d0d8d1;border-radius:6px;padding:0.55rem 1.1rem;font-size:0.875rem;font-weight:700;color:#5a6b5c;cursor:pointer;transition:all 0.2s;"
+        onmouseover="this.style.borderColor='#e05555';this.style.color='#e05555'" onmouseout="this.style.borderColor='#d0d8d1';this.style.color='#5a6b5c'">
+        Sign Out
+      </button>
+      <button class="mob-ham" id="mob-ham" aria-label="Toggle menu" onclick="(function(){var n=document.getElementById('mob-nav');var h=document.getElementById('mob-ham');var o=n.classList.toggle('open');h.classList.toggle('open',o);})()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile dropdown nav -->
+<div class="mob-nav" id="mob-nav">
+  <a href="#leaderboard" onclick="document.getElementById('mob-nav').classList.remove('open');document.getElementById('mob-ham').classList.remove('open')">Leaderboard</a>
+  <a href="#reviews"     onclick="document.getElementById('mob-nav').classList.remove('open');document.getElementById('mob-ham').classList.remove('open')">Reviews</a>
+  <a href="#map"         onclick="document.getElementById('mob-nav').classList.remove('open');document.getElementById('mob-ham').classList.remove('open')">Map</a>
+  <a href="#about"       onclick="document.getElementById('mob-nav').classList.remove('open');document.getElementById('mob-ham').classList.remove('open')">About</a>
+  <div class="mob-nav-btns">
+    <a href="/login"   id="mob-signin" style="flex:1;text-align:center;border:2px solid #3ab54a;color:#3ab54a;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;-webkit-tap-highlight-color:transparent;">Sign In</a>
+    <a href="/signup"  id="mob-signup" style="flex:1;text-align:center;background:#3ab54a;color:white;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;-webkit-tap-highlight-color:transparent;">List Your Profile</a>
+    <a href="/account" id="mob-account" style="display:none;flex:1;text-align:center;background:#3ab54a;color:white;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;-webkit-tap-highlight-color:transparent;">My Account</a>
+    <button id="mob-signout" style="display:none;flex:1;text-align:center;background:none;border:2px solid #d0d8d1;color:#5a6b5c;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;">Sign Out</button>
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<section id="top" style="position:relative;min-height:88vh;display:flex;align-items:center;overflow:hidden;background:#111311;border-top:3px solid #3ab54a;">
+  <div style="position:absolute;inset:0;background-image:url('/images/hero-bg.png');background-size:cover;background-position:center 20%;"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(108deg,rgba(8,18,10,0.75) 0%,rgba(8,18,10,0.52) 45%,rgba(8,18,10,0.20) 100%);"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.35) 100%);"></div>
+
+  <div class="hero-grid" style="position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:5rem 2.5rem;display:grid;grid-template-columns:1fr 390px;gap:4rem;align-items:center;width:100%;">
+
+    <!-- Left: copy -->
+    <div>
+      <div class="anim-1" style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(58,181,74,0.18);color:#7de88a;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:0.45rem 1rem;border-radius:20px;margin-bottom:1.75rem;border:1px solid rgba(58,181,74,0.3);">
+        The UK's only merit-based PT ranking platform
+      </div>
+      <h1 class="anim-2" style="font-family:'Playfair Display',serif;font-size:3.8rem;font-weight:900;line-height:1.08;color:#ffffff;margin-bottom:1.5rem;">
+        Find a trainer who <em style="font-style:normal;color:#3ab54a;">actually</em><br>delivers results.
+      </h1>
+      <p class="anim-3" style="font-size:1.05rem;color:rgba(255,255,255,0.78);line-height:1.8;margin-bottom:2.5rem;max-width:470px;font-weight:400;">
+        Personal TRating ranks every UK personal trainer by verified client reviews and our BMP scoring system. No paid placements. No guesswork. The best coaches rise to the top on merit — full stop.
+      </p>
+      <div class="anim-4" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.75rem;">
+        <a href="/find-a-trainer" style="background:#3ab54a;color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;transition:background 0.2s;box-shadow:0 4px 16px rgba(58,181,74,0.35);"
+          onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+          Start My Transformation
+        </a>
+        <a href="#leaderboard" style="border:1.5px solid rgba(255,255,255,0.4);color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:600;font-size:0.9rem;text-decoration:none;transition:all 0.2s;"
+          onmouseover="this.style.borderColor='#3ab54a';this.style.background='rgba(58,181,74,0.12)'"
+          onmouseout="this.style.borderColor='rgba(255,255,255,0.4)';this.style.background='transparent'">
+          Browse Top Trainers →
+        </a>
+      </div>
+      <div class="trust-bar" style="display:flex;gap:2.5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.12);">
+        <div style=”display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);”>
+          🚫 <strong style=”color:#fff;font-size:0.9rem;”>No paid rankings</strong>
+        </div>
+        <div style=”display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);”>
+          ✅ <strong style=”color:#fff;font-size:0.9rem;”>Verified clients only</strong>
+        </div>
+        <div style=”display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);”>
+          🆓 <strong style=”color:#fff;font-size:0.9rem;”>Free for every PT</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Live rankings card -->
+    <div class="hero-card anim-5">
+      <div style="background:rgba(13,26,14,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.11);border-radius:16px;padding:1.6rem;box-shadow:0 24px 64px rgba(0,0,0,0.35);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+          <div id="hero-card-title" style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#ffffff;">📍 Near You</div>
+          <div style="background:#3ab54a;color:#fff;font-size:0.68rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:20px;letter-spacing:0.5px;">LIVE</div>
+        </div>
+
+        <div id="hero-rankings-list" style="color:rgba(255,255,255,0.5);font-size:0.82rem;padding:1rem 0;text-align:center;">
+          Detecting location…
+        </div>
+
+        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(255,255,255,0.12);text-align:center;">
+          <a href="/find-a-trainer" style="color:#3ab54a;font-size:0.8rem;font-weight:700;text-decoration:none;">
+            View full leaderboard →
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── LEADERBOARD ── -->
+<section id="leaderboard" style="padding:5rem 0;background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
+  <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
+
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem;">
+      <div>
+        <div id="lb-eyebrow" style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Detecting your location…</div>
+        <div style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:white;line-height:1.1;">Top Trainers in Your Area</div>
+        <div id="lb-sub" style="color:rgba(255,255,255,0.55);font-size:0.85rem;margin-top:0.3rem;">Finding the best PTs within 50 miles of you</div>
+        <div class="bmp-chip" style="margin-top:0.85rem;display:inline-flex;align-items:center;gap:0.45rem;background:rgba(58,181,74,0.15);border:1px solid rgba(58,181,74,0.3);border-radius:20px;padding:0.3rem 0.85rem;font-size:0.72rem;font-weight:600;color:#7de88a;position:relative;cursor:default;">
+          📊 Ranked by BMP Score (0–100) <span style="opacity:0.65;font-size:0.65rem;">ⓘ</span>
+          <div class="bmp-chip-tip">
+            <strong style="color:white;">What is BMP?</strong><br/>
+            Body Muscle % is our 0–100 trust score for every PT. It combines the quality of their client ratings (up to 70 pts) with how many verified reviews they've collected (up to 30 pts). The higher the score, the more consistent and trusted the trainer.
+          </div>
+        </div>
+      </div>
+      <div id="lb-location-pill" style="display:none;background:rgba(255,255,255,0.12);color:white;font-size:0.78rem;font-weight:700;padding:0.45rem 1.1rem;border-radius:20px;letter-spacing:0.3px;border:1px solid rgba(255,255,255,0.2);"></div>
+    </div>
+
+    <div id="lb-list" style="text-align:center;padding:3rem;color:#8a8f8a;font-size:0.9rem;">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">📍</div>
+      Detecting your location…
+    </div>
+
+    <!-- View All button -->
+    <div style="text-align:center;margin-top:2rem;">
+      <a href="/find-a-trainer" style="display:inline-flex;align-items:center;gap:0.6rem;background:#3ab54a;color:white;font-weight:700;font-size:0.9rem;padding:0.85rem 2rem;border-radius:30px;text-decoration:none;letter-spacing:0.3px;">
+        Browse All Trainers →
+      </a>
+      <p style="font-size:0.75rem;color:#8a8f8a;margin-top:0.75rem;">Full profiles, bio &amp; verified reviews</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── MAP ── -->
+<section id="map" style="padding:5rem 0 0;background:white;border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem 3rem;">
+    <div class="eyebrow" style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Find a Trainer Near You</div>
+    <div style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;margin-bottom:0.4rem;">Trainer Map</div>
+    <div style="color:#8a8f8a;font-size:0.85rem;max-width:540px;">Explore top-rated personal trainers across the UK. Hover a pin to see their name and BMP rating.</div>
+  </div>
+  <div style="position:relative;z-index:1;width:100%;height:500px;border-top:1px solid #e0e8e1;">
+    <div id="pt-map" style="width:100%;height:100%;"></div>
+  </div>
+</section>
+
+<!-- ── FIND A TRAINER PREVIEW ── -->
+<section id="find-preview" style="padding:3.5rem 0;background:#111311;border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
+  <div style="max-width:860px;margin:0 auto;padding:0 2.5rem;">
+    <div style="font-size:0.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Find a Trainer</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:700;color:white;margin-bottom:0.35rem;">Browse Top-Ranked UK PTs</div>
+    <div style="color:#5a6b5c;font-size:0.88rem;margin-bottom:1.75rem;">Search, filter and compare by BMP score, city and specialty</div>
+    <form action="/find-a-trainer" method="get" style="display:flex;gap:0.6rem;margin-bottom:1.75rem;">
+      <div style="position:relative;flex:1;min-width:0;overflow:hidden;">
+        <input id="fp-search" name="q" type="text" placeholder="" style="width:100%;box-sizing:border-box;padding:0.85rem 1.1rem;border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.07);color:white;font-family:'Manrope',sans-serif;font-size:0.9rem;outline:none;" />
+        <div id="fp-ph" style="position:absolute;inset:0;display:flex;align-items:center;padding-left:1.1rem;overflow:hidden;pointer-events:none;border-radius:10px;">
+          <span id="fp-ph-span" style="display:inline-block;white-space:nowrap;color:rgba(255,255,255,0.38);font-family:'Manrope',sans-serif;font-size:0.9rem;">Search by city or trainer name…</span>
+        </div>
+      </div>
+      <button type="submit" style="padding:0.85rem 1.5rem;background:#3ab54a;border:none;border-radius:10px;color:white;font-weight:700;font-size:0.88rem;cursor:pointer;white-space:nowrap;font-family:'Manrope',sans-serif;">Search →</button>
+    </form>
+    <script is:inline>
+    (function () {
+      var inp = document.getElementById('fp-search');
+      var ph  = document.getElementById('fp-ph');
+      if (!inp || !ph) return;
+      inp.addEventListener('focus', function () { ph.style.display = 'none'; });
+      inp.addEventListener('input', function () { ph.style.display = inp.value ? 'none' : 'flex'; });
+      inp.addEventListener('blur',  function () { if (!inp.value) ph.style.display = 'flex'; });
+      var fpSpan = document.getElementById('fp-ph-span');
+      if (fpSpan) {
+        var cw = ph.offsetWidth;
+        var sw = fpSpan.offsetWidth;
+        fpSpan.style.setProperty('--fps-from', (cw + 20) + 'px');
+        fpSpan.style.setProperty('--fps-to',   (-sw - 20) + 'px');
+        fpSpan.style.animation = 'fp-scroll 10s linear infinite';
+      }
+    })();
+    </script>
+
+    <!-- Specialty quick-links -->
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.75rem;">
+      {[
+        { label:'💪 Strength',        spec:'strength & conditioning' },
+        { label:'🔥 Weight Loss',     spec:'weight loss' },
+        { label:'⚡ HIIT & Cardio',   spec:'hiit & cardio' },
+        { label:'🧘 Rehabilitation',  spec:'rehabilitation' },
+        { label:'🥗 Nutrition',       spec:'nutrition coaching' },
+        { label:'🏃 Sports',          spec:'sports performance' },
+      ].map(({ label, spec }) => (
+        <a
+          href={`/find-a-trainer?spec=${encodeURIComponent(spec)}`}
+          style="display:inline-block;padding:0.4rem 0.9rem;border-radius:20px;border:1px solid rgba(255,255,255,0.18);color:rgba(255,255,255,0.75);font-size:0.78rem;font-weight:600;text-decoration:none;font-family:'Manrope',sans-serif;transition:all 0.2s;background:rgba(255,255,255,0.06);"
+          onmouseover="this.style.borderColor='#3ab54a';this.style.color='#3ab54a';this.style.background='rgba(58,181,74,0.1)'"
+          onmouseout="this.style.borderColor='rgba(255,255,255,0.18)';this.style.color='rgba(255,255,255,0.75)';this.style.background='rgba(255,255,255,0.06)'"
+        >{label}</a>
+      ))}
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:0.65rem;margin-bottom:2rem;">
+      {previewTrainers.map(t => (
+        <a href={'/trainers/' + t.id} style="display:flex;align-items:center;gap:0.9rem;padding:0.9rem 1.1rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-left:3px solid #3ab54a;border-radius:10px;text-decoration:none;transition:background 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.09)'" onmouseout="this.style.background='rgba(255,255,255,0.04)'">
+          <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:#3ab54a;width:2rem;flex-shrink:0;line-height:1;">{String(t.rank).padStart(2,'0')}</div>
+          <Fragment set:html={t.avatar} />
+          <div style="flex:1;min-width:0;">
+            <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:0.9rem;color:white;margin-bottom:0.2rem;">{t.name}</div>
+            {t.city && <div style="font-size:0.72rem;color:#6a8f6c;">📍 {t.city}</div>}
+            {t.specialty && <div style="font-size:0.72rem;color:#6a8f6c;">🏋 {t.specialty}</div>}
+          </div>
+          <div style="text-align:right;flex-shrink:0;">
+            <div style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:white;line-height:1;">{t.bmp}</div>
+            <div style="font-size:0.5rem;color:#6a8f6c;letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:0.15rem;">BMP</div>
+            <div style="display:flex;gap:2px;justify-content:flex-end;"><Fragment set:html={t.dbs} /></div>
+          </div>
+        </a>
+      ))}
+    </div>
+    <div style="text-align:center;">
+      <a href="/find-a-trainer" style="display:inline-flex;align-items:center;gap:0.6rem;background:#3ab54a;color:white;font-weight:700;font-size:0.9rem;padding:0.85rem 2.25rem;border-radius:30px;text-decoration:none;letter-spacing:0.3px;">Browse Full Directory →</a>
+      <p style="font-size:0.75rem;color:#4a5e4a;margin-top:0.6rem;">Filter by city, specialty &amp; BMP score across all UK trainers</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── REVIEWS ── -->
+<section id="reviews" style="padding:5rem 0;background:white;border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;">
+    <div style="margin-bottom:3rem;">
+      <div class="eyebrow" style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Client Testimonials</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;">What real clients say</div>
+    </div>
+    <div class="rev-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+      {reviews.map((r) => (
+        <div class="rev-card">
+          <p style="font-size:0.88rem;line-height:1.78;color:#111311;margin-bottom:1.25rem;font-style:italic;flex:1;">{r.text}</p>
+          <div style="display:flex;align-items:center;gap:0.75rem;padding-top:1rem;border-top:1px solid #e0e8e1;">
+            <div style={`width:34px;height:34px;border-radius:50%;background:${r.bg};color:${r.color};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;flex-shrink:0;`}>
+              {r.initials}
+            </div>
+            <div>
+              <div style="display:flex;align-items:center;gap:0.5rem;">
+                <span style="font-weight:700;font-size:0.83rem;color:#111311;">{r.name}</span>
+              </div>
+              <div style="font-size:0.7rem;color:#8a8f8a;margin-top:0.1rem;">{r.info}</div>
+              <div style="font-size:0.7rem;color:#3ab54a;margin-top:0.15rem;font-weight:600;">→ {r.trainer}</div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<!-- ── FOR CLIENTS ── -->
+<section style="padding:6rem 0;background:white;border-top:3px solid #3ab54a;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;">
+    <div style="text-align:center;max-width:640px;margin:0 auto 4rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">For Clients</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Stop guessing. Start choosing.</div>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">Finding the right personal trainer used to mean word of mouth, Instagram scrolling, and hope. Personal TRating changes that.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="about-features-grid">
+      {[
+        { icon:'🎯', title:'Make an informed choice', desc:'Every trainer profile shows their BMP score, verified reviews, specialty, location and certifications in one place — everything you need to decide with confidence before you spend a penny.' },
+        { icon:'📍', title:'All local coaches in one place', desc:'No more jumping between Google, Instagram and gym noticeboards. Browse every active PT in your area ranked by real performance, all in one directory.' },
+        { icon:'⚖️', title:'Compare trainers side by side', desc:'BMP scores make comparing coaches objective. A trainer with 50 glowing reviews outranks one with 2 — because consistency matters more than a single great session.' },
+        { icon:'🛡️', title:'Unbiased, unsponsored results', desc:'Rankings are earned by verified client reviews — not paid for, not gamed. A PT cannot buy their way to the top. What you see is an honest account of real-world performance.' },
+        { icon:'💬', title:'Give constructive feedback', desc:'Your review isn\'t just a star rating — it holds coaches accountable and helps them improve. Good feedback makes good trainers great.' },
+        { icon:'🔒', title:'Anonymous — but still verified', desc:'Not comfortable putting your name to it? Submit anonymously. Your identity stays private and only your initials appear publicly — but the review is still verified and counts toward the trainer\'s BMP score.' },
+      ].map(f => (
+        <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:14px;padding:1.75rem;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+          <div style="font-size:1.75rem;margin-bottom:0.85rem;">{f.icon}</div>
+          <div style="font-weight:800;font-size:0.95rem;color:#111311;margin-bottom:0.5rem;line-height:1.3;">{f.title}</div>
+          <div style="font-size:0.82rem;color:#7a8f7c;line-height:1.75;">{f.desc}</div>
+        </div>
+      ))}
+    </div>
+    <div style="text-align:center;margin-top:3rem;">
+      <a href="/find-a-trainer" style="background:#3ab54a;color:white;padding:0.9rem 2.25rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-block;box-shadow:0 4px 16px rgba(58,181,74,0.3);"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        Find Your Trainer →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── PT CROSSOVER BANNER ── -->
+<section style="padding:3rem 0;background:#0d1a0e;border-top:3px solid #3ab54a;">
+  <div style="max-width:960px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2rem;">
+    <div>
+      <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Are you a Personal Trainer?</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:white;line-height:1.2;margin-bottom:0.5rem;">List your profile free and get ranked.</div>
+      <div style="font-size:0.875rem;color:rgba(255,255,255,0.45);max-width:480px;line-height:1.7;">Collect verified client reviews, earn your BMP score, and get found by people actively searching for a PT in your area.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;flex-shrink:0;">
+      <a href="/for-trainers" style="background:#3ab54a;color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:700;font-size:0.875rem;text-decoration:none;white-space:nowrap;box-shadow:0 4px 16px rgba(58,181,74,0.35);"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        See How It Works for PTs →
+      </a>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.25);">No credit card · Always free</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── BMP EXPLAINED ── -->
+<section style="padding:6rem 0;background:white;border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
+  <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
+    <div style="text-align:center;margin-bottom:4rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">The BMP Score</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">One number that actually means something.</div>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;max-width:580px;margin:0 auto;">Star ratings alone can be gamed. One five-star review from a friend tells you nothing. The BMP score is designed to reward trainers who are consistently excellent — not just occasionally lucky.</p>
+    </div>
+
+    <!-- Formula breakdown -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3.5rem;" class="hero-grid">
+
+      <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+          <div style="background:#eaf7ec;color:#2a9438;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #c3e6c8;">UP TO 80 PTS</div>
+          <div style="font-weight:800;font-size:1rem;color:#111311;">Quality Score</div>
+        </div>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">The majority of your BMP score comes from your <strong style="color:#111311;">average star rating</strong> across all verified reviews. A trainer with consistently high ratings will always rank near the top.</p>
+      </div>
+
+      <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+          <div style="background:#e8f0f7;color:#1a4b6b;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #b3cce0;">UP TO 20 PTS</div>
+          <div style="font-weight:800;font-size:1rem;color:#111311;">Volume Score</div>
+        </div>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">A small bonus based on the <strong style="color:#111311;">number of verified reviews</strong> you've collected — anonymous or named, they all count. It rewards trainers who build a consistent track record over time.</p>
+      </div>
+    </div>
+
+    <!-- Why this is better -->
+    <div style="background:#0d1a0e;border-radius:16px;padding:2.5rem;margin-bottom:3rem;">
+      <div style="font-weight:800;font-size:1.1rem;color:white;margin-bottom:1.5rem;text-align:center;">Why BMP is a better measure than star ratings alone</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="about-steps-grid">
+        {[
+          { icon:'🎲', title:'Removes luck', desc:'A single 5-star review could be a friend or a fluke. BMP requires volume to score well — you cannot fake consistency.' },
+          { icon:'📏', title:'Rewards sustained quality', desc:'A PT with 50 reviews averaging 4.8 stars will outscore one with 2 reviews at 5 stars. Real quality shows over time.' },
+          { icon:'🔍', title:'Transparent formula', desc:'There\'s no black box. Both components are clearly defined, so every PT knows exactly what they need to do to improve their score.' },
+        ].map(w => (
+          <div style="text-align:center;">
+            <div style="font-size:1.75rem;margin-bottom:0.65rem;">{w.icon}</div>
+            <div style="font-weight:700;font-size:0.9rem;color:white;margin-bottom:0.4rem;">{w.title}</div>
+            <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.7;">{w.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- BMP example range -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;">
+      {[
+        { range:'75–100', label:'Elite', color:'#b8860b', bg:'#fdf6e3', desc:'Consistently outstanding across many reviews' },
+        { range:'50–74',  label:'Strong', color:'#2a9438', bg:'#eaf7ec', desc:'Above average quality with solid volume' },
+        { range:'25–49',  label:'Developing', color:'#1a4b6b', bg:'#e8f0f7', desc:'Early stage or mixed review history' },
+        { range:'0–24',   label:'Rising', color:'#6b1a6b', bg:'#f5e8f7', desc:'New to the platform — building their reputation' },
+      ].map(b => (
+        <div style={`background:${b.bg};border-radius:12px;padding:1.25rem 0.75rem;`}>
+          <div style={`font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:${b.color};line-height:1;margin-bottom:0.3rem;`}>{b.range}</div>
+          <div style={`font-weight:800;font-size:0.78rem;color:${b.color};margin-bottom:0.4rem;`}>{b.label}</div>
+          <div style="font-size:0.72rem;color:#7a8f7c;line-height:1.5;">{b.desc}</div>
+        </div>
+      ))}
+    </div>
+
+  </div>
+</section>
+
+<!-- ── ABOUT ── -->
+<!-- ── ABOUT — stats strip ── -->
+<section style="background:#f4f6f4;border-top:3px solid #3ab54a;border-bottom:1px solid #e0e8e1;padding:2.5rem 0;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;text-align:center;" class="about-stats-grid">
+    {[
+      { value: '0',    label: 'Paid Placements' },
+      { value: '0',    label: 'Hidden Fees' },
+      { value: '0',    label: 'Fake Reviews' },
+      { value: '100%', label: 'Merit-Based Rankings' },
+    ].map(s => (
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:#3ab54a;line-height:1;">{s.value}</div>
+        <div style="font-size:0.78rem;font-weight:600;color:#7a8f7c;margin-top:0.35rem;text-transform:uppercase;letter-spacing:1px;">{s.label}</div>
+      </div>
+    ))}
+  </div>
+</section>
+
+<!-- ── ABOUT — main ── -->
+<section id="about" style="padding:6rem 0;background:#0d1a0e;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;">
+
+    <!-- Heading -->
+    <div style="text-align:center;max-width:700px;margin:0 auto 5rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:1rem;">About Personal TRating</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;line-height:1.15;color:white;margin-bottom:1.5rem;">
+        Finding a great trainer shouldn't be a gamble.
+      </div>
+      <p style="font-size:1rem;line-height:1.9;color:rgba(255,255,255,0.6);max-width:580px;margin:0 auto;">
+        We built Personal TRating because the fitness industry had no honest, transparent way to
+        compare personal trainers. Word of mouth only goes so far. Gym noticeboards aren't accountable.
+        Instagram followings don't tell you if someone actually gets results. We do.
+      </p>
+    </div>
+
+    <!-- How it works — 3 steps -->
+    <div style="margin-bottom:5rem;">
+      <div style="text-align:center;font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:3rem;">How It Works</div>
+      <div class="about-steps-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;position:relative;">
+        {[
+          { step:'01', icon:'🏋️', title:'Trainer Signs Up Free', desc:'Any UK personal trainer can create a verified profile in minutes. No credit card, no subscription — just a profile that works for you.' },
+          { step:'02', icon:'🔗', title:'Clients Leave Reviews',  desc:'After each session the trainer shares a unique review link. Clients rate their experience using our BMP scoring system — honest, verified, and accountable.' },
+          { step:'03', icon:'📊', title:'Rankings Update Live',   desc:'Every verified review updates the trainer\'s BMP score and their position in the UK leaderboard. The best trainers rise to the top naturally.' },
+        ].map(s => (
+          <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:2rem;">
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+              <div style="font-size:0.65rem;font-weight:800;color:#3ab54a;letter-spacing:2px;border:1.5px solid #3ab54a;padding:0.2rem 0.55rem;border-radius:20px;">{s.step}</div>
+              <div style="font-size:1.4rem;">{s.icon}</div>
+            </div>
+            <div style="font-weight:800;font-size:1.05rem;color:white;margin-bottom:0.65rem;line-height:1.3;">{s.title}</div>
+            <div style="font-size:0.875rem;color:rgba(255,255,255,0.55);line-height:1.75;">{s.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Feature grid — 6 pillars -->
+    <div>
+      <div style="text-align:center;font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:3rem;">Why Personal TRating</div>
+      <div class="about-features-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+        {[
+          { icon:'✅', title:'Verified Reviews Only',         desc:'Trainers send unique links directly to real clients after sessions. No anonymous trolling, no paid placements, no fake stars.' },
+          { icon:'📊', title:'The BMP Score',                 desc:'Body Muscle Percentage scores PTs from 0–100, weighing both rating quality (70 pts) and review volume (30 pts). Consistency counts.' },
+          { icon:'🇬🇧', title:'UK-Wide Coverage',            desc:'City-level leaderboards across Scotland, England, Wales and Northern Ireland. Whether you\'re in Glasgow or Guildford, you\'re ranked.' },
+          { icon:'🔒', title:'Data Safe & GDPR Compliant',   desc:'All data is encrypted, stored securely, and never sold. We comply fully with the UK GDPR and Data Protection Act 2018.' },
+          { icon:'🆓', title:'Free for Every Trainer',        desc:'Every PT can join, build their profile, and start collecting verified reviews at no cost. No hidden fees, no upsells.' },
+          { icon:'⚡', title:'Real-Time Rankings',            desc:'The leaderboard updates automatically as new verified reviews come in. Rankings reflect the current best, not a snapshot from months ago.' },
+        ].map(f => (
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:1.5rem;">
+            <div style="font-size:1.5rem;margin-bottom:0.75rem;">{f.icon}</div>
+            <div style="font-weight:700;font-size:0.95rem;color:white;margin-bottom:0.4rem;">{f.title}</div>
+            <div style="font-size:0.82rem;color:rgba(255,255,255,0.5);line-height:1.7;">{f.desc}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Bottom CTA -->
+    <div style="text-align:center;margin-top:4.5rem;">
+      <a href="/signup" style="background:#3ab54a;color:white;padding:1rem 2.5rem;border-radius:8px;font-weight:700;font-size:0.95rem;text-decoration:none;display:inline-block;box-shadow:0 4px 20px rgba(58,181,74,0.35);transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        List Your Profile Free →
+      </a>
+      <div style="font-size:0.78rem;color:rgba(255,255,255,0.3);margin-top:0.85rem;">No credit card required · Takes 2 minutes</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── CTA ── -->
+<section style="padding:6rem 0;text-align:center;background:white;border-top:3px solid #3ab54a;">
+  <div style="max-width:580px;margin:0 auto;padding:0 2.5rem;">
+    <div style="display:inline-block;background:#eaf7ec;color:#2a9438;padding:0.4rem 1rem;border-radius:20px;font-size:0.72rem;font-weight:700;margin-bottom:1.5rem;letter-spacing:1.5px;text-transform:uppercase;">
+      Free to Join
+    </div>
+    <div style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;margin-bottom:1rem;color:#111311;line-height:1.12;">
+      Are you a personal trainer?
+    </div>
+    <p style="color:#8a8f8a;font-size:1rem;margin-bottom:2.5rem;line-height:1.7;max-width:460px;margin-left:auto;margin-right:auto;">
+      List your profile free, collect verified reviews from your clients, and climb the UK rankings today.
+    </p>
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+      <a href="/signup" style="background:#3ab54a;color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;transition:background 0.2s;box-shadow:0 4px 16px rgba(58,181,74,0.3);"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        Create Your Free Profile
+      </a>
+      <a href="#about" style="border:1.5px solid #e0e8e1;color:#111311;padding:0.9rem 2rem;border-radius:8px;font-weight:600;font-size:0.9rem;text-decoration:none;transition:all 0.2s;background:white;"
+        onmouseover="this.style.borderColor='#3ab54a';this.style.color='#3ab54a'" onmouseout="this.style.borderColor='#e0e8e1';this.style.color='#111311'">
+        See How It Works →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:white;border-top:3px solid #3ab54a;">
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <img src="/images/logo.png" alt="Personal TRating" style="height:44px;width:auto;object-fit:contain;opacity:0.7;" />
+    <p style="font-size:0.8rem;color:#8a8f8a;">© 2026 Personal TRating · Built in the UK 🇬🇧</p>
+  </div>
+  <div style="display:flex;gap:2rem;">
+    <a href="/privacy" class="nav-link" style="font-size:0.8rem;">Privacy</a>
+    <a href="/terms" class="nav-link" style="font-size:0.8rem;">Terms</a>
+    <a href="mailto:hello@personalTrating.co.uk" class="nav-link" style="font-size:0.8rem;">Contact</a>
+  </div>
+</footer>
+
+</Layout>
+
+<!-- ── MAP SCRIPT ── -->
+<script is:inline>
+document.addEventListener('DOMContentLoaded', function () {
+  if (typeof L === 'undefined') return;
+
+  var ukBounds = L.latLngBounds(
+    L.latLng(49.0, -11.0),
+    L.latLng(61.5,  3.5)
+  );
+
+  var map = L.map('pt-map', {
+    scrollWheelZoom: false,
+    attributionControl: false,
+    maxBounds: ukBounds,
+    maxBoundsViscosity: 1.0,
+    minZoom: 5,
+    maxZoom: 13
+  }).setView([54.2, -2.5], 6);
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    maxZoom: 19
+  }).addTo(map);
+
+  var cityCoords = {
+    'london':[51.5074,-0.1278],'manchester':[53.4808,-2.2426],'birmingham':[52.4862,-1.8904],
+    'leeds':[53.8008,-1.5491],'glasgow':[55.8642,-4.2518],'edinburgh':[55.9533,-3.1883],
+    'liverpool':[53.4084,-2.9916],'bristol':[51.4545,-2.5879],'sheffield':[53.3811,-1.4701],
+    'newcastle':[54.9783,-1.6178],'cardiff':[51.4816,-3.1791],'belfast':[54.5973,-5.9301],
+    'nottingham':[52.9548,-1.1581],'leicester':[52.6369,-1.1398],'coventry':[52.4068,-1.5197],
+    'bradford':[53.7960,-1.7594],'exeter':[50.7184,-3.5339],'plymouth':[50.3755,-4.1427],
+    'southampton':[50.9097,-1.4044],'portsmouth':[50.8198,-1.0880],'brighton':[50.8225,-0.1372],
+    'oxford':[51.7520,-1.2577],'cambridge':[52.2053,0.1218],'norwich':[52.6309,1.2974],
+    'reading':[51.4543,-0.9781],'derby':[52.9225,-1.4746],'stoke':[53.0027,-2.1794],
+    'wolverhampton':[52.5869,-2.1288],'sunderland':[54.9069,-1.3838],'middlesbrough':[54.5752,-1.2349],
+    'hull':[53.7457,-0.3367],'york':[53.9590,-1.0815],'aberdeen':[57.1497,-2.0943],
+    'dundee':[56.4620,-2.9707],'inverness':[57.4778,-4.2247],'swansea':[51.6214,-3.9436],
+    'newport':[51.5842,-2.9977],'bath':[51.3758,-2.3599],'cheltenham':[51.9000,-2.0830],
+    'gloucester':[51.8642,-2.2380],'bournemouth':[50.7192,-1.8808],'poole':[50.7155,-1.9871],
+    'bolton':[53.5780,-2.4282],'wigan':[53.5450,-2.6370],'blackpool':[53.8142,-3.0503],
+    'preston':[53.7632,-2.7031],'burnley':[53.7890,-2.2494],'oldham':[53.5409,-2.1114],
+    'salford':[53.4875,-2.2901],'stockport':[53.4106,-2.1575],'warrington':[53.3900,-2.5970],
+    'chester':[53.1905,-2.8910],'bury':[53.5933,-2.2986],'huddersfield':[53.6458,-1.7850],
+    'wakefield':[53.6830,-1.4977],'doncaster':[53.5228,-1.1286],'rotherham':[53.4326,-1.3635],
+    'harrogate':[53.9922,-1.5378],'barnsley':[53.5547,-1.4791],'salisbury':[51.0693,-1.7957],
+    'truro':[50.2632,-5.0510],'torquay':[50.4619,-3.5253],'yeovil':[50.9425,-2.6303],
+    'taunton':[51.0152,-3.1007],'shrewsbury':[52.7080,-2.7545],'worcester':[52.1920,-2.2200],
+    'hereford':[52.0564,-2.7162],'stafford':[52.8053,-2.1189],'walsall':[52.5850,-1.9820],
+    'northampton':[52.2405,-0.9027],'peterborough':[52.5695,-0.2405],'lincoln':[53.2307,-0.5406],
+    'ipswich':[52.0567,1.1482],'colchester':[51.8959,0.8919],'chelmsford':[51.7356,0.4685],
+    'luton':[51.8787,-0.4200],'southend':[51.5459,0.7077],'guildford':[51.2362,-0.5704],
+    'maidstone':[51.2720,0.5291],'eastbourne':[50.7688,0.2845],'crawley':[51.1092,-0.1872],
+    'basingstoke':[51.2665,-1.0872],'swindon':[51.5558,-1.7797],'bangor':[53.2274,-4.1277],
+    'wrexham':[53.0482,-2.9919],'stirling':[56.1165,-3.9369],'perth':[56.3950,-3.4312],
+    'falkirk':[56.0019,-3.7839],'ayr':[55.4587,-4.6292],'paisley':[55.8456,-4.4237],
+    'hamilton':[55.7770,-4.0393],'livingston':[55.8830,-3.5262],'motherwell':[55.7940,-4.0011],
+    'derry':[54.9966,-7.3086],'lisburn':[54.5161,-6.0484],'newry':[54.1754,-6.3402],
+    'armagh':[54.3503,-6.6528],'ballymena':[54.8645,-6.2772],'antrim':[54.7194,-6.2094],
+  };
+
+  var trainers = window['__ptMapData'] || [];
+
+  trainers.forEach(function (t) {
+    var cityRaw = (t.city || t.location || '').toLowerCase().split(',')[0].trim();
+    var coords = cityCoords[cityRaw];
+    if (!coords) {
+      var keys = Object.keys(cityCoords);
+      for (var i = 0; i < keys.length; i++) {
+        if (cityRaw.indexOf(keys[i]) !== -1 || keys[i].indexOf(cityRaw) !== -1) {
+          coords = cityCoords[keys[i]]; break;
+        }
+      }
+    }
+    if (!coords) return;
+
+    var jitter = [(Math.random()-0.5)*0.04, (Math.random()-0.5)*0.08];
+    var bmp  = t.bmp_score || '—';
+    var name = (t.name || '').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
+    var icon = L.divIcon({
+      className: '',
+      html: '<div style="background:#3ab54a;color:white;font-weight:800;font-size:0.62rem;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 10px rgba(0,0,0,0.25);line-height:1;">' + bmp + '</div>',
+      iconSize: [34,34], iconAnchor: [17,17],
+    });
+    L.marker([coords[0]+jitter[0], coords[1]+jitter[1]], { icon: icon }).addTo(map)
+      .bindPopup(
+        '<div style="font-family:Manrope,sans-serif;min-width:160px;padding:0.25rem 0;">' +
+          '<div style="font-weight:700;font-size:0.92rem;margin-bottom:0.25rem;">' + name + '</div>' +
+          '<div style="font-size:0.75rem;color:#888;margin-bottom:0.5rem;">BMP Score: ' + bmp + '</div>' +
+          '<a href="/trainers/' + t.id + '" style="display:block;background:#3ab54a;color:white;text-align:center;padding:0.35rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.78rem;">View Profile →</a>' +
+        '</div>'
+      );
+  });
+});
+</script>
+
+<!-- Pass real trainer data to map + leaderboard -->
+<script define:vars={{ leaderboard }}>
+  window['__ptMapData']      = leaderboard;
+  window['__ptAllTrainers']  = leaderboard;
+</script>
+
+<!-- ── LEADERBOARD GEOLOCATION SCRIPT ── -->
+<script is:inline>
+(function () {
+  var cityCoords = {
+    'london': [51.505, -0.09], 'manchester': [53.480, -2.242],
+    'birmingham': [52.480, -1.893], 'leeds': [53.800, -1.548],
+    'edinburgh': [55.953, -3.188], 'bristol': [51.454, -2.587],
+    'liverpool': [53.408, -2.991], 'sheffield': [53.383, -1.465],
+    'nottingham': [52.954, -1.158], 'cardiff': [51.481, -3.179],
+    'glasgow': [55.860, -4.251], 'leicester': [52.636, -1.133],
+    'newcastle': [54.978, -1.617], 'oxford': [51.752, -1.257],
+    'cambridge': [52.205, 0.119], 'brighton': [50.827, -0.137],
+    'portsmouth': [50.798, -1.091], 'exeter': [50.724, -3.527],
+    'norwich': [52.628, 1.299], 'belfast': [54.597, -5.930],
+    'coventry': [52.408, -1.510], 'reading': [51.454, -0.973],
+    'southampton': [50.909, -1.404], 'hull': [53.744, -0.332],
+  };
+
+  function haversine(lat1, lon1, lat2, lon2) {
+    var R = 3958.8;
+    var dLat = (lat2 - lat1) * Math.PI / 180;
+    var dLon = (lon2 - lon1) * Math.PI / 180;
+    var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  function rankColor(i) {
+    return i === 0 ? '#b8860b' : i === 1 ? '#888888' : i === 2 ? '#b07040' : '#8a8f8a';
+  }
+
+  function dbSvg(filled) {
+    var c  = filled ? '#FFB800' : '#d4dbd5';
+    var sk = filled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
+    return '<svg viewBox="0 0 28 12" width="13" height="6" style="display:inline-block;vertical-align:middle;" aria-hidden="true">' +
+      '<rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="' + c + '" stroke="' + sk + '" stroke-width="0.7"/>' +
+      '<rect x="8" y="3.5" width="12" height="5" fill="' + c + '" stroke="' + sk + '" stroke-width="0.7"/>' +
+      '<rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="' + c + '" stroke="' + sk + '" stroke-width="0.7"/></svg>';
+  }
+
+  function renderCard(pt, rank) {
+    var filledDBs = (pt.bmp_score > 0) ? Math.min(5, Math.ceil((pt.bmp_score || 0) / 20)) : 0;
+    var avatar = pt.avatar_url
+      ? '<img src="' + pt.avatar_url + '" alt="" class="lbc-av" width="40" height="40" style="width:40px;min-width:40px;height:40px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid #e0e8e1;">'
+      : '<div class="lbc-av" style="background:' + (pt.avatar_bg || '#eaf7ec') + ';color:' + (pt.avatar_color || '#2a9438') + ';">' + (pt.avatar_initials || '?') + '</div>';
+    var cert = pt.cert ? '<span class="lbc-cert">' + pt.cert + '</span>' : '';
+    var city = pt.city || pt.location || '';
+    var spec = pt.specialty || '';
+    var dbs = '';
+    for (var i = 0; i < 5; i++) dbs += dbSvg(i < filledDBs);
+    var revCount = pt.review_count || 0;
+    var revText  = revCount + ' ' + (revCount === 1 ? 'review' : 'reviews');
+    var bmpDisplay = revCount === 0 ? 'Be first to review' : pt.bmp_score;
+    var bmpStyle   = revCount === 0 ? 'font-size:0.7rem;font-weight:700;color:#3ab54a;line-height:1.3;' : '';
+    return '<a href="/trainers/' + pt.id + '" class="lb-card">' +
+      '<div class="lbc-rank">' + String(rank).padStart(2, '0') + '</div>' +
+      '<div class="lbc-mid">' +
+        '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + '</div>' + cert + '</div>' +
+        (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
+        (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
+      '</div>' +
+      '<div class="lbc-bmp">' +
+        '<div class="lbc-bmp-label">BMP</div>' +
+        '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
+        '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
+        '<div class="lbc-bmp-rev">' + revText + '</div>' +
+      '</div>' +
+    '</a>';
+  }
+
+  function paintList(trainers, eyebrow, sub, pill) {
+    var el     = document.getElementById('lb-list');
+    var eyeEl  = document.getElementById('lb-eyebrow');
+    var subEl  = document.getElementById('lb-sub');
+    var pillEl = document.getElementById('lb-location-pill');
+    if (eyeEl) eyeEl.textContent  = eyebrow;
+    if (subEl)  subEl.textContent  = sub;
+    if (pillEl) { pillEl.textContent = pill || ''; pillEl.style.display = pill ? '' : 'none'; }
+    if (!el) return;
+    if (trainers.length === 0) {
+      el.innerHTML = '<div style="text-align:center;padding:4rem 2rem;background:white;border-radius:16px;border:1px dashed #c3e6c8;">' +
+        '<div style="font-size:2rem;margin-bottom:0.75rem;">🏋</div>' +
+        '<div style="font-family:\'Playfair Display\',serif;font-size:1.25rem;font-weight:700;color:#111311;margin-bottom:0.5rem;">No trainers nearby yet</div>' +
+        '<div style="color:#8a8f8a;font-size:0.9rem;">Be the first PT in your area to collect verified reviews.</div>' +
+        '<a href="/signup" style="display:inline-block;margin-top:1.5rem;background:#3ab54a;color:white;padding:0.75rem 1.75rem;border-radius:8px;font-weight:700;font-size:0.875rem;text-decoration:none;">List Your Profile Free →</a>' +
+        '</div>';
+      return;
+    }
+    el.innerHTML = '<div style="display:flex;flex-direction:column;gap:0.875rem;">' +
+      trainers.map(function (pt, i) { return renderCard(pt, i + 1); }).join('') +
+      '</div>';
+  }
+
+  function paintHero(trainers, title) {
+    var titleEl = document.getElementById('hero-card-title');
+    var listEl  = document.getElementById('hero-rankings-list');
+    if (titleEl) titleEl.textContent = title;
+    if (!listEl) return;
+    if (trainers.length === 0) {
+      listEl.innerHTML = '<div style="padding:1rem 0;text-align:center;color:#8a8f8a;font-size:0.82rem;">No trainers found nearby.</div>';
+      return;
+    }
+    listEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:0.6rem;">' +
+      trainers.slice(0, 4).map(function (t, i) {
+      var avatar = t.avatar_url
+        ? '<img src="' + t.avatar_url + '" alt="" width="36" height="36" style="width:36px;min-width:36px;height:36px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid #e0e8e1;">'
+        : '<div style="width:36px;min-width:36px;height:36px;border-radius:50%;background:' + (t.avatar_bg || '#eaf7ec') + ';color:' + (t.avatar_color || '#2a9438') + ';display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.72rem;flex-shrink:0;">' + (t.avatar_initials || '?') + '</div>';
+      var geoFilled = (t.bmp_score > 0) ? Math.min(5, Math.ceil((t.bmp_score || 0) / 20)) : 0;
+      var dbs = '';
+      for (var s = 0; s < 5; s++) {
+        var gc = s < geoFilled ? '#FFB800' : '#d4dbd5';
+        var gsk = s < geoFilled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
+        dbs += '<svg viewBox="0 0 28 12" width="10" height="5" style="display:inline-block;vertical-align:middle;"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/></svg>';
+      }
+      return '<a href="/trainers/' + t.id + '" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.75rem;text-decoration:none;background:white;border:1px solid #e0e8e1;border-left:3px solid #3ab54a;border-radius:10px;">' +
+        '<div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;font-weight:900;color:#3ab54a;width:1.75rem;flex-shrink:0;line-height:1;">' + String(i + 1).padStart(2, '0') + '</div>' +
+        avatar +
+        '<div style="flex:1;min-width:0;">' +
+          '<div style="font-family:\'Playfair Display\',serif;font-weight:700;font-size:0.82rem;color:#111311;margin-bottom:0.15rem;">' + t.name + '</div>' +
+          (t.city || t.location ? '<div style="font-size:0.68rem;color:#8a8f8a;">📍 ' + (t.city || t.location) + '</div>' : '') +
+          (t.specialty ? '<div style="font-size:0.68rem;color:#8a8f8a;">🏋 ' + t.specialty + '</div>' : '') +
+        '</div>' +
+        '<div style="text-align:right;flex-shrink:0;">' +
+          '<div style="font-family:\'Playfair Display\',serif;font-weight:900;font-size:1.1rem;color:#111311;line-height:1;">' + t.bmp_score + '</div>' +
+          '<div style="font-size:0.52rem;color:#aaa;letter-spacing:0.8px;text-transform:uppercase;font-weight:600;margin-bottom:0.15rem;">BMP</div>' +
+          '<div style="display:flex;gap:2px;justify-content:flex-end;">' + dbs + '</div>' +
+        '</div>' +
+      '</a>';
+    }).join('') + '</div>';
+  }
+
+  function showUkFallback(reason) {
+    var all = (window['__ptAllTrainers'] || []).slice(0, 10);
+    paintList(all, 'National Rankings', reason || 'Ranked by Body Muscle Percentage (BMP) score', '');
+    paintHero(all, '🏆 Top Trainers — UK');
+  }
+
+  // Wait for define:vars data to be ready
+  function init() {
+    if (!window['__ptAllTrainers']) { setTimeout(init, 50); return; }
+
+    if (!navigator.geolocation) { showUkFallback('Location unavailable — showing UK Top 10'); return; }
+
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        var uLat = pos.coords.latitude;
+        var uLng = pos.coords.longitude;
+        var all  = window['__ptAllTrainers'] || [];
+
+        var nearby = all.filter(function (t) {
+          var key    = (t.city || t.location || '').toLowerCase().split(',')[0].trim();
+          var coords = cityCoords[key];
+          return coords && haversine(uLat, uLng, coords[0], coords[1]) <= 50;
+        });
+        nearby.sort(function (a, b) { return (b.bmp_score || 0) - (a.bmp_score || 0); });
+        nearby = nearby.slice(0, 10);
+
+        // Nearest named city for the pill label
+        var nearestCity = '', nearestDist = Infinity;
+        Object.keys(cityCoords).forEach(function (city) {
+          var d = haversine(uLat, uLng, cityCoords[city][0], cityCoords[city][1]);
+          if (d < nearestDist) { nearestDist = d; nearestCity = city; }
+        });
+        var cityLabel = nearestCity ? nearestCity.charAt(0).toUpperCase() + nearestCity.slice(1) : '';
+
+        if (nearby.length === 0) {
+          showUkFallback('No trainers within 50 miles yet — showing UK Top 10');
+          return;
+        }
+
+        var countTxt = nearby.length + ' trainer' + (nearby.length !== 1 ? 's' : '') + ' within 50 miles';
+        var heroTitle = cityLabel ? '📍 Near ' + cityLabel : '📍 Near You';
+        paintList(nearby, 'Local Rankings', countTxt, cityLabel ? '📍 ' + cityLabel + ' area' : '');
+        paintHero(nearby, heroTitle);
+      },
+      function () {
+        showUkFallback('Enable location for local results — showing UK Top 10');
+      },
+      { timeout: 8000, maximumAge: 300000 }
+    );
+  }
+
+  init();
+})();
+</script>
+
+
+<!-- ── SCROLL REVEAL ── -->
+<style>
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  @media (max-width: 600px) {
+    .reveal { transform: translateY(14px); transition-duration: 0.45s, 0.45s; }
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Stagger grid children when parent becomes visible */
+  .stagger > *        { opacity:0; transform:translateY(20px); transition:opacity 0.55s ease-out, transform 0.55s ease-out; }
+  .stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0.05s; }
+  .stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.15s; }
+  .stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.25s; }
+  .stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.35s; }
+  .stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.45s; }
+  .stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay:0.55s; }
+</style>
+
+<script is:inline>
+  (function () {
+    // Sections to animate — skip hero (#top) and map (Leaflet breaks if hidden)
+    var skipIds = ['top', 'map'];
+    document.querySelectorAll('section').forEach(function (s) {
+      if (!skipIds.includes(s.id)) s.classList.add('reveal');
+    });
+
+    // Stagger the about grids so cards pop in one by one
+    ['about-stats-grid', 'about-steps-grid', 'about-features-grid'].forEach(function (cls) {
+      var el = document.querySelector('.' + cls);
+      if (el) el.classList.add('stagger');
+    });
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px 80px 0px' });
+
+    document.querySelectorAll('.reveal, .stagger').forEach(function (el) {
+      observer.observe(el);
+    });
+  })();
+</script>
+
+<script>
+  import { supabase } from '../lib/supabase';
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { data: trainerRow } = await supabase.from('trainers').select('id, name').eq('user_id', session.user.id).maybeSingle();
+    if (trainerRow) {
+      window.location.replace('/for-trainers');
+      // stop executing — redirect is in flight
+      document.getElementById('nav-signin')!.style.display  = 'none';
+      document.getElementById('nav-signup')!.style.display  = 'none';
+      const accountEl = document.getElementById('nav-account')! as HTMLAnchorElement;
+      accountEl.href         = '/dashboard';
+      accountEl.style.display = '';
+      accountEl.textContent  = 'My Dashboard →';
+      document.getElementById('nav-signout')!.style.display = '';
+      document.getElementById('mob-signin')!.style.display  = 'none';
+      document.getElementById('mob-signup')!.style.display  = 'none';
+      document.getElementById('mob-signout')!.style.display = 'block';
+      const mobEl = document.getElementById('mob-account')! as HTMLAnchorElement;
+      mobEl.href         = '/dashboard';
+      mobEl.style.display = 'block';
+      mobEl.textContent  = 'My Dashboard';
+    } else {
+      const { data: client } = await supabase.from('clients').select('id, name').eq('user_id', session.user.id).maybeSingle();
+      if (client) {
+        const firstName = client.name.split(' ')[0];
+        document.getElementById('nav-signin')!.style.display  = 'none';
+        document.getElementById('nav-signup')!.style.display  = 'none';
+        const accountEl = document.getElementById('nav-account')!;
+        accountEl.style.display  = '';
+        accountEl.textContent    = `Hi, ${firstName}  →  My Account`;
+        document.getElementById('nav-signout')!.style.display = '';
+        document.getElementById('mob-signin')!.style.display  = 'none';
+        document.getElementById('mob-signup')!.style.display  = 'none';
+        document.getElementById('mob-account')!.style.display = 'block';
+        document.getElementById('mob-signout')!.style.display = 'block';
+        document.getElementById('mob-account')!.textContent   = `Hi, ${firstName} — My Account`;
+      }
+    }
+  }
+
+  const signOutHandler = async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  };
+  document.getElementById('nav-signout')?.addEventListener('click', signOutHandler);
+  document.getElementById('mob-signout')?.addEventListener('click', signOutHandler);
+</script>
+

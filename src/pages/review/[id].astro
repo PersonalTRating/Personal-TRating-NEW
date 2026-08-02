@@ -1,0 +1,525 @@
+---
+// Review Submission Page — Personal TRating
+import { supabase } from '../../lib/supabase';
+
+export async function getStaticPaths() {
+  const { data: trainers } = await supabase
+    .from('trainers')
+    .select('id')
+    .eq('is_active', true);
+  return (trainers || []).map(t => ({ params: { id: t.id } }));
+}
+
+const { id } = Astro.params;
+const { data: trainer } = await supabase
+  .from('trainers')
+  .select('id, name, business_name, location, specialty, avatar_initials, avatar_bg, avatar_color, star_rating, review_count')
+  .eq('id', id)
+  .maybeSingle();
+
+if (!trainer) return Astro.redirect('/');
+
+const specialtyEmoji: Record<string, string> = {
+  'Strength & Conditioning': '💪', 'Weight Loss': '🔥',
+  'HIIT & Cardio': '⚡',          'Rehabilitation': '🧘',
+  'Nutrition Coaching': '🥗',      'Sports Performance': '🏃',
+  'Powerlifting': '🏋️',           'Functional Fitness': '🤸',
+};
+const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️') : '🏋️';
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Review {trainer.name} — Personal TRating</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#3ab54a; --green-dark:#2a9438; --green-light:#eaf7ec;
+    --green-mid:#d0f0d4; --border:#e0e8e1; --text:#0d1a0e;
+    --muted:#7a8f7c; --off:#f7f9f7; --gold:#e6a800;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; }
+
+  /* ── Top nav ── */
+  .rv-nav {
+    background:#0d1a0e;
+    padding:0 2rem; height:94px;
+    display:flex; align-items:center;
+    border-bottom:2px solid #3ab54a;
+  }
+  .rv-nav img { height:78px; width:auto; object-fit:contain; display:block; }
+  .rv-nav a { display:inline-flex; align-items:center; }
+
+  /* ── Hero ── */
+  .rv-hero {
+    background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);
+    padding:2.5rem 1.5rem 4rem; text-align:center; position:relative;
+  }
+  .rv-hero::after {
+    content:''; position:absolute; bottom:-60px; left:50%; transform:translateX(-50%);
+    width:200px; height:120px;
+    background:radial-gradient(ellipse,rgba(58,181,74,0.15) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .rv-avatar {
+    width:88px; height:88px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1.75rem;
+    margin:0 auto 1.1rem;
+    border:3px solid rgba(255,255,255,0.2);
+    box-shadow:0 8px 28px rgba(0,0,0,0.35);
+  }
+  .rv-name {
+    font-family:'Playfair Display',serif; font-size:1.85rem;
+    font-weight:900; color:white; line-height:1.1; margin-bottom:0.3rem;
+  }
+  .rv-biz { font-size:0.88rem; color:rgba(255,255,255,0.6); margin-bottom:0.75rem; font-weight:500; }
+  .rv-tags { display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; }
+  .rv-tag {
+    background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.75);
+    font-size:0.73rem; font-weight:600; padding:0.28rem 0.75rem;
+    border-radius:20px; border:1px solid rgba(255,255,255,0.15);
+  }
+
+  /* ── Card ── */
+  .rv-wrap { max-width:500px; margin:-2.25rem auto 0; padding:0 1.25rem 3rem; position:relative; z-index:2; }
+  .rv-card {
+    background:white; border-radius:18px;
+    border:1px solid var(--border);
+    box-shadow:0 8px 48px rgba(0,0,0,0.12);
+    overflow:hidden;
+  }
+  .rv-card-body { padding:2rem 2rem 1.5rem; }
+
+  /* ── BMP Slider ── */
+  .bmp-heading {
+    text-align:center; font-size:0.7rem; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:0.6rem;
+  }
+  .bmp-pct-display {
+    text-align:center; line-height:1; margin-bottom:0.6rem;
+  }
+  .bmp-pct-num {
+    font-family:'Playfair Display',serif; font-size:3rem;
+    font-weight:900; color:var(--green-dark);
+  }
+  .bmp-pct-sym {
+    font-size:1.4rem; font-weight:700; color:var(--green-dark); vertical-align:super;
+  }
+  .bmp-slider {
+    -webkit-appearance:none; appearance:none;
+    width:100%; height:6px; border-radius:3px;
+    background: linear-gradient(to right, var(--green) 0%, var(--green) 50%, #dde8de 50%, #dde8de 100%);
+    outline:none; cursor:pointer; margin-bottom:0.75rem;
+  }
+  .bmp-slider::-webkit-slider-thumb {
+    -webkit-appearance:none; appearance:none;
+    width:22px; height:22px; border-radius:50%;
+    background:var(--green); border:3px solid white;
+    box-shadow:0 2px 8px rgba(58,181,74,0.45); cursor:pointer;
+  }
+  .bmp-slider::-moz-range-thumb {
+    width:22px; height:22px; border-radius:50%;
+    background:var(--green); border:3px solid white;
+    box-shadow:0 2px 8px rgba(58,181,74,0.45); cursor:pointer;
+  }
+  .bmp-dbs {
+    position:relative; display:inline-block;
+    font-size:2.8rem; line-height:1; user-select:none;
+    margin-bottom:0.5rem;
+  }
+  .bmp-dbs-bg   { white-space:nowrap; filter:grayscale(1) opacity(0.25); letter-spacing:0.1rem; }
+  .bmp-dbs-fill {
+    position:absolute; top:0; left:0; overflow:hidden;
+    white-space:nowrap; width:0%; letter-spacing:0.1rem;
+    transition:width 0.05s linear;
+  }
+  .bmp-dbs-wrap { display:flex; justify-content:center; margin-bottom:0.4rem; }
+  .bmp-label {
+    text-align:center; font-size:0.8rem; font-weight:600;
+    color:var(--green-dark); min-height:1.3em; margin-bottom:1.75rem;
+  }
+
+  /* ── Form ── */
+  .rv-section { font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:1rem; }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0.85rem; margin-bottom:0.85rem; }
+  .form-group { display:flex; flex-direction:column; gap:0.35rem; margin-bottom:0.85rem; }
+  .form-group:last-of-type { margin-bottom:0; }
+  .form-label { font-size:0.76rem; font-weight:700; }
+  .optional { font-weight:400; color:var(--muted); }
+  .form-input, .form-textarea {
+    padding:0.8rem 1rem; border:1.5px solid var(--border); border-radius:8px;
+    font-family:'Manrope',sans-serif; font-size:0.875rem; color:var(--text);
+    background:white; outline:none; transition:border-color 0.2s, box-shadow 0.2s;
+  }
+  .form-input:focus, .form-textarea:focus {
+    border-color:var(--green); box-shadow:0 0 0 3px rgba(58,181,74,0.1);
+  }
+  .form-textarea { resize:vertical; min-height:115px; }
+  .char-hint { font-size:0.7rem; color:var(--muted); text-align:right; margin-top:0.2rem; transition:color 0.2s; }
+  .char-hint.ok { color:var(--green-dark); }
+
+  /* ── Error / Submit ── */
+  .rv-error {
+    background:#fdecea; border:1px solid #f5c6c6; color:#c62828;
+    padding:0.7rem 1rem; border-radius:8px; font-size:0.82rem;
+    margin-bottom:1rem; display:none;
+  }
+  .rv-footer { padding:1.25rem 2rem; border-top:1px solid var(--border); }
+  .rv-btn {
+    width:100%; padding:0.95rem; background:var(--green); color:white;
+    border:none; border-radius:8px; font-family:'Manrope',sans-serif;
+    font-weight:700; font-size:0.95rem; cursor:pointer;
+    transition:background 0.2s; box-shadow:0 4px 16px rgba(58,181,74,0.28);
+  }
+  .rv-btn:hover    { background:var(--green-dark); }
+  .rv-btn:disabled { opacity:0.6; cursor:not-allowed; }
+  .rv-trust {
+    text-align:center; font-size:0.7rem; color:var(--muted);
+    margin-top:0.85rem; display:flex; align-items:center; justify-content:center; gap:0.3rem;
+  }
+
+  /* ── Thank-you ── */
+  .rv-thanks { display:none; padding:3rem 2rem; text-align:center; }
+  .rv-thanks-icon { font-size:4rem; display:block; margin-bottom:1rem; }
+  .rv-thanks h2 {
+    font-family:'Playfair Display',serif; font-size:1.65rem;
+    font-weight:900; margin-bottom:0.6rem;
+  }
+  .rv-thanks p { font-size:0.875rem; color:var(--muted); line-height:1.7; margin-bottom:0.5rem; }
+  .rv-thanks-stars { font-size:1.3rem; color:var(--gold); letter-spacing:2px; margin-bottom:1.5rem; }
+  .rv-back {
+    display:inline-block; color:var(--green); font-weight:700;
+    text-decoration:none; font-size:0.875rem;
+  }
+  .rv-back:hover { text-decoration:underline; }
+
+  @media (max-width: 480px) {
+    .form-row   { grid-template-columns:1fr; }
+    .rv-card-body { padding:1.5rem; }
+    .rv-footer  { padding:1rem 1.5rem; }
+    .star       { font-size:2.4rem; }
+    .rv-name    { font-size:1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top nav -->
+<nav class="rv-nav">
+  <a id="rv-logo-link" href="/">
+    <img src="/images/logo.png" alt="Personal TRating" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;">
+  </a>
+</nav>
+
+<!-- Hero -->
+<div class="rv-hero">
+<div>
+  <div class="rv-avatar" style={`background:${trainer.avatar_bg};`}>
+    <span style={`color:${trainer.avatar_color};`}>{trainer.avatar_initials}</span>
+  </div>
+  <div class="rv-name">{trainer.name}</div>
+  {trainer.business_name && <div class="rv-biz">{trainer.business_name}</div>}
+  <div class="rv-tags">
+    {trainer.specialty && <span class="rv-tag">{emoji} {trainer.specialty}</span>}
+    {trainer.location  && <span class="rv-tag">📍 {trainer.location}</span>}
+  </div>
+</div>
+</div>
+
+<!-- Pass trainer data to client script -->
+<div id="rv-data"
+  data-trainer-id={trainer.id}
+  data-trainer-name={trainer.name}
+  style="display:none;">
+</div>
+
+<!-- Form card -->
+<div class="rv-wrap">
+  <div class="rv-card">
+
+    <!-- Form state -->
+    <div id="rv-form-state">
+      <div class="rv-card-body">
+
+        <!-- BMP Slider -->
+        <div class="bmp-heading">Body Muscle Percentage (BMP) Rating</div>
+        <div class="bmp-pct-display">
+          <span class="bmp-pct-num" id="bmp-pct">0</span><span class="bmp-pct-sym">%</span>
+        </div>
+        <input type="range" id="bmp-slider" class="bmp-slider" min="0" max="100" value="0" step="1">
+        <div class="bmp-dbs-wrap">
+          <div class="bmp-dbs" id="bmp-dbs">
+            <div class="bmp-dbs-bg">🏋️🏋️🏋️🏋️🏋️</div>
+            <div class="bmp-dbs-fill" id="bmp-dbs-fill">🏋️🏋️🏋️🏋️🏋️</div>
+          </div>
+        </div>
+        <div class="bmp-label" id="bmp-label">Drag the slider to rate</div>
+
+        <div class="rv-section">Your Review</div>
+        <div class="rv-error" id="rv-error"></div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="rv-name">Your Name *</label>
+            <input class="form-input" type="text" id="rv-name" placeholder="e.g. Sarah M." autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="rv-location">Location <span class="optional">(optional)</span></label>
+            <input class="form-input" type="text" id="rv-location" placeholder="e.g. London">
+          </div>
+        </div>
+
+        <!-- Anonymous toggle -->
+        <div style="display:flex;align-items:flex-start;gap:0.75rem;background:#f7f9f7;border:1px solid #e0e8e1;border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.25rem;">
+          <input type="checkbox" id="rv-anon" style="margin-top:3px;accent-color:#3ab54a;width:16px;height:16px;flex-shrink:0;cursor:pointer;">
+          <div>
+            <label for="rv-anon" style="font-size:0.82rem;font-weight:700;color:#111311;cursor:pointer;display:block;margin-bottom:0.2rem;">Submit anonymously</label>
+            <div style="font-size:0.75rem;color:#7a8f7c;line-height:1.5;">Only your initials will be shown publicly (e.g. <strong id="rv-anon-preview">J. S.</strong>). Your full name is kept private.</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="rv-text">Your Review *</label>
+          <textarea
+            class="form-textarea"
+            id="rv-text"
+            placeholder={`Tell others about your experience with ${trainer.name}…`}
+          ></textarea>
+          <div class="char-hint" id="char-hint">Minimum 30 characters</div>
+        </div>
+
+      </div>
+
+      <div class="rv-footer">
+        <div class="rv-error" id="rv-error-foot" style="margin-bottom:0.85rem;"></div>
+        <button class="rv-btn" id="rv-submit">Submit Review →</button>
+        <div class="rv-trust">🔒 Verified by Personal TRating · Your honest review helps others find great PTs</div>
+      </div>
+    </div>
+
+    <!-- Thank-you state -->
+    <div class="rv-thanks" id="rv-thanks">
+      <span class="rv-thanks-icon" id="rv-thanks-icon">⏳</span>
+      <h2 id="rv-thanks-name">Thank you!</h2>
+      <div class="rv-thanks-stars" id="rv-thanks-stars">🏋️🏋️🏋️🏋️🏋️</div>
+      <p id="rv-thanks-body">Your review has been submitted and is currently being verified by our team. It will appear on their profile within 24 hours.</p>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1.75rem;">Every review is checked to keep Personal TRating honest and trustworthy.</p>
+      <a href="/" class="rv-back">← Explore Personal TRating</a>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>
+
+<script>
+  import { supabase } from '../../lib/supabase';
+
+  const dataEl      = document.getElementById('rv-data') as HTMLElement;
+  const trainerId   = dataEl.dataset.trainerId!;
+  const trainerName = dataEl.dataset.trainerName!;
+
+  // ── Logo link — intercept before auth resolves so native href="/" can't fire ──
+  const logoLink = document.getElementById('rv-logo-link') as HTMLAnchorElement;
+  logoLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.location.href = logoLink.href;
+  });
+
+  // ── Check auth via getUser() — safe: does NOT clear the session if refresh ──
+  // fails (unlike getSession(), which wipes localStorage on a bad refresh token)
+  let clientId: string | null = null;
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const { data: trainer } = await supabase
+      .from('trainers').select('id').eq('user_id', user.id).maybeSingle();
+    if (trainer) {
+      logoLink.href = '/dashboard';
+      // Block the review form entirely for trainers
+      const formState = document.getElementById('rv-form-state') as HTMLElement;
+      if (formState) {
+        formState.innerHTML = `
+          <div style="padding:3rem 2rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">🚫</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:0.75rem;">Trainers can't leave reviews</h3>
+            <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.5rem;">Only verified clients can review personal trainers on Personal TRating.</p>
+            <a href="/dashboard" style="display:inline-flex;align-items:center;gap:0.5rem;background:#3ab54a;color:white;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:0.875rem;text-decoration:none;">← Back to Dashboard</a>
+          </div>`;
+      }
+    } else {
+      const { data: client } = await supabase
+        .from('clients').select('id, name').eq('user_id', user.id).maybeSingle();
+      if (client) {
+        clientId = client.id;
+        logoLink.href = '/account';
+        const nameInput = document.getElementById('rv-name') as HTMLInputElement;
+        nameInput.value    = client.name;
+        nameInput.readOnly = true;
+        nameInput.style.background = '#f7f9f7';
+        nameInput.style.color      = '#7a8f7c';
+        nameInput.title = 'Logged in as ' + client.name;
+      }
+    }
+  }
+
+  // ── BMP Slider ─────────────────────────────────────────────────────────────
+  let selectedRating = 0; // percentage 0-100
+
+  const slider     = document.getElementById('bmp-slider')   as HTMLInputElement;
+  const pctDisplay = document.getElementById('bmp-pct')      as HTMLElement;
+  const dbsFill    = document.getElementById('bmp-dbs-fill') as HTMLElement;
+  const labelEl    = document.getElementById('bmp-label')    as HTMLElement;
+
+  function bmpLabel(pct: number): string {
+    if (pct === 0)  return 'Drag the slider to rate';
+    if (pct <= 20)  return 'Needs Improvement';
+    if (pct <= 40)  return 'Below Average';
+    if (pct <= 60)  return 'Average';
+    if (pct <= 75)  return 'Good';
+    if (pct <= 90)  return 'Very Good';
+    return 'Outstanding! 🎉';
+  }
+
+  function updateSliderTrack(pct: number) {
+    slider.style.background = `linear-gradient(to right, var(--green) 0%, var(--green) ${pct}%, #dde8de ${pct}%, #dde8de 100%)`;
+  }
+
+  slider.addEventListener('input', () => {
+    selectedRating        = parseInt(slider.value);
+    pctDisplay.textContent = String(selectedRating);
+    labelEl.textContent    = bmpLabel(selectedRating);
+    dbsFill.style.width    = selectedRating + '%';
+    updateSliderTrack(selectedRating);
+  });
+
+  updateSliderTrack(0);
+
+  // ── Anonymous toggle — live initials preview ───────────────────────────────
+  const anonCheck   = document.getElementById('rv-anon')         as HTMLInputElement;
+  const anonPreview = document.getElementById('rv-anon-preview') as HTMLElement;
+  const nameInput   = document.getElementById('rv-name')         as HTMLInputElement;
+
+  function toInitials(name: string): string {
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (!parts.length) return 'J. S.';
+    if (parts.length === 1) return parts[0][0].toUpperCase() + '.';
+    return parts[0][0].toUpperCase() + '. ' + parts[parts.length - 1][0].toUpperCase() + '.';
+  }
+
+  nameInput.addEventListener('input', () => {
+    anonPreview.textContent = nameInput.value.trim() ? toInitials(nameInput.value) : 'J. S.';
+  });
+
+  // ── Character count ────────────────────────────────────────────────────────
+  const rvText    = document.getElementById('rv-text')    as HTMLTextAreaElement;
+  const charHint  = document.getElementById('char-hint')  as HTMLElement;
+
+  rvText.addEventListener('input', () => {
+    const len = rvText.value.trim().length;
+    charHint.textContent = len >= 30 ? `${len} characters ✓` : `${len} / 30 minimum`;
+    charHint.classList.toggle('ok', len >= 30);
+  });
+
+  // ── Submit ─────────────────────────────────────────────────────────────────
+  const submitBtn   = document.getElementById('rv-submit')      as HTMLButtonElement;
+  const errorEl     = document.getElementById('rv-error')       as HTMLElement;
+  const errorFoot   = document.getElementById('rv-error-foot')  as HTMLElement;
+  const formState   = document.getElementById('rv-form-state')  as HTMLElement;
+  const thanksState = document.getElementById('rv-thanks')      as HTMLElement;
+  const thanksName  = document.getElementById('rv-thanks-name') as HTMLElement;
+  const thanksStars = document.getElementById('rv-thanks-stars')as HTMLElement;
+  const thanksBody  = document.getElementById('rv-thanks-body') as HTMLElement;
+
+  function showError(msg: string) {
+    errorEl.textContent      = msg;
+    errorFoot.textContent    = msg;
+    errorEl.style.display    = 'block';
+    errorFoot.style.display  = 'block';
+    errorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  submitBtn.addEventListener('click', async () => {
+    errorEl.style.display   = 'none';
+    errorFoot.style.display = 'none';
+
+    const name     = (document.getElementById('rv-name')     as HTMLInputElement).value.trim();
+    const location = (document.getElementById('rv-location') as HTMLInputElement).value.trim();
+    const text     = rvText.value.trim();
+
+    if (!selectedRating) { showError('Please drag the BMP slider to set a rating.'); return; }
+    if (!name)            { showError('Please enter your name.'); return; }
+    if (text.length < 30) { showError(`Your review needs at least 30 characters (${text.length} so far).`); return; }
+
+    submitBtn.textContent = 'Submitting…';
+    submitBtn.disabled    = true;
+
+    const initials = name.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
+    const palettes = [
+      { bg:'#eaf7ec', color:'#2a9438' }, { bg:'#e8f0f7', color:'#1a4b6b' },
+      { bg:'#fdf6e3', color:'#b8860b' }, { bg:'#f5e8f7', color:'#6b1a6b' },
+    ];
+    const pal = palettes[Math.floor(Math.random() * palettes.length)];
+
+    const payload: Record<string, any> = {
+      trainer_id:            trainerId,
+      reviewer_name:         name,
+      reviewer_initials:     initials,
+      reviewer_avatar_bg:    pal.bg,
+      reviewer_avatar_color: pal.color,
+      reviewer_location:     location || null,
+      rating:                selectedRating / 20,
+      review_text:           text,
+      is_verified:           false,
+      is_anonymous:          anonCheck.checked,
+    };
+    if (clientId) payload.client_id = clientId;
+
+    const { data: inserted, error } = await supabase
+      .from('reviews').insert(payload).select('approval_token').single();
+
+    if (error) {
+      showError('Something went wrong — please try again.');
+      submitBtn.textContent = 'Submit Review →';
+      submitBtn.disabled    = false;
+      return;
+    }
+
+    // Fire approval email (non-blocking — don't fail submission if email errors)
+    if (inserted?.approval_token) {
+      fetch('/.netlify/functions/send-review-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          trainerName,
+          trainerId,
+          reviewerName:   name,
+          isClient:       !!clientId,
+          rating:         selectedRating / 20,
+          reviewText:     text,
+          approvalToken:  inserted.approval_token,
+        }),
+      }).catch(() => {}); // silent — email failure shouldn't block the reviewer
+    }
+
+    formState.style.display   = 'none';
+    thanksState.style.display = 'block';
+    thanksName.textContent    = `Thank you, ${name.split(' ')[0]}!`;
+    thanksStars.textContent   = `⏳ Pending Approval`;
+    thanksBody.textContent    = `Your review for ${trainerName} has been received. It will appear on their profile once approved — usually within 24 hours.`;
+
+    // Update the back link destination and label to match auth state
+    const backLink = document.querySelector<HTMLAnchorElement>('.rv-back');
+    if (backLink) {
+      backLink.href = logoLink.href;
+      if (logoLink.href.endsWith('/dashboard')) backLink.textContent = '← Back to Dashboard';
+      else if (logoLink.href.endsWith('/account')) backLink.textContent = '← Back to My Account';
+    }
+  });
+</script>

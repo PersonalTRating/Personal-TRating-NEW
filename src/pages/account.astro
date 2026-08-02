@@ -1,0 +1,654 @@
+---
+// Client Account — Personal TRating
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — Personal TRating</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style is:global>
+  :root {
+    --green:#3ab54a; --green-dark:#2a9438; --green-light:#eaf7ec;
+    --border:#e0e8e1; --text:#0d1a0e; --muted:#7a8f7c; --off:#f7f9f7;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { overflow-x:hidden; }
+  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; overflow-x:hidden; }
+
+  /* ── Top bar ── */
+  .topbar {
+    background:white; border-bottom:1px solid var(--border);
+    box-shadow:0 1px 8px rgba(0,0,0,0.05);
+    position:sticky; top:0; z-index:100;
+  }
+  .topbar-inner {
+    max-width:900px; margin:0 auto; padding:0 2rem;
+    display:flex; align-items:center; justify-content:space-between; height:73px;
+  }
+  .topbar-logo img { height:57px; width:auto; object-fit:contain; }
+  .topbar-right { display:flex; align-items:center; gap:1rem; }
+  .topbar-link {
+    font-size:0.85rem; font-weight:600; color:var(--muted);
+    text-decoration:none; transition:color 0.2s;
+  }
+  .topbar-link:hover { color:var(--text); }
+  .signout-btn {
+    background:none; border:1.5px solid var(--border); border-radius:7px;
+    padding:0.45rem 1rem; font-family:'Manrope',sans-serif; font-size:0.82rem;
+    font-weight:700; color:var(--muted); cursor:pointer; transition:all 0.2s;
+  }
+  .signout-btn:hover { border-color:var(--text); color:var(--text); }
+
+  /* ── Page layout ── */
+  .page { max-width:900px; margin:0 auto; padding:2.5rem 2rem 4rem; }
+
+  /* ── Welcome banner ── */
+  .welcome-banner {
+    background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);
+    border-radius:16px; padding:2.5rem; margin-bottom:2rem;
+    position:relative; overflow:hidden;
+  }
+  .welcome-banner::before {
+    content:''; position:absolute; right:-60px; top:-60px;
+    width:240px; height:240px;
+    background:radial-gradient(circle,rgba(58,181,74,0.18) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .welcome-banner-label {
+    font-size:0.7rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+    color:rgba(255,255,255,0.45); margin-bottom:0.5rem;
+  }
+  .welcome-banner h1 {
+    font-family:'Playfair Display',serif; font-size:2rem; font-weight:900;
+    color:white; line-height:1.15; margin-bottom:0.5rem;
+  }
+  .welcome-banner p { font-size:0.875rem; color:rgba(255,255,255,0.55); line-height:1.7; }
+  .welcome-avatar {
+    position:absolute; right:2.5rem; top:50%; transform:translateY(-50%);
+    width:72px; height:72px; border-radius:50%;
+    background:rgba(58,181,74,0.2); border:2px solid rgba(255,255,255,0.15);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.6rem; font-weight:800; color:white;
+  }
+
+  /* ── Grid ── */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.25rem; align-items:stretch; }
+  .grid-2 > * { display:flex; flex-direction:column; }
+
+  /* ── Cards ── */
+  .card {
+    background:white; border-radius:14px; border:1px solid var(--border);
+    padding:1.75rem; margin-bottom:1.25rem;
+  }
+  .card:last-child { margin-bottom:0; }
+  .card-label {
+    font-size:0.68rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase;
+    color:var(--green); margin-bottom:0.4rem;
+  }
+  .card-title {
+    font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:900;
+    color:var(--text); margin-bottom:1.25rem;
+  }
+
+  /* ── Quick action buttons ── */
+  .action-btn {
+    display:flex; align-items:center; gap:1rem;
+    background:var(--off); border:1.5px solid var(--border); border-radius:10px;
+    padding:1rem 1.25rem; text-decoration:none; color:var(--text);
+    transition:border-color 0.2s, box-shadow 0.2s; margin-bottom:0.75rem;
+    min-height:82px;
+  }
+  .action-btn:last-child { margin-bottom:0; }
+  .action-btn:hover { border-color:var(--green); box-shadow:0 2px 12px rgba(58,181,74,0.12); }
+  .action-btn-icon {
+    width:42px; height:42px; border-radius:10px; flex-shrink:0;
+    background:var(--green-light); display:flex; align-items:center;
+    justify-content:center; font-size:1.2rem;
+  }
+  .action-btn-body { flex:1; }
+  .action-btn-title { font-weight:700; font-size:0.9rem; margin-bottom:0.15rem; }
+  .action-btn-desc  { font-size:0.77rem; color:var(--muted); line-height:1.5; }
+  .action-btn-arrow { font-size:1rem; color:var(--green); font-weight:700; }
+
+  /* ── Reviews empty state ── */
+  .empty-state {
+    text-align:center; padding:2.5rem 1rem;
+    border:2px dashed var(--border); border-radius:10px;
+  }
+  .empty-state-icon { font-size:2.5rem; margin-bottom:0.875rem; display:block; }
+  .empty-state-title { font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; }
+  .empty-state-text  { font-size:0.82rem; color:var(--muted); line-height:1.7; max-width:340px; margin:0 auto; }
+
+  /* ── Account info ── */
+  .info-row {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0.85rem 0; border-bottom:1px solid var(--border);
+  }
+  .info-row:last-child { border-bottom:none; padding-bottom:0; }
+  .info-label { font-size:0.78rem; font-weight:700; color:var(--muted); }
+  .info-value { font-size:0.875rem; font-weight:600; color:var(--text); }
+
+  /* ── Message conversation cards ── */
+  .msg-card {
+    background:white; border:1px solid var(--border); border-radius:14px;
+    overflow:hidden; display:flex;
+  }
+  .msg-view-btn {
+    background:var(--green-light); color:var(--green-dark);
+    border:1.5px solid #c3e6c8; border-radius:7px;
+    padding:0.45rem 0.9rem; font-size:0.75rem; font-weight:700;
+    cursor:pointer; flex-shrink:0; transition:all 0.15s;
+    font-family:inherit; white-space:nowrap;
+  }
+  .msg-view-btn:hover { background:var(--green); color:white; border-color:var(--green); }
+  .msg-card.active { border-color:var(--green); box-shadow:0 0 0 2px rgba(58,181,74,0.15); }
+  .msg-card.active .msg-view-btn { background:var(--green); color:white; border-color:var(--green); cursor:default; }
+
+  /* ── Client reply panel (bottom-right) ── */
+  .cl-chat-panel {
+    position:fixed; bottom:24px; right:24px; z-index:9999;
+    width:360px; max-height:520px;
+    background:white; border-radius:16px;
+    box-shadow:0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+    display:flex; flex-direction:column; overflow:hidden;
+    transform:translateY(24px); opacity:0; pointer-events:none;
+    transition:transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.25s ease;
+  }
+  .cl-chat-panel.open { transform:translateY(0); opacity:1; pointer-events:all; }
+  .cl-chat-hidden { display:none !important; }
+  .cl-chat-hdr {
+    background:linear-gradient(135deg,#0d1a0e,#1a3d1e);
+    padding:0.85rem 1rem; display:flex; align-items:center; gap:0.75rem; flex-shrink:0;
+  }
+  .cl-chat-av {
+    width:38px; height:38px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:0.82rem;
+  }
+  .cl-chat-name { font-weight:700; font-size:0.88rem; color:white; }
+  .cl-chat-sub  { font-size:0.68rem; color:rgba(255,255,255,0.45); margin-top:0.1rem; }
+  .cl-chat-close {
+    margin-left:auto; background:rgba(255,255,255,0.1); border:none;
+    color:rgba(255,255,255,0.7); width:28px; height:28px; border-radius:6px;
+    cursor:pointer; font-size:0.85rem; display:flex; align-items:center;
+    justify-content:center; transition:background 0.15s;
+  }
+  .cl-chat-close:hover { background:rgba(255,255,255,0.22); }
+  .cl-chat-msgs {
+    flex:1; overflow-y:auto; padding:1rem;
+    display:flex; flex-direction:column; gap:0.65rem; background:#f7f9f7;
+  }
+  .cl-chat-input-row {
+    padding:0.75rem; border-top:1px solid var(--border);
+    display:flex; gap:0.5rem; align-items:flex-end;
+    flex-shrink:0; background:white;
+  }
+  .cl-chat-input {
+    flex:1; border:1.5px solid var(--border); border-radius:10px;
+    padding:0.55rem 0.85rem; font-family:inherit; font-size:0.875rem;
+    resize:none; outline:none; min-height:40px; max-height:110px;
+    transition:border-color 0.2s;
+  }
+  .cl-chat-input:focus { border-color:var(--green); }
+  .cl-chat-send {
+    width:40px; height:40px; border-radius:10px; background:var(--green);
+    color:white; border:none; cursor:pointer; font-size:1.05rem;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:background 0.15s;
+  }
+  .cl-chat-send:hover { background:var(--green-dark); }
+  @media (max-width:480px) {
+    .cl-chat-panel {
+      bottom:0; right:0; left:0; width:100%;
+      height:58vh; max-height:none;
+      border-radius:20px 20px 0 0;
+      transform:translateY(100%);
+      opacity:1;
+    }
+    .cl-chat-panel.open { transform:translateY(0); opacity:1; }
+    .cl-chat-hdr { padding:1rem 1rem 0.85rem; }
+    .cl-chat-input-row { padding:0.85rem; }
+    .cl-chat-input { font-size:1rem; }
+    .cl-chat-send { width:46px; height:46px; font-size:1.2rem; }
+  }
+
+  /* ── Review cards ── */
+  #reviews-list { display:flex; flex-direction:column; gap:0.85rem; }
+  .review-item {
+    background:white; border-radius:14px;
+    border:1px solid var(--border); display:flex; align-items:stretch;
+    text-decoration:none; color:inherit;
+    transition:box-shadow 0.2s, transform 0.2s; overflow:hidden;
+  }
+  .review-item:hover { box-shadow:0 4px 24px rgba(0,0,0,0.08); transform:translateY(-2px); }
+  .review-left { flex:1; padding:1.25rem 1.5rem; min-width:0; }
+  .review-trainer-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.6rem; }
+  .review-trainer-avatar {
+    width:44px; height:44px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:0.85rem; font-weight:800;
+  }
+  .review-trainer-name { font-weight:700; font-size:0.95rem; color:#111311; }
+  .review-date { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
+  .review-text { font-size:0.875rem; line-height:1.75; color:#3a4a3b; font-style:italic; margin-top:0.5rem; }
+  .review-right {
+    flex-shrink:0; width:130px; padding:1.25rem 1rem;
+    border-left:1px solid var(--border); text-align:center;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.2rem;
+  }
+  .review-bmp-label { font-size:0.65rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); }
+  .review-bmp-score { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; color:#111311; line-height:1; }
+  .review-dbs { font-size:1rem; letter-spacing:1px; margin-top:0.2rem; }
+  .review-count { font-size:0.7rem; color:var(--muted); margin-top:0.2rem; }
+
+  @media (max-width:640px) {
+    .page           { padding:1.5rem 1.25rem 3rem; }
+    .welcome-banner { padding:1.75rem; }
+    .welcome-avatar { display:none; }
+    .welcome-banner h1 { font-size:1.55rem; }
+    .grid-2         { grid-template-columns:1fr; }
+    .topbar-inner   { padding:0 1.25rem; height:60px; }
+    .topbar-logo img { height:44px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Top bar -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <a href="/" class="topbar-logo">
+      <img src="/images/logo.png" alt="Personal TRating" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    </a>
+    <div class="topbar-right">
+      <a href="/find-a-trainer" class="topbar-link">Find a PT</a>
+      <button class="signout-btn" id="signout-btn">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<!-- Page -->
+<div class="page">
+
+  <!-- Welcome banner -->
+  <div class="welcome-banner">
+    <div class="welcome-banner-label">My Account</div>
+    <h1 id="welcome-name">Welcome back</h1>
+    <p>Browse top-rated personal trainers near you, or leave a review for your current PT.</p>
+    <div class="welcome-avatar" id="welcome-avatar">?</div>
+  </div>
+
+  <!-- Quick actions -->
+  <div class="grid-2">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-label">Discover</div>
+      <div class="card-title">Find a PT</div>
+      <a href="/find-a-trainer" class="action-btn">
+        <div class="action-btn-icon">🔍</div>
+        <div class="action-btn-body">
+          <div class="action-btn-title">Browse Personal Trainers</div>
+          <div class="action-btn-desc">Search by city, specialty and rating.</div>
+        </div>
+        <div class="action-btn-arrow">→</div>
+      </a>
+      <a href="/#leaderboard" class="action-btn">
+        <div class="action-btn-icon">🏆</div>
+        <div class="action-btn-body">
+          <div class="action-btn-title">View the Rankings</div>
+          <div class="action-btn-desc">See the UK's top-ranked PTs.</div>
+        </div>
+        <div class="action-btn-arrow">→</div>
+      </a>
+    </div>
+
+    <div class="card" style="margin-bottom:0">
+      <div class="card-label">Reviews</div>
+      <div class="card-title">Leave a Review</div>
+      <a href="/find-a-trainer" class="action-btn">
+        <div class="action-btn-icon">⭐</div>
+        <div class="action-btn-body">
+          <div class="action-btn-title">Find Your Trainer</div>
+          <div class="action-btn-desc">Search for your PT and leave them a review from their profile.</div>
+        </div>
+        <div class="action-btn-arrow">→</div>
+      </a>
+      <div class="action-btn" style="cursor:default;opacity:0.65;">
+        <div class="action-btn-icon">🔗</div>
+        <div class="action-btn-body">
+          <div class="action-btn-title">Got a review link?</div>
+          <div class="action-btn-desc">Open the link your trainer sent you — it goes straight to their review form.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div style="margin-bottom:2rem;">
+    <div class="card-label" style="margin-bottom:0.25rem;">Messages</div>
+    <div class="card-title" style="margin-bottom:1.25rem;">My Conversations</div>
+    <div id="cl-conv-loading" style="text-align:center;padding:2rem;color:var(--muted);font-size:0.875rem;">Loading conversations…</div>
+    <div id="cl-conv-empty" style="display:none;">
+      <div class="empty-state">
+        <span class="empty-state-icon">💬</span>
+        <div class="empty-state-title">No conversations yet</div>
+        <div class="empty-state-text">When you message a personal trainer from their profile, your conversation will appear here.</div>
+      </div>
+    </div>
+    <div id="cl-conv-list" style="display:none;flex-direction:column;gap:0.85rem;"></div>
+  </div>
+
+  <!-- My Reviews -->
+  <div>
+    <div class="card-label" style="margin-bottom:0.25rem;">History</div>
+    <div class="card-title" style="margin-bottom:1.25rem;">My Reviews</div>
+    <div id="reviews-list" style="display:flex;flex-direction:column;gap:0.85rem;">
+      <div class="empty-state">
+        <span class="empty-state-icon">📝</span>
+        <div class="empty-state-title">No reviews yet</div>
+        <div class="empty-state-text">Reviews you submit will appear here. Find your trainer above and leave your first review.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Account details -->
+  <div class="card">
+    <div class="card-label">Account</div>
+    <div class="card-title">Your Details</div>
+    <div class="info-row">
+      <div class="info-label">Name</div>
+      <div class="info-value" id="account-name">—</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">Email</div>
+      <div class="info-value" id="account-email">—</div>
+    </div>
+    <div class="info-row">
+      <div class="info-label">Account type</div>
+      <div class="info-value">Client</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Client chat panel -->
+<div id="cl-chat-panel" class="cl-chat-panel cl-chat-hidden">
+  <div class="cl-chat-hdr">
+    <div class="cl-chat-av" id="cl-chat-av">?</div>
+    <div>
+      <div class="cl-chat-name" id="cl-chat-name">…</div>
+      <div class="cl-chat-sub">Personal Trainer · Personal TRating</div>
+    </div>
+    <button class="cl-chat-close" onclick="clCloseConv()">✕</button>
+  </div>
+  <div id="cl-chat-msgs" class="cl-chat-msgs"></div>
+  <div class="cl-chat-input-row">
+    <textarea id="cl-chat-input" class="cl-chat-input" rows="1"
+      placeholder="Type a message…"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();clSendMsg();}"></textarea>
+    <button class="cl-chat-send" onclick="clSendMsg()">➤</button>
+  </div>
+</div>
+
+</body>
+</html>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // ── Auth guard ─────────────────────────────────────────────────────────────
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
+
+  // ── Check if trainer (redirect to dashboard) ───────────────────────────────
+  const { data: trainer } = await supabase
+    .from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+  if (trainer) { window.location.href = '/dashboard'; throw new Error('is-trainer'); }
+
+  // ── Load client record ─────────────────────────────────────────────────────
+  const { data: client } = await supabase
+    .from('clients').select('*').eq('user_id', session.user.id).maybeSingle();
+
+  if (!client) {
+    // Might be a trainer — send them to their dashboard instead of signing out
+    const { data: trainerRow } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+    window.location.href = trainerRow ? '/dashboard' : '/login';
+    throw new Error('no-profile');
+  }
+
+  // ── Populate UI ────────────────────────────────────────────────────────────
+  const firstName = client.name.split(' ')[0];
+  const initials  = client.name.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
+
+  (document.getElementById('welcome-name') as HTMLElement).textContent  = `Welcome back, ${firstName}.`;
+  (document.getElementById('welcome-avatar') as HTMLElement).textContent = initials;
+  (document.getElementById('account-name') as HTMLElement).textContent  = client.name;
+  (document.getElementById('account-email') as HTMLElement).textContent = session.user.email ?? '—';
+
+  // ── Load past reviews ──────────────────────────────────────────────────────
+  const { data: reviews } = await supabase
+    .from('reviews')
+    .select('id, rating, review_text, created_at, trainer_id, trainers(name, avatar_initials, avatar_bg, avatar_color, bmp_score, review_count)')
+    .eq('client_id', client.id)
+    .order('created_at', { ascending: false });
+
+  if (reviews && reviews.length > 0) {
+    const listEl = document.getElementById('reviews-list')!;
+    listEl.innerHTML = reviews.map((r: any) => {
+      const t       = r.trainers;
+      const date    = new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      const bmp     = t?.bmp_score ?? 0;
+      const bmpDisp = bmp % 1 === 0 ? String(bmp) : bmp.toFixed(1);
+      const filled  = Math.min(5, Math.round(bmp / 20));
+      const dbs     = '🏋️'.repeat(filled) + '<span style="opacity:0.22">' + '🏋️'.repeat(5 - filled) + '</span>';
+      const revCount = t?.review_count ?? 0;
+      return `<a href="/trainers/${r.trainer_id}" class="review-item">
+        <div class="review-left">
+          <div class="review-trainer-row">
+            <div class="review-trainer-avatar" style="background:${t?.avatar_bg ?? '#eaf7ec'};color:${t?.avatar_color ?? '#2a9438'}">${t?.avatar_initials ?? '?'}</div>
+            <div>
+              <div class="review-trainer-name">${t?.name ?? 'Unknown Trainer'}</div>
+              <div class="review-date">${date}</div>
+            </div>
+          </div>
+          <div class="review-text">"${r.review_text}"</div>
+        </div>
+        <div class="review-right">
+          <div class="review-bmp-label">BMP</div>
+          <div class="review-bmp-score">${bmpDisp}</div>
+          <div class="review-dbs">${dbs}</div>
+          <div class="review-count">${revCount} review${revCount !== 1 ? 's' : ''}</div>
+        </div>
+      </a>`;
+    }).join('');
+  }
+
+  // ── Messages ───────────────────────────────────────────────────────────────
+  let _clConvId: string | null = null;
+  let _clMsgChannel: any = null;
+  let _clConvChannel: any = null;
+  const _clConvData = new Map<string, { name: string; initials: string; bg: string; color: string }>();
+
+  function _clEsc(s: string): string {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function _clHighlightActive() {
+    document.querySelectorAll('#cl-conv-list .msg-card').forEach((card) => {
+      const btn = card.querySelector('[data-cid]') as HTMLElement | null;
+      if (!btn) return;
+      if (btn.dataset.cid === _clConvId) {
+        card.classList.add('active');
+        btn.textContent = 'Viewing';
+      } else {
+        card.classList.remove('active');
+        btn.textContent = 'View Conversation';
+      }
+    });
+  }
+
+  async function _clLoadConvs() {
+    const { data: convs } = await supabase
+      .from('conversations')
+      .select('id, last_message_at, last_message_preview, client_unread_count, trainer_id, trainers(name, avatar_initials, avatar_bg, avatar_color)')
+      .eq('client_id', client.id)
+      .order('last_message_at', { ascending: false });
+
+    const loadingEl = document.getElementById('cl-conv-loading')!;
+    const emptyEl   = document.getElementById('cl-conv-empty')!;
+    const listEl    = document.getElementById('cl-conv-list')!;
+    loadingEl.style.display = 'none';
+
+    if (!convs || convs.length === 0) {
+      emptyEl.style.display = '';
+      listEl.style.display  = 'none';
+      return;
+    }
+
+    emptyEl.style.display = 'none';
+    listEl.style.display  = 'flex';
+    _clConvData.clear();
+
+    listEl.innerHTML = convs.map((c: any) => {
+      const t        = (c.trainers as any) || {};
+      const name     = t.name || 'Trainer';
+      const initials = t.avatar_initials || name.split(' ').map((w: string) => w[0] ?? '').join('').toUpperCase().slice(0, 2) || '?';
+      const bg       = t.avatar_bg    || '#eaf7ec';
+      const color    = t.avatar_color || '#2a9438';
+      const unread   = (c.client_unread_count ?? 0) > 0;
+      _clConvData.set(c.id, { name, initials, bg, color });
+
+      const dot     = unread ? `<span style="position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid white;"></span>` : '';
+      const newLine = unread && c.last_message_at
+        ? `<div style="font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.2rem;">New Message · ${new Date(c.last_message_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} at ${new Date(c.last_message_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>`
+        : '';
+      return `<div class="msg-card">
+        <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;flex:1;min-width:0;">
+          <div style="position:relative;flex-shrink:0;width:48px;height:48px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:${bg};color:${color};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;">${_clEsc(initials)}</div>
+            ${dot}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:0.93rem;color:var(--text);">${_clEsc(name)}</div>
+            ${newLine}
+          </div>
+          <button class="msg-view-btn" data-cid="${c.id}">View Conversation</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    _clHighlightActive();
+  }
+
+  // Single delegated listener — safe for any trainer name including apostrophes
+  document.getElementById('cl-conv-list')!.addEventListener('click', (e) => {
+    const btn = (e.target as Element).closest('[data-cid]') as HTMLElement | null;
+    if (!btn) return;
+    const cid = btn.dataset.cid!;
+    const d   = _clConvData.get(cid);
+    if (d) _clOpenConv(cid, d.name, d.initials, d.bg, d.color);
+  });
+
+  function _clRenderMsg(m: any): string {
+    const isClient = m.sender_type === 'client';
+    const time = new Date(m.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    const body = _clEsc(m.content).replace(/\n/g, '<br>');
+    return `<div style="display:flex;flex-direction:column;max-width:75%;${isClient ? 'align-self:flex-end;' : 'align-self:flex-start;'}">
+      <div style="${isClient ? 'background:#111311;color:white;' : 'background:white;border:1px solid #e0e8e1;color:#111311;'}padding:0.6rem 0.85rem;border-radius:${isClient ? '14px 14px 4px 14px' : '14px 14px 14px 4px'};font-size:0.875rem;line-height:1.5;word-break:break-word;">${body}</div>
+      <div style="font-size:0.62rem;color:#aab8ac;margin-top:0.2rem;${isClient ? 'text-align:right;' : ''}">${time}</div>
+    </div>`;
+  }
+
+  async function _clOpenConv(convId: string, trainerName: string, initials: string, avBg: string, avColor: string) {
+    const switching = _clConvId !== null && _clConvId !== convId;
+    _clConvId = convId;
+
+    // Update panel header
+    const avEl = document.getElementById('cl-chat-av')!;
+    avEl.textContent      = initials;
+    avEl.style.background = avBg;
+    avEl.style.color      = avColor;
+    document.getElementById('cl-chat-name')!.textContent = trainerName;
+
+    // Show panel — skip slide animation when already open (just switching conversations)
+    const panel = document.getElementById('cl-chat-panel')!;
+    if (panel.classList.contains('cl-chat-hidden') || !panel.classList.contains('open')) {
+      panel.classList.remove('cl-chat-hidden');
+      requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('open')));
+    }
+
+    // Show a loading spinner in the message area only when switching between conversations
+    const container = document.getElementById('cl-chat-msgs')!;
+    if (switching) {
+      container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#aab8ac;font-size:0.82rem;">Loading…</div>`;
+    }
+
+    _clHighlightActive();
+
+    await supabase.from('conversations').update({ client_unread_count: 0 }).eq('id', convId);
+    _clLoadConvs();
+
+    const { data: msgs } = await supabase
+      .from('messages').select('id, sender_type, content, created_at')
+      .eq('conversation_id', convId).order('created_at', { ascending: true });
+
+    // Race-condition guard: user may have switched again before this response arrived
+    if (_clConvId !== convId) return;
+
+    const _msgList = msgs || [];
+    const _INTRO = "Hi! Thanks for reaching out. I'd love to hear about your fitness goals — feel free to ask me anything or let me know what you're looking for in a PT.";
+    container.innerHTML = (_msgList.length === 0 ? _clRenderMsg({ sender_type: 'trainer', content: _INTRO, created_at: new Date().toISOString() }) : '') + _msgList.map(_clRenderMsg).join('');
+    container.scrollTop = container.scrollHeight;
+
+    if (_clMsgChannel) _clMsgChannel.unsubscribe();
+    _clMsgChannel = supabase.channel(`cl-thread-${convId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages',
+        filter: `conversation_id=eq.${convId}` }, (p: any) => {
+          if (_clConvId !== convId) return;
+          const cont = document.getElementById('cl-chat-msgs')!;
+          cont.insertAdjacentHTML('beforeend', _clRenderMsg(p.new));
+          cont.scrollTop = cont.scrollHeight;
+          supabase.from('conversations').update({ client_unread_count: 0 }).eq('id', convId);
+          _clLoadConvs();
+        })
+      .subscribe();
+  }
+
+  (window as any).clCloseConv = function() {
+    const panel = document.getElementById('cl-chat-panel')!;
+    panel.classList.remove('open');
+    setTimeout(() => panel.classList.add('cl-chat-hidden'), 300);
+    _clConvId = null;
+    if (_clMsgChannel) { _clMsgChannel.unsubscribe(); _clMsgChannel = null; }
+    _clHighlightActive();
+  };
+
+  (window as any).clSendMsg = async function() {
+    if (!_clConvId || !client?.id) return;
+    const inp = document.getElementById('cl-chat-input') as HTMLTextAreaElement;
+    const content = inp.value.trim();
+    if (!content) return;
+    inp.value = '';
+    inp.style.height = 'auto';
+    await supabase.from('messages').insert({ conversation_id: _clConvId, sender_type: 'client', content });
+  };
+
+  document.getElementById('cl-chat-input')?.addEventListener('input', function(this: HTMLTextAreaElement) {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 110) + 'px';
+  });
+
+  _clConvChannel = supabase.channel(`cl-convs-${client.id}`)
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'conversations',
+      filter: `client_id=eq.${client.id}` }, () => _clLoadConvs())
+    .subscribe();
+
+  _clLoadConvs();
+
+  // ── Sign out ───────────────────────────────────────────────────────────────
+  document.getElementById('signout-btn')!.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  });
+</script>

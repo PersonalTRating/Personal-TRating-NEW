@@ -1,0 +1,2624 @@
+---
+// PT Dashboard — Personal TRating
+// Route: /dashboard
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PT Dashboard — Personal TRating</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:       #3ab54a;
+    --green-dark:  #2a9438;
+    --green-light: #eaf7ec;
+    --green-mid:   #d0f0d4;
+    --white:       #ffffff;
+    --off:         #f7f9f7;
+    --border:      #e0e8e1;
+    --text:        #0d1a0e;
+    --muted:       #7a8f7c;
+    --card:        #ffffff;
+    --gold:        #b8860b;
+    --gold-light:  #fdf6e3;
+    --red:         #e53935;
+    --sidebar-w:   240px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { background:var(--off); font-family:'Manrope',sans-serif; color:var(--text); display:flex; min-height:100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width:var(--sidebar-w); flex-shrink:0;
+    background:var(--text);
+    display:flex; flex-direction:column;
+    position:fixed; top:0; left:0; bottom:0;
+    z-index:100; overflow:hidden;
+  }
+  .sidebar::before {
+    content:''; position:absolute; bottom:-60px; left:-60px;
+    width:240px; height:240px;
+    background:radial-gradient(circle,rgba(58,181,74,0.18) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .sb-logo {
+    padding:1.5rem 1.25rem 1.25rem;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .sb-logo img { height:62px; width:auto; object-fit:contain; }
+  .sb-pt-info {
+    padding:1.1rem 1.25rem;
+    display:flex; align-items:center; gap:0.75rem;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .sb-avatar {
+    width:38px; height:38px; border-radius:50%;
+    background:var(--green); display:flex; align-items:center;
+    justify-content:center; font-weight:800; font-size:0.85rem; color:white;
+    flex-shrink:0;
+  }
+  .sb-pt-name  { font-weight:700; font-size:0.85rem; color:white; }
+  .sb-pt-business { font-size:0.7rem; color:rgba(255,255,255,0.55); margin-top:0.1rem; font-weight:500; }
+  .sb-pt-status { font-size:0.7rem; color:var(--green); margin-top:0.1rem; font-weight:600; }
+  .sb-nav { flex:1; padding:1rem 0; overflow-y:auto; scrollbar-width:none; }
+  .sb-nav::-webkit-scrollbar { display:none; }
+  .sb-section-label {
+    font-size:0.62rem; font-weight:700; letter-spacing:2.5px;
+    text-transform:uppercase; color:rgba(255,255,255,0.25);
+    padding:0.75rem 1.25rem 0.4rem;
+  }
+  .sb-item {
+    display:flex; align-items:center; gap:0.75rem;
+    padding:0.7rem 1.25rem; cursor:pointer;
+    color:rgba(255,255,255,0.5); font-size:0.85rem; font-weight:600;
+    transition:all 0.15s; border-left:3px solid transparent;
+    text-decoration:none; background:none; border-right:none; border-top:none; border-bottom:none;
+    width:100%; text-align:left; font-family:'Manrope',sans-serif;
+  }
+  .sb-item:hover { color:white; background:rgba(255,255,255,0.05); }
+  .sb-item.active { color:white; background:rgba(58,181,74,0.12); border-left-color:var(--green); }
+  .sb-icon { font-size:1rem; width:20px; text-align:center; }
+  .sb-badge {
+    margin-left:auto; background:var(--green); color:white;
+    font-size:0.62rem; font-weight:800; padding:0.15rem 0.45rem;
+    border-radius:20px;
+  }
+  .sb-footer {
+    padding:1.1rem 1.25rem;
+    border-top:1px solid rgba(255,255,255,0.08);
+    display:flex; align-items:center; gap:1rem;
+  }
+  .sb-footer-link {
+    font-size:0.78rem; color:rgba(255,255,255,0.35);
+    text-decoration:none; transition:color 0.15s;
+  }
+  .sb-footer-link:hover { color:white; }
+
+  /* ── MAIN ── */
+  .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+
+  /* ── TOP BAR ── */
+  .topbar {
+    background:white; border-bottom:1px solid var(--border);
+    padding:0.9rem 2.5rem; display:flex; align-items:center;
+    justify-content:space-between; position:sticky; top:0; z-index:50;
+    box-shadow:0 1px 6px rgba(0,0,0,0.04);
+  }
+  .topbar-left h1 { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; }
+  .topbar-left p  { font-size:0.8rem; color:var(--muted); margin-top:0.1rem; }
+  .topbar-right   { display:flex; align-items:center; gap:1rem; }
+  .topbar-btn {
+    background:var(--green); color:white; padding:0.55rem 1.25rem;
+    border-radius:8px; font-weight:700; font-size:0.82rem;
+    border:none; cursor:pointer; transition:background 0.2s; font-family:'Manrope',sans-serif;
+  }
+  .topbar-btn:hover { background:var(--green-dark); }
+  .topbar-signout {
+    background:none; border:1.5px solid var(--border); border-radius:8px;
+    padding:0.5rem 1.1rem; font-family:'Manrope',sans-serif; font-size:0.82rem;
+    font-weight:700; color:var(--muted); cursor:pointer; transition:all 0.2s;
+  }
+  .topbar-signout:hover { border-color:#e05555; color:#e05555; }
+  .notif-btn {
+    width:36px; height:36px; border-radius:50%; background:var(--off);
+    border:1px solid var(--border); display:flex; align-items:center;
+    justify-content:center; cursor:pointer; position:relative; font-size:1rem;
+  }
+  .notif-dot {
+    position:absolute; top:6px; right:6px; width:8px; height:8px;
+    background:var(--green); border-radius:50%; border:2px solid white;
+  }
+
+  /* ── CONTENT ── */
+  .content { padding:2rem 2.5rem; flex:1; }
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* ── STAT CARDS ── */
+  .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; margin-bottom:2rem; }
+  .stat-card {
+    background:var(--card); border-radius:14px; padding:1.5rem;
+    border:1px solid var(--border); position:relative; overflow:hidden;
+  }
+  .stat-card::after {
+    content:''; position:absolute; top:0; right:0; width:80px; height:80px;
+    background:radial-gradient(circle,var(--stat-color,rgba(58,181,74,0.08)) 0%,transparent 70%);
+  }
+  .stat-label  { font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:0.6rem; }
+  .stat-value  { font-family:'Playfair Display',serif; font-size:2.25rem; font-weight:900; line-height:1; margin-bottom:0.4rem; }
+  .stat-change { font-size:0.75rem; font-weight:600; display:flex; align-items:center; gap:0.3rem; }
+  .stat-change.up   { color:var(--green-dark); }
+  .stat-change.down { color:var(--red); }
+  .stat-icon { font-size:1.5rem; margin-bottom:0.75rem; }
+
+  /* ── GRID LAYOUTS ── */
+  .two-col   { display:grid; grid-template-columns:1fr 1fr;  gap:1.25rem; margin-bottom:1.25rem; }
+  .three-col { display:grid; grid-template-columns:2fr 1fr;  gap:1.25rem; margin-bottom:1.25rem; }
+
+  /* ── CARD ── */
+  .card { background:var(--card); border-radius:14px; border:1px solid var(--border); overflow:hidden; margin-bottom:1.25rem; }
+  .card:last-child { margin-bottom:0; }
+  .card-head {
+    padding:1.25rem 1.5rem; border-bottom:1px solid var(--border);
+    display:flex; justify-content:space-between; align-items:center;
+  }
+  .card-title { font-weight:800; font-size:0.92rem; }
+  .card-sub   { font-size:0.75rem; color:var(--muted); margin-top:0.15rem; }
+  .card-body  { padding:1.5rem; }
+  .card-link  { font-size:0.78rem; color:var(--green); font-weight:700; text-decoration:none; cursor:pointer; background:none; border:none; font-family:'Manrope',sans-serif; }
+
+  /* ── CHART BARS ── */
+  .chart-wrap { display:flex; align-items:flex-end; gap:8px; height:120px; padding:0.5rem 0; }
+  .chart-bar-group { display:flex; flex-direction:column; align-items:center; flex:1; gap:4px; }
+  .chart-bar { width:100%; border-radius:4px 4px 0 0; background:var(--green-mid); transition:background 0.2s; cursor:pointer; }
+  .chart-bar:hover, .chart-bar.highlight { background:var(--green); }
+  .chart-label { font-size:0.65rem; color:var(--muted); font-weight:600; }
+
+  /* ── REVIEWS LIST ── */
+  .review-item { padding:1rem 0; border-bottom:1px solid var(--border); display:flex; gap:1rem; align-items:flex-start; }
+  .review-item:last-child { border-bottom:none; padding-bottom:0; }
+  .rev-avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.78rem; flex-shrink:0; }
+  .rev-name   { font-weight:700; font-size:0.85rem; }
+  .rev-stars  { color:var(--gold); font-size:0.75rem; letter-spacing:1px; }
+  .rev-text   { font-size:0.8rem; color:var(--muted); margin-top:0.25rem; line-height:1.5; }
+  .rev-date   { font-size:0.7rem; color:var(--muted); margin-top:0.2rem; }
+
+  /* ── BMP GAUGE ── */
+  .bmp-wrap { display:flex; flex-direction:column; align-items:center; padding:1rem 0; }
+  .bmp-circle {
+    width:130px; height:130px; border-radius:50%;
+    background:conic-gradient(var(--green) 0deg 317deg,var(--green-mid) 317deg 360deg);
+    display:flex; align-items:center; justify-content:center;
+    position:relative; margin-bottom:1rem;
+  }
+  .bmp-inner {
+    width:100px; height:100px; border-radius:50%; background:white;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .bmp-score       { font-family:'Playfair Display',serif; font-size:1.75rem; font-weight:900; color:var(--text); line-height:1; }
+  .bmp-label-small { font-size:0.6rem; font-weight:700; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+  .bmp-rank-info   { text-align:center; }
+  .bmp-rank-val    { font-size:1.1rem; font-weight:800; color:var(--green-dark); }
+  .bmp-rank-label  { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
+
+  /* ── RANKING TABLE ── */
+  .rank-table { width:100%; border-collapse:collapse; }
+  .rank-table th { text-align:left; padding:0.6rem 1rem; font-size:0.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-weight:700; border-bottom:1px solid var(--border); background:var(--off); }
+  .rank-table td { padding:0.9rem 1rem; font-size:0.85rem; border-bottom:1px solid var(--border); vertical-align:middle; }
+  .rank-table tr:last-child td { border-bottom:none; }
+  .rank-table tr.you { background:var(--green-light); }
+  .rank-table tr.you td { font-weight:700; color:var(--green-dark); }
+  .rank-pos     { font-weight:900; font-size:1rem; color:var(--muted); }
+  .rank-pos.r1  { color:var(--gold); }
+  .rank-pos.r2  { color:#888; }
+  .rank-pos.r3  { color:#a07040; }
+  .rank-you-tag { background:var(--green); color:white; font-size:0.6rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:20px; margin-left:0.5rem; letter-spacing:0.5px; }
+  .rank-avatar  { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.72rem; }
+
+  /* ── PROFILE FORM ── */
+  .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
+  .form-group { display:flex; flex-direction:column; gap:0.4rem; }
+  .form-group.full { grid-column:1 / -1; }
+  .form-label { font-size:0.78rem; font-weight:700; color:var(--text); letter-spacing:0.3px; }
+  .form-input, .form-select, .form-textarea {
+    padding:0.75rem 1rem; border:1.5px solid var(--border);
+    border-radius:8px; font-family:'Manrope',sans-serif;
+    font-size:0.875rem; color:var(--text); background:white;
+    transition:border-color 0.2s, box-shadow 0.2s; outline:none;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color:var(--green); box-shadow:0 0 0 3px rgba(58,181,74,0.1);
+  }
+  .form-textarea { resize:vertical; min-height:100px; }
+  .form-hint { font-size:0.72rem; color:var(--muted); }
+  .tag-wrap { display:flex; flex-wrap:wrap; gap:0.5rem; }
+  .tag-pill {
+    padding:0.35rem 0.9rem; border-radius:20px; font-size:0.78rem;
+    font-weight:600; border:1.5px solid var(--border); cursor:pointer;
+    transition:all 0.15s; color:var(--muted); background:white;
+    font-family:'Manrope',sans-serif;
+  }
+  .tag-pill.selected { background:var(--green-light); border-color:var(--green); color:var(--green-dark); }
+  /* ── Avatar preview circle ────────────────────────────── */
+  .avatar-preview-circle {
+    width:90px; height:90px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1.5rem; cursor:pointer; overflow:hidden;
+    border:3px solid var(--green-mid); transition:border-color 0.2s, background 0.25s, color 0.25s; flex-shrink:0;
+  }
+  .avatar-preview-circle:hover { border-color:var(--green); }
+
+  /* ── Colour swatches ───────────────────────────────────── */
+  .colour-swatch {
+    width:38px; height:38px; border-radius:50%;
+    border:3px solid transparent; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:0.85rem;
+    transition:transform 0.15s, box-shadow 0.15s;
+    flex-shrink:0;
+  }
+  .colour-swatch:hover { transform:scale(1.12); }
+  .colour-swatch.selected { box-shadow:0 0 0 2px white, 0 0 0 4px #111311; }
+
+  /* ── Theme swatches ────────────────────────────────────── */
+  .theme-swatch {
+    display:flex; flex-direction:column; align-items:center; gap:0.4rem;
+    background:none; border:none; cursor:pointer; padding:0;
+  }
+  .theme-swatch-preview {
+    width:72px; height:44px; border-radius:8px;
+    border:2.5px solid #e0e8e1; transition:border-color 0.15s, transform 0.15s;
+  }
+  .theme-swatch:hover .theme-swatch-preview { border-color:var(--green); transform:translateY(-2px); }
+  .theme-swatch.selected .theme-swatch-preview { border-color:var(--green); box-shadow:0 0 0 2px var(--green); }
+  .theme-swatch-label { font-size:0.68rem; font-weight:600; color:var(--muted); }
+  .theme-swatch.selected .theme-swatch-label { color:var(--green); }
+  .social-row { display:flex; align-items:center; gap:0.75rem; }
+  .social-icon { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0; }
+  .save-bar {
+    padding:1.25rem 1.5rem; background:var(--off); border-top:1px solid var(--border);
+    display:flex; justify-content:flex-end; gap:0.75rem; align-items:center;
+  }
+  .btn { padding:0.7rem 1.5rem; border-radius:8px; font-weight:700; font-size:0.85rem; cursor:pointer; font-family:'Manrope',sans-serif; border:none; transition:all 0.2s; }
+  .btn-green   { background:var(--green); color:white; }
+  .btn-green:hover { background:var(--green-dark); }
+  .btn-outline { background:white; border:1.5px solid var(--border); color:var(--text); }
+  .btn-outline:hover { border-color:var(--green); }
+  .save-msg { font-size:0.78rem; color:var(--green-dark); font-weight:600; opacity:0; transition:opacity 0.3s; margin-right:auto; }
+  .save-msg.show { opacity:1; }
+
+  /* ── REVIEW LINK GENERATOR ── */
+  .link-card {
+    background:linear-gradient(135deg,var(--green-light) 0%,white 60%);
+    border:1.5px solid var(--green-mid); border-radius:14px; padding:2rem;
+    text-align:center; margin-bottom:1.5rem;
+  }
+  .link-icon  { font-size:2.5rem; margin-bottom:0.75rem; }
+  .link-title { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900; margin-bottom:0.5rem; }
+  .link-sub   { font-size:0.85rem; color:var(--muted); margin-bottom:1.5rem; line-height:1.6; max-width:420px; margin-left:auto; margin-right:auto; }
+  .link-box   { display:flex; border:1.5px solid var(--border); border-radius:10px; overflow:hidden; background:white; max-width:520px; margin:0 auto 1.25rem; }
+  .link-url   { flex:1; padding:0.85rem 1rem; font-size:0.82rem; color:var(--muted); font-family:'Manrope',sans-serif; border:none; outline:none; background:transparent; }
+  .link-copy  { padding:0.85rem 1.25rem; background:var(--green); color:white; border:none; font-weight:700; font-size:0.82rem; cursor:pointer; font-family:'Manrope',sans-serif; transition:background 0.2s; }
+  .link-copy:hover { background:var(--green-dark); }
+  .link-actions { display:flex; gap:0.75rem; justify-content:center; flex-wrap:wrap; }
+  .link-action-btn {
+    display:flex; align-items:center; gap:0.5rem;
+    padding:0.6rem 1.25rem; border-radius:8px; font-size:0.82rem;
+    font-weight:700; cursor:pointer; border:1.5px solid var(--border);
+    background:white; color:var(--text); font-family:'Manrope',sans-serif;
+    transition:all 0.2s;
+  }
+  .link-action-btn:hover { border-color:var(--green); color:var(--green-dark); }
+  .link-history-row {
+    display:flex; align-items:center; gap:1rem; padding:0.9rem 1.5rem;
+    border-bottom:1px solid var(--border); font-size:0.84rem;
+  }
+  .link-history-row:last-child { border-bottom:none; }
+  .lh-client { font-weight:700; flex:1; }
+  .lh-date   { color:var(--muted); font-size:0.78rem; }
+  .lh-status { padding:0.2rem 0.65rem; border-radius:20px; font-size:0.7rem; font-weight:700; }
+  .lh-status.reviewed { background:var(--green-light); color:var(--green-dark); }
+  .lh-status.pending  { background:var(--gold-light);  color:var(--gold); }
+  .lh-status.expired  { background:#f5f5f5; color:#aaa; }
+
+  /* ── RANKINGS ── */
+  .rank-filters { display:flex; gap:0.6rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+  .rank-filter {
+    padding:0.4rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:600;
+    border:1.5px solid var(--border); cursor:pointer; background:white; color:var(--muted);
+    transition:all 0.15s; font-family:'Manrope',sans-serif;
+  }
+  .rank-filter.active { background:var(--green-light); border-color:var(--green); color:var(--green-dark); }
+  .progress-row { display:flex; align-items:center; gap:1rem; padding:0.6rem 0; }
+  .progress-label   { font-size:0.78rem; font-weight:600; width:120px; flex-shrink:0; }
+  .progress-bar-wrap { flex:1; height:8px; background:var(--green-mid); border-radius:4px; overflow:hidden; }
+  .progress-bar-fill { height:100%; background:var(--green); border-radius:4px; }
+  .progress-val { font-size:0.78rem; font-weight:700; color:var(--green-dark); width:40px; text-align:right; }
+
+  /* ── NOTIFICATIONS ── */
+  .notif-item {
+    display:flex; gap:1rem; padding:1.1rem 1.5rem;
+    border-bottom:1px solid var(--border); align-items:flex-start;
+  }
+  .notif-item:last-child { border-bottom:none; }
+  .notif-bullet {
+    width:10px; height:10px; border-radius:50%;
+    background:var(--green); flex-shrink:0; margin-top:0.42rem;
+    box-shadow:0 0 0 3px rgba(58,181,74,0.15);
+  }
+  .notif-bullet.read { background:var(--border); box-shadow:none; }
+  .notif-body { display:flex; flex-direction:column; gap:0.25rem; flex:1; min-width:0; }
+  .notif-text { font-size:0.855rem; line-height:1.55; word-break:break-word; color:var(--text); }
+  .notif-time { font-size:0.7rem; color:var(--muted); margin-top:0.15rem; }
+
+  /* ── SECTION HEADING ── */
+  .section-eyebrow { font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:0.3rem; }
+  .section-heading { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; margin-bottom:1.5rem; }
+
+  /* ── TOAST ── */
+  .copy-toast {
+    position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
+    background:var(--text); color:white; padding:0.6rem 1.5rem;
+    border-radius:8px; font-size:0.82rem; font-weight:600;
+    opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:999;
+  }
+  .copy-toast.show { opacity:1; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .page.active .stat-card { animation:fadeUp 0.4s ease both; }
+  .page.active .stat-card:nth-child(2) { animation-delay:0.05s; }
+  .page.active .stat-card:nth-child(3) { animation-delay:0.10s; }
+  .page.active .stat-card:nth-child(4) { animation-delay:0.15s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .stats-grid { grid-template-columns:repeat(2,1fr); }
+    .three-col  { grid-template-columns:1fr; }
+  }
+  @media (max-width: 768px) {
+    /* Sidebar slides in as overlay */
+    .sidebar {
+      transform:translateX(-100%);
+      transition:transform 0.3s ease;
+      z-index:200;
+    }
+    .sidebar.mob-open { transform:translateX(0); }
+    /* Dark backdrop */
+    .mob-overlay {
+      display:none; position:fixed; inset:0;
+      background:rgba(0,0,0,0.5); z-index:199;
+    }
+    .mob-overlay.active { display:block; }
+    /* Hamburger button */
+    .mob-menu-btn {
+      display:flex !important; align-items:center; justify-content:center;
+      width:36px; height:36px; background:none; border:1px solid var(--border);
+      border-radius:8px; cursor:pointer; font-size:1.15rem; flex-shrink:0;
+    }
+    .main      { margin-left:0; }
+    .content   { padding:1.25rem; }
+    .topbar    { padding:0.75rem 1.25rem; gap:0.75rem; }
+    .topbar-btn { font-size:0.75rem; padding:0.5rem 0.85rem; }
+    .form-grid  { grid-template-columns:1fr; }
+    .stats-grid { grid-template-columns:1fr 1fr; }
+    .form-grid .full { grid-column:1; }
+    .card-body  { padding:1.25rem; }
+    .card-head  { padding:1rem 1.25rem; }
+  }
+  @media (max-width: 480px) {
+    .stats-grid  { grid-template-columns:1fr 1fr; gap:0.75rem; }
+    .topbar-btn  { display:none; }
+    .topbar-left h1 { font-size:1.15rem; }
+  }
+  @media (max-width: 900px) {
+    #link-builder-grid { grid-template-columns:1fr !important; }
+    #share-card { width:100% !important; max-width:360px; margin:0 auto; }
+  }
+
+  /* ── Messages ── */
+  #msg-conv-list { background:none !important; border:none !important; box-shadow:none !important; padding:0 !important; }
+  .msg-card {
+    display:flex; align-items:stretch;
+    background:white; border:1px solid var(--border); border-radius:14px;
+    overflow:hidden; margin-bottom:0.85rem;
+  }
+  .msg-card:last-child { margin-bottom:0; }
+  .msg-card-left {
+    display:flex; align-items:flex-start; gap:1rem;
+    flex:1; padding:1.25rem 1.5rem; min-width:0;
+  }
+  .msg-card-av {
+    width:52px; height:52px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:1rem;
+  }
+  .msg-card-info { flex:1; min-width:0; }
+  .msg-card-name  { font-weight:700; font-size:0.95rem; color:var(--text); margin-bottom:0.15rem; }
+  .msg-card-date  { font-size:0.78rem; color:var(--muted); margin-bottom:0.6rem; }
+  .msg-card-preview { font-size:0.85rem; color:var(--muted); font-style:italic; }
+  .msg-card-right {
+    width:170px; flex-shrink:0; border-left:1px solid var(--border);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:1.25rem 1rem; gap:0.5rem; background:#fafbfa;
+  }
+  .msg-card-stat-label { font-size:0.62rem; font-weight:700; letter-spacing:0.08em; color:var(--muted); }
+  .msg-card-stat-num   { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; line-height:1; color:var(--text); }
+  .msg-card-stat-num.new { color:var(--green); }
+  .msg-view-btn {
+    background:var(--green-light); color:var(--green-dark);
+    border:1.5px solid var(--green-mid); border-radius:7px;
+    padding:0.45rem 0.8rem; font-size:0.75rem; font-weight:700;
+    cursor:pointer; width:100%; transition:all 0.15s;
+    font-family:inherit; white-space:nowrap; margin-top:0.25rem;
+  }
+  .msg-view-btn:hover { background:var(--green); color:white; border-color:var(--green); }
+  .msg-bubble-t { background:var(--text); color:white; padding:0.6rem 0.85rem; border-radius:14px 14px 4px 14px; font-size:0.875rem; line-height:1.5; word-break:break-word; }
+  .msg-bubble-c { background:white; color:var(--text); border:1px solid var(--border); padding:0.6rem 0.85rem; border-radius:14px 14px 14px 4px; font-size:0.875rem; line-height:1.5; word-break:break-word; }
+  .msg-time { font-size:0.62rem; color:#aab8ac; margin-top:0.2rem; }
+
+  /* ── Trainer reply panel (bottom-right) ── */
+  .tr-chat-panel {
+    position:fixed; bottom:24px; right:24px; z-index:9999;
+    width:360px; max-height:520px;
+    background:white; border-radius:16px;
+    box-shadow:0 12px 48px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.08);
+    display:flex; flex-direction:column; overflow:hidden;
+    transform:translateY(24px); opacity:0; pointer-events:none;
+    transition:transform 0.3s cubic-bezier(.34,1.56,.64,1), opacity 0.25s ease;
+  }
+  .tr-chat-panel.open { transform:translateY(0); opacity:1; pointer-events:all; }
+  .tr-chat-hidden { display:none !important; }
+  .tr-chat-hdr {
+    background:linear-gradient(135deg,#0d1a0e,#1a3d1e);
+    padding:0.85rem 1rem; display:flex; align-items:center; gap:0.75rem; flex-shrink:0;
+  }
+  .tr-chat-av {
+    width:38px; height:38px; border-radius:50%; flex-shrink:0;
+    background:#2a9438; color:white;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:0.82rem;
+  }
+  .tr-chat-name { font-weight:700; font-size:0.88rem; color:white; }
+  .tr-chat-sub  { font-size:0.68rem; color:rgba(255,255,255,0.45); margin-top:0.1rem; }
+  .tr-chat-close {
+    margin-left:auto; background:rgba(255,255,255,0.1); border:none;
+    color:rgba(255,255,255,0.7); width:28px; height:28px; border-radius:6px;
+    cursor:pointer; font-size:0.85rem; display:flex; align-items:center;
+    justify-content:center; transition:background 0.15s;
+  }
+  .tr-chat-close:hover { background:rgba(255,255,255,0.22); }
+  .tr-chat-msgs {
+    flex:1; overflow-y:auto; padding:1rem;
+    display:flex; flex-direction:column; gap:0.65rem; background:#f7f9f7;
+  }
+  .tr-chat-input-row {
+    padding:0.75rem; border-top:1px solid var(--border);
+    display:flex; gap:0.5rem; align-items:flex-end;
+    flex-shrink:0; background:white;
+  }
+  .tr-chat-input {
+    flex:1; border:1.5px solid var(--border); border-radius:10px;
+    padding:0.55rem 0.85rem; font-family:inherit; font-size:0.875rem;
+    resize:none; outline:none; min-height:40px; max-height:110px;
+    transition:border-color 0.2s;
+  }
+  .tr-chat-input:focus { border-color:var(--green); }
+  .tr-chat-send {
+    width:40px; height:40px; border-radius:10px; background:var(--green);
+    color:white; border:none; cursor:pointer; font-size:1.05rem;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    transition:background 0.15s;
+  }
+  .tr-chat-send:hover { background:var(--green-dark); }
+  @media (max-width:480px) {
+    .tr-chat-panel { bottom:0; right:0; left:0; width:100%; border-bottom-left-radius:0; border-bottom-right-radius:0; max-height:72vh; }
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script is:inline src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+<style>
+  /* ── New-review celebration banner ─────────────────────── */
+  .review-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: linear-gradient(135deg, #eaf7ec 0%, #fff 70%);
+    border: 1.5px solid var(--green-mid);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    animation: slideDown 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  .review-alert-icon { font-size: 1.75rem; flex-shrink: 0; }
+  .review-alert-title { font-weight: 800; font-size: 0.9rem; color: var(--text); margin-bottom: 0.15rem; }
+  .review-alert-sub   { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+  .review-alert-close {
+    margin-left: auto; background: none; border: none;
+    font-size: 1.1rem; color: var(--muted); cursor: pointer; padding: 0.25rem;
+    flex-shrink: 0; line-height: 1;
+  }
+  .review-alert-close:hover { color: var(--text); }
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <a href="/" target="_blank" rel="noopener" title="View client homepage">
+      <img src="/images/logo.png" alt="Personal TRating" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    </a>
+  </div>
+
+  <div class="sb-pt-info">
+    <div class="sb-avatar"></div>
+    <div>
+      <div class="sb-pt-name">Loading…</div>
+      <div class="sb-pt-business" style="display:none;"></div>
+      <div class="sb-pt-status"></div>
+    </div>
+  </div>
+
+  <nav class="sb-nav">
+    <div class="sb-section-label">Navigate</div>
+    <button class="sb-item" onclick="window.location.href='/for-trainers'">
+      <span class="sb-icon">🏠</span> Home Page
+    </button>
+
+    <div class="sb-section-label">Main</div>
+    <button class="sb-item active" onclick="showPage('overview')">
+      <span class="sb-icon">📊</span> Overview
+    </button>
+    <button class="sb-item" onclick="showPage('profile')">
+      <span class="sb-icon">👤</span> My Profile
+    </button>
+    <button class="sb-item" onclick="showPage('reviews')">
+      <span class="sb-icon">⭐</span> Reviews
+      <span class="sb-badge" id="sb-review-badge">0</span>
+    </button>
+    <button class="sb-item" onclick="showPage('links')">
+      <span class="sb-icon">🔗</span> Review Links
+    </button>
+    <button class="sb-item" onclick="window.open('/find-a-trainer','_blank')">
+      <span class="sb-icon">🏆</span> Rankings
+    </button>
+    <button class="sb-item" onclick="showPage('feed')">
+      <span class="sb-icon">📸</span> My Feed
+    </button>
+    <button class="sb-item" onclick="showPage('messages')">
+      <span class="sb-icon">💬</span> Messages
+      <span class="sb-badge" id="sb-msg-badge" style="display:none;">0</span>
+    </button>
+
+    <div class="sb-section-label">Account</div>
+    <button class="sb-item" onclick="showPage('notifications')">
+      <span class="sb-icon">🔔</span> Notifications
+      <span class="sb-badge" id="notif-badge" style="display:none;">0</span>
+    </button>
+    <button class="sb-item">
+      <span class="sb-icon">⚙️</span> Settings
+    </button>
+    <a class="sb-item" id="view-profile-link" href="/" target="_blank">
+      <span class="sb-icon">🌐</span> View Public Profile
+    </a>
+  </nav>
+
+  <div class="sb-footer">
+    <a href="#" class="sb-footer-link">Help</a>
+  </div>
+</aside>
+
+<!-- Mobile overlay backdrop -->
+<div class="mob-overlay" id="mob-overlay" onclick="closeMobMenu()"></div>
+
+<!-- ══ MAIN ══ -->
+<main class="main">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="mob-menu-btn" id="mob-menu-btn" onclick="toggleMobMenu()" style="display:none;" aria-label="Menu">☰</button>
+      <div class="topbar-left">
+        <h1 id="page-title">Overview</h1>
+        <p  id="page-sub">Loading your dashboard…</p>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="showPage('notifications')" style="cursor:pointer;">
+        🔔<div class="notif-dot"></div>
+      </div>
+      <button class="topbar-btn" onclick="showPage('links')">+ Generate Review Link</button>
+      <button class="topbar-signout" id="sign-out-btn">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══════════ OVERVIEW ══════════ -->
+    <div class="page active" id="page-overview">
+
+      <div class="stats-grid">
+        <div class="stat-card" style="--stat-color:rgba(58,181,74,0.1)">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-label">BMP Score</div>
+          <div class="stat-value" id="stat-bmp" style="color:var(--green-dark)">—</div>
+          <div class="stat-change up" id="stat-bmp-change"></div>
+        </div>
+        <div class="stat-card" style="--stat-color:rgba(184,134,11,0.08)">
+          <div class="stat-icon">🏆</div>
+          <div class="stat-label">UK Ranking</div>
+          <div class="stat-value" id="stat-rank" style="color:var(--gold)">—</div>
+          <div class="stat-change up" id="stat-rank-change"></div>
+        </div>
+        <div class="stat-card" style="--stat-color:rgba(58,181,74,0.06)">
+          <div class="stat-icon">📝</div>
+          <div class="stat-label">Total Reviews</div>
+          <div class="stat-value" id="stat-reviews">—</div>
+          <div class="stat-change up" id="stat-reviews-change"></div>
+        </div>
+        <div class="stat-card" style="--stat-color:rgba(58,181,74,0.06)">
+          <div class="stat-icon">👁️</div>
+          <div class="stat-label">Profile Views</div>
+          <div class="stat-value" id="stat-views">—</div>
+          <div class="stat-change up" id="stat-views-change"></div>
+        </div>
+      </div>
+
+      <div class="three-col">
+        <!-- Reviews chart -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Reviews Over Time</div>
+              <div class="card-sub">Monthly review volume — last 8 months</div>
+            </div>
+            <button class="card-link" onclick="showPage('reviews')">View all →</button>
+          </div>
+          <div class="card-body">
+            <div class="chart-wrap" id="reviews-chart-wrap">
+              <!-- filled by JS with real monthly data -->
+              <div class="chart-bar-group"><div class="chart-bar" style="height:8%"></div><div class="chart-label">—</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BMP Gauge -->
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">BMP Score</div>
+              <div class="card-sub">Your current ranking score</div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="bmp-wrap">
+              <div class="bmp-circle" id="gauge-circle" style="background:var(--green-mid);">
+                <div class="bmp-inner">
+                  <div class="bmp-score" id="gauge-score">—</div>
+                  <div class="bmp-label-small">BMP</div>
+                </div>
+              </div>
+              <div class="bmp-rank-info">
+                <div class="bmp-rank-val" id="gauge-rank">Collect reviews to unlock</div>
+                <div class="bmp-rank-label" id="gauge-sub">Your score updates with every review</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feed preview -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">My Feed</div>
+            <div class="card-sub" id="ov-feed-sub">Your recent posts</div>
+          </div>
+          <button class="card-link" onclick="showPage('feed')">+ New Post →</button>
+        </div>
+        <div id="ov-feed-list" style="padding:1.5rem;min-height:60px;"></div>
+      </div>
+
+      <!-- Recent reviews -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Recent Reviews</div>
+            <div class="card-sub">Your latest verified client feedback</div>
+          </div>
+          <button class="card-link" onclick="showPage('reviews')">View all →</button>
+        </div>
+        <div id="recent-reviews-list" class="card-body" style="padding:0 1.5rem;"></div>
+      </div>
+
+    </div>
+
+    <!-- ══════════ MY PROFILE ══════════ -->
+    <div class="page" id="page-profile">
+      <div class="section-eyebrow">Your Public Profile</div>
+      <div class="section-heading">Profile Builder</div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Photo & Identity</div>
+            <div class="card-sub">This is what clients see first on your public profile</div>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <!-- ── Photo upload ── -->
+          <div style="display:flex;align-items:flex-start;gap:1.75rem;margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
+            <div style="position:relative;flex-shrink:0;">
+              <div class="avatar-preview-circle" id="profile-avatar-preview" onclick="document.getElementById('avatar-file-input').click()">
+                <!-- filled by JS: photo or initials -->
+              </div>
+              <div style="position:absolute;bottom:0;right:0;background:var(--green);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;border:2px solid white;" onclick="document.getElementById('avatar-file-input').click()">📷</div>
+              <input id="avatar-file-input" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleAvatarUpload(this)">
+            </div>
+            <div style="padding-top:0.2rem;">
+              <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.35rem;">Profile Photo</div>
+              <div style="font-size:0.78rem;color:var(--muted);line-height:1.65;">Upload a professional headshot.<br>Square images work best · JPG or PNG.</div>
+              <button style="margin-top:0.75rem;background:none;border:1.5px solid var(--green);color:var(--green);padding:0.4rem 1rem;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.15s,color 0.15s;"
+                onmouseover="this.style.background='var(--green)';this.style.color='white'"
+                onmouseout="this.style.background='none';this.style.color='var(--green)'"
+                onclick="document.getElementById('avatar-file-input').click()">Choose Photo</button>
+            </div>
+          </div>
+
+          <!-- ── Avatar colour ── -->
+          <div style="margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
+            <label class="form-label" style="display:block;margin-bottom:0.65rem;">Avatar Colour <span style="font-weight:400;color:var(--muted);">(shown when no photo uploaded)</span></label>
+            <div style="display:flex;gap:0.6rem;flex-wrap:wrap;" id="colour-swatches">
+              <button class="colour-swatch" data-bg="#eaf7ec" data-color="#2a9438" title="Forest"   onclick="selectColour(this)" style="background:#eaf7ec;"><span style="color:#2a9438;">A</span></button>
+              <button class="colour-swatch" data-bg="#fdf6e3" data-color="#b8860b" title="Gold"     onclick="selectColour(this)" style="background:#fdf6e3;"><span style="color:#b8860b;">A</span></button>
+              <button class="colour-swatch" data-bg="#e8f0f7" data-color="#1a4b6b" title="Ocean"    onclick="selectColour(this)" style="background:#e8f0f7;"><span style="color:#1a4b6b;">A</span></button>
+              <button class="colour-swatch" data-bg="#f5e8f7" data-color="#6b1a6b" title="Royal"    onclick="selectColour(this)" style="background:#f5e8f7;"><span style="color:#6b1a6b;">A</span></button>
+              <button class="colour-swatch" data-bg="#e8ecf5" data-color="#1a2b6b" title="Navy"     onclick="selectColour(this)" style="background:#e8ecf5;"><span style="color:#1a2b6b;">A</span></button>
+              <button class="colour-swatch" data-bg="#fef0ed" data-color="#c0451a" title="Ember"    onclick="selectColour(this)" style="background:#fef0ed;"><span style="color:#c0451a;">A</span></button>
+              <button class="colour-swatch" data-bg="#fde8f0" data-color="#b5265e" title="Rose"     onclick="selectColour(this)" style="background:#fde8f0;"><span style="color:#b5265e;">A</span></button>
+              <button class="colour-swatch" data-bg="#f3e8fd" data-color="#7c2dbe" title="Lavender" onclick="selectColour(this)" style="background:#f3e8fd;"><span style="color:#7c2dbe;">A</span></button>
+              <button class="colour-swatch" data-bg="#e5f3fd" data-color="#1a6fa8" title="Sky"      onclick="selectColour(this)" style="background:#e5f3fd;"><span style="color:#1a6fa8;">A</span></button>
+            </div>
+          </div>
+
+          <!-- ── Hero background theme ── -->
+          <div style="margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
+            <label class="form-label" style="display:block;margin-bottom:0.65rem;">Profile Page Background</label>
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;" id="theme-swatches">
+              <button class="theme-swatch" data-theme="forest"   onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#0d1a0e,#2a5a30);"></div>
+                <span class="theme-swatch-label">Forest</span>
+              </button>
+              <button class="theme-swatch" data-theme="midnight" onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#0a0f1e,#2a3a6a);"></div>
+                <span class="theme-swatch-label">Midnight</span>
+              </button>
+              <button class="theme-swatch" data-theme="charcoal" onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#111111,#333333);"></div>
+                <span class="theme-swatch-label">Charcoal</span>
+              </button>
+              <button class="theme-swatch" data-theme="royal"    onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#1a0a2e,#4a2a7a);"></div>
+                <span class="theme-swatch-label">Royal</span>
+              </button>
+              <button class="theme-swatch" data-theme="slate"    onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#0a1828,#2a3e58);"></div>
+                <span class="theme-swatch-label">Slate</span>
+              </button>
+              <button class="theme-swatch" data-theme="rose"     onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#3d0a1e,#8b2252);"></div>
+                <span class="theme-swatch-label">Rose</span>
+              </button>
+              <button class="theme-swatch" data-theme="lavender" onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#1e0a3d,#5c2a8b);"></div>
+                <span class="theme-swatch-label">Lavender</span>
+              </button>
+              <button class="theme-swatch" data-theme="sky"      onclick="selectTheme(this)">
+                <div class="theme-swatch-preview" style="background:linear-gradient(135deg,#0a1e3d,#2a5a8b);"></div>
+                <span class="theme-swatch-label">Sky</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">First Name</label>
+              <input id="profile-firstname" class="form-input" type="text" placeholder="First name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Last Name</label>
+              <input id="profile-lastname" class="form-input" type="text" placeholder="Last name">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Business / Trading Name <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
+              <input id="profile-business" class="form-input" type="text" placeholder="e.g. Mitchell Fitness — leave blank to use your own name">
+            </div>
+            <div class="form-group">
+              <label class="form-label">City</label>
+              <input id="profile-city" class="form-input" type="text" placeholder="Your city">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Postcode / Area</label>
+              <input id="profile-postcode" class="form-input" type="text" placeholder="e.g. SW1, M1, B1">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Bio</label>
+              <textarea id="profile-bio" class="form-textarea" placeholder="Tell clients about yourself, your approach and your results..."></textarea>
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Intro Message <span style="font-weight:400;color:var(--muted);">(sent automatically when a client starts a chat)</span></label>
+              <textarea id="profile-intro-msg" class="form-textarea" placeholder="e.g. Hi! Thanks for reaching out — I'd love to help you hit your goals. What are you training for?"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Specialties</div>
+            <div class="card-sub">Select up to 3 that best describe your training focus</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="tag-wrap">
+            <button class="tag-pill selected" onclick="toggleTag(this)">💪 Strength & Conditioning</button>
+            <button class="tag-pill"          onclick="toggleTag(this)">🔥 Weight Loss</button>
+            <button class="tag-pill selected" onclick="toggleTag(this)">🏃 Sports Performance</button>
+            <button class="tag-pill"          onclick="toggleTag(this)">⚡ HIIT & Cardio</button>
+            <button class="tag-pill"          onclick="toggleTag(this)">🧘 Rehabilitation</button>
+            <button class="tag-pill selected" onclick="toggleTag(this)">🥗 Nutrition Coaching</button>
+            <button class="tag-pill"          onclick="toggleTag(this)">🏋️ Powerlifting</button>
+            <button class="tag-pill"          onclick="toggleTag(this)">🤸 Functional Fitness</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Certifications</div>
+            <div class="card-sub">Add your qualifications to build client trust</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Primary Qualification</label>
+              <select class="form-select" id="profile-cert">
+                <option value="">Select qualification…</option>
+                <option value="REPs Level 3">REPs Level 3 Personal Trainer</option>
+                <option value="REPs Level 4">REPs Level 4</option>
+                <option value="REPs Level 2">REPs Level 2</option>
+                <option value="CIMSPA">CIMSPA</option>
+                <option value="NASM CPT">NASM CPT</option>
+                <option value="ACE CPT">ACE CPT</option>
+                <option value="Nutrition Diploma">Nutrition Diploma</option>
+                <option value="Physiotherapy Cert.">Physiotherapy Certificate</option>
+                <option value="other">Other…</option>
+              </select>
+            </div>
+            <div class="form-group" id="profile-cert-other-wrap" style="display:none;">
+              <label class="form-label">Please specify your qualification</label>
+              <input class="form-input" type="text" id="profile-cert-other" placeholder="e.g. YMCA Level 3, Premier Training…">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Additional Cert (optional)</label>
+              <input class="form-input" id="profile-cert2" type="text" placeholder="e.g. Nutrition Diploma">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Training Locations</div>
+            <div class="card-sub">Add the gyms you train clients at — shown on your public profile</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="gym-list" style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.25rem;"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:0.65rem;align-items:end;">
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Gym Name</label>
+              <input class="form-input" id="gym-name-input" type="text" placeholder="e.g. PureGym" onkeydown="if(event.key==='Enter')addGym()">
+            </div>
+            <div class="form-group" style="margin-bottom:0;">
+              <label class="form-label">Location</label>
+              <input class="form-input" id="gym-location-input" type="text" placeholder="e.g. Manchester City Centre" onkeydown="if(event.key==='Enter')addGym()">
+            </div>
+            <button onclick="addGym()" style="padding:0 1.1rem;background:var(--green);color:white;border:none;border-radius:8px;font-weight:700;font-size:0.85rem;cursor:pointer;white-space:nowrap;height:42px;">+ Add</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Social Links & Contact</div>
+            <div class="card-sub">Help clients connect with you</div>
+          </div>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div class="social-row">
+            <div class="social-icon" style="background:#e7f3ff;">📘</div>
+            <input class="form-input" type="text" placeholder="Facebook URL" style="flex:1;">
+          </div>
+          <div class="social-row">
+            <div class="social-icon" style="background:#fce4ec;">📸</div>
+            <input class="form-input" type="text" placeholder="Instagram URL" style="flex:1;">
+          </div>
+          <div class="social-row">
+            <div class="social-icon" style="background:#e8f5e9;">📱</div>
+            <input class="form-input" type="text" placeholder="WhatsApp / Phone" style="flex:1;">
+          </div>
+          <div class="social-row">
+            <div class="social-icon" style="background:#fff3e0;">📧</div>
+            <input class="form-input" type="email" placeholder="Email address" style="flex:1;">
+          </div>
+        </div>
+      </div>
+
+      <div class="save-bar">
+        <span class="save-msg" id="save-msg">✅ Profile saved successfully!</span>
+        <button class="btn btn-outline" onclick="discardProfile()">Discard Changes</button>
+        <button class="btn btn-green"   onclick="saveProfile()">Save Profile</button>
+      </div>
+    </div>
+
+    <!-- ══════════ REVIEWS ══════════ -->
+    <div class="page" id="page-reviews">
+      <div class="section-eyebrow">Client Feedback</div>
+      <div class="section-heading">Your Reviews</div>
+
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-label">Average Rating</div><div class="stat-value" id="rev-stat-avg" style="color:var(--gold)">—</div><div class="stat-change up" id="rev-stat-avg-sub"></div></div>
+        <div class="stat-card"><div class="stat-icon">📝</div><div class="stat-label">Total Reviews</div><div class="stat-value" id="rev-stat-total">—</div><div class="stat-change up" id="rev-stat-total-sub"></div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Verified Rate</div><div class="stat-value" id="rev-stat-verified">—</div><div class="stat-change up">All client-verified</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">All Reviews</div>
+            <div class="card-sub">Showing most recent first</div>
+          </div>
+        </div>
+        <div id="all-reviews-list" style="padding:0 1.5rem;"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ REVIEW LINKS ══════════ -->
+    <div class="page" id="page-links">
+      <div class="section-eyebrow">Collect Feedback</div>
+      <div class="section-heading">Review Link Generator</div>
+
+      <!-- Two-column layout: card preview | controls -->
+      <div id="link-builder-grid" style="display:grid;grid-template-columns:380px 1fr;gap:1.75rem;align-items:start;margin-bottom:1.5rem;">
+
+        <!-- LEFT: Story Card Preview -->
+        <div>
+          <div style="font-size:0.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;text-align:center;">Instagram Story Preview</div>
+          <div id="share-card" style="width:360px;height:640px;border-radius:24px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 45%,#2a5a30 100%);">
+            <div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:0.85rem;font-family:'Manrope',sans-serif;">Loading card…</div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Controls -->
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+
+          <!-- Download -->
+          <div class="card" style="margin-bottom:0;overflow:hidden;">
+            <div style="background:linear-gradient(135deg,var(--green-light) 0%,white 80%);padding:1.5rem;">
+              <div style="font-weight:800;font-size:0.95rem;color:var(--text);margin-bottom:0.3rem;">📲 Download your review card</div>
+              <div style="font-size:0.8rem;color:var(--muted);line-height:1.65;margin-bottom:1.25rem;">Save and post to your Instagram Story, WhatsApp status, or anywhere clients will see it. They scan the QR code to leave you a verified review in seconds.</div>
+              <button id="download-card-btn" onclick="downloadShareCard()"
+                style="width:100%;padding:0.9rem;background:var(--text);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:background 0.2s;"
+                onmouseover="this.style.background='#1a3d1e'" onmouseout="this.style.background='var(--text)'">
+                ⬇️ Download for Instagram Stories
+              </button>
+              <div style="margin-top:0.6rem;font-size:0.72rem;color:var(--muted);text-align:center;">On mobile? Screenshot the card preview instead.</div>
+            </div>
+          </div>
+
+          <!-- Review link -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Your Review Link</div>
+                <div class="card-sub">Share directly via WhatsApp or email</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="link-box">
+                <input class="link-url" id="review-link" readonly value="personalTrating.co.uk/review/...">
+                <button class="link-copy" onclick="copyLink()">Copy</button>
+              </div>
+              <div class="link-actions" style="margin-top:1rem;">
+                <button class="link-action-btn" onclick="shareLink('whatsapp')">📱 WhatsApp</button>
+                <button class="link-action-btn" onclick="shareLink('email')">📧 Email</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Custom message -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Custom Message</div>
+                <div class="card-sub">Shown on your card above the QR code</div>
+              </div>
+            </div>
+            <div class="card-body" style="padding:1.1rem 1.5rem;">
+              <textarea id="sc-custom-msg" rows="2" maxlength="80"
+                placeholder="I'd love your feedback 🙏"
+                oninput="buildShareCard(); document.getElementById('sc-msg-count').textContent = this.value.length + ' / 80';"
+                style="width:100%;padding:0.65rem 0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.84rem;color:var(--text);resize:none;line-height:1.5;outline:none;box-sizing:border-box;"></textarea>
+              <div id="sc-msg-count" style="font-size:0.7rem;color:var(--muted);margin-top:0.3rem;text-align:right;">0 / 80</div>
+            </div>
+          </div>
+
+          <!-- Card theme -->
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Card Theme</div>
+                <div class="card-sub">Matches your profile background</div>
+              </div>
+              <button class="card-link" onclick="showPage('profile')">Change →</button>
+            </div>
+            <div class="card-body" style="padding:1.1rem 1.5rem;">
+              <div style="display:flex;align-items:center;gap:0.85rem;">
+                <div id="sc-theme-swatch" style="width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#0d1a0e,#2a5a30);flex-shrink:0;border:2px solid var(--border);"></div>
+                <div>
+                  <div style="font-weight:700;font-size:0.875rem;" id="sc-theme-name">Forest</div>
+                  <div style="font-size:0.75rem;color:var(--muted);">Go to My Profile to change your theme</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Review History -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Review History</div>
+            <div class="card-sub">Reviews submitted by your clients</div>
+          </div>
+        </div>
+        <div id="link-history-list">
+          <div style="padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:0.84rem;">Loading…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ RANKINGS ══════════ -->
+    <div class="page" id="page-rankings">
+      <div class="section-eyebrow">Leaderboard Position</div>
+      <div class="section-heading">Your Rankings</div>
+
+      <div class="rank-filters">
+        <button class="rank-filter active">🇬🇧 UK Overall</button>
+        <button class="rank-filter" onclick="filterRank(this)">📍 London</button>
+        <button class="rank-filter" onclick="filterRank(this)">💪 Strength</button>
+        <button class="rank-filter" onclick="filterRank(this)">This Month</button>
+        <button class="rank-filter" onclick="filterRank(this)">All Time</button>
+      </div>
+
+      <div class="three-col">
+        <div class="card" style="margin-bottom:0;">
+          <div class="card-head">
+            <div>
+              <div class="card-title">UK Leaderboard</div>
+              <div class="card-sub">Top 7 — ranked by BMP score</div>
+            </div>
+          </div>
+          <table class="rank-table">
+            <thead>
+              <tr><th>#</th><th>Trainer</th><th>City</th><th>BMP</th></tr>
+            </thead>
+            <tbody id="rank-tbody">
+              <tr><td colspan="4" style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Loading rankings…</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Your Position</div>
+                <div class="card-sub">How you compare nationally</div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="bmp-wrap" style="padding:0.5rem 0;">
+                <div class="bmp-circle" id="mini-gauge-circle" style="width:110px;height:110px;background:var(--green-mid);">
+                  <div class="bmp-inner" style="width:84px;height:84px;">
+                    <div class="bmp-score" id="mini-gauge-score" style="font-size:1.5rem;">—</div>
+                    <div class="bmp-label-small">BMP</div>
+                  </div>
+                </div>
+                <div class="bmp-rank-info">
+                  <div class="bmp-rank-val" id="mini-gauge-rank" style="font-size:1rem;">🔒 Rank unlocks with first review</div>
+                  <div class="bmp-rank-label" id="mini-gauge-sub">Collect verified reviews to rank</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-bottom:0;">
+            <div class="card-head">
+              <div>
+                <div class="card-title">Score Breakdown</div>
+                <div class="card-sub">What's driving your BMP</div>
+              </div>
+            </div>
+            <div class="card-body" id="score-breakdown-body" style="padding-top:1rem;">
+              <div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.5rem 0;">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ MY FEED ══════════ -->
+    <div class="page" id="page-feed">
+      <div class="section-eyebrow">Content</div>
+      <div class="section-heading">My Feed</div>
+
+      <!-- Create post -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">New Post</div>
+            <div class="card-sub">Share a class, update or client progress — visible on your public profile</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Image drop zone -->
+          <div id="post-drop" style="border:2px dashed var(--border);border-radius:12px;padding:1.75rem;text-align:center;cursor:pointer;transition:border-color 0.2s,background 0.2s;margin-bottom:1rem;position:relative;"
+            onclick="document.getElementById('post-img-input').click()"
+            ondragover="event.preventDefault();this.style.borderColor='var(--green)';this.style.background='var(--green-light)'"
+            ondragleave="this.style.borderColor='var(--border)';this.style.background=''"
+            ondrop="handlePostDrop(event)">
+            <div id="post-img-placeholder">
+              <div style="font-size:2rem;margin-bottom:0.4rem;">📷</div>
+              <div style="font-weight:600;font-size:0.875rem;color:var(--text);margin-bottom:0.2rem;">Add a photo <span style="font-weight:400;color:var(--muted);">(optional)</span></div>
+              <div style="font-size:0.75rem;color:var(--muted);">Click or drag & drop · JPG, PNG, WebP · max 10 MB</div>
+            </div>
+            <div id="post-img-preview" style="display:none;position:relative;">
+              <img id="post-img-preview-src" style="max-width:100%;max-height:260px;border-radius:8px;object-fit:cover;" />
+              <button onclick="event.stopPropagation();clearPostImg()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;">✕</button>
+            </div>
+            <input id="post-img-input" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handlePostImgSelect(this)">
+          </div>
+
+          <!-- Caption -->
+          <textarea id="post-caption" class="form-textarea" placeholder="Write a caption, announce a class, share a training tip… (optional)" style="min-height:90px;margin-bottom:1rem;"></textarea>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;">
+            <div id="post-err" style="font-size:0.78rem;color:var(--red);display:none;">Add a photo or write a caption before posting.</div>
+            <button id="post-submit" onclick="submitPost()" class="btn btn-green" style="margin-left:auto;">Publish Post</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts list -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Your Posts</div>
+            <div class="card-sub" id="feed-sub">Loading…</div>
+          </div>
+        </div>
+        <div id="feed-list" style="padding:1.5rem;min-height:80px;"></div>
+      </div>
+    </div>
+
+    <!-- ══════════ NOTIFICATIONS ══════════ -->
+    <div class="page" id="page-notifications">
+      <div class="section-eyebrow">Activity</div>
+      <div class="section-heading">Notifications</div>
+      <div class="card" id="notif-card" style="margin-bottom:0;overflow:visible;">
+        <div style="padding:2rem;text-align:center;color:var(--muted);font-size:0.84rem;">Loading notifications…</div>
+      </div>
+    </div>
+
+    <!-- ══════════ MESSAGES ══════════ -->
+    <div class="page" id="page-messages">
+      <div class="section-eyebrow">Inbox</div>
+      <div class="section-heading">Messages</div>
+
+      <div id="msg-loading" class="card">
+        <div style="padding:2.5rem;text-align:center;color:var(--muted);font-size:0.85rem;">Loading conversations…</div>
+      </div>
+
+      <div id="msg-empty" class="card" style="display:none;">
+        <div style="padding:3rem;text-align:center;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">💬</div>
+          <div style="font-weight:700;margin-bottom:0.4rem;">No messages yet</div>
+          <div style="color:var(--muted);font-size:0.85rem;max-width:300px;margin:0 auto;">When a client reaches out from your public profile, the conversation will appear here.</div>
+        </div>
+      </div>
+
+      <div id="msg-conv-list" style="display:none;" class="card">
+        <div id="msg-conv-items"></div>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<!-- ── Trainer reply panel (bottom-right) ── -->
+<div id="tr-chat-panel" class="tr-chat-panel tr-chat-hidden">
+  <div class="tr-chat-hdr">
+    <div class="tr-chat-av" id="tr-chat-av">?</div>
+    <div>
+      <div class="tr-chat-name" id="tr-chat-name">…</div>
+      <div class="tr-chat-sub">Client · Personal TRating</div>
+    </div>
+    <button class="tr-chat-close" onclick="closeMsgThread()">✕</button>
+  </div>
+  <div id="tr-chat-msgs" class="tr-chat-msgs"></div>
+  <div class="tr-chat-input-row">
+    <textarea id="msg-reply-input" class="tr-chat-input" rows="1"
+      placeholder="Type your reply…"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTrainerReply();}"></textarea>
+    <button class="tr-chat-send" onclick="sendTrainerReply()">➤</button>
+  </div>
+</div>
+
+<div class="copy-toast" id="copy-toast">✅ Link copied to clipboard!</div>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // ── Dumbbell SVG helper (matches trainer profile) ───────────────────────
+  function _db(filled: boolean, w = 18): string {
+    const c  = filled ? '#FFB800' : '#e0e8e1';
+    const sk = filled ? '#e6a800' : '#c8d4c8';
+    const h  = Math.round(w * 12 / 28);
+    return `<svg viewBox="0 0 28 12" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/></svg>`;
+  }
+  function _dumbbells(rating: number, w = 18): string {
+    const n = Math.min(5, Math.max(0, Math.round(rating)));
+    return Array.from({ length: 5 }, (_, i) => _db(i < n, w)).join('');
+  }
+
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
+
+  // ── Load trainer record ─────────────────────────────────────────────────
+  const { data: trainer } = await supabase
+    .from('trainers')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .maybeSingle();
+
+  // Logged in but no trainer profile — check if they're a client and redirect accordingly.
+  if (!trainer) {
+    const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
+    if (client) {
+      window.location.href = '/account';
+    } else {
+      window.location.href = '/signup';
+    }
+    throw new Error('no-profile');
+  }
+
+  // Store ID for save/update operations
+  let trainerId: string | null = trainer?.id ?? null;
+
+  // ── Gyms ────────────────────────────────────────────────────────────────────
+  let trainerGyms: { name: string; location: string }[] = [];
+
+  function renderGyms() {
+    const el = document.getElementById('gym-list') as HTMLElement;
+    if (!el) return;
+    if (trainerGyms.length === 0) {
+      el.innerHTML = '<div style="font-size:0.82rem;color:var(--muted);">No gyms added yet.</div>';
+      return;
+    }
+    el.innerHTML = trainerGyms.map((g, i) => `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:#f4f6f4;border:1px solid var(--border);border-radius:8px;padding:0.65rem 0.9rem;">
+        <div>
+          <div style="font-weight:700;font-size:0.875rem;">🏋️ ${g.name}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.15rem;">📍 ${g.location}</div>
+        </div>
+        <button onclick="removeGym(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:0.2rem 0.5rem;border-radius:4px;" title="Remove">✕</button>
+      </div>
+    `).join('');
+  }
+
+  (window as any).addGym = () => {
+    const nameInput = document.getElementById('gym-name-input') as HTMLInputElement;
+    const locInput  = document.getElementById('gym-location-input') as HTMLInputElement;
+    const name     = nameInput.value.trim();
+    const location = locInput.value.trim();
+    if (!name || !location) return;
+    trainerGyms.push({ name, location });
+    nameInput.value = '';
+    locInput.value  = '';
+    renderGyms();
+  };
+
+  (window as any).removeGym = (i: number) => {
+    trainerGyms.splice(i, 1);
+    renderGyms();
+  };
+
+  if (trainer) {
+    const firstName = trainer.name.split(' ')[0];
+
+    // ── Sidebar ─────────────────────────────────────────────────────────
+    const sbAvatarEl = document.querySelector('.sb-avatar') as HTMLElement;
+    if (sbAvatarEl) {
+      if (trainer.avatar_url) {
+        sbAvatarEl.innerHTML = `<img src="${trainer.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      } else {
+        sbAvatarEl.textContent = trainer.avatar_initials ?? '';
+      }
+    }
+    (document.querySelector('.sb-pt-name')  as HTMLElement).textContent = trainer.name;
+    (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${trainer.location}`;
+    const sbBusiness = document.querySelector('.sb-pt-business') as HTMLElement;
+    if (sbBusiness) {
+      if (trainer.business_name) {
+        sbBusiness.textContent   = trainer.business_name;
+        sbBusiness.style.display = 'block';
+      } else {
+        sbBusiness.style.display = 'none';
+      }
+    }
+
+    // ── View Public Profile link ─────────────────────────────────────────
+    const profileLink = document.getElementById('view-profile-link') as HTMLAnchorElement;
+    if (profileLink) profileLink.href = `/trainers/${trainer.id}`;
+
+    // ── Topbar subtitle ──────────────────────────────────────────────────
+    const pageSub = document.getElementById('page-sub');
+    if (pageSub) pageSub.textContent = `Welcome back, ${firstName}. Here's how you're performing.`;
+
+    // ── Stat cards ───────────────────────────────────────────────────────
+    const hasBmp  = (trainer.bmp_score ?? 0) > 0;
+    const bmpEl   = document.getElementById('stat-bmp');
+    const revEl   = document.getElementById('stat-reviews');
+    const viewsEl = document.getElementById('stat-views');
+    if (bmpEl)   bmpEl.textContent   = hasBmp ? String(trainer.bmp_score) : '—';
+    if (revEl)   revEl.textContent   = String(trainer.review_count ?? 0);
+    const revBadge = document.getElementById('sb-review-badge');
+    if (revBadge) revBadge.textContent = String(trainer.review_count ?? 0);
+
+    const bmpChangeEl  = document.getElementById('stat-bmp-change');
+    const revChangeEl  = document.getElementById('stat-reviews-change');
+    const viewChangeEl = document.getElementById('stat-views-change');
+    if (bmpChangeEl)  bmpChangeEl.textContent  = hasBmp ? 'Based on verified reviews'    : 'Earn your first review to unlock';
+    if (revChangeEl)  revChangeEl.textContent  = (trainer.review_count ?? 0) > 0 ? `${trainer.review_count} verified reviews` : 'No reviews yet — send your first link';
+
+    // ── Profile views ─────────────────────────────────────────────────────
+    const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+    const [{ count: totalViews }, { count: monthViews }] = await Promise.all([
+      supabase.from('profile_views').select('*', { count: 'exact', head: true }).eq('trainer_id', trainer.id),
+      supabase.from('profile_views').select('*', { count: 'exact', head: true }).eq('trainer_id', trainer.id).gte('viewed_at', monthStart.toISOString()),
+    ]);
+    if (viewsEl)    viewsEl.textContent    = String(totalViews ?? 0);
+    if (viewChangeEl) viewChangeEl.textContent = (monthViews ?? 0) > 0 ? `${monthViews} this month` : 'Increases as clients find you';
+
+    // ── New-review celebration ────────────────────────────────────────────
+    const currentCount = trainer.review_count ?? 0;
+    const storageKey   = `pt_last_review_count_${trainer.id}`;
+    const lastCount    = parseInt(localStorage.getItem(storageKey) || '0', 10);
+    const newReviews   = currentCount - lastCount;
+
+    if (currentCount > 0 && newReviews > 0) {
+      // Fire fireworks 🎆
+      (window as any).__ptFireCelebration(newReviews);
+
+      // Show inline banner on Overview
+      const overviewPage = document.getElementById('page-overview');
+      if (overviewPage && !overviewPage.querySelector('.review-alert')) {
+        const label    = newReviews === 1 ? '1 new review!' : `${newReviews} new reviews!`;
+        const subtext  = newReviews === 1
+          ? `A client just rated you — your BMP score has been updated.`
+          : `${newReviews} clients rated you since your last login — your BMP score has been updated.`;
+        const banner   = document.createElement('div');
+        banner.className = 'review-alert';
+        banner.innerHTML = `
+          <div class="review-alert-icon">🎉</div>
+          <div>
+            <div class="review-alert-title">You got ${label}</div>
+            <div class="review-alert-sub">${subtext}</div>
+          </div>
+          <button class="review-alert-close" onclick="this.closest('.review-alert').remove()">✕</button>`;
+        overviewPage.insertBefore(banner, overviewPage.firstChild);
+      }
+    }
+    localStorage.setItem(storageKey, String(currentCount));
+    // ─────────────────────────────────────────────────────────────────────
+
+    // Compute UK rank
+    const { count } = await supabase
+      .from('trainers')
+      .select('*', { count: 'exact', head: true })
+      .gt('bmp_score', trainer.bmp_score ?? 0);
+    const rank   = (count ?? 0) + 1;
+    const rankEl = document.getElementById('stat-rank');
+    const rankChangeEl = document.getElementById('stat-rank-change');
+    if (rankEl)       rankEl.textContent       = hasBmp ? `#${rank}` : '—';
+    if (rankChangeEl) rankChangeEl.textContent = hasBmp ? `Competing with 2,400+ PTs` : 'Rank unlocks with first review';
+
+    // ── BMP Gauge ────────────────────────────────────────────────────────
+    const gaugeCircle = document.getElementById('gauge-circle') as HTMLElement;
+    const gaugeScore  = document.getElementById('gauge-score')  as HTMLElement;
+    const gaugeRank   = document.getElementById('gauge-rank')   as HTMLElement;
+    const gaugeSub    = document.getElementById('gauge-sub')    as HTMLElement;
+    if (gaugeScore) gaugeScore.textContent = hasBmp ? String(trainer.bmp_score) : '—';
+    if (gaugeCircle && hasBmp) {
+      const deg = Math.round(((trainer.bmp_score ?? 0) / 100) * 360);
+      gaugeCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
+    }
+    if (gaugeRank) gaugeRank.textContent = hasBmp ? `🏆 Ranked #${rank} in the UK`   : '🔒 Rank unlocks with first review';
+    if (gaugeSub)  gaugeSub.textContent  = hasBmp ? `Competing with 2,400+ PTs`      : 'Start collecting verified reviews';
+
+    // ── Fetch this PT's real reviews ─────────────────────────────────────
+    const { data: ptReviews } = await supabase
+      .from('reviews')
+      .select('*')
+      .eq('trainer_id', trainer.id)
+      .eq('is_verified', true)
+      .order('created_at', { ascending: false });
+    const reviews = ptReviews ?? [];
+
+    // ── Recent reviews (overview) ────────────────────────────────────────
+    const recentList = document.getElementById('recent-reviews-list');
+    if (recentList) {
+      if (reviews.length === 0) {
+        recentList.innerHTML = `
+          <div style="padding:2.5rem 0;text-align:center;">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">⭐</div>
+            <div style="font-weight:700;font-size:0.9rem;color:#0d1a0e;margin-bottom:0.3rem;">No reviews yet</div>
+            <div style="font-size:0.8rem;color:#7a8f7c;line-height:1.6;max-width:280px;margin:0 auto 1rem;">Generate a review link and send it to your first client after a session.</div>
+            <button onclick="showPage('links')" style="padding:0.55rem 1.25rem;background:#3ab54a;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:'Manrope',sans-serif;">+ Generate Review Link</button>
+          </div>`;
+      } else {
+        recentList.innerHTML = reviews.slice(0, 3).map(r => `
+          <div class="review-item">
+            <div style="width:38px;height:38px;border-radius:50%;background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;flex-shrink:0;">${r.reviewer_initials||'?'}</div>
+            <div>
+              <div class="rev-name">${r.reviewer_name} <span style="font-weight:400;color:var(--muted);font-size:0.78rem;">· Verified Client</span></div>
+              <div style="display:flex;gap:2px;margin-top:0.2rem;">${_dumbbells(r.rating)}</div>
+              <div style="font-size:0.75rem;color:var(--green-dark);font-weight:700;margin-top:0.25rem;">BMP assigned: ${Math.round(r.rating * 20)}%</div>
+              <div class="rev-text">"${r.review_text}"</div>
+              <div class="rev-date">${new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+            </div>
+          </div>`).join('');
+      }
+    }
+
+    // ── Reviews page stats ────────────────────────────────────────────────
+    const avgEl   = document.getElementById('rev-stat-avg');
+    const totEl   = document.getElementById('rev-stat-total');
+    const verEl   = document.getElementById('rev-stat-verified');
+    const totSubEl = document.getElementById('rev-stat-total-sub');
+    if (reviews.length > 0) {
+      const avg = (reviews.reduce((s: number, r: any) => s + r.rating, 0) / reviews.length).toFixed(1);
+      if (avgEl)  avgEl.textContent  = avg;
+      if (totEl)  totEl.textContent  = String(reviews.length);
+      if (verEl)  verEl.textContent  = '100%';
+      if (totSubEl) totSubEl.textContent = reviews.length === 1 ? '1 review received' : `${reviews.length} reviews received`;
+    } else {
+      if (avgEl)  avgEl.textContent  = '—';
+      if (totEl)  totEl.textContent  = '0';
+      if (verEl)  verEl.textContent  = '—';
+    }
+
+    // ── All reviews list ──────────────────────────────────────────────────
+    const allList = document.getElementById('all-reviews-list');
+    if (allList) {
+      if (reviews.length === 0) {
+        allList.innerHTML = `
+          <div style="padding:3rem 1.5rem;text-align:center;">
+            <div style="font-size:2.5rem;margin-bottom:0.75rem;">⭐</div>
+            <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.15rem;color:#0d1a0e;margin-bottom:0.4rem;">No reviews yet</div>
+            <div style="font-size:0.84rem;color:#7a8f7c;line-height:1.65;max-width:340px;margin:0 auto;">Send your first review link to a client after your next session and their verified review will appear here.</div>
+          </div>`;
+      } else {
+        allList.innerHTML = reviews.map((r: any) => `
+          <div class="review-item">
+            <div style="width:38px;height:38px;border-radius:50%;background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;flex-shrink:0;">${r.reviewer_initials||'?'}</div>
+            <div style="flex:1">
+              <div class="rev-name">${r.reviewer_name} <span style="font-weight:400;color:var(--muted);font-size:0.78rem;">· Verified Client · ${new Date(r.created_at).toLocaleDateString('en-GB')}</span></div>
+              <div style="display:flex;gap:2px;margin-top:0.2rem;">${_dumbbells(r.rating)}</div>
+              <div style="font-size:0.75rem;color:var(--green-dark);font-weight:700;margin-top:0.25rem;">BMP assigned: ${Math.round(r.rating * 20)}%</div>
+              <div class="rev-text">"${r.review_text}"</div>
+            </div>
+          </div>`).join('');
+      }
+    }
+
+    // ── Time-ago helper ───────────────────────────────────────────────────
+    const timeAgo = (iso: string): string => {
+      const diff = Date.now() - new Date(iso).getTime();
+      const mins  = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days  = Math.floor(diff / 86400000);
+      const weeks = Math.floor(days / 7);
+      if (mins < 60)  return mins <= 1 ? 'Just now' : `${mins} mins ago`;
+      if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+      if (days < 7)   return `${days} day${days > 1 ? 's' : ''} ago`;
+      if (weeks < 5)  return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
+      return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    };
+
+    // ── Reviews chart (real monthly data) ────────────────────────────────
+    const chartWrap = document.getElementById('reviews-chart-wrap') as HTMLElement;
+    if (chartWrap) {
+      const now = new Date();
+      const months: { label: string; count: number }[] = [];
+      for (let i = 7; i >= 0; i--) {
+        const d     = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const label = d.toLocaleString('en-GB', { month: 'short' });
+        const start = new Date(d.getFullYear(), d.getMonth(), 1).toISOString();
+        const end   = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59).toISOString();
+        const count = reviews.filter((r: any) => r.created_at >= start && r.created_at <= end).length;
+        months.push({ label, count });
+      }
+      const maxCount = Math.max(...months.map(m => m.count), 1);
+      chartWrap.innerHTML = months.map((m, i) => {
+        const pct     = Math.max(8, Math.round((m.count / maxCount) * 100));
+        const isLast  = i === months.length - 1;
+        return `<div class="chart-bar-group">
+          <div class="chart-bar${isLast ? ' highlight' : ''}" style="height:${pct}%" title="${m.count} review${m.count !== 1 ? 's' : ''}"></div>
+          <div class="chart-label">${m.label}</div>
+        </div>`;
+      }).join('');
+    }
+
+    // ── Review History (link history page) ───────────────────────────────
+    const linkHistoryEl = document.getElementById('link-history-list') as HTMLElement;
+    if (linkHistoryEl) {
+      if (reviews.length === 0) {
+        linkHistoryEl.innerHTML = `<div style="padding:2.5rem 1.5rem;text-align:center;color:var(--muted);font-size:0.84rem;">No reviews yet. Send your link to clients after each session and their reviews will appear here.</div>`;
+      } else {
+        linkHistoryEl.innerHTML = reviews.map((r: any) => {
+          const dateStr = new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+          const initials = r.is_anonymous ? '?' : (r.reviewer_initials || (r.reviewer_name||'?').slice(0,2).toUpperCase());
+          const displayName = r.is_anonymous ? 'Anonymous' : (r.reviewer_name || 'Client');
+          const bmp = Math.round((r.rating || 0) * 20);
+          return `<div style="display:flex;gap:1rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);align-items:flex-start;">
+            <div style="width:42px;height:42px;border-radius:50%;background:${r.reviewer_avatar_bg||'#e8f5e9'};color:${r.reviewer_avatar_color||'#2a6b35'};display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:800;flex-shrink:0;font-family:'Manrope',sans-serif;">${initials}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:0.9rem;color:var(--text);">${displayName}</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin-bottom:${r.review_text ? '0.45rem' : '0'};">${dateStr}</div>
+              ${r.review_text ? `<div style="font-size:0.82rem;color:#4a5a4c;line-height:1.55;font-style:italic;">"${r.review_text}"</div>` : ''}
+            </div>
+            <div style="text-align:center;flex-shrink:0;min-width:72px;">
+              <div style="font-size:0.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.1rem;">BMP</div>
+              <div style="font-size:1.65rem;font-weight:900;color:var(--text);line-height:1;">${bmp}<span style="font-size:0.72rem;font-weight:600;color:var(--muted);">%</span></div>
+              <div style="margin:0.3rem 0;">${_dumbbells(r.rating, 14)}</div>
+              <div style="font-size:0.65rem;font-weight:700;color:var(--green-dark);">✓ Verified Client</div>
+            </div>
+          </div>`;
+        }).join('');
+      }
+    }
+
+    // ── Score Breakdown (real values) ────────────────────────────────────
+    const breakdownEl = document.getElementById('score-breakdown-body') as HTMLElement;
+    if (breakdownEl) {
+      if (!hasBmp) {
+        breakdownEl.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.75rem 0;">Collect reviews to unlock your score breakdown.</div>`;
+      } else {
+        const starPct    = Math.round(((trainer.star_rating ?? 0) / 5) * 100);
+        const volComp    = Math.min((trainer.review_count ?? 0) * 2, 30);
+        const volPct     = Math.round((volComp / 30) * 100);
+        let profileScore = 0;
+        if (trainer.bio)       profileScore += 25;
+        if (trainer.city)      profileScore += 25;
+        if (trainer.cert)      profileScore += 25;
+        if (trainer.specialty) profileScore += 25;
+        const mostRecent  = reviews[0];
+        let recencyLabel  = 'Low';
+        let recencyPct    = 15;
+        if (mostRecent) {
+          const daysSince = (Date.now() - new Date(mostRecent.created_at).getTime()) / 86400000;
+          if (daysSince < 14)  { recencyLabel = 'High'; recencyPct = 100; }
+          else if (daysSince < 60)  { recencyLabel = 'Good'; recencyPct = 65; }
+          else if (daysSince < 180) { recencyLabel = 'Fair'; recencyPct = 35; }
+        }
+        breakdownEl.innerHTML = `
+          <div class="progress-row"><span class="progress-label">Star Rating</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${starPct}%"></div></div><span class="progress-val">${trainer.star_rating ?? '—'}</span></div>
+          <div class="progress-row"><span class="progress-label">Review Volume</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${volPct}%"></div></div><span class="progress-val">${trainer.review_count ?? 0}</span></div>
+          <div class="progress-row"><span class="progress-label">Recency</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${recencyPct}%"></div></div><span class="progress-val">${recencyLabel}</span></div>
+          <div class="progress-row"><span class="progress-label">Profile</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${profileScore}%"></div></div><span class="progress-val">${profileScore}%</span></div>`;
+      }
+    }
+
+    // ── Notifications badge + read state ─────────────────────────────────
+    const notifKey      = `pt_last_notif_seen_${trainer.id}`;
+    const lastNotifSeen = parseInt(localStorage.getItem(notifKey) || '0', 10);
+    const unreadCount   = Math.max(0, reviews.length - lastNotifSeen);
+
+    const notifBadgeEl = document.getElementById('notif-badge') as HTMLElement;
+    if (notifBadgeEl) {
+      if (unreadCount > 0) {
+        notifBadgeEl.textContent   = String(unreadCount);
+        notifBadgeEl.style.display = '';
+      } else {
+        notifBadgeEl.style.display = 'none';
+      }
+    }
+    localStorage.setItem(`pt_review_count_snap_${trainer.id}`, String(reviews.length));
+
+    const notifDot = document.querySelector('.notif-dot') as HTMLElement;
+    if (notifDot) notifDot.style.display = unreadCount > 0 ? '' : 'none';
+
+    // ── Notifications list ────────────────────────────────────────────────
+    const notifCard = document.getElementById('notif-card') as HTMLElement;
+    if (notifCard) {
+      type NotifItem = { text: string; time: string; isRead: boolean };
+      const notifs: NotifItem[] = [];
+      // Reviews are newest-first; the first `unreadCount` are unseen
+      reviews.slice(0, 8).forEach((r: any, i: number) => {
+        const quote = r.review_text
+          ? `<span style="display:block;margin-top:0.4rem;font-size:0.78rem;color:var(--muted);font-style:italic;line-height:1.55;">"${r.review_text.slice(0, 140)}${r.review_text.length > 140 ? '…' : ''}"</span>`
+          : '';
+        notifs.push({
+          text:   `<strong>New review received</strong> — ${r.reviewer_name} gave you ${r.rating} dumbbell${r.rating !== 1 ? 's' : ''}.${quote}`,
+          time:   timeAgo(r.created_at),
+          isRead: i >= unreadCount,
+        });
+      });
+      if (hasBmp && reviews.length > 0) {
+        notifs.push({
+          text:   `<strong>BMP Score updated</strong> — Your score is now <strong>${trainer.bmp_score}</strong>, placing you #${rank} in the UK.`,
+          time:   timeAgo(reviews[0].created_at),
+          isRead: true,
+        });
+      }
+      if (notifs.length === 0) {
+        notifCard.innerHTML = `<div style="padding:3rem 1.5rem;text-align:center;"><div style="font-size:2rem;margin-bottom:0.5rem;">🔔</div><div style="font-weight:700;font-size:0.9rem;color:#0d1a0e;margin-bottom:0.25rem;">No notifications yet</div><div style="font-size:0.8rem;color:#7a8f7c;">Notifications appear when clients leave you reviews.</div></div>`;
+      } else {
+        notifCard.innerHTML = notifs.map(n => `
+          <div class="notif-item">
+            <div class="notif-bullet${n.isRead ? ' read' : ''}"></div>
+            <div class="notif-body">
+              <div class="notif-text">${n.text}</div>
+              <div class="notif-time">${n.time}</div>
+            </div>
+          </div>`).join('');
+      }
+    }
+
+    // ── Profile form pre-fill ────────────────────────────────────────────
+    const nameParts = (trainer.name || '').split(' ');
+    const fillText = (id: string, val: string) => {
+      const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
+      if (el) el.value = val ?? '';
+    };
+    fillText('profile-firstname', nameParts[0] ?? '');
+    fillText('profile-lastname',  nameParts.slice(1).join(' ') ?? '');
+    fillText('profile-business',  trainer.business_name ?? '');
+    fillText('profile-city',      trainer.city     ?? '');
+    fillText('profile-postcode',  trainer.postcode ?? '');
+    fillText('profile-bio',       trainer.bio ?? '');
+    fillText('profile-intro-msg', (trainer as any).intro_message ?? '');
+
+    // ── Avatar preview ───────────────────────────────────────────────────
+    const avatarPreview = document.getElementById('profile-avatar-preview') as HTMLElement;
+    if (avatarPreview) {
+      if (trainer.avatar_url) {
+        avatarPreview.innerHTML = `<img src="${trainer.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />`;
+        avatarPreview.style.background = 'transparent';
+      } else {
+        avatarPreview.textContent = trainer.avatar_initials ?? '';
+        avatarPreview.style.background = trainer.avatar_bg ?? '#eaf7ec';
+        avatarPreview.style.color      = trainer.avatar_color ?? '#2a9438';
+      }
+    }
+
+    // ── Colour swatch pre-select ─────────────────────────────────────────
+    const currentBg = (trainer.avatar_bg ?? '').trim().toLowerCase();
+    document.querySelectorAll('.colour-swatch').forEach((el) => {
+      const swatch = el as HTMLElement;
+      if ((swatch.dataset.bg ?? '').trim().toLowerCase() === currentBg) {
+        swatch.classList.add('selected');
+      }
+    });
+
+    // ── Theme swatch pre-select ──────────────────────────────────────────
+    const currentTheme = trainer.hero_theme ?? 'forest';
+    document.querySelectorAll('.theme-swatch').forEach((el) => {
+      const swatch = el as HTMLElement;
+      if (swatch.dataset.theme === currentTheme) swatch.classList.add('selected');
+    });
+
+    // ── Profile completeness banner ───────────────────────────────────────
+    const isNewProfile = !trainer.bio && !trainer.city && (trainer.review_count ?? 0) === 0;
+    const profilePage  = document.getElementById('page-profile');
+    if (isNewProfile && profilePage && !profilePage.querySelector('.profile-welcome-banner')) {
+      const banner = document.createElement('div');
+      banner.className = 'profile-welcome-banner';
+      banner.style.cssText = `
+        background:linear-gradient(135deg,var(--green-light) 0%,white 70%);
+        border:1.5px solid var(--green-mid); border-radius:12px;
+        padding:1.25rem 1.5rem; margin-bottom:1.5rem;
+        display:flex; align-items:center; gap:1rem;
+      `;
+      banner.innerHTML = `
+        <div style="font-size:1.75rem;flex-shrink:0;">👋</div>
+        <div>
+          <div style="font-weight:800;font-size:0.92rem;color:var(--text);margin-bottom:0.2rem;">Welcome! Let's complete your profile.</div>
+          <div style="font-size:0.8rem;color:var(--muted);line-height:1.55;">
+            Fill in your city, bio and specialties below, then click <strong>Save Profile</strong>.
+            A complete profile attracts more clients and boosts your BMP score.
+          </div>
+        </div>
+      `;
+      profilePage.insertBefore(banner, profilePage.firstChild);
+    }
+
+    // ── Specialty tags — deselect all, then select matching ───────────────
+    document.querySelectorAll('.tag-pill').forEach(tag => {
+      tag.classList.remove('selected');
+      // Match on the text after the emoji
+      const tagText = (tag.textContent ?? '').replace(/^\S+\s*/, '').trim();
+      if (trainer.specialty && tagText === trainer.specialty) {
+        tag.classList.add('selected');
+      }
+    });
+
+    // ── Cert dropdown ────────────────────────────────────────────────────
+    const certEl         = document.getElementById('profile-cert')            as HTMLSelectElement;
+    const certOtherWrap  = document.getElementById('profile-cert-other-wrap') as HTMLDivElement;
+    const certOtherInput = document.getElementById('profile-cert-other')      as HTMLInputElement;
+    const certValue = (trainer.cert ?? '').trim();
+    if (certEl && certValue) {
+      const opts = Array.from(certEl.options).map(o => o.value);
+      if (opts.includes(certValue)) {
+        certEl.value = certValue;
+      } else {
+        certEl.value = 'other';
+        if (certOtherWrap) certOtherWrap.style.display = 'flex';
+        if (certOtherInput) certOtherInput.value = certValue;
+      }
+    }
+
+    // Show/hide cert other box on change
+    certEl?.addEventListener('change', () => {
+      const isOther = certEl.value === 'other';
+      certOtherWrap.style.display = isOther ? 'flex' : 'none';
+    });
+
+    // ── Personalised review link ──────────────────────────────────────────
+    const reviewLinkEl = document.getElementById('review-link') as HTMLInputElement;
+    const reviewUrl = `${window.location.origin}/review/${trainer.id}`;
+    if (reviewLinkEl) reviewLinkEl.value = reviewUrl;
+    (window as any).__ptReviewUrl  = reviewUrl;
+    (window as any).__ptTrainerId  = trainer.id;
+    (window as any).__ptUserId     = session.user.id;
+    (window as any).__ptInitials   = trainer.avatar_initials ?? '';
+    (window as any).__ptSupabase   = supabase;
+    (window as any).__ptTrainer    = trainer;
+
+    // Load feed on initial overview display
+    loadOverviewFeed();
+
+    // ── Rankings table (dynamic) ──────────────────────────────────────────
+    const { data: leaderboard } = await supabase
+      .from('trainers')
+      .select('id, name, city, location, bmp_score, avatar_initials, avatar_bg, avatar_color')
+      .eq('is_active', true)
+      .gt('bmp_score', 0)
+      .order('bmp_score', { ascending: false })
+      .limit(10);
+
+    const rankTbody = document.getElementById('rank-tbody') as HTMLElement;
+    const posClasses = ['r1','r2','r3'];
+    if (rankTbody) {
+      if (leaderboard && leaderboard.length > 0) {
+        rankTbody.innerHTML = leaderboard.map((pt: any, i: number) => {
+          const isYou = pt.id === trainer.id;
+          return `<tr ${isYou ? 'class="you"' : ''}>
+            <td class="rank-pos ${posClasses[i] ?? ''}">${i + 1}</td>
+            <td><div style="display:flex;align-items:center;gap:0.5rem;">
+              <div class="rank-avatar" style="background:${pt.avatar_bg || '#eaf7ec'};color:${pt.avatar_color || '#2a9438'};">${pt.avatar_initials || '?'}</div>
+              ${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}
+            </div></td>
+            <td>${pt.city || pt.location}</td>
+            <td><strong>${pt.bmp_score}</strong></td>
+          </tr>`;
+        }).join('');
+      } else {
+        rankTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2.5rem;color:#7a8f7c;font-size:0.85rem;">Rankings appear once PTs collect verified reviews.</td></tr>`;
+      }
+    }
+
+    // ── Mini gauge on Rankings page ───────────────────────────────────────
+    const miniScore  = document.getElementById('mini-gauge-score')  as HTMLElement;
+    const miniRank   = document.getElementById('mini-gauge-rank')   as HTMLElement;
+    const miniSub    = document.getElementById('mini-gauge-sub')    as HTMLElement;
+    const miniCircle = document.getElementById('mini-gauge-circle') as HTMLElement;
+    if (miniScore) miniScore.textContent = hasBmp ? String(trainer.bmp_score) : '—';
+    if (miniRank)  miniRank.textContent  = hasBmp ? `🏆 #${rank} in the UK`          : '🔒 Rank unlocks with first review';
+    if (miniSub)   miniSub.textContent   = hasBmp ? `Competing with 2,400+ PTs`       : 'Collect verified reviews to rank';
+    if (miniCircle && hasBmp) {
+      const deg = Math.round(((trainer.bmp_score ?? 0) / 100) * 360);
+      miniCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
+    }
+
+    // ── Load gyms ─────────────────────────────────────────────────────────
+    trainerGyms = Array.isArray(trainer.gyms) ? [...trainer.gyms] : [];
+    renderGyms();
+  }
+
+  // ── Save Profile (exposed globally so onclick can call it) ──────────────
+  (window as any).saveProfile = async () => {
+    if (!trainerId) return;
+
+    const firstName    = (document.getElementById('profile-firstname') as HTMLInputElement).value.trim();
+    const lastName     = (document.getElementById('profile-lastname')  as HTMLInputElement).value.trim();
+    const businessName = (document.getElementById('profile-business')  as HTMLInputElement).value.trim();
+    const city         = (document.getElementById('profile-city')      as HTMLInputElement).value.trim();
+    const postcode  = (document.getElementById('profile-postcode')  as HTMLInputElement).value.trim().toUpperCase();
+    const bio        = (document.getElementById('profile-bio')        as HTMLTextAreaElement).value.trim();
+    const introMsg   = (document.getElementById('profile-intro-msg') as HTMLTextAreaElement).value.trim();
+
+    const certRaw = (document.getElementById('profile-cert') as HTMLSelectElement).value;
+    const cert    = certRaw === 'other'
+      ? (document.getElementById('profile-cert-other') as HTMLInputElement).value.trim()
+      : certRaw;
+
+    // First selected specialty tag
+    const selectedTag = document.querySelector('.tag-pill.selected');
+    const specialty   = selectedTag
+      ? (selectedTag.textContent ?? '').replace(/^\S+\s*/, '').trim()
+      : '';
+
+    const name     = `${firstName} ${lastName}`.trim();
+    const location = postcode ? `${city}, ${postcode}` : city;
+    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
+
+    const selectedColour = document.querySelector('.colour-swatch.selected') as HTMLElement | null;
+    const avatarBg    = selectedColour?.dataset.bg    ?? '#eaf7ec';
+    const avatarColor = selectedColour?.dataset.color ?? '#2a9438';
+
+    const selectedTheme = document.querySelector('.theme-swatch.selected') as HTMLElement | null;
+    const heroTheme = selectedTheme?.dataset.theme ?? 'forest';
+
+    const { error } = await supabase
+      .from('trainers')
+      .update({ name, business_name: businessName || null, location, city, postcode, bio, intro_message: introMsg || null, specialty, cert, avatar_initials: initials, avatar_bg: avatarBg, avatar_color: avatarColor, hero_theme: heroTheme, gyms: trainerGyms })
+      .eq('id', trainerId);
+
+    if (error) {
+      showToast('❌ Save failed — please try again.');
+    } else {
+      // Update sidebar live
+      (document.querySelector('.sb-pt-name')  as HTMLElement).textContent = name;
+      (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${location}`;
+      const sbAv = document.querySelector('.sb-avatar') as HTMLElement;
+      if (sbAv && !sbAv.querySelector('img')) {
+        sbAv.textContent = initials;
+        sbAv.style.background = avatarBg;
+        sbAv.style.color = avatarColor;
+      }
+      // Update avatar preview colour live (if no photo uploaded)
+      const prev = document.getElementById('profile-avatar-preview') as HTMLElement;
+      if (prev && !prev.querySelector('img')) {
+        prev.textContent = initials;
+        prev.style.background = avatarBg;
+        prev.style.color = avatarColor;
+      }
+      const sbBiz = document.querySelector('.sb-pt-business') as HTMLElement;
+      if (sbBiz) {
+        if (businessName) { sbBiz.textContent = businessName; sbBiz.style.display = 'block'; }
+        else { sbBiz.style.display = 'none'; }
+      }
+      showToast('✅ Profile saved successfully!');
+    }
+  };
+
+  // ── Messages ────────────────────────────────────────────────────────────
+
+  let _msgConvId: string | null   = null;
+  let _msgChannel: any            = null;
+  let _msgConvChannel: any        = null;
+
+  function _esc(s: string) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
+
+  function _msgTime(iso: string): string {
+    const d = new Date(iso), now = new Date(), diff = now.getTime() - d.getTime();
+    if (diff < 86400000) return d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    if (diff < 604800000) return d.toLocaleDateString('en-GB', { weekday:'short' });
+    return d.toLocaleDateString('en-GB', { day:'numeric', month:'short' });
+  }
+
+  function _updateMsgBadge(n: number) {
+    const el = document.getElementById('sb-msg-badge');
+    if (!el) return;
+    if (n > 0) { el.textContent = String(n); el.style.display = ''; }
+    else el.style.display = 'none';
+  }
+
+  async function _fetchUnreadBadge() {
+    if (!trainerId) return;
+    const { data } = await supabase.from('conversations').select('trainer_unread_count').eq('trainer_id', trainerId);
+    _updateMsgBadge((data || []).reduce((s: number, c: any) => s + (c.trainer_unread_count || 0), 0));
+  }
+
+  (window as any).loadConversations = async function() {
+    if (!trainerId) return;
+
+    const { data: convs } = await supabase
+      .from('conversations')
+      .select('id, last_message_at, last_message_preview, trainer_unread_count, client_id, client_name')
+      .eq('trainer_id', trainerId)
+      .order('last_message_at', { ascending: false });
+
+    document.getElementById('msg-loading')!.style.display = 'none';
+    const total = (convs || []).reduce((s: number, c: any) => s + (c.trainer_unread_count || 0), 0);
+    _updateMsgBadge(total);
+
+    if (!convs || convs.length === 0) {
+      document.getElementById('msg-empty')!.style.display = '';
+      return;
+    }
+    document.getElementById('msg-empty')!.style.display = 'none';
+    document.getElementById('msg-conv-list')!.style.display = '';
+
+    const AV_PALETTES = [
+      { bg:'#fde8e8', color:'#c0392b' },
+      { bg:'#eaf7ec', color:'#2a9438' },
+      { bg:'#f0e8fd', color:'#7b2fbe' },
+      { bg:'#e8f4fd', color:'#2471a3' },
+      { bg:'#fdf5e8', color:'#b7770d' },
+      { bg:'#fdeef8', color:'#a93277' },
+    ];
+    const el = document.getElementById('msg-conv-items')!;
+    el.innerHTML = convs.map((c: any) => {
+      const rawName  = c.client_name || 'Client';
+      const p        = rawName.trim().split(' ');
+      const initials = ((p[0]?.[0] ?? '') + (p[1]?.[0] ?? '')).toUpperCase() || '?';
+      const palette  = AV_PALETTES[(initials.charCodeAt(0) + (initials.charCodeAt(1) || 0)) % AV_PALETTES.length];
+      const unread   = c.trainer_unread_count > 0;
+      return `<div class="msg-card">
+        <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;flex:1;min-width:0;">
+          <div style="position:relative;flex-shrink:0;width:48px;height:48px;">
+            <div style="width:48px;height:48px;border-radius:50%;background:${palette.bg};color:${palette.color};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;">${initials}</div>
+            ${unread ? `<span style="position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid white;"></span>` : ''}
+          </div>
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:0.93rem;color:var(--text);">${_esc(rawName)}</div>
+            ${unread && c.last_message_at ? `<div style="font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.2rem;">New Message · ${new Date(c.last_message_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} at ${new Date(c.last_message_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
+          </div>
+          <button class="msg-view-btn" onclick="openMsgThread('${c.id}','${_esc(rawName)}','${initials}')">View Conversation</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    // Subscribe to conversation updates and new conversations for live badge
+    if (!_msgConvChannel) {
+      const _onConvChange = () => {
+        const active = document.getElementById('page-messages')?.classList.contains('active');
+        if (active) (window as any).loadConversations();
+        else _fetchUnreadBadge();
+      };
+      _msgConvChannel = supabase.channel('trainer-convs-' + trainerId)
+        .on('postgres_changes', { event:'UPDATE', schema:'public', table:'conversations',
+          filter:`trainer_id=eq.${trainerId}` }, _onConvChange)
+        .on('postgres_changes', { event:'INSERT', schema:'public', table:'conversations',
+          filter:`trainer_id=eq.${trainerId}` }, _onConvChange)
+        .subscribe();
+    }
+  };
+
+  (window as any).openMsgThread = async function(convId: string, clientName: string, clientInitials: string) {
+    _msgConvId = convId;
+
+    // Update panel header
+    document.getElementById('tr-chat-name')!.textContent = clientName;
+    document.getElementById('tr-chat-av')!.textContent   = clientInitials;
+
+    // Slide in the panel
+    const panel = document.getElementById('tr-chat-panel')!;
+    panel.classList.remove('tr-chat-hidden');
+    requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('open')));
+
+    // Reset trainer unread and refresh list badges
+    await supabase.from('conversations').update({ trainer_unread_count: 0 }).eq('id', convId);
+    await (window as any).loadConversations();
+
+    // Load messages
+    const { data: msgs } = await supabase
+      .from('messages').select('id, sender_type, content, created_at')
+      .eq('conversation_id', convId).order('created_at', { ascending: true });
+
+    const container = document.getElementById('tr-chat-msgs')!;
+    container.innerHTML = (msgs || []).map(_renderThreadMsg).join('');
+    container.scrollTop = container.scrollHeight;
+
+    // Subscribe to new messages in this thread
+    if (_msgChannel) _msgChannel.unsubscribe();
+    _msgChannel = supabase.channel(`trainer-thread-${convId}`)
+      .on('postgres_changes', { event:'INSERT', schema:'public', table:'messages',
+        filter:`conversation_id=eq.${convId}` }, (p: any) => {
+          container.insertAdjacentHTML('beforeend', _renderThreadMsg(p.new));
+          container.scrollTop = container.scrollHeight;
+          (window as any).loadConversations();
+        })
+      .subscribe();
+  };
+
+  function _renderThreadMsg(m: any): string {
+    const isT = m.sender_type === 'trainer';
+    const time = new Date(m.created_at).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+    const bubbleStyle = isT
+      ? 'background:#111311;color:white;padding:0.6rem 0.85rem;border-radius:14px 14px 4px 14px;font-size:0.875rem;line-height:1.5;word-break:break-word;'
+      : 'background:white;color:#111311;border:1px solid #e0e8e1;padding:0.6rem 0.85rem;border-radius:14px 14px 14px 4px;font-size:0.875rem;line-height:1.5;word-break:break-word;';
+    return `<div style="display:flex;flex-direction:column;max-width:75%;${isT ? 'align-self:flex-end;' : 'align-self:flex-start;'}">
+      <div style="${bubbleStyle}">${_esc(m.content)}</div>
+      <div style="font-size:0.62rem;color:#aab8ac;margin-top:0.2rem;${isT ? 'text-align:right;' : ''}">${time}</div>
+    </div>`;
+  }
+
+  (window as any).closeMsgThread = function() {
+    const panel = document.getElementById('tr-chat-panel')!;
+    panel.classList.remove('open');
+    setTimeout(() => panel.classList.add('tr-chat-hidden'), 300);
+    _msgConvId = null;
+    if (_msgChannel) { _msgChannel.unsubscribe(); _msgChannel = null; }
+  };
+
+  (window as any).sendTrainerReply = async function() {
+    if (!_msgConvId || !trainerId) return;
+    const inp = document.getElementById('msg-reply-input') as HTMLTextAreaElement;
+    const content = inp.value.trim();
+    if (!content) return;
+    inp.value = '';
+    await supabase.from('messages').insert({ conversation_id: _msgConvId, sender_type: 'trainer', content });
+  };
+
+  // Auto-resize reply textarea
+  document.getElementById('msg-reply-input')?.addEventListener('input', function(this: HTMLTextAreaElement) {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+
+  // Load initial badge count on dashboard open
+  _fetchUnreadBadge();
+
+  // ── Sign out ─────────────────────────────────────────────────────────────
+  document.getElementById('sign-out-btn')?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  });
+</script>
+
+<script is:inline>
+  // ── Avatar photo upload ──────────────────────────────────────────────────
+  async function handleAvatarUpload(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    // Size guard — 5 MB max
+    if (file.size > 5 * 1024 * 1024) {
+      showToast('❌ Image too large — max 5 MB');
+      return;
+    }
+
+    const preview   = document.getElementById('profile-avatar-preview');
+    const trainerId = window['__ptTrainerId'];
+    const userId    = window['__ptUserId'];
+    if (!trainerId || !userId) return;
+
+    preview.innerHTML = '<div style="font-size:1.4rem;animation:spin 1s linear infinite;">⏳</div>';
+
+    // Use user ID as folder so the storage RLS policy matches auth.uid()
+    const ext  = file.name.split('.').pop() || 'jpg';
+    const path = `${userId}/avatar.${ext}`;
+
+    const { error: uploadErr } = await window['__ptSupabase'].storage
+      .from('avatars')
+      .upload(path, file, { upsert: true, contentType: file.type });
+
+    if (uploadErr) {
+      showToast('❌ Upload failed — ' + uploadErr.message);
+      // Restore initials
+      preview.textContent = window['__ptInitials'] || '?';
+      return;
+    }
+
+    const { data: { publicUrl } } = window['__ptSupabase'].storage
+      .from('avatars')
+      .getPublicUrl(path);
+
+    // Cache-bust the URL
+    const urlWithBust = publicUrl + '?t=' + Date.now();
+
+    await window['__ptSupabase'].from('trainers')
+      .update({ avatar_url: urlWithBust })
+      .eq('id', trainerId);
+
+    // Update preview
+    preview.innerHTML = `<img src="${urlWithBust}" style="width:100%;height:100%;object-fit:cover;" />`;
+    preview.style.background = 'transparent';
+
+    // Update sidebar
+    const sbAv = document.querySelector('.sb-avatar');
+    if (sbAv) sbAv.innerHTML = `<img src="${urlWithBust}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+
+    showToast('✅ Photo uploaded!');
+  }
+
+  // ── Colour swatch selection ──────────────────────────────────────────────
+  function selectColour(btn) {
+    document.querySelectorAll('.colour-swatch').forEach(s => s.classList.remove('selected'));
+    btn.classList.add('selected');
+    // Live-update the avatar preview circle background (if no photo)
+    const preview = document.getElementById('profile-avatar-preview');
+    if (preview && !preview.querySelector('img')) {
+      preview.style.background = btn.dataset.bg;
+      preview.style.color      = btn.dataset.color;
+    }
+  }
+
+  // ── Theme swatch selection ───────────────────────────────────────────────
+  function selectTheme(btn) {
+    document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  const titles = {
+    // overview subtitle is set dynamically by the auth script — don't override it here
+    overview:      ['Overview',       null],
+    profile:       ['My Profile',     'Update your public profile — changes go live immediately.'],
+    reviews:       ['Reviews',        'All verified client reviews for your profile.'],
+    links:         ['Review Links',   'Generate and send review links to your clients.'],
+    rankings:      ['Rankings',       'Your position on the UK leaderboard.'],
+    notifications: ['Notifications',  'Recent activity on your account.'],
+    feed:          ['My Feed',        'Share updates, classes and client progress with your audience.'],
+    messages:      ['Messages',       'Direct messages from clients who reached out on your profile.'],
+  };
+
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+    const page = document.getElementById('page-' + id);
+    if (page) page.classList.add('active');
+    const match = [...document.querySelectorAll('.sb-item')].find(el => el.getAttribute('onclick') && el.getAttribute('onclick').includes(id));
+    if (match) match.classList.add('active');
+    const [title, sub] = titles[id] || ['Dashboard', ''];
+    document.getElementById('page-title').textContent = title;
+    // Only update subtitle when we have one (overview keeps the personalised welcome set by auth script)
+    if (sub) document.getElementById('page-sub').textContent = sub;
+    window.scrollTo(0, 0);
+
+    // Load feed posts when navigating to that page
+    if (id === 'feed') loadFeedPosts();
+
+    // Load messages when navigating to messages tab
+    if (id === 'messages') loadConversations();
+
+    // Load feed preview on overview
+    if (id === 'overview') loadOverviewFeed();
+
+    // Build share card when navigating to the links page
+    if (id === 'links') setTimeout(buildShareCard, 80);
+
+    // Mark notifications as read when the user opens that page
+    if (id === 'notifications') {
+      const badge  = document.getElementById('notif-badge');
+      const dot    = document.querySelector('.notif-dot');
+      const trainerId = window['__ptTrainerId'];
+      if (trainerId) {
+        // Count current reviews and persist as "last seen"
+        const notifCard = document.getElementById('notif-card');
+        const count = notifCard ? notifCard.querySelectorAll('.notif-item').length : 0;
+        // We stored review count at login time — update the localStorage key
+        const reviewCount = parseInt(localStorage.getItem('pt_review_count_snap_' + trainerId) || '0', 10);
+        localStorage.setItem('pt_last_notif_seen_' + trainerId, String(reviewCount));
+      }
+      if (badge) badge.style.display = 'none';
+      if (dot)   dot.style.display   = 'none';
+      // Mark all dot items in the card as read
+      document.querySelectorAll('#notif-card .notif-bullet').forEach(d => d.classList.add('read'));
+    }
+  }
+
+  function toggleTag(el) {
+    const selected = document.querySelectorAll('.tag-pill.selected');
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+    } else if (selected.length < 3) {
+      el.classList.add('selected');
+    }
+  }
+
+  function discardProfile() {
+    showPage('overview');
+  }
+
+  // ── Share Card Builder ────────────────────────────────────────────────────
+  var _cardBuilt = false;
+
+  function buildShareCard() {
+    var trainer = window['__ptTrainer'];
+    if (!trainer) return;
+
+    var themes = {
+      forest:   { bg:'linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 45%,#2a5a30 100%)', accent:'#3ab54a', glow:'rgba(58,181,74,0.45)',  swatch:'linear-gradient(135deg,#0d1a0e,#2a5a30)',  name:'Forest' },
+      midnight: { bg:'linear-gradient(160deg,#050a18 0%,#0d1a40 45%,#1a2a70 100%)', accent:'#5b8cff', glow:'rgba(91,140,255,0.45)', swatch:'linear-gradient(135deg,#050a18,#1a2a70)',  name:'Midnight' },
+      charcoal: { bg:'linear-gradient(160deg,#080808 0%,#181818 45%,#282828 100%)', accent:'#c8c8c8', glow:'rgba(200,200,200,0.25)', swatch:'linear-gradient(135deg,#080808,#282828)',  name:'Charcoal' },
+      royal:    { bg:'linear-gradient(160deg,#150822 0%,#2e1258 45%,#4a1e8a 100%)', accent:'#c17aff', glow:'rgba(193,122,255,0.45)',swatch:'linear-gradient(135deg,#150822,#4a1e8a)',  name:'Royal' },
+      slate:    { bg:'linear-gradient(160deg,#080f1a 0%,#122035 45%,#1e3350 100%)', accent:'#5bcfff', glow:'rgba(91,207,255,0.4)',  swatch:'linear-gradient(135deg,#080f1a,#1e3350)',  name:'Slate' },
+    };
+
+    var theme  = themes[trainer.hero_theme] || themes.forest;
+    var name   = trainer.name || 'Personal Trainer';
+    var city   = trainer.city || (trainer.location || '').split(',')[0].trim() || 'United Kingdom';
+    var bmp    = (trainer.bmp_score > 0) ? trainer.bmp_score : null;
+    var url    = window['__ptReviewUrl'] || (window.location.origin + '/review/' + trainer.id);
+    var customMsgEl = document.getElementById('sc-custom-msg');
+    var ctaMsg = (customMsgEl && customMsgEl.value.trim()) ? customMsgEl.value.trim() : "I'd love your feedback 🙏";
+
+    // Update theme swatch in controls panel
+    var swatchEl = document.getElementById('sc-theme-swatch');
+    var nameEl   = document.getElementById('sc-theme-name');
+    if (swatchEl) swatchEl.style.background = theme.swatch;
+    if (nameEl)   nameEl.textContent = theme.name;
+
+    // Avatar HTML
+    var avatarHtml = trainer.avatar_url
+      ? '<img src="' + trainer.avatar_url + '" crossorigin="anonymous" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid ' + theme.accent + ';display:block;" />'
+      : '<div style="width:120px;height:120px;border-radius:50%;background:' + (trainer.avatar_bg||'#1a3d1e') + ';color:' + (trainer.avatar_color||theme.accent) + ';display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:900;border:3px solid ' + theme.accent + ';font-family:\'Manrope\',sans-serif;">' + (trainer.avatar_initials||'?') + '</div>';
+
+    // BMP badge
+    var bmpHtml = bmp
+      ? '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:0.35rem 1rem;border-radius:20px;font-size:0.78rem;font-weight:700;font-family:\'Manrope\',sans-serif;display:inline-flex;align-items:center;gap:0.4rem;">📊 BMP <span style="color:' + theme.accent + ';font-size:0.92rem;">' + bmp + '</span></div>'
+      : '';
+
+    var card = document.getElementById('share-card');
+    if (!card) return;
+
+    card.style.background = theme.bg;
+    card.innerHTML = ''
+      // Glow layers
+      + '<div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,' + theme.glow + ' 0%,transparent 58%);pointer-events:none;z-index:0;"></div>'
+      + '<div style="position:absolute;bottom:0;left:0;right:0;height:35%;background:rgba(0,0,0,0.3);pointer-events:none;z-index:0;"></div>'
+      // Content
+      + '<div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;padding:24px 24px 18px;">'
+        // Logo bar
+        + '<div style="align-self:stretch;display:flex;align-items:center;gap:5px;margin-bottom:22px;">'
+          + '<div style="background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
+            + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="PTRating" />'
+          + '</div>'
+          + '<div style="flex:1;"></div>'
+          + '<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:0.2rem 0.65rem;font-size:0.58rem;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
+        + '</div>'
+        // Avatar with glow ring
+        + '<div style="position:relative;margin-bottom:14px;">'
+          + '<div style="position:absolute;inset:-8px;border-radius:50%;background:' + theme.glow + ';filter:blur(10px);z-index:0;opacity:0.7;"></div>'
+          + '<div style="position:relative;z-index:1;">' + avatarHtml + '</div>'
+        + '</div>'
+        // Name
+        + '<div style="font-family:\'Playfair Display\',serif;font-size:1.6rem;font-weight:900;color:white;text-align:center;line-height:1.15;margin-bottom:5px;text-shadow:0 2px 16px rgba(0,0,0,0.5);">' + name + '</div>'
+        // City
+        + '<div style="color:rgba(255,255,255,0.38);font-size:0.72rem;font-weight:500;text-align:center;margin-bottom:12px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">📍 ' + city + '</div>'
+        // BMP badge
+        + (bmpHtml ? '<div style="margin-bottom:16px;">' + bmpHtml + '</div>' : '<div style="margin-bottom:16px;height:28px;"></div>')
+        // Divider
+        + '<div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent);margin-bottom:16px;"></div>'
+        // CTA text
+        + '<div style="color:rgba(255,255,255,0.78);font-size:0.88rem;font-weight:600;text-align:center;line-height:1.65;margin-bottom:14px;font-family:\'Manrope\',sans-serif;">'
+          + ctaMsg + '<br/>'
+          + '<span style="font-size:0.72rem;font-weight:500;color:rgba(255,255,255,0.45);">Scan the QR code to leave a verified review</span>'
+        + '</div>'
+        // QR code
+        + '<div id="sc-qr-inner" style="background:white;padding:10px;border-radius:14px;margin-bottom:14px;box-shadow:0 8px 28px rgba(0,0,0,0.35);line-height:0;"></div>'
+        // Spacer
+        + '<div style="flex:1;"></div>'
+        // URL
+        + '<div style="color:rgba(255,255,255,0.22);font-size:0.58rem;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;text-transform:lowercase;">personalTrating.co.uk</div>'
+      + '</div>';
+
+    // Draw QR onto a canvas element — html2canvas captures canvas natively without async img loading
+    _cardBuilt = false;
+    var qrContainer = document.getElementById('sc-qr-inner');
+    if (qrContainer && window['QRCode']) {
+      var qrCanvas = document.createElement('canvas');
+      window['QRCode'].toCanvas(qrCanvas, url, { width:130, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err) {
+        if (!err && qrContainer) {
+          qrCanvas.style.cssText = 'width:130px;height:130px;display:block;border-radius:4px;';
+          qrContainer.appendChild(qrCanvas);
+        }
+        _cardBuilt = true;
+      });
+    } else {
+      _cardBuilt = true;
+    }
+  }
+
+  async function downloadShareCard() {
+    var card = document.getElementById('share-card');
+    var btn  = document.getElementById('download-card-btn');
+    if (!card) return;
+
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
+
+    try {
+      // Wait for QR canvas to be drawn before capture
+      if (!_cardBuilt) {
+        await new Promise(function(resolve) {
+          var t = setInterval(function() { if (_cardBuilt) { clearInterval(t); resolve(); } }, 50);
+          setTimeout(function() { clearInterval(t); resolve(); }, 8000);
+        });
+      }
+      // Give browser one paint cycle to render the canvas
+      await new Promise(function(resolve) { setTimeout(resolve, 80); });
+
+      var canvas = await window['html2canvas'](card, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: null,
+        logging: false,
+        allowTaint: true,
+        imageTimeout: 10000,
+      });
+
+      var link = document.createElement('a');
+      link.download = 'ptrating-review-card.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      showToast('✅ Card downloaded — share to your Story!');
+    } catch(e) {
+      showToast('❌ Download failed — screenshot the card preview instead');
+    }
+
+    if (btn) { btn.disabled = false; btn.innerHTML = '⬇️ Download for Instagram Stories'; }
+  }
+
+  function copyLink() {
+    const link = document.getElementById('review-link').value;
+    navigator.clipboard.writeText(link).catch(() => {});
+    showToast('✅ Link copied to clipboard!');
+  }
+
+
+  function shareLink(method) {
+    const link = document.getElementById('review-link').value;
+    if (method === 'whatsapp') {
+      window.open(`https://wa.me/?text=Hi! Please leave me a review on Personal TRating: ${link}`);
+    } else {
+      window.open(`mailto:?subject=Please review my Personal TRating profile&body=Hi, I'd appreciate a review on Personal TRating: ${link}`);
+    }
+  }
+
+  function filterRank(el) {
+    document.querySelectorAll('.rank-filter').forEach(f => f.classList.remove('active'));
+    el.classList.add('active');
+  }
+
+  function showToast(msg) {
+    const toast = document.getElementById('copy-toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  // ── Feed post functions ──────────────────────────────────────────────────
+  var _postImgFile = null;
+
+  function handlePostImgSelect(input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    if (file.size > 10 * 1024 * 1024) { showToast('❌ Image too large — max 10 MB'); return; }
+    _postImgFile = file;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('post-img-preview-src').src = e.target.result;
+      document.getElementById('post-img-preview').style.display = 'block';
+      document.getElementById('post-img-placeholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function handlePostDrop(e) {
+    e.preventDefault();
+    var drop = document.getElementById('post-drop');
+    drop.style.borderColor = 'var(--border)'; drop.style.background = '';
+    var file = e.dataTransfer && e.dataTransfer.files[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    handlePostImgSelect({ files: [file] });
+  }
+
+  function clearPostImg() {
+    _postImgFile = null;
+    document.getElementById('post-img-preview').style.display = 'none';
+    document.getElementById('post-img-placeholder').style.display = 'block';
+    document.getElementById('post-img-input').value = '';
+    document.getElementById('post-img-preview-src').src = '';
+  }
+
+  async function submitPost() {
+    var caption = (document.getElementById('post-caption').value || '').trim();
+    var errEl   = document.getElementById('post-err');
+    var btn     = document.getElementById('post-submit');
+    if (!caption && !_postImgFile) { errEl.style.display = 'block'; return; }
+    errEl.style.display = 'none';
+    btn.disabled = true; btn.textContent = 'Publishing…';
+    var sb  = window['__ptSupabase'];
+    var tid = window['__ptTrainerId'];
+    var imageUrl = null;
+    if (_postImgFile) {
+      var ext  = _postImgFile.name.split('.').pop() || 'jpg';
+      var path = tid + '/' + Date.now() + '.' + ext;
+      var up   = await sb.storage.from('post-images').upload(path, _postImgFile, { contentType: _postImgFile.type });
+      if (up.error) { showToast('❌ Upload failed: ' + up.error.message); btn.disabled = false; btn.textContent = 'Publish Post'; return; }
+      imageUrl = sb.storage.from('post-images').getPublicUrl(path).data.publicUrl;
+    }
+    var ins = await sb.from('trainer_posts').insert({ trainer_id: tid, content: caption || null, image_url: imageUrl });
+    btn.disabled = false; btn.textContent = 'Publish Post';
+    if (ins.error) { showToast('❌ Failed to publish: ' + ins.error.message); return; }
+    document.getElementById('post-caption').value = '';
+    clearPostImg();
+    showToast('✅ Post published!');
+    loadFeedPosts();
+    loadOverviewFeed();
+  }
+
+  async function loadFeedPosts() {
+    var listEl = document.getElementById('feed-list');
+    var subEl  = document.getElementById('feed-sub');
+    if (!listEl) return;
+    var sb  = window['__ptSupabase'];
+    var tid = window['__ptTrainerId'];
+    if (!sb || !tid) return;
+    listEl.innerHTML = '<div style="color:var(--muted);font-size:0.84rem;text-align:center;padding:1rem 0;">Loading…</div>';
+    var res   = await sb.from('trainer_posts').select('*').eq('trainer_id', tid).order('created_at', { ascending: false });
+    var posts = res.data || [];
+    if (subEl) subEl.textContent = posts.length + ' post' + (posts.length !== 1 ? 's' : '') + ' published';
+    if (posts.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:2.5rem 0;"><div style="font-size:2rem;margin-bottom:0.5rem;">📸</div><div style="font-weight:700;font-size:0.9rem;color:var(--text);margin-bottom:0.3rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Use the form above to publish your first update.</div></div>';
+      return;
+    }
+    listEl.innerHTML = posts.map(function(p) {
+      var date = new Date(p.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      return '<div style="display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 0;border-bottom:1px solid var(--border);" id="fp-' + p.id + '">'
+        + (p.image_url ? '<img src="' + p.image_url + '" style="width:80px;height:80px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid var(--border);" />' : '')
+        + '<div style="flex:1;min-width:0;">'
+        + (p.content ? '<div style="font-size:0.875rem;line-height:1.65;color:var(--text);margin-bottom:0.35rem;">' + p.content + '</div>' : '')
+        + '<div style="font-size:0.72rem;color:var(--muted);">' + date + '</div>'
+        + '</div>'
+        + '<button onclick="deletePost(\'' + p.id + '\')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:0.78rem;padding:0.2rem 0.5rem;flex-shrink:0;border-radius:4px;white-space:nowrap;" onmouseover="this.style.color=\'#e53935\'" onmouseout="this.style.color=\'var(--muted)\'">Delete</button>'
+        + '</div>';
+    }).join('');
+  }
+
+  async function loadOverviewFeed() {
+    var listEl = document.getElementById('ov-feed-list');
+    var subEl  = document.getElementById('ov-feed-sub');
+    if (!listEl) return;
+    var sb  = window['__ptSupabase'];
+    var tid = window['__ptTrainerId'];
+    if (!sb || !tid) return;
+    listEl.innerHTML = '<div style="color:var(--muted);font-size:0.84rem;text-align:center;padding:1rem 0;">Loading…</div>';
+    var res   = await sb.from('trainer_posts').select('*').eq('trainer_id', tid).order('created_at', { ascending: false }).limit(5);
+    var posts = res.data || [];
+    if (subEl) subEl.textContent = posts.length + ' recent post' + (posts.length !== 1 ? 's' : '');
+    if (posts.length === 0) {
+      listEl.innerHTML = '<div style="text-align:center;padding:2rem 0;"><div style="font-size:1.75rem;margin-bottom:0.5rem;">📸</div><div style="font-weight:700;font-size:0.88rem;color:var(--text);margin-bottom:0.25rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Click "+ New Post →" to share your first update.</div></div>';
+      return;
+    }
+    // Fetch like counts for these posts
+    var postIds = posts.map(function(p) { return p.id; });
+    var likesRes = await sb.from('post_likes').select('post_id').in('post_id', postIds);
+    var likeMap = {};
+    postIds.forEach(function(id) { likeMap[id] = 0; });
+    (likesRes.data || []).forEach(function(l) { likeMap[l.post_id] = (likeMap[l.post_id] || 0) + 1; });
+
+    listEl.innerHTML = '<div style="display:flex;flex-direction:column;">' + posts.map(function(p) {
+      var date  = new Date(p.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      var likes = likeMap[p.id] || 0;
+      return '<div style="display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 1.5rem;border-bottom:1px solid var(--border);">'
+        + (p.image_url ? '<img src="' + p.image_url + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;flex-shrink:0;border:1px solid var(--border);" />' : '')
+        + '<div style="flex:1;min-width:0;">'
+        + (p.content ? '<div style="font-size:0.875rem;line-height:1.65;color:var(--text);margin-bottom:0.3rem;">' + p.content + '</div>' : '')
+        + '<div style="display:flex;align-items:center;gap:0.75rem;">'
+        + '<span style="font-size:0.72rem;color:var(--muted);">' + date + '</span>'
+        + (likes > 0 ? '<span style="font-size:0.72rem;color:#e53935;font-weight:600;">❤️ ' + likes + '</span>' : '')
+        + '</div>'
+        + '</div></div>';
+    }).join('') + '</div>';
+  }
+
+  async function deletePost(id) {
+    if (!confirm('Delete this post? This cannot be undone.')) return;
+    var sb  = window['__ptSupabase'];
+    var res = await sb.from('trainer_posts').delete().eq('id', id);
+    if (!res.error) { loadFeedPosts(); loadOverviewFeed(); }
+    else showToast('❌ Failed to delete post.');
+  }
+  // ────────────────────────────────────────────────────────────────────────────
+
+  // ── Fireworks celebration ────────────────────────────────────────────────
+  window['__ptFireCelebration'] = function(newCount) {
+    // Small delay so the page has finished rendering
+    setTimeout(function() {
+      var end = Date.now() + 3500;
+
+      // Burst from both sides like real fireworks
+      (function frame() {
+        confetti({
+          particleCount: 6,
+          angle: 60,
+          spread: 55,
+          startVelocity: 60,
+          origin: { x: 0, y: 0.75 },
+          colors: ['#3ab54a','#e6a800','#ffffff','#2a9438','#ffd700'],
+          zIndex: 9999,
+        });
+        confetti({
+          particleCount: 6,
+          angle: 120,
+          spread: 55,
+          startVelocity: 60,
+          origin: { x: 1, y: 0.75 },
+          colors: ['#3ab54a','#e6a800','#ffffff','#2a9438','#ffd700'],
+          zIndex: 9999,
+        });
+        if (Date.now() < end) requestAnimationFrame(frame);
+      })();
+
+      // One big central pop at the start
+      confetti({
+        particleCount: 80,
+        spread: 100,
+        startVelocity: 45,
+        origin: { x: 0.5, y: 0.55 },
+        colors: ['#3ab54a','#e6a800','#ffffff','#2a9438','#ffd700'],
+        zIndex: 9999,
+      });
+    }, 300);
+  };
+  // ────────────────────────────────────────────────────────────────────────
+</script>
+<script is:inline>
+  function toggleMobMenu() {
+    document.querySelector('.sidebar').classList.toggle('mob-open');
+    document.getElementById('mob-overlay').classList.toggle('active');
+  }
+  function closeMobMenu() {
+    document.querySelector('.sidebar').classList.remove('mob-open');
+    document.getElementById('mob-overlay').classList.remove('active');
+  }
+  // Close sidebar when a nav item is tapped on mobile
+  document.querySelectorAll('.sb-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      if (window.innerWidth <= 768) closeMobMenu();
+    });
+  });
+</script>
+</body>
+</html>

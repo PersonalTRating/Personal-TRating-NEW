@@ -1,0 +1,312 @@
+﻿---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Terms of Service — Personal TRating" description="The legally binding terms of service governing use of the Personal TRating platform.">
+
+<style>
+  body { background: #f7f9f7; }
+  .terms-wrap { max-width: 820px; margin: 0 auto; padding: 4rem 2.5rem 6rem; font-family: 'Manrope', sans-serif; }
+  .eyebrow { font-size: 0.72rem; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #3ab54a; margin-bottom: 0.5rem; }
+  h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 900; color: #0d1a0e; line-height: 1.1; margin-bottom: 0.75rem; }
+  .lead { font-size: 0.95rem; color: #5a6f5c; line-height: 1.8; margin-bottom: 0.5rem; }
+  .effective-date { font-size: 0.8rem; color: #9aaa9c; margin-bottom: 3rem; font-weight: 600; }
+  .terms-nav { background: white; border: 1px solid #e0e8e1; border-radius: 12px; padding: 1.5rem; margin-bottom: 3rem; }
+  .terms-nav p { font-size: 0.78rem; font-weight: 700; color: #7a8f7c; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 0.75rem; }
+  .terms-nav-links { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .terms-nav-links a { font-size: 0.8rem; font-weight: 600; color: #2a9438; text-decoration: none; padding: 0.3rem 0.85rem; border: 1.5px solid #c8e6cb; border-radius: 20px; transition: background 0.15s; }
+  .terms-nav-links a:hover { background: #eaf7ec; }
+  .terms-section { margin-bottom: 2.75rem; padding-bottom: 2.75rem; border-bottom: 1px solid #e0e8e1; }
+  .terms-section:last-child { border-bottom: none; }
+  .terms-section h2 { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #0d1a0e; margin-bottom: 0.9rem; }
+  .terms-section h3 { font-size: 0.88rem; font-weight: 800; color: #0d1a0e; margin: 1.2rem 0 0.5rem; }
+  .terms-section p { font-size: 0.875rem; color: #3d4e3f; line-height: 1.85; margin-bottom: 0.75rem; }
+  .terms-section ul, .terms-section ol { padding-left: 1.35rem; font-size: 0.875rem; color: #3d4e3f; line-height: 1.85; }
+  .terms-section li { margin-bottom: 0.4rem; }
+  .terms-section a { color: #2a9438; font-weight: 600; }
+  .legal-box { background: #f7f9f7; border: 1px solid #e0e8e1; border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.82rem; color: #5a6f5c; line-height: 1.75; margin-top: 0.75rem; }
+  .legal-box strong { color: #0d1a0e; }
+  .warning-box { background: #fff8e1; border: 1.5px solid #ffe082; border-radius: 8px; padding: 1rem 1.25rem; font-size: 0.82rem; color: #5c4a00; line-height: 1.75; margin-top: 0.75rem; }
+  .back-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.82rem; font-weight: 700; color: #2a9438; text-decoration: none; margin-bottom: 2rem; transition: gap 0.15s; }
+  .back-link:hover { gap: 0.65rem; }
+  .privacy-cta { background: linear-gradient(135deg,#eaf7ec,#fff); border: 1.5px solid #3ab54a; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 3rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+  .privacy-cta p { font-size: 0.875rem; color: #3d5c40; margin: 0; }
+  .privacy-cta a { background: #3ab54a; color: white; padding: 0.55rem 1.25rem; border-radius: 8px; font-weight: 700; font-size: 0.82rem; text-decoration: none; white-space: nowrap; }
+  @media (max-width: 640px) { h1 { font-size: 1.9rem; } }
+</style>
+
+<nav style="background:white;border-bottom:1px solid #e0e8e1;padding:0 2.5rem;">
+  <div style="max-width:820px;margin:0 auto;height:68px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;">
+      <img src="/images/logo.png" alt="Personal TRating" style="height:52px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    </a>
+    <div style="display:flex;gap:1.5rem;align-items:center;">
+      <a href="/privacy" style="font-size:0.82rem;font-weight:700;color:#2a9438;text-decoration:none;">Privacy Policy →</a>
+      <a href="/" style="font-size:0.82rem;font-weight:600;color:#7a8f7c;text-decoration:none;">← Back to home</a>
+    </div>
+  </div>
+</nav>
+
+<div class="terms-wrap">
+
+  <a href="/" class="back-link">← Back to home</a>
+
+  <div class="eyebrow">Legal</div>
+  <h1>Terms of Service</h1>
+  <p class="lead">
+    These Terms of Service constitute a legally binding agreement between you and Personal TRating.
+    By accessing or using this platform in any capacity, you confirm that you have read, understood, and agreed to be bound by these terms.
+  </p>
+  <p class="effective-date">Effective date: 1 June 2026 &nbsp;·&nbsp; Governing law: England &amp; Wales</p>
+
+  <div class="privacy-cta">
+    <p>🔒 Looking for how we handle your personal data? Read our <strong>Privacy Policy</strong>.</p>
+    <a href="/privacy">View Privacy Policy →</a>
+  </div>
+
+  <div class="terms-nav">
+    <p>Jump to section</p>
+    <div class="terms-nav-links">
+      <a href="#definitions">Definitions</a>
+      <a href="#acceptance">Acceptance</a>
+      <a href="#services">Our Services</a>
+      <a href="#trainer-obligations">Trainer Obligations</a>
+      <a href="#client-obligations">Client Obligations</a>
+      <a href="#reviews-policy">Reviews Policy</a>
+      <a href="#ip">Intellectual Property</a>
+      <a href="#liability">Liability</a>
+      <a href="#termination">Termination</a>
+      <a href="#governing-law">Governing Law</a>
+      <a href="#changes">Changes</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+
+  <div class="terms-section" id="definitions">
+    <h2>1. Definitions</h2>
+    <p>In these Terms, the following definitions apply:</p>
+    <ul>
+      <li><strong>"Personal TRating", "we", "us", "our"</strong> — the operator of personalTrating.co.uk, incorporated and operating in the United Kingdom.</li>
+      <li><strong>"Platform"</strong> — the website, web application, and all associated pages and services at personalTrating.co.uk.</li>
+      <li><strong>"Trainer"</strong> — any personal trainer who registers an account on the Platform to display their profile and collect client reviews.</li>
+      <li><strong>"Client"</strong> — any individual who submits a review of a Trainer via the Platform.</li>
+      <li><strong>"User"</strong> — any person who accesses or uses the Platform, whether as a Trainer, Client, or visitor.</li>
+      <li><strong>"BMP Score"</strong> — the Body Muscle Percentage score calculated by Personal TRating's proprietary algorithm based on verified review data.</li>
+      <li><strong>"Review"</strong> — a star rating and written testimonial submitted by a Client about a Trainer.</li>
+      <li><strong>"Review Link"</strong> — a unique URL generated by the Platform and shared by a Trainer with a Client to facilitate Review submission.</li>
+      <li><strong>"Content"</strong> — any text, images, data, or other material submitted to or displayed on the Platform by any User.</li>
+    </ul>
+  </div>
+
+  <div class="terms-section" id="acceptance">
+    <h2>2. Acceptance of Terms</h2>
+    <p>
+      By accessing or using the Platform in any capacity — including browsing as a visitor, registering as a Trainer,
+      or submitting a Review as a Client — you agree to be legally bound by these Terms of Service and our
+      <a href="/privacy">Privacy Policy</a>.
+    </p>
+    <p>
+      If you do not agree to these Terms in their entirety, you must immediately cease all use of the Platform.
+      Trainers who register an account provide additional express consent by completing the sign-up process,
+      which constitutes a binding agreement between the Trainer and Personal TRating.
+    </p>
+    <div class="warning-box">
+      ⚠️ You must be at least 18 years of age to register as a Trainer or submit a Review. By using the Platform, you confirm that you meet this requirement.
+    </div>
+  </div>
+
+  <div class="terms-section" id="services">
+    <h2>3. Our Services</h2>
+    <p>Personal TRating provides a public directory and ranking platform for personal trainers in the United Kingdom. Our services include:</p>
+    <ul>
+      <li>A searchable public directory of registered personal trainers</li>
+      <li>A verified review collection system via unique Review Links</li>
+      <li>A proprietary BMP Score and national ranking system based on verified client feedback</li>
+      <li>A Trainer dashboard for profile management, review monitoring, and ranking tracking</li>
+    </ul>
+    <p>
+      We reserve the right to modify, suspend, or discontinue any aspect of the Platform at any time with reasonable notice where practicable.
+      The Platform is provided on an "as is" and "as available" basis. We make no warranties, express or implied,
+      that the Platform will be uninterrupted or error-free.
+    </p>
+  </div>
+
+  <div class="terms-section" id="trainer-obligations">
+    <h2>4. Trainer Obligations</h2>
+    <h3>4.1 Accuracy of Information</h3>
+    <p>
+      You warrant that all information on your profile — including name, qualifications, certifications, location,
+      and biography — is accurate, complete, and not misleading. You agree to keep this information current.
+      Providing false or misleading information is grounds for immediate account termination.
+    </p>
+    <h3>4.2 Qualification Compliance</h3>
+    <p>
+      You confirm that you hold all qualifications, registrations, and insurance policies required by law and applicable
+      industry bodies (including but not limited to REPs, CIMSPA, or equivalent) to operate as a personal trainer in the UK.
+      Personal TRating does not verify qualifications and bears no liability for misrepresentation by Trainers.
+    </p>
+    <h3>4.3 Review Link Usage</h3>
+    <p>
+      Review Links must only be shared with genuine clients who have undertaken a bona fide training session with you.
+      You must not solicit Reviews from friends, family, or any person who has not received your personal training services,
+      nor offer incentives of any kind in exchange for Reviews. Breach of this clause may constitute fraud and will
+      result in immediate account termination and potential referral to the relevant authorities.
+    </p>
+    <h3>4.4 Prohibited Conduct</h3>
+    <p>Trainers must not:</p>
+    <ul>
+      <li>Attempt to manipulate their BMP Score or ranking by any artificial means</li>
+      <li>Impersonate any other person or entity on the Platform</li>
+      <li>Upload content that is defamatory, discriminatory, obscene, or in breach of any applicable law</li>
+      <li>Use the Platform to harass, abuse, or harm any other User</li>
+      <li>Attempt to access, reverse-engineer, or disrupt any part of the Platform's technical infrastructure</li>
+    </ul>
+  </div>
+
+  <div class="terms-section" id="client-obligations">
+    <h2>5. Client Obligations</h2>
+    <p>By submitting a Review, you confirm that:</p>
+    <ul>
+      <li>You are a genuine client who has personally received personal training services from the Trainer you are reviewing</li>
+      <li>Your Review is honest, accurate, and reflects your genuine experience</li>
+      <li>Your Review does not contain defamatory, offensive, discriminatory, or unlawful content</li>
+      <li>You are not an employee, family member, or associate of the Trainer, nor have you been incentivised to submit a positive Review</li>
+      <li>You are at least 18 years of age</li>
+    </ul>
+    <p>
+      Submitting a false, misleading, or malicious Review may constitute defamation under English law. Personal TRating
+      reserves the right to remove any Review it reasonably believes breaches these obligations and to report
+      fraudulent activity to the relevant authorities.
+    </p>
+  </div>
+
+  <div class="terms-section" id="reviews-policy">
+    <h2>6. Reviews Policy</h2>
+    <h3>6.1 Publication</h3>
+    <p>
+      Reviews submitted via the Platform are published publicly on the relevant Trainer's profile. By submitting a Review,
+      you grant Personal TRating a perpetual, royalty-free, non-exclusive licence to display, reproduce, and use your
+      Review content on the Platform.
+    </p>
+    <h3>6.2 Trainer Rights Regarding Reviews</h3>
+    <p>
+      Trainers cannot edit, delete, or suppress Reviews. This protects the integrity of the ranking system and client trust.
+      Personal TRating will not remove a Review at a Trainer's request unless it is determined to be fraudulent, defamatory,
+      or otherwise in breach of these Terms following a formal investigation.
+    </p>
+    <h3>6.3 Review Disputes</h3>
+    <p>
+      If a Trainer believes a Review is fraudulent or defamatory, they may raise a formal dispute by emailing
+      <a href="mailto:hello@personalTrating.co.uk">hello@personalTrating.co.uk</a> with supporting evidence.
+      We will investigate within 14 working days and notify all parties of our decision. Our decision is final.
+    </p>
+    <h3>6.4 Client Review Removal</h3>
+    <p>A Client may request removal of their own Review at any time by contacting us. We will remove it within 7 working days of a verified request.</p>
+    <h3>6.5 BMP Score</h3>
+    <p>
+      The BMP Score is a proprietary metric calculated solely by Personal TRating. We reserve the right to adjust
+      the algorithm at any time. Trainers have no contractual entitlement to any specific BMP Score or ranking position.
+    </p>
+  </div>
+
+  <div class="terms-section" id="ip">
+    <h2>7. Intellectual Property</h2>
+    <p>
+      All intellectual property rights in the Platform — including the BMP algorithm, design, branding, software, and
+      database structure — are owned exclusively by Personal TRating or its licensors. Nothing in these Terms
+      transfers any intellectual property rights to any User.
+    </p>
+    <p>
+      Trainers and Clients retain ownership of Content they submit but grant Personal TRating a worldwide, royalty-free
+      licence to use such Content for the operation and promotion of the Platform. You must not reproduce, distribute,
+      modify, or create derivative works from any part of the Platform without our express written consent.
+    </p>
+  </div>
+
+  <div class="terms-section" id="liability">
+    <h2>8. Limitation of Liability</h2>
+    <h3>8.1 No Warranty on Rankings</h3>
+    <p>
+      Personal TRating makes no representation or warranty that BMP Scores or rankings accurately reflect the quality
+      of any Trainer's services. Clients should conduct their own due diligence before engaging any Trainer.
+    </p>
+    <h3>8.2 Trainer–Client Relationships</h3>
+    <p>
+      Personal TRating is a directory and ranking platform only. We are not a party to any agreement between a Trainer
+      and a Client and accept no liability for any loss, injury, damage, or dispute arising from any such relationship.
+    </p>
+    <h3>8.3 Cap on Liability</h3>
+    <p>
+      To the fullest extent permitted by law, Personal TRating's total aggregate liability to any User shall not exceed
+      <strong>£100 (one hundred pounds sterling)</strong>. We shall not be liable for any indirect, incidental, special,
+      consequential, or punitive damages, including loss of profit, revenue, data, or business opportunity.
+    </p>
+    <div class="legal-box">
+      <strong>Statutory rights:</strong> Nothing in these Terms limits or excludes our liability for death or personal injury caused by negligence, fraud, or any other liability that cannot be excluded by law.
+    </div>
+  </div>
+
+  <div class="terms-section" id="termination">
+    <h2>9. Termination</h2>
+    <p>
+      Personal TRating reserves the right to suspend or permanently terminate any Trainer account, with or without notice,
+      where we reasonably believe the Trainer has breached these Terms, engaged in fraudulent activity, or caused harm
+      to any User or to the reputation of the Platform.
+    </p>
+    <p>
+      Trainers may request account deletion at any time by contacting us. Upon deletion, the Trainer's public profile
+      will be removed within 30 days. Reviews may be retained in anonymised form for integrity and fraud prevention purposes.
+      Termination does not affect any accrued rights or liabilities.
+    </p>
+  </div>
+
+  <div class="terms-section" id="governing-law">
+    <h2>10. Governing Law &amp; Dispute Resolution</h2>
+    <p>
+      These Terms, and any dispute or claim arising out of or in connection with them (including non-contractual disputes),
+      shall be governed by and construed in accordance with the laws of <strong>England and Wales</strong>.
+      Each party irrevocably agrees that the courts of England and Wales shall have exclusive jurisdiction.
+    </p>
+    <p>
+      Before commencing legal proceedings, we encourage Users to contact us directly to attempt informal resolution.
+      We will use reasonable efforts to resolve disputes within 30 days of notification.
+    </p>
+  </div>
+
+  <div class="terms-section" id="changes">
+    <h2>11. Changes to These Terms</h2>
+    <p>
+      We reserve the right to update or amend these Terms at any time. When we make material changes, we will update the
+      effective date above and, where reasonably practicable, notify registered Trainers by email at least
+      <strong>14 days</strong> before the changes take effect. Continued use of the Platform after that date constitutes acceptance.
+    </p>
+  </div>
+
+  <div class="terms-section" id="contact">
+    <h2>12. Contact</h2>
+    <div class="legal-box">
+      <strong>Personal TRating</strong><br>
+      Email: <a href="mailto:hello@personalTrating.co.uk">hello@personalTrating.co.uk</a><br>
+      Response time: within 7 working days
+    </div>
+    <p style="margin-top:1.5rem;font-size:0.8rem;color:#9aaa9c;">
+      Last updated: 1 June 2026 · Personal TRating operates in the United Kingdom.
+    </p>
+  </div>
+
+</div>
+
+<footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:white;border-top:3px solid #3ab54a;">
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <img src="/images/logo.png" alt="Personal TRating" style="height:44px;width:auto;object-fit:contain;opacity:0.7;" />
+    <p style="font-size:0.8rem;color:#8a8f8a;">© 2026 Personal TRating · Built in the UK 🇬🇧</p>
+  </div>
+  <div style="display:flex;gap:2rem;">
+    <a href="/privacy" style="font-size:0.8rem;color:#8a8f8a;text-decoration:none;font-weight:600;">Privacy Policy</a>
+    <a href="/terms" style="font-size:0.8rem;color:#8a8f8a;text-decoration:none;font-weight:600;">Terms of Service</a>
+    <a href="mailto:hello@personalTrating.co.uk" style="font-size:0.8rem;color:#8a8f8a;text-decoration:none;font-weight:600;">Contact</a>
+  </div>
+</footer>
+
+</Layout>
+

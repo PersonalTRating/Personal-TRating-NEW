@@ -1,0 +1,474 @@
+---
+// Admin Review Queue — Personal TRating
+// Access restricted to admin email defined below
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Review Queue · Personal TRating</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#3ab54a; --green-dark:#2a9438; --green-light:#eaf7ec;
+    --green-mid:#d0f0d4; --border:#e0e8e1; --text:#0d1a0e;
+    --muted:#7a8f7c; --off:#f7f9f7; --gold:#e6a800;
+    --red:#e53935; --red-light:#fdecea;
+    --sidebar-w:220px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); display:flex; min-height:100vh; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width:var(--sidebar-w); flex-shrink:0; background:var(--text);
+    display:flex; flex-direction:column;
+    position:fixed; top:0; left:0; bottom:0; z-index:100;
+  }
+  .sb-logo { padding:1.5rem 1.25rem; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; }
+  .sb-logo img { height:57px; width:auto; object-fit:contain; }
+  .sb-label { padding:0.75rem 1.25rem 0.4rem; font-size:0.62rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.25); }
+  .sb-item {
+    display:flex; align-items:center; gap:0.75rem;
+    padding:0.7rem 1.25rem; cursor:pointer;
+    color:rgba(255,255,255,0.5); font-size:0.84rem; font-weight:600;
+    border-left:3px solid transparent; text-decoration:none;
+    transition:all 0.15s; background:none; border-right:none; border-top:none; border-bottom:none;
+    width:100%; text-align:left; font-family:'Manrope',sans-serif;
+  }
+  .sb-item:hover { color:white; background:rgba(255,255,255,0.05); }
+  .sb-item.active { color:white; background:rgba(58,181,74,0.12); border-left-color:var(--green); }
+  .sb-badge { margin-left:auto; background:var(--red); color:white; font-size:0.62rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:20px; }
+  .sb-badge.green { background:var(--green); }
+  .sb-footer { margin-top:auto; padding:1.1rem 1.25rem; border-top:1px solid rgba(255,255,255,0.08); }
+  .sb-footer-link { font-size:0.78rem; color:rgba(255,255,255,0.35); text-decoration:none; background:none; border:none; cursor:pointer; font-family:'Manrope',sans-serif; transition:color 0.15s; }
+  .sb-footer-link:hover { color:white; }
+
+  /* ── MAIN ── */
+  .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; min-height:100vh; }
+  .topbar {
+    background:white; border-bottom:1px solid var(--border);
+    padding:0.9rem 2.5rem; display:flex; align-items:center;
+    justify-content:space-between; position:sticky; top:0; z-index:50;
+  }
+  .topbar h1 { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:900; }
+  .topbar p  { font-size:0.8rem; color:var(--muted); margin-top:0.1rem; }
+  .content { padding:2rem 2.5rem; flex:1; }
+
+  /* ── PAGE SECTIONS ── */
+  .page { display:none; }
+  .page.active { display:block; }
+
+  /* ── STAT CARDS ── */
+  .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:2rem; }
+  .stat-card { background:white; border-radius:14px; padding:1.5rem; border:1px solid var(--border); }
+  .stat-icon { font-size:1.4rem; margin-bottom:0.6rem; }
+  .stat-label { font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:0.4rem; }
+  .stat-value { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; line-height:1; }
+
+  /* ── CARDS ── */
+  .card { background:white; border-radius:14px; border:1px solid var(--border); overflow:hidden; margin-bottom:1.5rem; }
+  .card-head { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+  .card-title { font-weight:800; font-size:0.92rem; }
+  .card-sub   { font-size:0.75rem; color:var(--muted); margin-top:0.15rem; }
+
+  /* ── REVIEW QUEUE ITEMS ── */
+  .review-row {
+    padding:1.25rem 1.5rem; border-bottom:1px solid var(--border);
+    display:flex; gap:1.25rem; align-items:flex-start;
+  }
+  .review-row:last-child { border-bottom:none; }
+  .rev-avatar { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.85rem; flex-shrink:0; }
+  .rev-meta { flex:1; min-width:0; }
+  .rev-header { display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.3rem; }
+  .rev-name { font-weight:800; font-size:0.9rem; }
+  .rev-rating { color:var(--gold); font-size:0.85rem; letter-spacing:1px; }
+  .rev-trainer { font-size:0.75rem; font-weight:700; color:var(--green-dark); background:var(--green-light); padding:0.18rem 0.6rem; border-radius:20px; }
+  .rev-text { font-size:0.84rem; color:#3d4e3f; line-height:1.65; margin-bottom:0.4rem; }
+  .rev-date { font-size:0.72rem; color:var(--muted); }
+  .rev-actions { display:flex; gap:0.6rem; flex-shrink:0; align-items:flex-start; padding-top:0.15rem; }
+  .btn-approve {
+    padding:0.55rem 1.1rem; background:var(--green); color:white;
+    border:none; border-radius:8px; font-weight:700; font-size:0.8rem;
+    cursor:pointer; font-family:'Manrope',sans-serif; transition:background 0.15s;
+    white-space:nowrap;
+  }
+  .btn-approve:hover { background:var(--green-dark); }
+  .btn-reject {
+    padding:0.55rem 1.1rem; background:white; color:var(--red);
+    border:1.5px solid #f5c6c6; border-radius:8px; font-weight:700; font-size:0.8rem;
+    cursor:pointer; font-family:'Manrope',sans-serif; transition:all 0.15s;
+    white-space:nowrap;
+  }
+  .btn-reject:hover { background:var(--red-light); border-color:var(--red); }
+  .btn-approve:disabled, .btn-reject:disabled { opacity:0.5; cursor:not-allowed; }
+
+  /* ── APPROVED LIST ── */
+  .approved-row {
+    padding:1rem 1.5rem; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; gap:1rem; font-size:0.84rem;
+  }
+  .approved-row:last-child { border-bottom:none; }
+  .approved-check { color:var(--green); font-size:1rem; flex-shrink:0; }
+  .approved-info { flex:1; }
+  .approved-name { font-weight:700; }
+  .approved-trainer { font-size:0.75rem; color:var(--muted); margin-top:0.1rem; }
+  .approved-date { font-size:0.75rem; color:var(--muted); flex-shrink:0; }
+
+  /* ── EMPTY STATE ── */
+  .empty { padding:3.5rem 2rem; text-align:center; }
+  .empty-icon { font-size:2.5rem; margin-bottom:0.75rem; }
+  .empty-title { font-family:'Playfair Display',serif; font-weight:700; font-size:1.15rem; color:var(--text); margin-bottom:0.4rem; }
+  .empty-sub { font-size:0.84rem; color:var(--muted); }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
+    background:var(--text); color:white; padding:0.6rem 1.5rem;
+    border-radius:8px; font-size:0.82rem; font-weight:600;
+    opacity:0; pointer-events:none; transition:opacity 0.3s; z-index:9999;
+  }
+  .toast.show { opacity:1; }
+
+  /* ── ACCESS DENIED ── */
+  .denied {
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; text-align:center; padding:2rem;
+  }
+  .denied-icon { font-size:3rem; margin-bottom:1rem; }
+  .denied h2 { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; margin-bottom:0.5rem; }
+  .denied p { color:var(--muted); font-size:0.9rem; }
+</style>
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <img src="/images/logo.png" alt="Personal TRating" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+  </div>
+  <nav style="flex:1;padding:1rem 0;overflow-y:auto;">
+    <div class="sb-label">Review Queue</div>
+    <button class="sb-item active" onclick="showPage('pending')">
+      <span>⏳</span> Pending
+      <span class="sb-badge" id="sb-pending-count">0</span>
+    </button>
+    <button class="sb-item" onclick="showPage('approved')">
+      <span>✅</span> Approved
+      <span class="sb-badge green" id="sb-approved-count">0</span>
+    </button>
+    <div class="sb-label">Platform</div>
+    <a class="sb-item" href="/" target="_blank"><span>🌐</span> View Site</a>
+  </nav>
+  <div class="sb-footer">
+    <button id="sign-out-btn" class="sb-footer-link">Sign Out</button>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1 id="page-title">Pending Reviews</h1>
+      <p  id="page-sub">Reviews awaiting your approval before going live</p>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- PENDING PAGE -->
+    <div class="page active" id="page-pending">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-label">Awaiting Review</div>
+          <div class="stat-value" id="stat-pending" style="color:var(--red);">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div class="stat-label">Approved Today</div>
+          <div class="stat-value" id="stat-approved-today" style="color:var(--green);">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📝</div>
+          <div class="stat-label">Total Approved</div>
+          <div class="stat-value" id="stat-total-approved">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Pending Reviews</div>
+            <div class="card-sub">Read each review carefully before approving</div>
+          </div>
+        </div>
+        <div id="pending-list">
+          <div class="empty">
+            <div class="empty-icon">⏳</div>
+            <div class="empty-title">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- APPROVED PAGE -->
+    <div class="page" id="page-approved">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Approved Reviews</div>
+            <div class="card-sub">Live on trainer profiles</div>
+          </div>
+        </div>
+        <div id="approved-list">
+          <div class="empty">
+            <div class="empty-icon">✅</div>
+            <div class="empty-title">Loading…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  import { supabase } from '../lib/supabase';
+
+  // ── CONFIG — change this to your admin email ──────────────────────────────
+  const ADMIN_EMAIL = 'modernisetraders@hotmail.com';
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // ── Auth guard ────────────────────────────────────────────────────────────
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
+
+  if (session.user.email !== ADMIN_EMAIL) {
+    document.body.innerHTML = `
+      <div class="denied">
+        <div class="denied-icon">🔒</div>
+        <h2>Access Denied</h2>
+        <p>This page is restricted to Personal TRating administrators.</p>
+        <a href="/" style="margin-top:1.5rem;display:inline-block;color:#2a9438;font-weight:700;font-size:0.875rem;">← Back to home</a>
+      </div>`;
+    throw new Error('unauthorized');
+  }
+
+  // ── Data ──────────────────────────────────────────────────────────────────
+  type Review = {
+    id: string;
+    trainer_id: string;
+    reviewer_name: string;
+    reviewer_initials: string;
+    reviewer_avatar_bg: string;
+    reviewer_avatar_color: string;
+    rating: number;
+    review_text: string;
+    created_at: string;
+    is_verified: boolean;
+    trainers: { name: string; city: string } | null;
+  };
+
+  let pendingReviews: Review[]  = [];
+  let approvedReviews: Review[] = [];
+
+  async function loadAll() {
+    const [pendingRes, approvedRes, approvedTodayRes] = await Promise.all([
+      supabase
+        .from('reviews')
+        .select('*, trainers(name, city)')
+        .eq('is_verified', false)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('reviews')
+        .select('*, trainers(name, city)')
+        .eq('is_verified', true)
+        .order('created_at', { ascending: false })
+        .limit(50),
+      supabase
+        .from('reviews')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_verified', true)
+        .gte('created_at', new Date(new Date().setHours(0,0,0,0)).toISOString()),
+    ]);
+
+    pendingReviews  = (pendingRes.data  || []) as Review[];
+    approvedReviews = (approvedRes.data || []) as Review[];
+
+    const approvedTodayCount = approvedTodayRes.count ?? 0;
+
+    // Stats
+    (document.getElementById('stat-pending')        as HTMLElement).textContent = String(pendingReviews.length);
+    (document.getElementById('stat-approved-today') as HTMLElement).textContent = String(approvedTodayCount);
+    (document.getElementById('stat-total-approved') as HTMLElement).textContent = String(approvedRes.data?.length ?? 0) + (approvedRes.data?.length === 50 ? '+' : '');
+
+    // Sidebar badges
+    (document.getElementById('sb-pending-count')  as HTMLElement).textContent = String(pendingReviews.length);
+    (document.getElementById('sb-approved-count') as HTMLElement).textContent = String(approvedReviews.length);
+
+    renderPending();
+    renderApproved();
+  }
+
+  // ── Render helpers ────────────────────────────────────────────────────────
+  function stars(n: number) {
+    return '★'.repeat(n) + '☆'.repeat(5 - n);
+  }
+
+  function timeAgo(iso: string) {
+    const diff  = Date.now() - new Date(iso).getTime();
+    const mins  = Math.floor(diff / 60000);
+    const hours = Math.floor(diff / 3600000);
+    const days  = Math.floor(diff / 86400000);
+    if (mins < 60)  return `${mins}m ago`;
+    if (hours < 24) return `${hours}h ago`;
+    return `${days}d ago`;
+  }
+
+  function renderPending() {
+    const el = document.getElementById('pending-list') as HTMLElement;
+    if (pendingReviews.length === 0) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">🎉</div><div class="empty-title">All clear!</div><div class="empty-sub">No reviews waiting for approval right now.</div></div>`;
+      return;
+    }
+    el.innerHTML = pendingReviews.map(r => {
+      const trainerName = (r.trainers as any)?.name ?? 'Unknown Trainer';
+      return `
+        <div class="review-row" id="row-${r.id}">
+          <div class="rev-avatar" style="background:${r.reviewer_avatar_bg};color:${r.reviewer_avatar_color};">${r.reviewer_initials}</div>
+          <div class="rev-meta">
+            <div class="rev-header">
+              <span class="rev-name">${r.reviewer_name}</span>
+              <span class="rev-rating">${stars(r.rating)}</span>
+              <span class="rev-trainer">→ ${trainerName}</span>
+            </div>
+            <div class="rev-text">"${r.review_text}"</div>
+            <div class="rev-date">Submitted ${timeAgo(r.created_at)}</div>
+          </div>
+          <div class="rev-actions">
+            <button class="btn-approve" id="approve-${r.id}" onclick="approveReview('${r.id}')">✅ Approve</button>
+            <button class="btn-reject"  id="reject-${r.id}"  onclick="rejectReview('${r.id}')">✕ Reject</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderApproved() {
+    const el = document.getElementById('approved-list') as HTMLElement;
+    if (approvedReviews.length === 0) {
+      el.innerHTML = `<div class="empty"><div class="empty-icon">📝</div><div class="empty-title">No approved reviews yet</div><div class="empty-sub">Approved reviews will appear here.</div></div>`;
+      return;
+    }
+    el.innerHTML = approvedReviews.map(r => {
+      const trainerName = (r.trainers as any)?.name ?? 'Unknown';
+      const date = new Date(r.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      return `
+        <div class="approved-row">
+          <span class="approved-check">✅</span>
+          <div class="approved-info">
+            <div class="approved-name">${r.reviewer_name} — ${'★'.repeat(r.rating)}</div>
+            <div class="approved-trainer">For ${trainerName} · "${r.review_text.slice(0, 80)}${r.review_text.length > 80 ? '…' : ''}"</div>
+          </div>
+          <div class="approved-date">${date}</div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── Actions ───────────────────────────────────────────────────────────────
+  (window as any).approveReview = async (id: string) => {
+    const approveBtn = document.getElementById(`approve-${id}`) as HTMLButtonElement;
+    const rejectBtn  = document.getElementById(`reject-${id}`)  as HTMLButtonElement;
+    approveBtn.disabled = true;
+    rejectBtn.disabled  = true;
+    approveBtn.textContent = 'Approving…';
+
+    const { error } = await supabase
+      .from('reviews')
+      .update({ is_verified: true })
+      .eq('id', id);
+
+    if (error) {
+      showToast('❌ Failed to approve — ' + error.message);
+      approveBtn.disabled = false;
+      rejectBtn.disabled  = false;
+      approveBtn.textContent = '✅ Approve';
+      return;
+    }
+
+    document.getElementById(`row-${id}`)?.remove();
+    pendingReviews = pendingReviews.filter(r => r.id !== id);
+    (document.getElementById('stat-pending') as HTMLElement).textContent = String(pendingReviews.length);
+    (document.getElementById('sb-pending-count') as HTMLElement).textContent = String(pendingReviews.length);
+    if (pendingReviews.length === 0) renderPending();
+    showToast('✅ Review approved and now live!');
+  };
+
+  (window as any).rejectReview = async (id: string) => {
+    if (!confirm('Are you sure you want to reject and permanently delete this review?')) return;
+
+    const approveBtn = document.getElementById(`approve-${id}`) as HTMLButtonElement;
+    const rejectBtn  = document.getElementById(`reject-${id}`)  as HTMLButtonElement;
+    approveBtn.disabled = true;
+    rejectBtn.disabled  = true;
+    rejectBtn.textContent = 'Rejecting…';
+
+    const { error } = await supabase
+      .from('reviews')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      showToast('❌ Failed to reject — ' + error.message);
+      approveBtn.disabled = false;
+      rejectBtn.disabled  = false;
+      rejectBtn.textContent = '✕ Reject';
+      return;
+    }
+
+    document.getElementById(`row-${id}`)?.remove();
+    pendingReviews = pendingReviews.filter(r => r.id !== id);
+    (document.getElementById('stat-pending') as HTMLElement).textContent = String(pendingReviews.length);
+    (document.getElementById('sb-pending-count') as HTMLElement).textContent = String(pendingReviews.length);
+    if (pendingReviews.length === 0) renderPending();
+    showToast('🗑️ Review rejected and removed.');
+  };
+
+  // ── Navigation ────────────────────────────────────────────────────────────
+  (window as any).showPage = (id: string) => {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
+    document.getElementById('page-' + id)?.classList.add('active');
+    const match = [...document.querySelectorAll('.sb-item')].find(el => el.getAttribute('onclick')?.includes(id));
+    if (match) match.classList.add('active');
+    const titles: Record<string, [string, string]> = {
+      pending:  ['Pending Reviews',  'Reviews awaiting your approval before going live'],
+      approved: ['Approved Reviews', 'All reviews that are live on trainer profiles'],
+    };
+    const [title, sub] = titles[id] || ['Admin', ''];
+    (document.getElementById('page-title') as HTMLElement).textContent = title;
+    (document.getElementById('page-sub')   as HTMLElement).textContent = sub;
+  };
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
+  function showToast(msg: string) {
+    const t = document.getElementById('toast') as HTMLElement;
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+
+  // ── Sign out ──────────────────────────────────────────────────────────────
+  document.getElementById('sign-out-btn')?.addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    window.location.href = '/';
+  });
+
+  // ── Init ──────────────────────────────────────────────────────────────────
+  await loadAll();
+</script>
+</body>
+</html>
