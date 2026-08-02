@@ -530,6 +530,20 @@
       return;
     }
 
+    // Insert trainer row immediately so user_id is linked regardless of email confirmation timing
+    if (data.user) {
+      await supabase.from('trainers').insert({
+        user_id:   data.user.id,
+        name:      `${firstName} ${lastName}`.trim(),
+        email,
+        city,
+        postcode,
+        specialty,
+        cert,
+        is_verified: false,
+      });
+    }
+
     if (data.session) {
       window.location.href = '/dashboard';
     } else {
