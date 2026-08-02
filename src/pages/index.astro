@@ -278,16 +278,18 @@ const reviews = [
   .nav-link:hover { color:#111311; }
 
   /* Hero rankings card — dark glass overrides */
-  .hero-card .lb-card { background:rgba(255,255,255,0.07); border-color:rgba(255,255,255,0.13); border-left-color:#3ab54a; }
-  .hero-card .lb-card:hover { box-shadow:0 4px 16px rgba(0,0,0,0.35); transform:translateY(-1px); }
+  .hero-card .lb-card { background:rgba(255,255,255,0.07); border:2px solid #7defa0; border-left:2px solid #7defa0; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5); }
+  .hero-card .lb-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6); transform:translateY(-1px); }
   .hero-card .lbc-name { color:#ffffff; }
   .hero-card .lbc-detail { color:rgba(255,255,255,0.52); }
   .hero-card .lbc-bmp-score { color:#ffffff; }
   .hero-card .lbc-bmp-label, .hero-card .lbc-bmp-rev { color:rgba(255,255,255,0.45); }
 
   /* Leaderboard section — white cards on dark green */
-  #leaderboard .lb-card { box-shadow:0 4px 20px rgba(0,0,0,0.25); border-color:rgba(255,255,255,0.08); }
-  #leaderboard .lb-card:hover { box-shadow:0 8px 32px rgba(0,0,0,0.4); transform:translateY(-2px); }
+  #leaderboard .lb-card { border:2px solid #7defa0; border-left:2px solid #7defa0; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5); }
+  #leaderboard .lb-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6); transform:translateY(-2px); }
+  /* Find-a-trainer preview — dark section card glow */
+  #find-preview a[href^="/trainers/"] { border:2px solid #7defa0 !important; border-left:2px solid #7defa0 !important; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important; }
   #leaderboard p { color:rgba(255,255,255,0.5); }
 
   /* Review card hover */
@@ -1082,7 +1084,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var gsk = s < geoFilled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
         dbs += '<svg viewBox="0 0 28 12" width="10" height="5" style="display:inline-block;vertical-align:middle;"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/></svg>';
       }
-      return '<a href="/trainers/' + t.id + '" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.75rem;text-decoration:none;background:white;border:1px solid #e0e8e1;border-left:3px solid #3ab54a;border-radius:10px;">' +
+      return '<a href="/trainers/' + t.id + '" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.75rem;text-decoration:none;background:white;border:2px solid #7defa0;border-left:2px solid #7defa0;border-radius:10px;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);">' +
         '<div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;font-weight:900;color:#3ab54a;width:1.75rem;flex-shrink:0;line-height:1;">' + String(i + 1).padStart(2, '0') + '</div>' +
         avatar +
         '<div style="flex:1;min-width:0;">' +
