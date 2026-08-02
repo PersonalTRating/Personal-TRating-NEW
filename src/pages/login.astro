@@ -167,7 +167,7 @@
   supabase.auth.getSession().then(async ({ data: { session } }) => {
     if (!session) return;
     const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
-    window.location.href = trainer ? '/dashboard' : '/';
+    window.location.href = trainer ? '/dashboard' : '/account';
   });
 
   const form      = document.getElementById('login-form') as HTMLFormElement;
@@ -193,7 +193,7 @@
     } else {
       const { data: { user } } = await supabase.auth.getUser();
       const { data: trainer }  = await supabase.from('trainers').select('id').eq('user_id', user!.id).maybeSingle();
-      window.location.href = trainer ? '/dashboard' : '/';
+      window.location.href = trainer ? '/dashboard' : '/account';
     }
   });
 </script>

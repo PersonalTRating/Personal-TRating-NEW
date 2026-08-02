@@ -1216,8 +1216,6 @@ document.addEventListener('DOMContentLoaded', function () {
   if (session) {
     const { data: trainerRow } = await supabase.from('trainers').select('id, name').eq('user_id', session.user.id).maybeSingle();
     if (trainerRow) {
-      window.location.replace('/for-trainers');
-      // stop executing — redirect is in flight
       document.getElementById('nav-signin')!.style.display  = 'none';
       document.getElementById('nav-signup')!.style.display  = 'none';
       const accountEl = document.getElementById('nav-account')! as HTMLAnchorElement;
