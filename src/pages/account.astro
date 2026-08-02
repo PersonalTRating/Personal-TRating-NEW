@@ -413,7 +413,7 @@
   if (!client) {
     // Might be a trainer — send them to their dashboard instead of signing out
     const { data: trainerRow } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
-    window.location.href = trainerRow ? '/dashboard' : '/login';
+    window.location.href = trainerRow ? '/dashboard' : '/';
     throw new Error('no-profile');
   }
 
