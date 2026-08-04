@@ -1,0 +1,85 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Page Not Found — Personal TRating" description="The page you're looking for doesn't exist.">
+
+<style>
+  body { background:#f7f9f7; }
+  .wrap {
+    max-width:560px; margin:0 auto; padding:6rem 2rem;
+    font-family:'Manrope',sans-serif; text-align:center;
+  }
+  .badge {
+    display:inline-block; background:rgba(58,181,74,0.12);
+    border:1px solid rgba(58,181,74,0.3); border-radius:20px;
+    color:#2a9438; font-size:0.72rem; font-weight:700;
+    letter-spacing:2px; text-transform:uppercase;
+    padding:0.3rem 0.9rem; margin-bottom:1.5rem;
+  }
+  .num {
+    font-family:'Playfair Display',serif; font-size:7rem; font-weight:900;
+    color:#0d1a0e; line-height:1; margin-bottom:0.5rem;
+    background:linear-gradient(135deg,#0d1a0e 0%,#3ab54a 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  }
+  h1 {
+    font-family:'Playfair Display',serif; font-size:1.75rem; font-weight:800;
+    color:#0d1a0e; margin-bottom:1rem;
+  }
+  p { font-size:0.95rem; color:#5a6f5c; line-height:1.8; margin-bottom:2.5rem; }
+  .actions { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+  .btn-primary {
+    background:#0d1a0e; color:white; text-decoration:none;
+    padding:0.875rem 2rem; border-radius:10px;
+    font-weight:700; font-size:0.9rem; transition:background 0.15s;
+  }
+  .btn-primary:hover { background:#1a3d1e; }
+  .btn-secondary {
+    background:white; color:#0d1a0e; text-decoration:none;
+    padding:0.875rem 2rem; border-radius:10px; border:1.5px solid #d4dbd5;
+    font-weight:700; font-size:0.9rem; transition:border-color 0.15s;
+  }
+  .btn-secondary:hover { border-color:#3ab54a; }
+  .divider { border:none; border-top:1px solid #e0e8e1; margin:3rem auto; max-width:200px; }
+  .suggestions { display:flex; flex-direction:column; gap:0.6rem; }
+  .sug-link {
+    display:flex; align-items:center; justify-content:space-between;
+    background:white; border:1px solid #e0e8e1; border-radius:10px;
+    padding:0.9rem 1.25rem; text-decoration:none; color:#0d1a0e;
+    font-size:0.875rem; font-weight:600; transition:border-color 0.15s, box-shadow 0.15s;
+  }
+  .sug-link:hover { border-color:#3ab54a; box-shadow:0 2px 12px rgba(58,181,74,0.12); }
+  .sug-link span { color:#8a8f8a; font-size:1rem; }
+</style>
+
+<nav style="background:white;border-bottom:1px solid #e0e8e1;padding:0 2rem;">
+  <div style="max-width:900px;margin:0 auto;height:68px;display:flex;align-items:center;">
+    <a href="/" style="display:flex;align-items:center;text-decoration:none;">
+      <img src="/images/logo.png" alt="Personal TRating" style="height:52px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="badge">404 Error</div>
+  <div class="num">404</div>
+  <h1>Page not found.</h1>
+  <p>The page you're looking for doesn't exist or may have moved.<br/>Let's get you back on track.</p>
+
+  <div class="actions">
+    <a href="/" class="btn-primary">Back to Homepage →</a>
+    <a href="/find-a-trainer" class="btn-secondary">Browse Trainers</a>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="suggestions">
+    <a href="/" class="sug-link">🏆 UK Leaderboard <span>→</span></a>
+    <a href="/find-a-trainer" class="sug-link">🔍 Find a Trainer <span>→</span></a>
+    <a href="/signup" class="sug-link">💪 List Your Profile Free <span>→</span></a>
+    <a href="/contact" class="sug-link">✉️ Contact Us <span>→</span></a>
+  </div>
+</div>
+
+</Layout>
