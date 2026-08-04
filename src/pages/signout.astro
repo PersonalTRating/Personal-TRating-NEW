@@ -22,6 +22,10 @@
   <script>
     import { supabase } from '../lib/supabase';
     supabase.auth.signOut().then(() => {
+      // Clear all Supabase keys from localStorage to ensure a clean slate
+      Object.keys(localStorage).forEach(function(key) {
+        if (key.startsWith('sb-')) localStorage.removeItem(key);
+      });
       window.location.href = '/login';
     });
   </script>
