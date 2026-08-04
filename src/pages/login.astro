@@ -191,9 +191,15 @@
       submitBtn.textContent  = 'Sign In';
       submitBtn.disabled     = false;
     } else {
-      const { data: { user } } = await supabase.auth.getUser();
-      const { data: trainer }  = await supabase.from('trainers').select('id').eq('user_id', user!.id).maybeSingle();
-      window.location.href = '/dashboard';
+      // Wait for session to be fully persisted before redirecting (fixes mobile timing issue)
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN' && session) {
+          subscription.unsubscribe();
+          window.location.href = '/dashboard';
+        }
+      });
+      // Fallback in case onAuthStateChange doesn't fire within 3s
+      setTimeout(() => { window.location.href = '/dashboard'; }, 3000);
     }
   });
 </script>
