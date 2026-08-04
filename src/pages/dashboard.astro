@@ -414,6 +414,41 @@
     .stats-grid  { grid-template-columns:1fr 1fr; gap:0.75rem; }
     .topbar-btn  { display:none; }
     .topbar-left h1 { font-size:1.15rem; }
+    .content { padding-bottom:80px; }
+  }
+
+  /* ── Mobile bottom nav ── */
+  .mob-bottom-nav {
+    display:none;
+    position:fixed; bottom:0; left:0; right:0; z-index:300;
+    background:white; border-top:1px solid var(--border);
+    padding:0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
+    box-shadow:0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .mob-bottom-nav ul {
+    list-style:none; margin:0; padding:0;
+    display:flex; justify-content:space-around; align-items:center;
+  }
+  .mob-bottom-nav li { flex:1; }
+  .mob-bottom-nav button {
+    width:100%; background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+    padding:0.35rem 0.25rem; color:var(--muted); transition:color 0.15s;
+  }
+  .mob-bottom-nav button.active { color:var(--green); }
+  .mob-bottom-nav .nav-icon { font-size:1.35rem; line-height:1; }
+  .mob-bottom-nav .nav-label { font-size:0.6rem; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; }
+  .mob-bottom-nav .nav-badge {
+    position:absolute; top:-2px; right:8px;
+    background:var(--green); color:white;
+    font-size:0.55rem; font-weight:800;
+    width:14px; height:14px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    display:none;
+  }
+  .mob-bottom-nav li { position:relative; }
+  @media (max-width:768px) {
+    .mob-bottom-nav { display:block; }
   }
   @media (max-width: 900px) {
     #link-builder-grid { grid-template-columns:1fr !important; }
@@ -2604,6 +2639,42 @@
   };
   // ────────────────────────────────────────────────────────────────────────
 </script>
+<!-- Mobile bottom navigation -->
+<nav class="mob-bottom-nav" id="mob-bottom-nav">
+  <ul>
+    <li>
+      <button onclick="mobNavTo('overview')" id="bn-overview" class="active">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Overview</span>
+      </button>
+    </li>
+    <li>
+      <button onclick="mobNavTo('profile')" id="bn-profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
+      </button>
+    </li>
+    <li>
+      <button onclick="mobNavTo('reviews')" id="bn-reviews">
+        <span class="nav-icon">⭐</span>
+        <span class="nav-label">Reviews</span>
+      </button>
+    </li>
+    <li>
+      <button onclick="mobNavTo('links')" id="bn-links">
+        <span class="nav-icon">🔗</span>
+        <span class="nav-label">Links</span>
+      </button>
+    </li>
+    <li>
+      <button onclick="toggleMobMenu()" id="bn-more">
+        <span class="nav-icon">☰</span>
+        <span class="nav-label">More</span>
+      </button>
+    </li>
+  </ul>
+</nav>
+
 <script is:inline>
   function toggleMobMenu() {
     document.querySelector('.sidebar').classList.toggle('mob-open');
@@ -2613,7 +2684,19 @@
     document.querySelector('.sidebar').classList.remove('mob-open');
     document.getElementById('mob-overlay').classList.remove('active');
   }
-  // Close sidebar when a nav item is tapped on mobile
+
+  function mobNavTo(page) {
+    showPage(page);
+    closeMobMenu();
+    // Update active state on bottom nav
+    document.querySelectorAll('.mob-bottom-nav button').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    var btn = document.getElementById('bn-' + page);
+    if (btn) btn.classList.add('active');
+  }
+
+  // Sync bottom nav active state when sidebar items are tapped
   document.querySelectorAll('.sb-item').forEach(function(item) {
     item.addEventListener('click', function() {
       if (window.innerWidth <= 768) closeMobMenu();
