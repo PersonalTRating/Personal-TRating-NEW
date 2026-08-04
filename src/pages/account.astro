@@ -44,6 +44,48 @@
   /* ── Page layout ── */
   .page { max-width:900px; margin:0 auto; padding:2.5rem 2rem 4rem; }
 
+  /* ── Tab nav ── */
+  .acc-tabs {
+    display:flex; gap:0.25rem; background:white; border:1px solid var(--border);
+    border-radius:12px; padding:0.3rem; margin-bottom:2rem;
+  }
+  .acc-tab {
+    flex:1; background:none; border:none; border-radius:9px;
+    padding:0.6rem 0.5rem; font-family:'Manrope',sans-serif;
+    font-size:0.8rem; font-weight:700; color:var(--muted);
+    cursor:pointer; transition:all 0.15s; text-align:center;
+    display:flex; align-items:center; justify-content:center; gap:0.4rem;
+  }
+  .acc-tab.active { background:var(--green); color:white; }
+  .acc-tab:not(.active):hover { background:var(--off); color:var(--text); }
+  .acc-section { display:none; }
+  .acc-section.active { display:block; }
+
+  /* ── Mobile bottom nav ── */
+  .acc-bottom-nav {
+    display:none; position:fixed; bottom:0; left:0; right:0; z-index:300;
+    background:white; border-top:1px solid var(--border);
+    padding:0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
+    box-shadow:0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .acc-bottom-nav ul { list-style:none; margin:0; padding:0; display:flex; justify-content:space-around; }
+  .acc-bottom-nav li { flex:1; }
+  .acc-bottom-nav button {
+    width:100%; background:none; border:none; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; gap:0.2rem;
+    padding:0.35rem 0; color:var(--muted); transition:color 0.15s;
+  }
+  .acc-bottom-nav button.active { color:var(--green); }
+  .acc-bottom-nav .bn-icon { font-size:1.35rem; line-height:1; }
+  .acc-bottom-nav .bn-label { font-size:0.6rem; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; }
+  @media (max-width:768px) {
+    .acc-tabs { display:none; }
+    .acc-bottom-nav { display:block; }
+    .page { padding-bottom:80px; }
+    .welcome-banner h1 { font-size:1.5rem; }
+    .welcome-avatar { width:52px; height:52px; font-size:1.2rem; right:1.25rem; }
+  }
+
   /* ── Welcome banner ── */
   .welcome-banner {
     background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);
@@ -280,52 +322,61 @@
     <div class="welcome-avatar" id="welcome-avatar">?</div>
   </div>
 
-  <!-- Quick actions -->
-  <div class="grid-2">
-    <div class="card" style="margin-bottom:0">
-      <div class="card-label">Discover</div>
-      <div class="card-title">Find a PT</div>
-      <a href="/find-a-trainer" class="action-btn">
-        <div class="action-btn-icon">🔍</div>
-        <div class="action-btn-body">
-          <div class="action-btn-title">Browse Personal Trainers</div>
-          <div class="action-btn-desc">Search by city, specialty and rating.</div>
-        </div>
-        <div class="action-btn-arrow">→</div>
-      </a>
-      <a href="/#leaderboard" class="action-btn">
-        <div class="action-btn-icon">🏆</div>
-        <div class="action-btn-body">
-          <div class="action-btn-title">View the Rankings</div>
-          <div class="action-btn-desc">See the UK's top-ranked PTs.</div>
-        </div>
-        <div class="action-btn-arrow">→</div>
-      </a>
-    </div>
+  <!-- Tab nav (desktop) -->
+  <div class="acc-tabs">
+    <button class="acc-tab active" data-tab="home" onclick="accTab('home', this)">🏠 Home</button>
+    <button class="acc-tab" data-tab="messages" onclick="accTab('messages', this)">💬 Messages</button>
+    <button class="acc-tab" data-tab="reviews" onclick="accTab('reviews', this)">⭐ Reviews</button>
+    <button class="acc-tab" data-tab="profile" onclick="accTab('profile', this)">👤 Profile</button>
+  </div>
 
-    <div class="card" style="margin-bottom:0">
-      <div class="card-label">Reviews</div>
-      <div class="card-title">Leave a Review</div>
-      <a href="/find-a-trainer" class="action-btn">
-        <div class="action-btn-icon">⭐</div>
-        <div class="action-btn-body">
-          <div class="action-btn-title">Find Your Trainer</div>
-          <div class="action-btn-desc">Search for your PT and leave them a review from their profile.</div>
-        </div>
-        <div class="action-btn-arrow">→</div>
-      </a>
-      <div class="action-btn" style="cursor:default;opacity:0.65;">
-        <div class="action-btn-icon">🔗</div>
-        <div class="action-btn-body">
-          <div class="action-btn-title">Got a review link?</div>
-          <div class="action-btn-desc">Open the link your trainer sent you — it goes straight to their review form.</div>
+  <!-- Home section -->
+  <div class="acc-section active" id="acc-home">
+    <div class="grid-2">
+      <div class="card" style="margin-bottom:0">
+        <div class="card-label">Discover</div>
+        <div class="card-title">Find a PT</div>
+        <a href="/find-a-trainer" class="action-btn">
+          <div class="action-btn-icon">🔍</div>
+          <div class="action-btn-body">
+            <div class="action-btn-title">Browse Personal Trainers</div>
+            <div class="action-btn-desc">Search by city, specialty and rating.</div>
+          </div>
+          <div class="action-btn-arrow">→</div>
+        </a>
+        <a href="/#leaderboard" class="action-btn">
+          <div class="action-btn-icon">🏆</div>
+          <div class="action-btn-body">
+            <div class="action-btn-title">View the Rankings</div>
+            <div class="action-btn-desc">See the UK's top-ranked PTs.</div>
+          </div>
+          <div class="action-btn-arrow">→</div>
+        </a>
+      </div>
+      <div class="card" style="margin-bottom:0">
+        <div class="card-label">Reviews</div>
+        <div class="card-title">Leave a Review</div>
+        <a href="/find-a-trainer" class="action-btn">
+          <div class="action-btn-icon">⭐</div>
+          <div class="action-btn-body">
+            <div class="action-btn-title">Find Your Trainer</div>
+            <div class="action-btn-desc">Search for your PT and leave them a review from their profile.</div>
+          </div>
+          <div class="action-btn-arrow">→</div>
+        </a>
+        <div class="action-btn" style="cursor:default;opacity:0.65;">
+          <div class="action-btn-icon">🔗</div>
+          <div class="action-btn-body">
+            <div class="action-btn-title">Got a review link?</div>
+            <div class="action-btn-desc">Open the link your trainer sent you — it goes straight to their review form.</div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Messages -->
-  <div style="margin-bottom:2rem;">
+  <!-- Messages section -->
+  <div class="acc-section" id="acc-messages">
     <div class="card-label" style="margin-bottom:0.25rem;">Messages</div>
     <div class="card-title" style="margin-bottom:1.25rem;">My Conversations</div>
     <div id="cl-conv-loading" style="text-align:center;padding:2rem;color:var(--muted);font-size:0.875rem;">Loading conversations…</div>
@@ -339,8 +390,8 @@
     <div id="cl-conv-list" style="display:none;flex-direction:column;gap:0.85rem;"></div>
   </div>
 
-  <!-- My Reviews -->
-  <div>
+  <!-- Reviews section -->
+  <div class="acc-section" id="acc-reviews">
     <div class="card-label" style="margin-bottom:0.25rem;">History</div>
     <div class="card-title" style="margin-bottom:1.25rem;">My Reviews</div>
     <div id="reviews-list" style="display:flex;flex-direction:column;gap:0.85rem;">
@@ -352,25 +403,37 @@
     </div>
   </div>
 
-  <!-- Account details -->
-  <div class="card">
-    <div class="card-label">Account</div>
-    <div class="card-title">Your Details</div>
-    <div class="info-row">
-      <div class="info-label">Name</div>
-      <div class="info-value" id="account-name">—</div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Email</div>
-      <div class="info-value" id="account-email">—</div>
-    </div>
-    <div class="info-row">
-      <div class="info-label">Account type</div>
-      <div class="info-value">Client</div>
+  <!-- Profile section -->
+  <div class="acc-section" id="acc-profile">
+    <div class="card">
+      <div class="card-label">Account</div>
+      <div class="card-title">Your Details</div>
+      <div class="info-row">
+        <div class="info-label">Name</div>
+        <div class="info-value" id="account-name">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Email</div>
+        <div class="info-value" id="account-email">—</div>
+      </div>
+      <div class="info-row">
+        <div class="info-label">Account type</div>
+        <div class="info-value">Client</div>
+      </div>
     </div>
   </div>
 
 </div>
+
+<!-- Mobile bottom nav -->
+<nav class="acc-bottom-nav">
+  <ul>
+    <li><button onclick="accTab('home', this)" id="abn-home" class="active"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></button></li>
+    <li><button onclick="accTab('messages', this)" id="abn-messages"><span class="bn-icon">💬</span><span class="bn-label">Messages</span></button></li>
+    <li><button onclick="accTab('reviews', this)" id="abn-reviews"><span class="bn-icon">⭐</span><span class="bn-label">Reviews</span></button></li>
+    <li><button onclick="accTab('profile', this)" id="abn-profile"><span class="bn-icon">👤</span><span class="bn-label">Profile</span></button></li>
+  </ul>
+</nav>
 
 <!-- Client chat panel -->
 <div id="cl-chat-panel" class="cl-chat-panel cl-chat-hidden">
@@ -651,4 +714,22 @@
     await supabase.auth.signOut();
     window.location.href = '/';
   });
+
+  // ── Tab navigation ─────────────────────────────────────────────────────────
+  (window as any).accTab = function(name: string, _btn: HTMLElement) {
+    // hide all sections
+    document.querySelectorAll('.acc-section').forEach(el => el.classList.remove('active'));
+    // deactivate desktop tabs
+    document.querySelectorAll('.acc-tab').forEach(el => el.classList.remove('active'));
+    // deactivate bottom nav buttons
+    document.querySelectorAll('.acc-bottom-nav button').forEach(el => el.classList.remove('active'));
+
+    // show target section
+    document.getElementById('acc-' + name)?.classList.add('active');
+    // activate matching desktop tab
+    document.querySelector(`.acc-tab[data-tab="${name}"]`)?.classList.add('active');
+    // activate matching bottom nav button
+    const bnBtn = document.getElementById('abn-' + name);
+    if (bnBtn) bnBtn.classList.add('active');
+  };
 </script>
