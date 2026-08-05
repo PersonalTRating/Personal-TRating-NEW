@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /account
+Disallow: /signout
+Disallow: /auth/
+
+Sitemap: https://personaltrating.com/sitemap.xml

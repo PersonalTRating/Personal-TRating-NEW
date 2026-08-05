@@ -172,6 +172,38 @@ const reviews = [
 
 <Layout title="Personal TRating – Find the UK's Top Personal Trainers">
 
+<script type="application/ld+json" is:inline>
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Personal TRating",
+  "url": "https://personaltrating.com",
+  "description": "The UK's personal trainer ranking platform. Find and compare personal trainers by real, verified client reviews.",
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": "https://personaltrating.com/find-a-trainer?q={search_term_string}",
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
+
+<script type="application/ld+json" is:inline>
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Personal TRating",
+  "url": "https://personaltrating.com",
+  "logo": "https://personaltrating.com/images/logo.png",
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "email": "personaltrating@protonmail.com",
+    "contactType": "customer support"
+  },
+  "areaServed": "GB",
+  "description": "UK platform ranking personal trainers by verified client reviews using the BMP™ scoring system."
+}
+</script>
+
 <style is:global>
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(22px); }
