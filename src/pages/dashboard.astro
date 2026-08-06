@@ -2378,21 +2378,27 @@
         + '<div style="color:rgba(255,255,255,0.22);font-size:0.58rem;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;text-transform:lowercase;">personalTrating.co.uk</div>'
       + '</div>';
 
-    // Draw QR onto a canvas element — html2canvas captures canvas natively without async img loading
+    // Draw QR — wait for QRCode library to be ready if CDN is still loading
     _cardBuilt = false;
     var qrContainer = document.getElementById('sc-qr-inner');
-    if (qrContainer && window['QRCode']) {
-      var qrCanvas = document.createElement('canvas');
-      window['QRCode'].toCanvas(qrCanvas, url, { width:130, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err) {
-        if (!err && qrContainer) {
-          qrCanvas.style.cssText = 'width:130px;height:130px;display:block;border-radius:4px;';
-          qrContainer.appendChild(qrCanvas);
-        }
+    var waitForQR = function(attempts: number) {
+      if (!qrContainer) { _cardBuilt = true; return; }
+      if (window['QRCode']) {
+        var qrCanvas = document.createElement('canvas');
+        window['QRCode'].toCanvas(qrCanvas, url, { width:140, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err: any) {
+          if (!err && qrContainer) {
+            qrCanvas.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
+            qrContainer.appendChild(qrCanvas);
+          }
+          _cardBuilt = true;
+        });
+      } else if (attempts > 0) {
+        setTimeout(function() { waitForQR(attempts - 1); }, 200);
+      } else {
         _cardBuilt = true;
-      });
-    } else {
-      _cardBuilt = true;
-    }
+      }
+    };
+    waitForQR(20);
   }
 
   async function downloadShareCard() {
