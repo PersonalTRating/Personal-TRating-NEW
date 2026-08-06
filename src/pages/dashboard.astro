@@ -2381,11 +2381,11 @@
     // Draw QR — wait for QRCode library to be ready if CDN is still loading
     _cardBuilt = false;
     var qrContainer = document.getElementById('sc-qr-inner');
-    var waitForQR = function(attempts: number) {
+    var waitForQR = function(attempts) {
       if (!qrContainer) { _cardBuilt = true; return; }
       if (window['QRCode']) {
         var qrCanvas = document.createElement('canvas');
-        window['QRCode'].toCanvas(qrCanvas, url, { width:140, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err: any) {
+        window['QRCode'].toCanvas(qrCanvas, url, { width:140, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err) {
           if (!err && qrContainer) {
             qrCanvas.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
             qrContainer.appendChild(qrCanvas);
