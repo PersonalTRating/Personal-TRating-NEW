@@ -467,6 +467,26 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     errorEl.style.display   = 'none';
     errorFoot.style.display = 'none';
 
+    // Hard auth guard — re-check in case the page-load auth check hasn't completed yet
+    const { data: { user: submitUser } } = await supabase.auth.getUser();
+    if (!submitUser) {
+      const trainerNameEl = document.getElementById('rv-trainer-name') as HTMLElement;
+      const tName = trainerNameEl?.textContent?.trim() || 'this trainer';
+      const trainerId = (document as any).__rvTrainerId || window.location.pathname.split('/').pop() || '';
+      const signupUrl = `/signup?review=${encodeURIComponent(trainerId)}&tname=${encodeURIComponent(tName)}`;
+      if (formState) {
+        formState.innerHTML = `
+          <div style="padding:2.5rem 2rem;text-align:center;max-width:400px;margin:0 auto;">
+            <div style="font-size:2.5rem;margin-bottom:1rem;">⭐</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:0.75rem;">Sign up to review ${tName}</h3>
+            <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.75rem;">Create your free account in seconds — then leave your verified review straight away.</p>
+            <a href="${signupUrl}" style="display:block;background:#3ab54a;color:white;padding:0.9rem 1.5rem;border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-bottom:0.85rem;">Create free account →</a>
+            <a href="/login?redirect=${encodeURIComponent(window.location.pathname)}" style="display:block;color:var(--muted);font-size:0.85rem;text-decoration:none;padding:0.5rem;">Already have an account? Sign in</a>
+          </div>`;
+      }
+      return;
+    }
+
     const name     = (document.getElementById('rv-name')     as HTMLInputElement).value.trim();
     const location = (document.getElementById('rv-location') as HTMLInputElement).value.trim();
     const text     = rvText.value.trim();
