@@ -163,11 +163,14 @@
 <script>
   import { supabase } from '../lib/supabase';
 
+  const _loginParams   = new URLSearchParams(window.location.search);
+  const _loginRedirect = _loginParams.get('redirect') || null;
+
   // If already logged in, redirect based on user type
   supabase.auth.getSession().then(async ({ data: { session } }) => {
     if (!session) return;
     const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
-    window.location.href = '/dashboard';
+    window.location.href = trainer ? '/dashboard' : (_loginRedirect || '/account');
   });
 
   const form      = document.getElementById('login-form') as HTMLFormElement;
@@ -192,14 +195,19 @@
       submitBtn.disabled     = false;
     } else {
       // Wait for session to be fully persisted before redirecting (fixes mobile timing issue)
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
         if (event === 'SIGNED_IN' && session) {
           subscription.unsubscribe();
-          window.location.href = '/dashboard';
+          if (_loginRedirect) {
+            window.location.href = _loginRedirect;
+          } else {
+            const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+            window.location.href = trainer ? '/dashboard' : '/account';
+          }
         }
       });
       // Fallback in case onAuthStateChange doesn't fire within 3s
-      setTimeout(() => { window.location.href = '/dashboard'; }, 3000);
+      setTimeout(() => { window.location.href = _loginRedirect || '/dashboard'; }, 3000);
     }
   });
 </script>

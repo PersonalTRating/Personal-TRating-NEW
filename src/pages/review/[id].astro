@@ -337,6 +337,24 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
   // fails (unlike getSession(), which wipes localStorage on a bad refresh token)
   let clientId: string | null = null;
   const { data: { user } } = await supabase.auth.getUser();
+
+  // ── Not logged in — show sign-up gate ─────────────────────────────────────
+  if (!user) {
+    const trainerName = (document.getElementById('rv-trainer-name') as HTMLElement)?.textContent?.trim() || 'this trainer';
+    const formState = document.getElementById('rv-form-state') as HTMLElement;
+    const signupUrl = `/signup?review=${encodeURIComponent(window.location.pathname.split('/').pop() || '')}&tname=${encodeURIComponent(trainerName)}`;
+    if (formState) {
+      formState.innerHTML = `
+        <div style="padding:2.5rem 2rem;text-align:center;max-width:400px;margin:0 auto;">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">⭐</div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:0.75rem;">Sign up to review ${trainerName}</h3>
+          <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.75rem;">Create your free account in seconds — then leave your verified review straight away.</p>
+          <a href="${signupUrl}" style="display:block;background:#3ab54a;color:white;padding:0.9rem 1.5rem;border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-bottom:0.85rem;">Create free account →</a>
+          <a href="/login?redirect=${encodeURIComponent(window.location.pathname)}" style="display:block;color:var(--muted);font-size:0.85rem;text-decoration:none;padding:0.5rem;">Already have an account? Sign in</a>
+        </div>`;
+    }
+  }
+
   if (user) {
     const { data: trainer } = await supabase
       .from('trainers').select('id').eq('user_id', user.id).maybeSingle();

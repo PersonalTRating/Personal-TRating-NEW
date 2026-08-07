@@ -410,6 +410,28 @@
 <script>
   import { supabase } from '../lib/supabase';
 
+  // ── Review flow params ────────────────────────────────────────────────────
+  const _urlParams    = new URLSearchParams(window.location.search);
+  const _reviewId     = _urlParams.get('review');
+  const _reviewName   = _urlParams.get('tname') || 'your trainer';
+  const _reviewDest   = _reviewId ? `/review/${_reviewId}` : null;
+
+  // If arriving from a QR code / review link, skip role step and go straight to client form
+  if (_reviewDest) {
+    // Inject a banner above the client form
+    document.addEventListener('DOMContentLoaded', () => {
+      const clientStep = document.getElementById('step-client');
+      if (clientStep) {
+        const banner = document.createElement('div');
+        banner.style.cssText = 'background:var(--green-light);border:1px solid var(--green);border-radius:10px;padding:0.85rem 1rem;margin-bottom:1.25rem;font-size:0.875rem;color:var(--text);line-height:1.5;';
+        banner.innerHTML = `⭐ <strong>You're signing up to review ${_reviewName}.</strong><br>Once your account is created you'll be taken straight to the review form.`;
+        clientStep.insertBefore(banner, clientStep.firstChild);
+      }
+    });
+    // Auto-skip role selection
+    setTimeout(() => { (window as any).selectRole('client'); }, 50);
+  }
+
   // ── Session check ──────────────────────────────────────────────────────────
   (async () => {
     const { data: { session } } = await supabase.auth.getSession();
@@ -417,7 +439,7 @@
     const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
     if (trainer) { window.location.href = '/dashboard'; return; }
     const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
-    if (client) { window.location.href = '/account'; return; }
+    if (client) { window.location.href = _reviewDest || '/account'; return; }
   })();
 
   // ── Role selection ─────────────────────────────────────────────────────────
@@ -593,10 +615,16 @@
     }
 
     if (data.session) {
-      window.location.href = '/account';
+      window.location.href = _reviewDest || '/account';
     } else {
       _cEmail = email;
-      successMsg.innerHTML     = `✅ <strong>Account created!</strong> We've sent a confirmation email to <strong>${email}</strong>. Click the link to activate your account, then <a href="/login" style="color:var(--green-dark)">sign in here</a>.<br><br><span id="c-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendClient()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
+      const loginLink = _reviewDest
+        ? `/login?redirect=${encodeURIComponent(_reviewDest)}`
+        : '/login';
+      const afterMsg = _reviewDest
+        ? `After confirming, <a href="${loginLink}" style="color:var(--green-dark)">sign in here</a> and you'll be taken straight to review <strong>${_reviewName}</strong>.`
+        : `Click the link to activate your account, then <a href="/login" style="color:var(--green-dark)">sign in here</a>.`;
+      successMsg.innerHTML     = `✅ <strong>Account created!</strong> We've sent a confirmation email to <strong>${email}</strong>. ${afterMsg}<br><br><span id="c-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendClient()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
       successMsg.style.display = 'block';
       submitBtn.textContent    = 'Check your email ✉️';
     }
