@@ -331,9 +331,15 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
           )}
         </div>
 
-        <h1 class="tp-hero-name" style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;color:white;line-height:1.08;margin-bottom:0.4rem;">
+        <h1 class="tp-hero-name" style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;color:white;line-height:1.08;margin-bottom:0.25rem;">
           {trainer.name}
         </h1>
+
+        {(trainer as any).username && (
+          <div style="font-size:0.95rem;color:rgba(255,255,255,0.5);font-weight:600;margin-bottom:0.4rem;letter-spacing:0.3px;">
+            @{(trainer as any).username}
+          </div>
+        )}
 
         {trainer.business_name && (
           <div style="font-size:1rem;color:rgba(255,255,255,0.6);font-weight:600;margin-bottom:0.75rem;">

@@ -876,6 +876,14 @@
               <input id="profile-lastname" class="form-input" type="text" placeholder="Last name">
             </div>
             <div class="form-group full">
+              <label class="form-label">Username <span style="font-weight:400;color:var(--muted);">— shown as @username on your profile</span></label>
+              <div style="position:relative;">
+                <span style="position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);font-weight:700;color:var(--muted);font-size:0.95rem;">@</span>
+                <input id="profile-username" class="form-input" type="text" placeholder="yourname" style="padding-left:1.9rem;" maxlength="30">
+              </div>
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">Lowercase letters, numbers and underscores only. Must be unique.</div>
+            </div>
+            <div class="form-group full">
               <label class="form-label">Business / Trading Name <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
               <input id="profile-business" class="form-input" type="text" placeholder="e.g. Mitchell Fitness — leave blank to use your own name">
             </div>
@@ -1751,6 +1759,7 @@
     };
     fillText('profile-firstname', nameParts[0] ?? '');
     fillText('profile-lastname',  nameParts.slice(1).join(' ') ?? '');
+    fillText('profile-username',  (trainer as any).username ?? '');
     fillText('profile-business',  trainer.business_name ?? '');
     fillText('profile-city',      trainer.city     ?? '');
     fillText('profile-postcode',  trainer.postcode ?? '');
@@ -1911,6 +1920,8 @@
 
     const firstName    = (document.getElementById('profile-firstname') as HTMLInputElement).value.trim();
     const lastName     = (document.getElementById('profile-lastname')  as HTMLInputElement).value.trim();
+    const usernameRaw  = (document.getElementById('profile-username')  as HTMLInputElement).value.trim().toLowerCase();
+    const username     = usernameRaw.replace(/[^a-z0-9_]/g, '') || null;
     const businessName = (document.getElementById('profile-business')  as HTMLInputElement).value.trim();
     const city         = (document.getElementById('profile-city')      as HTMLInputElement).value.trim();
     const postcode  = (document.getElementById('profile-postcode')  as HTMLInputElement).value.trim().toUpperCase();
@@ -1941,7 +1952,7 @@
 
     const { error } = await supabase
       .from('trainers')
-      .update({ name, business_name: businessName || null, location, city, postcode, bio, intro_message: introMsg || null, specialty, cert, avatar_initials: initials, avatar_bg: avatarBg, avatar_color: avatarColor, hero_theme: heroTheme, gyms: trainerGyms })
+      .update({ name, username, business_name: businessName || null, location, city, postcode, bio, intro_message: introMsg || null, specialty, cert, avatar_initials: initials, avatar_bg: avatarBg, avatar_color: avatarColor, hero_theme: heroTheme, gyms: trainerGyms })
       .eq('id', trainerId);
 
     if (error) {
@@ -2309,9 +2320,10 @@
       slate:    { bg:'linear-gradient(160deg,#080f1a 0%,#122035 45%,#1e3350 100%)', accent:'#5bcfff', glow:'rgba(91,207,255,0.4)',  swatch:'linear-gradient(135deg,#080f1a,#1e3350)',  name:'Slate' },
     };
 
-    var theme  = themes[trainer.hero_theme] || themes.forest;
-    var name   = trainer.name || 'Personal Trainer';
-    var city   = trainer.city || (trainer.location || '').split(',')[0].trim() || 'United Kingdom';
+    var theme    = themes[trainer.hero_theme] || themes.forest;
+    var name     = trainer.name || 'Personal Trainer';
+    var username = trainer.username ? '@' + trainer.username : null;
+    var city     = trainer.city || (trainer.location || '').split(',')[0].trim() || 'United Kingdom';
     var bmp    = (trainer.bmp_score > 0) ? trainer.bmp_score : null;
     var url    = window['__ptReviewUrl'] || (window.location.origin + '/review/' + trainer.id);
     var customMsgEl = document.getElementById('sc-custom-msg');
@@ -2357,7 +2369,9 @@
           + '<div style="position:relative;z-index:1;">' + avatarHtml + '</div>'
         + '</div>'
         // Name
-        + '<div style="font-family:\'Playfair Display\',serif;font-size:1.5rem;font-weight:900;color:white;text-align:center;line-height:1.15;margin-bottom:4px;text-shadow:0 2px 16px rgba(0,0,0,0.5);">' + name + '</div>'
+        + '<div style="font-family:\'Playfair Display\',serif;font-size:1.5rem;font-weight:900;color:white;text-align:center;line-height:1.15;margin-bottom:3px;text-shadow:0 2px 16px rgba(0,0,0,0.5);">' + name + '</div>'
+        // Username
+        + (username ? '<div style="color:rgba(255,255,255,0.45);font-size:0.72rem;font-weight:600;text-align:center;margin-bottom:5px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">' + username + '</div>' : '')
         // City
         + '<div style="color:rgba(255,255,255,0.38);font-size:0.7rem;font-weight:500;text-align:center;margin-bottom:10px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">📍 ' + city + '</div>'
         // BMP badge
