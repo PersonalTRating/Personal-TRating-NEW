@@ -2342,9 +2342,9 @@
       + '<div style="position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:400px;height:400px;background:radial-gradient(circle,' + theme.glow + ' 0%,transparent 58%);pointer-events:none;z-index:0;"></div>'
       + '<div style="position:absolute;bottom:0;left:0;right:0;height:35%;background:rgba(0,0,0,0.3);pointer-events:none;z-index:0;"></div>'
       // Content
-      + '<div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;padding:24px 24px 18px;">'
+      + '<div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;padding:20px 20px 14px;">'
         // Logo bar
-        + '<div style="align-self:stretch;display:flex;align-items:center;gap:5px;margin-bottom:22px;">'
+        + '<div style="align-self:stretch;display:flex;align-items:center;gap:5px;margin-bottom:16px;">'
           + '<div style="background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
             + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="PTRating" />'
           + '</div>'
@@ -2352,25 +2352,25 @@
           + '<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:0.2rem 0.65rem;font-size:0.58rem;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
         + '</div>'
         // Avatar with glow ring
-        + '<div style="position:relative;margin-bottom:14px;">'
+        + '<div style="position:relative;margin-bottom:10px;">'
           + '<div style="position:absolute;inset:-8px;border-radius:50%;background:' + theme.glow + ';filter:blur(10px);z-index:0;opacity:0.7;"></div>'
           + '<div style="position:relative;z-index:1;">' + avatarHtml + '</div>'
         + '</div>'
         // Name
-        + '<div style="font-family:\'Playfair Display\',serif;font-size:1.6rem;font-weight:900;color:white;text-align:center;line-height:1.15;margin-bottom:5px;text-shadow:0 2px 16px rgba(0,0,0,0.5);">' + name + '</div>'
+        + '<div style="font-family:\'Playfair Display\',serif;font-size:1.5rem;font-weight:900;color:white;text-align:center;line-height:1.15;margin-bottom:4px;text-shadow:0 2px 16px rgba(0,0,0,0.5);">' + name + '</div>'
         // City
-        + '<div style="color:rgba(255,255,255,0.38);font-size:0.72rem;font-weight:500;text-align:center;margin-bottom:12px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">📍 ' + city + '</div>'
+        + '<div style="color:rgba(255,255,255,0.38);font-size:0.7rem;font-weight:500;text-align:center;margin-bottom:10px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">📍 ' + city + '</div>'
         // BMP badge
-        + (bmpHtml ? '<div style="margin-bottom:16px;">' + bmpHtml + '</div>' : '<div style="margin-bottom:16px;height:28px;"></div>')
+        + (bmpHtml ? '<div style="margin-bottom:12px;">' + bmpHtml + '</div>' : '<div style="margin-bottom:12px;height:28px;"></div>')
         // Divider
-        + '<div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent);margin-bottom:16px;"></div>'
+        + '<div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent);margin-bottom:12px;"></div>'
         // CTA text
-        + '<div style="color:rgba(255,255,255,0.78);font-size:0.88rem;font-weight:600;text-align:center;line-height:1.65;margin-bottom:14px;font-family:\'Manrope\',sans-serif;">'
+        + '<div style="color:rgba(255,255,255,0.78);font-size:0.85rem;font-weight:600;text-align:center;line-height:1.6;margin-bottom:12px;font-family:\'Manrope\',sans-serif;width:100%;">'
           + ctaMsg + '<br/>'
           + '<span style="font-size:0.72rem;font-weight:500;color:rgba(255,255,255,0.45);">Scan the QR code to leave a verified review</span>'
         + '</div>'
         // QR code
-        + '<div id="sc-qr-inner" style="background:white;padding:10px;border-radius:14px;margin-bottom:14px;box-shadow:0 8px 28px rgba(0,0,0,0.35);line-height:0;"></div>'
+        + '<div id="sc-qr-inner" style="background:white;padding:8px;border-radius:12px;margin-bottom:10px;box-shadow:0 8px 28px rgba(0,0,0,0.35);line-height:0;"></div>'
         // Spacer
         + '<div style="flex:1;"></div>'
         // URL
@@ -2382,7 +2382,7 @@
     var qrContainer = document.getElementById('sc-qr-inner');
     if (qrContainer) {
       var img = document.createElement('img');
-      img.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
+      img.style.cssText = 'width:120px;height:120px;display:block;border-radius:4px;';
       img.onload = function() { _cardBuilt = true; };
       img.onerror = function() { _cardBuilt = true; };
       img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&margin=4&data=' + encodeURIComponent(url);
