@@ -2378,28 +2378,19 @@
         + '<div style="color:rgba(255,255,255,0.22);font-size:0.58rem;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;text-transform:lowercase;">personalTrating.co.uk</div>'
       + '</div>';
 
-    // Draw QR — wait for QRCode library to be ready if CDN is still loading
+    // Draw QR using API — simple and reliable
     _cardBuilt = false;
     var qrContainer = document.getElementById('sc-qr-inner');
-    var waitForQR = function(attempts) {
-      if (!qrContainer) { _cardBuilt = true; return; }
-      if (window['QRCode']) {
-        window['QRCode'].toDataURL(url, { width:140, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err, dataUrl) {
-          if (!err && dataUrl && qrContainer) {
-            var img = document.createElement('img');
-            img.src = dataUrl;
-            img.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
-            qrContainer.appendChild(img);
-          }
-          _cardBuilt = true;
-        });
-      } else if (attempts > 0) {
-        setTimeout(function() { waitForQR(attempts - 1); }, 200);
-      } else {
-        _cardBuilt = true;
-      }
-    };
-    waitForQR(20);
+    if (qrContainer) {
+      var img = document.createElement('img');
+      img.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
+      img.onload = function() { _cardBuilt = true; };
+      img.onerror = function() { _cardBuilt = true; };
+      img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=140x140&margin=4&data=' + encodeURIComponent(url);
+      qrContainer.appendChild(img);
+    } else {
+      _cardBuilt = true;
+    }
   }
 
   async function downloadShareCard() {
