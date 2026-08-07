@@ -2384,11 +2384,12 @@
     var waitForQR = function(attempts) {
       if (!qrContainer) { _cardBuilt = true; return; }
       if (window['QRCode']) {
-        var qrCanvas = document.createElement('canvas');
-        window['QRCode'].toCanvas(qrCanvas, url, { width:140, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err) {
-          if (!err && qrContainer) {
-            qrCanvas.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
-            qrContainer.appendChild(qrCanvas);
+        window['QRCode'].toDataURL(url, { width:140, margin:1, color:{ dark:'#000000', light:'#ffffff' } }, function(err, dataUrl) {
+          if (!err && dataUrl && qrContainer) {
+            var img = document.createElement('img');
+            img.src = dataUrl;
+            img.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
+            qrContainer.appendChild(img);
           }
           _cardBuilt = true;
         });
