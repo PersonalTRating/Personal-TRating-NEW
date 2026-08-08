@@ -364,7 +364,6 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     if (trainer) {
       logoLink.href = '/dashboard';
       // Block the review form entirely for trainers
-      const formState = document.getElementById('rv-form-state') as HTMLElement;
       if (formState) {
         formState.innerHTML = `
           <div style="padding:3rem 2rem;text-align:center;">
