@@ -2350,7 +2350,7 @@
 
     // BMP badge
     var bmpHtml = bmp
-      ? '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:0.35rem 1.1rem;border-radius:20px;font-size:0.78rem;font-weight:700;font-family:\'Manrope\',sans-serif;display:table;margin:0 auto;">📊 BMP <span style="color:' + theme.accent + ';font-size:0.92rem;">' + bmp + '</span></div>'
+      ? '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:7px 18px;border-radius:20px;font-size:12px;line-height:1;font-weight:700;font-family:\'Manrope\',sans-serif;display:block;text-align:center;">📊 BMP <span style="color:' + theme.accent + ';font-size:14px;">' + bmp + '</span></div>'
       : '';
 
     var card = document.getElementById('share-card');
@@ -2368,7 +2368,7 @@
           + '<div style="position:absolute;left:0;top:0;background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
             + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="PTRating" />'
           + '</div>'
-          + '<div style="position:absolute;right:0;top:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:0.2rem 0.65rem;font-size:0.58rem;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
+          + '<div style="position:absolute;right:0;top:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:5px 10px;font-size:9px;line-height:1;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
         + '</div>'
         // Avatar with glow ring
         + '<div style="position:relative;margin-bottom:10px;">'
@@ -2382,7 +2382,7 @@
         // City
         + '<div style="color:rgba(255,255,255,0.38);font-size:0.7rem;font-weight:500;text-align:center;margin-bottom:10px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">📍 ' + city + '</div>'
         // BMP badge
-        + (bmpHtml ? '<div style="margin-bottom:12px;">' + bmpHtml + '</div>' : '<div style="margin-bottom:12px;height:28px;"></div>')
+        + (bmpHtml ? '<div style="margin-bottom:12px;width:100%;text-align:center;">' + bmpHtml + '</div>' : '<div style="margin-bottom:12px;height:28px;"></div>')
         // Divider
         + '<div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.14),transparent);margin-bottom:12px;"></div>'
         // CTA text
