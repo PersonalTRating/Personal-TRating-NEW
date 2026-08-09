@@ -2350,7 +2350,7 @@
 
     // BMP badge
     var bmpHtml = bmp
-      ? '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:7px 18px;border-radius:20px;font-size:12px;line-height:1;font-weight:700;font-family:\'Manrope\',sans-serif;display:inline-block;">📊 BMP <span style="color:' + theme.accent + ';font-size:14px;">' + bmp + '</span></div>'
+      ? '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;height:30px;line-height:30px;padding:0 18px;border-radius:15px;font-size:12px;font-weight:700;font-family:\'Manrope\',sans-serif;display:inline-block;vertical-align:middle;">📊 BMP <span style="color:' + theme.accent + ';font-size:14px;">' + bmp + '</span></div>'
       : '';
 
     var card = document.getElementById('share-card');
@@ -2368,7 +2368,7 @@
           + '<div style="position:absolute;left:0;top:0;background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
             + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="PTRating" />'
           + '</div>'
-          + '<div style="position:absolute;right:0;top:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:5px 10px;font-size:9px;line-height:1;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
+          + '<div style="position:absolute;right:0;top:14px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:12px;height:24px;line-height:24px;padding:0 10px;font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
         + '</div>'
         // Avatar with glow ring
         + '<div style="position:relative;margin-bottom:10px;">'
@@ -2428,8 +2428,9 @@
           setTimeout(function() { clearInterval(t); resolve(); }, 8000);
         });
       }
-      // Give browser one paint cycle to render the canvas
-      await new Promise(function(resolve) { setTimeout(resolve, 80); });
+      // Ensure fonts are fully loaded before html2canvas captures
+      await document.fonts.ready;
+      await new Promise(function(resolve) { setTimeout(resolve, 200); });
 
       var canvas = await window['html2canvas'](card, {
         scale: 3,
