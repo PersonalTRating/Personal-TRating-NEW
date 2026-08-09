@@ -5,7 +5,7 @@ import { supabase } from '../lib/supabase';
 // Fetch ranked trainers — enough to filter by location client-side
 const { data: topTrainers } = await supabase
   .from('trainers')
-  .select('id, name, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url')
+  .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url')
   .eq('is_active', true)
   .gt('bmp_score', 0)
   .order('bmp_score', { ascending: false })
@@ -58,7 +58,7 @@ const previewTrainers = leaderboard.slice(0, 3).map((t: any, i: number) => {
   const avatar = t.avatar_url
     ? `<img src="${t.avatar_url}" width="44" height="44" style="width:44px;min-width:44px;height:44px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="" />`
     : `<div style="width:44px;min-width:44px;height:44px;border-radius:50%;background:rgba(58,181,74,0.15);color:#3ab54a;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.82rem;flex-shrink:0;">${t.avatar_initials || '?'}</div>`;
-  return { id: t.id, name: t.name as string, city: (t.city || t.location || '') as string, specialty: (t.specialty || '') as string, bmp, rank: i + 1, avatar, dbs };
+  return { id: t.id, name: t.name as string, username: (t.username || '') as string, city: (t.city || t.location || '') as string, specialty: (t.specialty || '') as string, bmp, rank: i + 1, avatar, dbs };
 });
 
 const cbg = (id: string): string => {
@@ -606,7 +606,8 @@ const reviews = [
           <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:#3ab54a;width:2rem;flex-shrink:0;line-height:1;">{String(t.rank).padStart(2,'0')}</div>
           <Fragment set:html={t.avatar} />
           <div style="flex:1;min-width:0;">
-            <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:0.9rem;color:white;margin-bottom:0.2rem;">{t.name}</div>
+            <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:0.9rem;color:white;margin-bottom:0.1rem;">{t.name}</div>
+            {t.username && <div style="font-size:0.7rem;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:0.1rem;">@{t.username}</div>}
             {t.city && <div style="font-size:0.72rem;color:#6a8f6c;">📍 {t.city}</div>}
             {t.specialty && <div style="font-size:0.72rem;color:#6a8f6c;">🏋 {t.specialty}</div>}
           </div>
@@ -1071,6 +1072,7 @@ document.addEventListener('DOMContentLoaded', function () {
       '<div class="lbc-rank">' + String(rank).padStart(2, '0') + '</div>' +
       '<div class="lbc-mid">' +
         '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + '</div>' + cert + '</div>' +
+        (pt.username ? '<div style="font-size:0.68rem;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:0.2rem;">@' + pt.username + '</div>' : '') +
         (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
         (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
       '</div>' +
@@ -1131,7 +1133,8 @@ document.addEventListener('DOMContentLoaded', function () {
         '<div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;font-weight:900;color:#3ab54a;width:1.75rem;flex-shrink:0;line-height:1;">' + String(i + 1).padStart(2, '0') + '</div>' +
         avatar +
         '<div style="flex:1;min-width:0;">' +
-          '<div style="font-family:\'Playfair Display\',serif;font-weight:700;font-size:0.82rem;color:#111311;margin-bottom:0.15rem;">' + t.name + '</div>' +
+          '<div style="font-family:\'Playfair Display\',serif;font-weight:700;font-size:0.82rem;color:#111311;margin-bottom:0.05rem;">' + t.name + '</div>' +
+          (t.username ? '<div style="font-size:0.65rem;color:#7a8f7c;font-weight:600;margin-bottom:0.1rem;">@' + t.username + '</div>' : '') +
           (t.city || t.location ? '<div style="font-size:0.68rem;color:#8a8f8a;">📍 ' + (t.city || t.location) + '</div>' : '') +
           (t.specialty ? '<div style="font-size:0.68rem;color:#8a8f8a;">🏋 ' + t.specialty + '</div>' : '') +
         '</div>' +

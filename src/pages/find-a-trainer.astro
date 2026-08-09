@@ -178,6 +178,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
             <span class="fpc-name">{t.name}</span>
             {t.cert && <span class="fpc-cert">{t.cert}</span>}
           </div>
+          {t.username && <div style="font-size:0.75rem;color:#7a8f7c;font-weight:600;margin-bottom:0.2rem;">@{t.username}</div>}
           {(t.city || t.spec) && (
             <div class="fpc-meta">
               {t.city && <span>📍 {t.city}</span>}

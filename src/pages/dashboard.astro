@@ -1877,7 +1877,7 @@
     // ── Rankings table (dynamic) ──────────────────────────────────────────
     const { data: leaderboard } = await supabase
       .from('trainers')
-      .select('id, name, city, location, bmp_score, avatar_initials, avatar_bg, avatar_color')
+      .select('id, name, username, city, location, bmp_score, avatar_initials, avatar_bg, avatar_color')
       .eq('is_active', true)
       .gt('bmp_score', 0)
       .order('bmp_score', { ascending: false })
@@ -1893,7 +1893,7 @@
             <td class="rank-pos ${posClasses[i] ?? ''}">${i + 1}</td>
             <td><div style="display:flex;align-items:center;gap:0.5rem;">
               <div class="rank-avatar" style="background:${pt.avatar_bg || '#eaf7ec'};color:${pt.avatar_color || '#2a9438'};">${pt.avatar_initials || '?'}</div>
-              ${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}
+              <div><div>${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}</div>${pt.username ? '<div style="font-size:0.68rem;color:#7a8f7c;font-weight:600;">@' + pt.username + '</div>' : ''}</div>
             </div></td>
             <td>${pt.city || pt.location}</td>
             <td><strong>${pt.bmp_score}</strong></td>
