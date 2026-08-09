@@ -2345,12 +2345,12 @@
 
     // Avatar HTML
     var avatarHtml = trainer.avatar_url
-      ? '<img src="' + trainer.avatar_url + '" crossorigin="anonymous" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid ' + theme.accent + ';display:block;" />'
-      : '<div style="width:120px;height:120px;border-radius:50%;background:' + (trainer.avatar_bg||'#1a3d1e') + ';color:' + (trainer.avatar_color||theme.accent) + ';display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:900;border:3px solid ' + theme.accent + ';font-family:\'Manrope\',sans-serif;">' + (trainer.avatar_initials||'?') + '</div>';
+      ? '<div style="width:120px;height:120px;min-width:120px;min-height:120px;border-radius:50%;overflow:hidden;border:3px solid ' + theme.accent + ';display:block;flex-shrink:0;"><img src="' + trainer.avatar_url + '" crossorigin="anonymous" style="width:120px;height:120px;min-width:120px;min-height:120px;object-fit:cover;object-position:center;display:block;" /></div>'
+      : '<div style="width:120px;height:120px;min-width:120px;min-height:120px;border-radius:50%;background:' + (trainer.avatar_bg||'#1a3d1e') + ';color:' + (trainer.avatar_color||theme.accent) + ';display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:900;border:3px solid ' + theme.accent + ';font-family:\'Manrope\',sans-serif;">' + (trainer.avatar_initials||'?') + '</div>';
 
     // BMP badge
     var bmpHtml = bmp
-      ? '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:0.35rem 1rem;border-radius:20px;font-size:0.78rem;font-weight:700;font-family:\'Manrope\',sans-serif;display:inline-flex;align-items:center;gap:0.4rem;">📊 BMP <span style="color:' + theme.accent + ';font-size:0.92rem;">' + bmp + '</span></div>'
+      ? '<div style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;padding:0.35rem 1.1rem;border-radius:20px;font-size:0.78rem;font-weight:700;font-family:\'Manrope\',sans-serif;display:table;margin:0 auto;">📊 BMP <span style="color:' + theme.accent + ';font-size:0.92rem;">' + bmp + '</span></div>'
       : '';
 
     var card = document.getElementById('share-card');
@@ -2363,13 +2363,12 @@
       + '<div style="position:absolute;bottom:0;left:0;right:0;height:35%;background:rgba(0,0,0,0.3);pointer-events:none;z-index:0;"></div>'
       // Content
       + '<div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;padding:20px 20px 14px;">'
-        // Logo bar
-        + '<div style="align-self:stretch;display:flex;align-items:center;gap:5px;margin-bottom:16px;">'
-          + '<div style="background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
+        // Logo bar — logo left, VERIFIED right, absolutely positioned for reliable rendering
+        + '<div style="position:relative;align-self:stretch;height:52px;margin-bottom:16px;">'
+          + '<div style="position:absolute;left:0;top:0;background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
             + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="PTRating" />'
           + '</div>'
-          + '<div style="flex:1;"></div>'
-          + '<div style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:0.2rem 0.65rem;font-size:0.58rem;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
+          + '<div style="position:absolute;right:0;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.14);border-radius:20px;padding:0.2rem 0.65rem;font-size:0.58rem;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
         + '</div>'
         // Avatar with glow ring
         + '<div style="position:relative;margin-bottom:10px;">'
