@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 const { id } = Astro.params;
 const { data: trainer } = await supabase
   .from('trainers')
-  .select('id, name, business_name, location, specialty, avatar_initials, avatar_bg, avatar_color, star_rating, review_count')
+  .select('id, name, username, business_name, location, specialty, avatar_initials, avatar_bg, avatar_color, star_rating, review_count')
   .eq('id', id)
   .maybeSingle();
 
