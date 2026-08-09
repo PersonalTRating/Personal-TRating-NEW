@@ -224,6 +224,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     <span style={`color:${trainer.avatar_color};`}>{trainer.avatar_initials}</span>
   </div>
   <div class="rv-name">{trainer.name}</div>
+  {(trainer as any).username && <div style="font-size:0.9rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:0.2rem;margin-bottom:0.25rem;">@{(trainer as any).username}</div>}
   {trainer.business_name && <div class="rv-biz">{trainer.business_name}</div>}
   <div class="rv-tags">
     {trainer.specialty && <span class="rv-tag">{emoji} {trainer.specialty}</span>}
