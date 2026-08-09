@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, gyms')
+  .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, gyms')
   .eq('is_active', true)
   .order('bmp_score', { ascending: false })
   .limit(500);
@@ -28,6 +28,7 @@ interface Gym { name: string; location: string; }
 const allTrainers = raw.map((t: any, i: number) => ({
   id:         t.id,
   name:       t.name || '',
+  username:   t.username || '',
   city:       t.city || t.location || '',
   spec:       t.specialty || '',
   cert:       t.cert || '',
@@ -161,6 +162,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
         data-bmp={String(t.bmp)}
         data-reviews={String(t.revCount)}
         data-name={t.name.toLowerCase()}
+        data-username={t.username.toLowerCase()}
         data-city={t.city.toLowerCase()}
         data-spec={t.spec.toLowerCase()}
       >
@@ -423,7 +425,9 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
         if (regionCities) {
           mQ = regionCities.some(function (c) { return city.indexOf(c) !== -1; });
         } else {
-          mQ = name.indexOf(activeSearch) !== -1 || city.indexOf(activeSearch) !== -1;
+          var username = card.getAttribute('data-username') || '';
+          var q = activeSearch.replace(/^@/, '');
+          mQ = name.indexOf(q) !== -1 || city.indexOf(q) !== -1 || username.indexOf(q) !== -1;
         }
       }
       var mS = !activeSpec || spec.indexOf(activeSpec) !== -1;
