@@ -1353,52 +1353,78 @@
     return Array.from({ length: 5 }, (_, i) => _db(i < n, w)).join('');
   }
 
-  // ── Auth guard ──────────────────────────────────────────────────────────
-  // Fast path: getSession() reads from localStorage (desktop + returning mobile users).
-  // It also awaits Supabase's internal initializePromise, so it's safe to call immediately.
-  let _session: any = (await supabase.auth.getSession()).data.session;
+  // ── DEBUG PANEL (remove before launch) ─────────────────────────────────
+  const _dbg: string[] = [];
+  const _showDebug = (lines: string[]) => {
+    document.body.style.cssText = 'background:#111;color:#0f0;font-family:monospace;font-size:14px;padding:20px;margin:0;min-height:100vh;word-break:break-all;';
+    document.body.innerHTML = '<pre style="white-space:pre-wrap;">' + lines.join('\n') + '</pre>';
+  };
 
-  // Fallback: login page stashed tokens in sessionStorage for iOS cases where
-  // the localStorage write from signInWithPassword hasn't been read yet.
+  // ── Auth guard ──────────────────────────────────────────────────────────
+  _dbg.push('=== AUTH DEBUG ===');
+  _dbg.push('URL: ' + window.location.href.substring(0, 80));
+  _dbg.push('sessionStorage _pt_tokens: ' + (sessionStorage.getItem('_pt_tokens') ? 'YES' : 'NO'));
+
+  let _session: any = (await supabase.auth.getSession()).data.session;
+  _dbg.push('getSession(): ' + (_session ? 'SESSION FOUND (user: ' + _session.user?.email + ')' : 'NULL'));
+
   if (!_session) {
     const _stored = sessionStorage.getItem('_pt_tokens');
     if (_stored) {
+      _dbg.push('Trying setSession() from sessionStorage...');
       try {
         const { access_token, refresh_token } = JSON.parse(_stored);
-        const { data } = await supabase.auth.setSession({ access_token, refresh_token });
+        _dbg.push('access_token length: ' + access_token?.length);
+        const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
+        _dbg.push('setSession() error: ' + (error ? JSON.stringify(error) : 'none'));
+        _dbg.push('setSession() session: ' + (data.session ? 'GOT SESSION' : 'NULL'));
         _session = data.session;
-      } catch (_) {}
+      } catch (e: any) {
+        _dbg.push('setSession() threw: ' + e?.message);
+      }
       sessionStorage.removeItem('_pt_tokens');
+    } else {
+      _dbg.push('No sessionStorage tokens either.');
     }
   }
 
   const session = _session;
-  if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
+  if (!session) {
+    _dbg.push('RESULT: No session → would redirect to /login');
+    _showDebug(_dbg);
+    throw new Error('unauthenticated');
+  }
+  _dbg.push('Session OK: ' + session.user?.email);
 
   // ── Load trainer record ─────────────────────────────────────────────────
   const { data: _trainerData, error: _trainerErr } = await supabase
     .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
 
   let trainer: any = _trainerData;
+  _dbg.push('Trainer query error: ' + (_trainerErr ? JSON.stringify(_trainerErr) : 'none'));
+  _dbg.push('Trainer found: ' + (trainer ? 'YES (id: ' + trainer.id + ')' : 'NO'));
 
-  // On transient network error (error non-null), retry once before giving up
   if (!trainer && _trainerErr) {
+    _dbg.push('Retrying trainer query...');
     await new Promise(r => setTimeout(r, 600));
-    const { data: _retry } = await supabase
+    const { data: _retry, error: _retryErr } = await supabase
       .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
     trainer = _retry;
+    _dbg.push('Retry error: ' + (_retryErr ? JSON.stringify(_retryErr) : 'none'));
+    _dbg.push('Retry trainer: ' + (trainer ? 'YES' : 'NO'));
   }
 
-  // Logged in but no trainer profile — check if they're a client and redirect accordingly.
   if (!trainer) {
-    const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
-    if (client) {
-      window.location.href = '/account';
-    } else {
-      window.location.href = '/signup';
-    }
+    const { data: client, error: clientErr } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
+    _dbg.push('Client found: ' + (client ? 'YES' : 'NO'));
+    _dbg.push('Client error: ' + (clientErr ? JSON.stringify(clientErr) : 'none'));
+    _dbg.push('RESULT: No trainer → would redirect to ' + (client ? '/account' : '/signup'));
+    _showDebug(_dbg);
     throw new Error('no-profile');
   }
+
+  _dbg.push('All OK — loading dashboard');
+  // Uncomment to see debug even on success: _showDebug(_dbg);
 
   // Store ID for save/update operations
   let trainerId: string | null = trainer?.id ?? null;
