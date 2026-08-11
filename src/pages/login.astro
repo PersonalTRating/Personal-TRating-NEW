@@ -166,11 +166,10 @@
   const _loginParams   = new URLSearchParams(window.location.search);
   const _loginRedirect = _loginParams.get('redirect') || null;
 
-  // If already logged in, redirect based on user type
-  supabase.auth.getSession().then(async ({ data: { session } }) => {
+  // If already logged in, go to dashboard (dashboard handles routing to /account or /signup)
+  supabase.auth.getSession().then(({ data: { session } }) => {
     if (!session) return;
-    const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
-    window.location.href = trainer ? '/dashboard' : (_loginRedirect || '/account');
+    window.location.href = _loginRedirect || '/dashboard';
   });
 
   const form      = document.getElementById('login-form') as HTMLFormElement;
