@@ -1395,6 +1395,7 @@
     throw new Error('unauthenticated');
   }
   _dbg.push('Session OK: ' + session.user?.email);
+  _dbg.push('User ID (auth.uid): ' + session.user?.id);
 
   // ── Load trainer record ─────────────────────────────────────────────────
   const { data: _trainerData, error: _trainerErr } = await supabase
