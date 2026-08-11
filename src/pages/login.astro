@@ -194,11 +194,14 @@
       submitBtn.textContent  = 'Sign In';
       submitBtn.disabled     = false;
     } else {
-      const { access_token, refresh_token, expires_in } = data.session!;
-      const dest = _loginRedirect || `/dashboard#access_token=${access_token}&refresh_token=${encodeURIComponent(refresh_token)}&token_type=bearer&expires_in=${expires_in}`;
-      // Use replace() so iOS doesn't cache this login page in back/forward cache,
-      // which would cause the session-check code here to fire again on restore.
-      window.location.replace(dest);
+      // Stash tokens in sessionStorage so the dashboard can call setSession()
+      // directly if localStorage hasn't been written yet (iOS timing issue).
+      sessionStorage.setItem('_pt_tokens', JSON.stringify({
+        access_token: data.session!.access_token,
+        refresh_token: data.session!.refresh_token,
+      }));
+      // replace() prevents iOS from caching the login page in back/forward cache.
+      window.location.replace(_loginRedirect || '/dashboard');
     }
   });
 </script>

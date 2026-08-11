@@ -1354,28 +1354,22 @@
   }
 
   // ── Auth guard ──────────────────────────────────────────────────────────
-  // Fast path: read session from localStorage (works on desktop + most mobile)
+  // Fast path: getSession() reads from localStorage (desktop + returning mobile users).
+  // It also awaits Supabase's internal initializePromise, so it's safe to call immediately.
   let _session: any = (await supabase.auth.getSession()).data.session;
 
-  // Slow path: if no localStorage session, the page may have been opened via the
-  // login hash-token redirect and detectSessionInUrl is still processing the hash.
-  // Wait for SIGNED_IN (not INITIAL_SESSION — that fires before hash processing
-  // completes, which is the root cause of the mobile "shows briefly then back out" bug).
+  // Fallback: login page stashed tokens in sessionStorage for iOS cases where
+  // the localStorage write from signInWithPassword hasn't been read yet.
   if (!_session) {
-    _session = await new Promise<any>((resolve) => {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
-        if (event === 'SIGNED_IN' && sess) {
-          subscription.unsubscribe();
-          resolve(sess);
-        }
-      });
-      // 4 s timeout — gives iOS enough time to process the hash token
-      setTimeout(() => { subscription.unsubscribe(); resolve(null); }, 4000);
-    });
-  }
-
-  if (window.location.hash.includes('access_token')) {
-    history.replaceState(null, '', window.location.pathname);
+    const _stored = sessionStorage.getItem('_pt_tokens');
+    if (_stored) {
+      try {
+        const { access_token, refresh_token } = JSON.parse(_stored);
+        const { data } = await supabase.auth.setSession({ access_token, refresh_token });
+        _session = data.session;
+      } catch (_) {}
+      sessionStorage.removeItem('_pt_tokens');
+    }
   }
 
   const session = _session;
