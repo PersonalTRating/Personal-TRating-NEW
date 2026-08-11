@@ -1354,17 +1354,21 @@
   }
 
   // ── Auth guard ──────────────────────────────────────────────────────────
-  // If redirected from login with tokens in URL hash, restore session directly
-  // (bypasses localStorage timing issues on mobile Safari)
-  const _hash = new URLSearchParams(window.location.hash.slice(1));
-  const _at = _hash.get('access_token');
-  const _rt = _hash.get('refresh_token');
-  if (_at && _rt) {
-    await supabase.auth.setSession({ access_token: _at, refresh_token: decodeURIComponent(_rt) });
+  // Wait for Supabase to finish initialising — handles both localStorage and
+  // URL-hash token flows (mobile Safari needs this rather than getSession())
+  const session = await new Promise<any>((resolve) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
+      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
+        subscription.unsubscribe();
+        resolve(sess);
+      }
+    });
+    setTimeout(() => { subscription.unsubscribe(); resolve(null); }, 4000);
+  });
+  // Clean URL if tokens were passed in hash
+  if (window.location.hash.includes('access_token')) {
     history.replaceState(null, '', window.location.pathname);
   }
-
-  const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
   // ── Load trainer record ─────────────────────────────────────────────────
