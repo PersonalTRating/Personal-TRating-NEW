@@ -186,7 +186,7 @@
     const email    = (document.getElementById('email')    as HTMLInputElement).value.trim();
     const password = (document.getElementById('password') as HTMLInputElement).value;
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       errorMsg.textContent   = error.message;
@@ -194,20 +194,12 @@
       submitBtn.textContent  = 'Sign In';
       submitBtn.disabled     = false;
     } else {
-      // Wait for session to be fully persisted before redirecting (fixes mobile timing issue)
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-        if (event === 'SIGNED_IN' && session) {
-          subscription.unsubscribe();
-          if (_loginRedirect) {
-            window.location.href = _loginRedirect;
-          } else {
-            const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
-            window.location.href = trainer ? '/dashboard' : '/account';
-          }
-        }
-      });
-      // Fallback in case onAuthStateChange doesn't fire within 3s
-      setTimeout(() => { window.location.href = _loginRedirect || '/dashboard'; }, 3000);
+      if (_loginRedirect) {
+        window.location.href = _loginRedirect;
+      } else {
+        const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', data.user!.id).maybeSingle();
+        window.location.href = trainer ? '/dashboard' : '/account';
+      }
     }
   });
 </script>

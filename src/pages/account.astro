@@ -461,13 +461,7 @@
   import { supabase } from '../lib/supabase';
 
   // ── Auth guard ─────────────────────────────────────────────────────────────
-  let session = null;
-  for (let _i = 0; _i < 5; _i++) {
-    const { data } = await supabase.auth.getSession();
-    session = data.session;
-    if (session) break;
-    await new Promise(r => setTimeout(r, 400));
-  }
+  const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
   // ── Check if trainer (redirect to dashboard) ───────────────────────────────
