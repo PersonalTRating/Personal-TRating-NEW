@@ -1354,29 +1354,46 @@
   }
 
   // ── Auth guard ──────────────────────────────────────────────────────────
-  // Wait for Supabase to finish initialising — handles both localStorage and
-  // URL-hash token flows (mobile Safari needs this rather than getSession())
-  const session = await new Promise<any>((resolve) => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
-      if (event === 'INITIAL_SESSION' || event === 'SIGNED_IN') {
-        subscription.unsubscribe();
-        resolve(sess);
-      }
+  // Fast path: read session from localStorage (works on desktop + most mobile)
+  let _session: any = (await supabase.auth.getSession()).data.session;
+
+  // Slow path: if no localStorage session, the page may have been opened via the
+  // login hash-token redirect and detectSessionInUrl is still processing the hash.
+  // Wait for SIGNED_IN (not INITIAL_SESSION — that fires before hash processing
+  // completes, which is the root cause of the mobile "shows briefly then back out" bug).
+  if (!_session) {
+    _session = await new Promise<any>((resolve) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, sess) => {
+        if (event === 'SIGNED_IN' && sess) {
+          subscription.unsubscribe();
+          resolve(sess);
+        }
+      });
+      // 4 s timeout — gives iOS enough time to process the hash token
+      setTimeout(() => { subscription.unsubscribe(); resolve(null); }, 4000);
     });
-    setTimeout(() => { subscription.unsubscribe(); resolve(null); }, 4000);
-  });
-  // Clean URL if tokens were passed in hash
+  }
+
   if (window.location.hash.includes('access_token')) {
     history.replaceState(null, '', window.location.pathname);
   }
+
+  const session = _session;
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
   // ── Load trainer record ─────────────────────────────────────────────────
-  const { data: trainer } = await supabase
-    .from('trainers')
-    .select('*')
-    .eq('user_id', session.user.id)
-    .maybeSingle();
+  const { data: _trainerData, error: _trainerErr } = await supabase
+    .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
+
+  let trainer: any = _trainerData;
+
+  // On transient network error (error non-null), retry once before giving up
+  if (!trainer && _trainerErr) {
+    await new Promise(r => setTimeout(r, 600));
+    const { data: _retry } = await supabase
+      .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
+    trainer = _retry;
+  }
 
   // Logged in but no trainer profile — check if they're a client and redirect accordingly.
   if (!trainer) {

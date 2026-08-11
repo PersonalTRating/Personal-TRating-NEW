@@ -196,7 +196,9 @@
     } else {
       const { access_token, refresh_token, expires_in } = data.session!;
       const dest = _loginRedirect || `/dashboard#access_token=${access_token}&refresh_token=${encodeURIComponent(refresh_token)}&token_type=bearer&expires_in=${expires_in}`;
-      window.location.href = dest;
+      // Use replace() so iOS doesn't cache this login page in back/forward cache,
+      // which would cause the session-check code here to fire again on restore.
+      window.location.replace(dest);
     }
   });
 </script>
