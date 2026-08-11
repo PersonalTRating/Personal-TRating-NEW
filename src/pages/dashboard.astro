@@ -1388,14 +1388,39 @@
     }
   }
 
-  const session = _session;
-  if (!session) {
+  if (!_session) {
     _dbg.push('RESULT: No session → would redirect to /login');
     _showDebug(_dbg);
     throw new Error('unauthenticated');
   }
-  _dbg.push('Session OK: ' + session.user?.email);
-  _dbg.push('User ID (auth.uid): ' + session.user?.id);
+
+  // Check if the stored access token is expired. Expired JWTs cause Supabase RLS
+  // to silently return empty results (no error, just null) — this is why trainer
+  // lookup fails on mobile with a saved-but-stale session.
+  const _jwtExp = (() => {
+    try { return JSON.parse(atob(_session.access_token.split('.')[1])).exp; }
+    catch { return 0; }
+  })();
+  const _nowSec = Math.floor(Date.now() / 1000);
+  _dbg.push('Token expires in: ' + (_jwtExp - _nowSec) + 's');
+
+  if (_jwtExp - _nowSec < 60) {
+    _dbg.push('Token expired/expiring — forcing refresh...');
+    const { data: _refreshed, error: _refreshErr } = await supabase.auth.refreshSession();
+    _dbg.push('Refresh error: ' + (_refreshErr ? _refreshErr.message : 'none'));
+    if (_refreshed.session) {
+      _session = _refreshed.session;
+      _dbg.push('Refresh OK');
+    } else {
+      await supabase.auth.signOut();
+      _dbg.push('RESULT: Refresh failed → would redirect to /login');
+      _showDebug(_dbg);
+      throw new Error('unauthenticated');
+    }
+  }
+
+  const session = _session;
+  _dbg.push('Session OK: ' + session.user?.email + ' | uid: ' + session.user?.id);
 
   // ── Load trainer record ─────────────────────────────────────────────────
   const { data: _trainerData, error: _trainerErr } = await supabase
