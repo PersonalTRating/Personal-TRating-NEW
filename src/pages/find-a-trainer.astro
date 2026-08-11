@@ -37,7 +37,7 @@ const allTrainers = raw.map((t: any, i: number) => ({
   rank:       i + 1,
   rankColor:  rankClr(i),
   avatar:     t.avatar_url
-    ? `<img src="${t.avatar_url}" alt="" class="fpc-av" width="72" height="72" style="width:72px;min-width:72px;height:72px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:3px solid #e8f0e9;"/>`
+    ? `<img src="${t.avatar_url}" alt="" class="fpc-av" width="72" height="72" style="width:72px;min-width:72px;height:72px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:3px solid #e8f0e9;" onerror="this.outerHTML='<div class=\\'fpc-av fpc-av-init\\'  style=\\'background:${t.avatar_bg||'#eaf7ec'};color:${t.avatar_color||'#2a9438'};width:72px;min-width:72px;height:72px;\\'>${t.avatar_initials||'?'}</div>'">`
     : `<div class="fpc-av fpc-av-init" style="background:${t.avatar_bg||'#eaf7ec'};color:${t.avatar_color||'#2a9438'};">${t.avatar_initials||'?'}</div>`,
   dbs:        makeDumbbells(t.bmp_score || 0),
   bioSnip:    t.bio ? String(t.bio).replace(/<[^>]+>/g,'').trim().slice(0,120) : '',
