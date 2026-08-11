@@ -1514,7 +1514,7 @@
     const rankEl = document.getElementById('stat-rank');
     const rankChangeEl = document.getElementById('stat-rank-change');
     if (rankEl)       rankEl.textContent       = hasBmp ? `#${rank}` : '—';
-    if (rankChangeEl) rankChangeEl.textContent = hasBmp ? `Competing with 2,400+ PTs` : 'Rank unlocks with first review';
+    if (rankChangeEl) rankChangeEl.textContent = hasBmp ? `Competing with PTs across the UK` : 'Rank unlocks with first review';
 
     // ── BMP Gauge ────────────────────────────────────────────────────────
     const gaugeCircle = document.getElementById('gauge-circle') as HTMLElement;
@@ -1527,7 +1527,7 @@
       gaugeCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
     }
     if (gaugeRank) gaugeRank.textContent = hasBmp ? `🏆 Ranked #${rank} in the UK`   : '🔒 Rank unlocks with first review';
-    if (gaugeSub)  gaugeSub.textContent  = hasBmp ? `Competing with 2,400+ PTs`      : 'Start collecting verified reviews';
+    if (gaugeSub)  gaugeSub.textContent  = hasBmp ? `Competing with PTs across the UK`      : 'Start collecting verified reviews';
 
     // ── Fetch this PT's real reviews ─────────────────────────────────────
     const { data: ptReviews } = await supabase
@@ -1911,7 +1911,7 @@
     const miniCircle = document.getElementById('mini-gauge-circle') as HTMLElement;
     if (miniScore) miniScore.textContent = hasBmp ? String(trainer.bmp_score) : '—';
     if (miniRank)  miniRank.textContent  = hasBmp ? `🏆 #${rank} in the UK`          : '🔒 Rank unlocks with first review';
-    if (miniSub)   miniSub.textContent   = hasBmp ? `Competing with 2,400+ PTs`       : 'Collect verified reviews to rank';
+    if (miniSub)   miniSub.textContent   = hasBmp ? `Competing with PTs across the UK`       : 'Collect verified reviews to rank';
     if (miniCircle && hasBmp) {
       const deg = Math.round(((trainer.bmp_score ?? 0) / 100) * 360);
       miniCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
