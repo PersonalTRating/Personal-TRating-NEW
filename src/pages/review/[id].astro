@@ -522,6 +522,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
       review_text:           text,
       is_verified:           false,
       is_anonymous:          anonCheck.checked,
+      approval_token:        crypto.randomUUID(),
     };
     if (clientId) payload.client_id = clientId;
 
