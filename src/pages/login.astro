@@ -198,7 +198,14 @@
         window.location.href = _loginRedirect;
       } else {
         const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', data.user!.id).maybeSingle();
-        window.location.href = trainer ? '/dashboard' : '/account';
+        if (trainer) {
+          // Pass tokens in URL hash — works on all browsers including mobile Safari
+          // where localStorage may not sync before the next page loads
+          const { access_token, refresh_token, expires_in } = data.session!;
+          window.location.href = `/dashboard#access_token=${access_token}&refresh_token=${encodeURIComponent(refresh_token)}&token_type=bearer&expires_in=${expires_in}`;
+        } else {
+          window.location.href = '/account';
+        }
       }
     }
   });

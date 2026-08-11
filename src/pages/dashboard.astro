@@ -1354,12 +1354,17 @@
   }
 
   // ── Auth guard ──────────────────────────────────────────────────────────
-  // Retry briefly — mobile browsers sometimes need a moment for localStorage to sync
-  let { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
-    await new Promise(r => setTimeout(r, 800));
-    ({ data: { session } } = await supabase.auth.getSession());
+  // If redirected from login with tokens in URL hash, restore session directly
+  // (bypasses localStorage timing issues on mobile Safari)
+  const _hash = new URLSearchParams(window.location.hash.slice(1));
+  const _at = _hash.get('access_token');
+  const _rt = _hash.get('refresh_token');
+  if (_at && _rt) {
+    await supabase.auth.setSession({ access_token: _at, refresh_token: decodeURIComponent(_rt) });
+    history.replaceState(null, '', window.location.pathname);
   }
+
+  const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
   // ── Load trainer record ─────────────────────────────────────────────────
