@@ -1354,7 +1354,12 @@
   }
 
   // ── Auth guard ──────────────────────────────────────────────────────────
-  const { data: { session } } = await supabase.auth.getSession();
+  // Retry briefly — mobile browsers sometimes need a moment for localStorage to sync
+  let { data: { session } } = await supabase.auth.getSession();
+  if (!session) {
+    await new Promise(r => setTimeout(r, 800));
+    ({ data: { session } } = await supabase.auth.getSession());
+  }
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
   // ── Load trainer record ─────────────────────────────────────────────────
