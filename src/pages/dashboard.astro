@@ -813,7 +813,7 @@
 
           <!-- ── Avatar colour ── -->
           <div style="margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
-            <label class="form-label" style="display:block;margin-bottom:0.65rem;">Avatar Colour <span style="font-weight:400;color:var(--muted);">(shown when no photo uploaded)</span></label>
+            <label class="form-label" style="display:block;margin-bottom:0.65rem;">Avatar Colour <span style="font-weight:400;color:var(--muted);">(initials colour, or border ring on your photo)</span></label>
             <div style="display:flex;gap:0.6rem;flex-wrap:wrap;" id="colour-swatches">
               <button class="colour-swatch" data-bg="#eaf7ec" data-color="#2a9438" title="Forest"   onclick="selectColour(this)" style="background:#eaf7ec;"><span style="color:#2a9438;">A</span></button>
               <button class="colour-swatch" data-bg="#fdf6e3" data-color="#b8860b" title="Gold"     onclick="selectColour(this)" style="background:#fdf6e3;"><span style="color:#b8860b;">A</span></button>
@@ -924,6 +924,10 @@
             <button class="tag-pill selected" onclick="toggleTag(this)">🥗 Nutrition Coaching</button>
             <button class="tag-pill"          onclick="toggleTag(this)">🏋️ Powerlifting</button>
             <button class="tag-pill"          onclick="toggleTag(this)">🤸 Functional Fitness</button>
+            <button class="tag-pill" id="specialty-other-pill" onclick="toggleSpecialtyOther(this)">✏️ Other</button>
+          </div>
+          <div id="specialty-other-wrap" style="display:none;margin-top:0.75rem;">
+            <input class="form-input" type="text" id="specialty-other-input" placeholder="e.g. Boxing, Yoga, Pre/Postnatal…" maxlength="50">
           </div>
         </div>
       </div>
@@ -1820,6 +1824,8 @@
       if (trainer.avatar_url) {
         avatarPreview.innerHTML = `<img src="${trainer.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />`;
         avatarPreview.style.background = 'transparent';
+        // Show chosen colour as border ring when photo is set
+        if (trainer.avatar_color) avatarPreview.style.border = `4px solid ${trainer.avatar_color}`;
       } else {
         avatarPreview.textContent = trainer.avatar_initials ?? '';
         avatarPreview.style.background = trainer.avatar_bg ?? '#eaf7ec';
@@ -1869,14 +1875,22 @@
     }
 
     // ── Specialty tags — deselect all, then select matching ───────────────
-    document.querySelectorAll('.tag-pill').forEach(tag => {
+    document.querySelectorAll('.tag-pill:not(#specialty-other-pill)').forEach(tag => {
       tag.classList.remove('selected');
-      // Match on the text after the emoji
       const tagText = (tag.textContent ?? '').replace(/^\S+\s*/, '').trim();
       if (trainer.specialty && tagText === trainer.specialty) {
         tag.classList.add('selected');
       }
     });
+    // If saved specialty doesn't match a preset pill, restore into Other
+    if (trainer.specialty && !document.querySelector('.tag-pill.selected')) {
+      const otherPill  = document.getElementById('specialty-other-pill');
+      const otherInput = document.getElementById('specialty-other-input') as HTMLInputElement;
+      const otherWrap  = document.getElementById('specialty-other-wrap');
+      if (otherPill)  otherPill.classList.add('selected');
+      if (otherInput) otherInput.value = trainer.specialty;
+      if (otherWrap)  otherWrap.style.display = 'block';
+    }
 
     // ── Cert dropdown ────────────────────────────────────────────────────
     const certEl         = document.getElementById('profile-cert')            as HTMLSelectElement;
@@ -1981,11 +1995,15 @@
       ? (document.getElementById('profile-cert-other') as HTMLInputElement).value.trim()
       : certRaw;
 
-    // First selected specialty tag
-    const selectedTag = document.querySelector('.tag-pill.selected');
-    const specialty   = selectedTag
-      ? (selectedTag.textContent ?? '').replace(/^\S+\s*/, '').trim()
-      : '';
+    // Specialty: prefer Other text input, else first selected preset pill
+    const otherPillSelected = document.getElementById('specialty-other-pill')?.classList.contains('selected');
+    const otherInputVal = (document.getElementById('specialty-other-input') as HTMLInputElement)?.value.trim();
+    const selectedTag = document.querySelector('.tag-pill.selected:not(#specialty-other-pill)');
+    const specialty = otherPillSelected && otherInputVal
+      ? otherInputVal
+      : selectedTag
+        ? (selectedTag.textContent ?? '').replace(/^\S+\s*/, '').trim()
+        : '';
 
     const name     = `${firstName} ${lastName}`.trim();
     const location = postcode ? `${city}, ${postcode}` : city;
@@ -2269,11 +2287,16 @@
   function selectColour(btn) {
     document.querySelectorAll('.colour-swatch').forEach(s => s.classList.remove('selected'));
     btn.classList.add('selected');
-    // Live-update the avatar preview circle background (if no photo)
     const preview = document.getElementById('profile-avatar-preview');
-    if (preview && !preview.querySelector('img')) {
-      preview.style.background = btn.dataset.bg;
-      preview.style.color      = btn.dataset.color;
+    if (preview) {
+      if (!preview.querySelector('img')) {
+        // Initials circle — update background and text colour
+        preview.style.background = btn.dataset.bg;
+        preview.style.color      = btn.dataset.color;
+      } else {
+        // Photo — show chosen colour as a border ring
+        preview.style.border = `4px solid ${btn.dataset.color}`;
+      }
     }
   }
 
@@ -2346,6 +2369,22 @@
       el.classList.remove('selected');
     } else if (selected.length < 3) {
       el.classList.add('selected');
+    }
+  }
+
+  function toggleSpecialtyOther(el) {
+    const wrap = document.getElementById('specialty-other-wrap');
+    if (el.classList.contains('selected')) {
+      el.classList.remove('selected');
+      if (wrap) wrap.style.display = 'none';
+    } else {
+      const selected = document.querySelectorAll('.tag-pill.selected');
+      if (selected.length < 3) {
+        el.classList.add('selected');
+        if (wrap) { wrap.style.display = 'block'; }
+        const inp = document.getElementById('specialty-other-input') as HTMLInputElement;
+        if (inp) inp.focus();
+      }
     }
   }
 

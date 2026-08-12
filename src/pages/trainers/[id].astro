@@ -68,6 +68,19 @@ const heroThemes: Record<string, string> = {
 };
 const heroBackground = heroThemes[trainer.hero_theme ?? 'forest'] ?? heroThemes.forest;
 
+// Accent colours for box borders — reflect each theme on the white content sections
+const themeAccents: Record<string, string> = {
+  forest:   '#b8ddc0',
+  midnight: '#aabce0',
+  charcoal: '#c8c8c8',
+  royal:    '#caaae8',
+  slate:    '#aabcd0',
+  rose:     '#e0aac8',
+  lavender: '#c8aae8',
+  sky:      '#aacce0',
+};
+const themeAccent = themeAccents[trainer.hero_theme ?? 'forest'] ?? themeAccents.forest;
+
 // ── SEO ──────────────────────────────────────────────────────────────────────
 const trainerCity = trainer.city ?? trainer.location ?? 'the UK';
 const seoTitle = `${trainer.name} — Personal Trainer in ${trainerCity} · Personal TRating`;
@@ -120,8 +133,8 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 
 <style is:global>
   /* ── Trainer profile ──────────────────────────────────── */
-  .tp-stat  { background:white; border-radius:12px; padding:1.5rem 1.25rem; border:1px solid #e0e8e1; text-align:center; }
-  .tp-rev   { background:white; border-radius:14px; padding:1.75rem; border:1px solid #e0e8e1; display:flex; flex-direction:column; transition:box-shadow 0.2s, transform 0.2s; }
+  .tp-stat  { background:white; border-radius:12px; padding:1.5rem 1.25rem; border:1px solid var(--tp-accent,#e0e8e1); text-align:center; }
+  .tp-rev   { background:white; border-radius:14px; padding:1.75rem; border:1px solid var(--tp-accent,#e0e8e1); display:flex; flex-direction:column; transition:box-shadow 0.2s, transform 0.2s; }
   .tp-rev:hover { box-shadow:0 4px 24px rgba(0,0,0,0.08); transform:translateY(-2px); }
 
   .db-bar-track { flex:1; height:8px; background:#e0e8e1; border-radius:4px; overflow:hidden; }
@@ -271,6 +284,9 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
   }
 </style>
 
+<!-- Inject theme accent colour as CSS variable -->
+<Fragment set:html={`<style>:root{--tp-accent:${themeAccent};}</style>`} />
+
 <!-- ── NAV ── -->
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
@@ -304,7 +320,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       <!-- Avatar -->
       {trainer.avatar_url ? (
         <img src={trainer.avatar_url} alt={trainer.name}
-          style="width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;border:4px solid rgba(255,255,255,0.18);box-shadow:0 8px 32px rgba(0,0,0,0.35);" />
+          style={`width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;border:4px solid ${trainer.avatar_color ?? 'rgba(255,255,255,0.3)'};box-shadow:0 8px 32px rgba(0,0,0,0.35);`} />
       ) : (
         <div style={`width:120px;height:120px;border-radius:50%;background:${trainer.avatar_bg};color:${trainer.avatar_color};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:2.25rem;flex-shrink:0;border:4px solid rgba(255,255,255,0.18);box-shadow:0 8px 32px rgba(0,0,0,0.35);`}>
           {trainer.avatar_initials}

@@ -82,6 +82,44 @@ const { count: totalReviews } = await supabase
     .ft-feature-grid { grid-template-columns:1fr !important; }
     section { padding-left:1.25rem !important; padding-right:1.25rem !important; }
     section > div[style*="max-width"] { padding-left:0 !important; padding-right:0 !important; }
+    /* Mobile nav */
+    nav > div    { height:64px !important; padding:0 1.25rem !important; }
+    nav img      { height:46px !important; }
+    .ft-nav-links { display:none !important; }
+    .ft-mob-ham  { display:flex !important; }
+    .ft-mob-nav  { display:flex; }
+  }
+  /* Hamburger button */
+  .ft-mob-ham {
+    display:none; flex-direction:column; justify-content:center; align-items:center;
+    gap:5px; width:40px; height:40px; background:none; border:none; cursor:pointer;
+    padding:0; border-radius:8px; transition:background 0.15s;
+  }
+  .ft-mob-ham:hover { background:#f0f4f0; }
+  .ft-mob-ham span {
+    display:block; width:22px; height:2px; background:#111311; border-radius:2px;
+    transition:all 0.25s;
+  }
+  .ft-mob-ham.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .ft-mob-ham.open span:nth-child(2) { opacity:0; }
+  .ft-mob-ham.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  /* Mobile dropdown nav */
+  .ft-mob-nav {
+    display:none; flex-direction:column;
+    position:fixed; top:64px; left:0; right:0; z-index:499;
+    background:white; max-height:0; overflow:hidden;
+    transition:max-height 0.3s ease;
+    box-shadow:0 4px 24px rgba(0,0,0,0.08);
+  }
+  .ft-mob-nav.open { max-height:440px; border-bottom:2px solid #3ab54a; }
+  .ft-mob-nav a {
+    font-size:1rem; font-weight:600; color:#111311; text-decoration:none;
+    padding:1rem 1.5rem; border-bottom:1px solid #f0f4f0;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .ft-mob-nav a:active { background:#f7fbf7; }
+  .ft-mob-nav-btns {
+    display:flex; gap:0.75rem; padding:1rem 1.5rem;
   }
 </style>
 
@@ -91,7 +129,7 @@ const { count: totalReviews } = await supabase
     <a href="/" style="text-decoration:none;display:flex;align-items:center;">
       <img src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
     </a>
-    <div style="display:flex;gap:2rem;align-items:center;">
+    <div class="ft-nav-links" style="display:flex;gap:2rem;align-items:center;">
       <a href="/find-a-trainer" class="ft-nav-link">Find a Trainer</a>
       <a href="#how-it-works"   class="ft-nav-link">How It Works</a>
       <a href="#features"       class="ft-nav-link">Features</a>
@@ -107,8 +145,23 @@ const { count: totalReviews } = await supabase
         Sign Out
       </button>
     </div>
+    <button class="ft-mob-ham" id="ft-mob-ham" aria-label="Toggle menu"
+      onclick="(function(){var n=document.getElementById('ft-mob-nav');var h=document.getElementById('ft-mob-ham');var o=n.classList.toggle('open');h.classList.toggle('open',o);})()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile dropdown nav -->
+<div class="ft-mob-nav" id="ft-mob-nav">
+  <a href="/find-a-trainer" onclick="document.getElementById('ft-mob-nav').classList.remove('open');document.getElementById('ft-mob-ham').classList.remove('open')">Find a Trainer</a>
+  <a href="#how-it-works"   onclick="document.getElementById('ft-mob-nav').classList.remove('open');document.getElementById('ft-mob-ham').classList.remove('open')">How It Works</a>
+  <a href="#features"       onclick="document.getElementById('ft-mob-nav').classList.remove('open');document.getElementById('ft-mob-ham').classList.remove('open')">Features</a>
+  <div class="ft-mob-nav-btns">
+    <a href="/login"  id="ft-mob-signin"  style="flex:1;text-align:center;border:2px solid #3ab54a;color:#3ab54a;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;text-decoration:none;-webkit-tap-highlight-color:transparent;">Sign In</a>
+    <a href="/signup" id="ft-mob-cta"     style="flex:1;text-align:center;background:#3ab54a;color:white;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;text-decoration:none;-webkit-tap-highlight-color:transparent;">List Free</a>
+  </div>
+</div>
 
 <!-- ── HERO ── -->
 <section style="background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);padding:5.5rem 0 4.5rem;position:relative;overflow:hidden;">
