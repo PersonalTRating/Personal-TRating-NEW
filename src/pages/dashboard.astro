@@ -1353,104 +1353,61 @@
     return Array.from({ length: 5 }, (_, i) => _db(i < n, w)).join('');
   }
 
-  // ── DEBUG PANEL (remove before launch) ─────────────────────────────────
-  const _dbg: string[] = [];
-  const _showDebug = (lines: string[]) => {
-    document.body.style.cssText = 'background:#111;color:#0f0;font-family:monospace;font-size:14px;padding:20px;margin:0;min-height:100vh;word-break:break-all;';
-    document.body.innerHTML = '<pre style="white-space:pre-wrap;">' + lines.join('\n') + '</pre>';
-  };
-
   // ── Auth guard ──────────────────────────────────────────────────────────
-  _dbg.push('=== AUTH DEBUG ===');
-  _dbg.push('URL: ' + window.location.href.substring(0, 80));
-  _dbg.push('sessionStorage _pt_tokens: ' + (sessionStorage.getItem('_pt_tokens') ? 'YES' : 'NO'));
-
+  // Fast path: read from localStorage (persisted across visits).
   let _session: any = (await supabase.auth.getSession()).data.session;
-  _dbg.push('getSession(): ' + (_session ? 'SESSION FOUND (user: ' + _session.user?.email + ')' : 'NULL'));
 
+  // Fallback: login page stashes tokens in sessionStorage for the first load
+  // after sign-in (handles iOS cases where the localStorage write is delayed).
   if (!_session) {
     const _stored = sessionStorage.getItem('_pt_tokens');
     if (_stored) {
-      _dbg.push('Trying setSession() from sessionStorage...');
       try {
         const { access_token, refresh_token } = JSON.parse(_stored);
-        _dbg.push('access_token length: ' + access_token?.length);
-        const { data, error } = await supabase.auth.setSession({ access_token, refresh_token });
-        _dbg.push('setSession() error: ' + (error ? JSON.stringify(error) : 'none'));
-        _dbg.push('setSession() session: ' + (data.session ? 'GOT SESSION' : 'NULL'));
+        const { data } = await supabase.auth.setSession({ access_token, refresh_token });
         _session = data.session;
-      } catch (e: any) {
-        _dbg.push('setSession() threw: ' + e?.message);
-      }
+      } catch (_) {}
       sessionStorage.removeItem('_pt_tokens');
-    } else {
-      _dbg.push('No sessionStorage tokens either.');
     }
   }
 
-  if (!_session) {
-    _dbg.push('RESULT: No session → would redirect to /login');
-    _showDebug(_dbg);
-    throw new Error('unauthenticated');
-  }
+  if (!_session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
-  // Check if the stored access token is expired. Expired JWTs cause Supabase RLS
-  // to silently return empty results (no error, just null) — this is why trainer
-  // lookup fails on mobile with a saved-but-stale session.
+  // If access token is expired (or about to), refresh before running RLS queries.
+  // Expired JWTs cause Supabase to silently return empty rows — no error, just null.
   const _jwtExp = (() => {
-    try { return JSON.parse(atob(_session.access_token.split('.')[1])).exp; }
-    catch { return 0; }
+    try { return JSON.parse(atob(_session.access_token.split('.')[1])).exp; } catch { return 0; }
   })();
-  const _nowSec = Math.floor(Date.now() / 1000);
-  _dbg.push('Token expires in: ' + (_jwtExp - _nowSec) + 's');
-
-  if (_jwtExp - _nowSec < 60) {
-    _dbg.push('Token expired/expiring — forcing refresh...');
-    const { data: _refreshed, error: _refreshErr } = await supabase.auth.refreshSession();
-    _dbg.push('Refresh error: ' + (_refreshErr ? _refreshErr.message : 'none'));
-    if (_refreshed.session) {
-      _session = _refreshed.session;
-      _dbg.push('Refresh OK');
-    } else {
-      await supabase.auth.signOut();
-      _dbg.push('RESULT: Refresh failed → would redirect to /login');
-      _showDebug(_dbg);
-      throw new Error('unauthenticated');
-    }
+  if (Math.floor(Date.now() / 1000) >= _jwtExp - 60) {
+    const { data: _ref } = await supabase.auth.refreshSession();
+    if (_ref.session) { _session = _ref.session; }
+    else { await supabase.auth.signOut(); window.location.href = '/login'; throw new Error('unauthenticated'); }
   }
 
   const session = _session;
-  _dbg.push('Session OK: ' + session.user?.email + ' | uid: ' + session.user?.id);
 
   // ── Load trainer record ─────────────────────────────────────────────────
   const { data: _trainerData, error: _trainerErr } = await supabase
     .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
 
   let trainer: any = _trainerData;
-  _dbg.push('Trainer query error: ' + (_trainerErr ? JSON.stringify(_trainerErr) : 'none'));
-  _dbg.push('Trainer found: ' + (trainer ? 'YES (id: ' + trainer.id + ')' : 'NO'));
 
+  // Retry once on transient network error (non-null error means network/server issue,
+  // not a missing row — missing row returns null data with null error).
   if (!trainer && _trainerErr) {
-    _dbg.push('Retrying trainer query...');
     await new Promise(r => setTimeout(r, 600));
-    const { data: _retry, error: _retryErr } = await supabase
+    const { data: _retry } = await supabase
       .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
     trainer = _retry;
-    _dbg.push('Retry error: ' + (_retryErr ? JSON.stringify(_retryErr) : 'none'));
-    _dbg.push('Retry trainer: ' + (trainer ? 'YES' : 'NO'));
   }
 
   if (!trainer) {
-    const { data: client, error: clientErr } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
-    _dbg.push('Client found: ' + (client ? 'YES' : 'NO'));
-    _dbg.push('Client error: ' + (clientErr ? JSON.stringify(clientErr) : 'none'));
-    _dbg.push('RESULT: No trainer → would redirect to ' + (client ? '/account' : '/signup'));
-    _showDebug(_dbg);
+    // No trainer profile for this account — sign out so they land on login
+    // and can sign in with the correct account (e.g. their PT email).
+    await supabase.auth.signOut();
+    window.location.href = '/login';
     throw new Error('no-profile');
   }
-
-  _dbg.push('All OK — loading dashboard');
-  // Uncomment to see debug even on success: _showDebug(_dbg);
 
   // Store ID for save/update operations
   let trainerId: string | null = trainer?.id ?? null;
