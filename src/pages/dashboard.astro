@@ -2373,16 +2373,16 @@
   }
 
   function toggleSpecialtyOther(el) {
-    const wrap = document.getElementById('specialty-other-wrap');
+    var wrap = document.getElementById('specialty-other-wrap');
     if (el.classList.contains('selected')) {
       el.classList.remove('selected');
       if (wrap) wrap.style.display = 'none';
     } else {
-      const selected = document.querySelectorAll('.tag-pill.selected');
+      var selected = document.querySelectorAll('.tag-pill.selected');
       if (selected.length < 3) {
         el.classList.add('selected');
-        if (wrap) { wrap.style.display = 'block'; }
-        const inp = document.getElementById('specialty-other-input') as HTMLInputElement;
+        if (wrap) wrap.style.display = 'block';
+        var inp = document.getElementById('specialty-other-input');
         if (inp) inp.focus();
       }
     }
