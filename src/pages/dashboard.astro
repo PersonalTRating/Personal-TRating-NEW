@@ -1402,10 +1402,16 @@
   }
 
   if (!trainer) {
-    // No trainer profile for this account — sign out so they land on login
-    // and can sign in with the correct account (e.g. their PT email).
-    await supabase.auth.signOut();
-    window.location.href = '/login';
+    // Check if they're a client user — clients belong on /account, not /dashboard.
+    const { data: _clientRow } = await supabase
+      .from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
+    if (_clientRow) {
+      window.location.href = '/account';
+    } else {
+      // No trainer, no client — sign out so they can use the correct account.
+      await supabase.auth.signOut();
+      window.location.href = '/login';
+    }
     throw new Error('no-profile');
   }
 
