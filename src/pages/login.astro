@@ -166,11 +166,8 @@
   const _loginParams   = new URLSearchParams(window.location.search);
   const _loginRedirect = _loginParams.get('redirect') || null;
 
-  // If already logged in, go to dashboard (dashboard handles routing to /account or /signup)
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (!session) return;
-    window.location.href = _loginRedirect || '/dashboard';
-  });
+  // No auto-redirect on login page — let the user sign in explicitly.
+  // (Auto-redirect caused loops when a stale session for a different account was cached.)
 
   const form      = document.getElementById('login-form') as HTMLFormElement;
   const errorMsg  = document.getElementById('error-msg') as HTMLDivElement;
