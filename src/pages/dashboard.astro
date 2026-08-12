@@ -805,7 +805,7 @@
               </div>
               <div>
                 <div style="font-size:0.8rem;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:0.75rem;">Your name, location and reviews<br>appear here on your public profile.</div>
-                <button style="background:none;border:1.5px solid rgba(255,255,255,0.5);color:rgba(255,255,255,0.85);padding:0.4rem 1rem;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;"
+                <button id="avatar-upload-btn" style="background:none;border:1.5px solid rgba(255,255,255,0.5);color:rgba(255,255,255,0.85);padding:0.4rem 1rem;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;"
                   onmouseover="this.style.background='rgba(255,255,255,0.15)'"
                   onmouseout="this.style.background='none'"
                   onclick="document.getElementById('avatar-file-input').click()">Upload Photo</button>
@@ -1826,8 +1826,9 @@
       if (trainer.avatar_url) {
         avatarPreview.innerHTML = `<img src="${trainer.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />`;
         avatarPreview.style.background = 'transparent';
-        // Show chosen colour as border ring when photo is set
         if (trainer.avatar_color) avatarPreview.style.border = `4px solid ${trainer.avatar_color}`;
+        const uploadBtn = document.getElementById('avatar-upload-btn');
+        if (uploadBtn) uploadBtn.textContent = 'Replace Photo';
       } else {
         avatarPreview.textContent = trainer.avatar_initials ?? '';
         avatarPreview.style.background = trainer.avatar_bg ?? '#eaf7ec';
@@ -2293,6 +2294,8 @@
     // Update preview
     preview.innerHTML = `<img src="${urlWithBust}" style="width:100%;height:100%;object-fit:cover;" />`;
     preview.style.background = 'transparent';
+    var uploadBtn = document.getElementById('avatar-upload-btn');
+    if (uploadBtn) uploadBtn.textContent = 'Replace Photo';
 
     // Update sidebar
     const sbAv = document.querySelector('.sb-avatar');
