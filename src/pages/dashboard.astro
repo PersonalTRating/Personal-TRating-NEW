@@ -792,22 +792,24 @@
         </div>
         <div class="card-body">
 
-          <!-- ── Photo upload ── -->
-          <div style="display:flex;align-items:flex-start;gap:1.75rem;margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
-            <div style="position:relative;flex-shrink:0;">
-              <div class="avatar-preview-circle" id="profile-avatar-preview" onclick="document.getElementById('avatar-file-input').click()">
-                <!-- filled by JS: photo or initials -->
+          <!-- ── Hero preview + Photo upload ── -->
+          <div id="profile-hero-preview" style="background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);border-radius:12px;padding:1.75rem;margin-bottom:1.75rem;transition:background 0.5s ease;">
+            <div style="font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.1rem;">Live Preview — Your Profile Header</div>
+            <div style="display:flex;align-items:center;gap:1.75rem;">
+              <div style="position:relative;flex-shrink:0;">
+                <div class="avatar-preview-circle" id="profile-avatar-preview" onclick="document.getElementById('avatar-file-input').click()" style="cursor:pointer;border-color:rgba(255,255,255,0.25);">
+                  <!-- filled by JS: photo or initials -->
+                </div>
+                <div style="position:absolute;bottom:0;right:0;background:var(--green);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;border:2px solid white;" onclick="document.getElementById('avatar-file-input').click()">📷</div>
+                <input id="avatar-file-input" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleAvatarUpload(this)">
               </div>
-              <div style="position:absolute;bottom:0;right:0;background:var(--green);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;border:2px solid white;" onclick="document.getElementById('avatar-file-input').click()">📷</div>
-              <input id="avatar-file-input" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleAvatarUpload(this)">
-            </div>
-            <div style="padding-top:0.2rem;">
-              <div style="font-weight:700;font-size:0.9rem;margin-bottom:0.35rem;">Profile Photo</div>
-              <div style="font-size:0.78rem;color:var(--muted);line-height:1.65;">Upload a professional headshot.<br>Square images work best · JPG or PNG.</div>
-              <button style="margin-top:0.75rem;background:none;border:1.5px solid var(--green);color:var(--green);padding:0.4rem 1rem;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:background 0.15s,color 0.15s;"
-                onmouseover="this.style.background='var(--green)';this.style.color='white'"
-                onmouseout="this.style.background='none';this.style.color='var(--green)'"
-                onclick="document.getElementById('avatar-file-input').click()">Choose Photo</button>
+              <div>
+                <div style="font-size:0.8rem;color:rgba(255,255,255,0.55);line-height:1.6;margin-bottom:0.75rem;">Your name, location and reviews<br>appear here on your public profile.</div>
+                <button style="background:none;border:1.5px solid rgba(255,255,255,0.5);color:rgba(255,255,255,0.85);padding:0.4rem 1rem;border-radius:6px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all 0.15s;font-family:inherit;"
+                  onmouseover="this.style.background='rgba(255,255,255,0.15)'"
+                  onmouseout="this.style.background='none'"
+                  onclick="document.getElementById('avatar-file-input').click()">Upload Photo</button>
+              </div>
             </div>
           </div>
 
@@ -1849,6 +1851,22 @@
       if (swatch.dataset.theme === currentTheme) swatch.classList.add('selected');
     });
 
+    // Set hero preview background to match saved theme
+    const _heroPreviewEl = document.getElementById('profile-hero-preview');
+    if (_heroPreviewEl) {
+      const _grads: Record<string,string> = {
+        forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
+        midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
+        charcoal: 'linear-gradient(135deg,#111111 0%,#252525 55%,#333333 100%)',
+        royal:    'linear-gradient(135deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
+        slate:    'linear-gradient(135deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
+        rose:     'linear-gradient(135deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
+        lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
+        sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+      };
+      _heroPreviewEl.style.background = _grads[currentTheme] ?? _grads.forest;
+    }
+
     // ── Profile completeness banner ───────────────────────────────────────
     const isNewProfile = !trainer.bio && !trainer.city && (trainer.review_count ?? 0) === 0;
     const profilePage  = document.getElementById('page-profile');
@@ -2301,9 +2319,21 @@
   }
 
   // ── Theme swatch selection ───────────────────────────────────────────────
+  var _themeGradients = {
+    forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
+    midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
+    charcoal: 'linear-gradient(135deg,#111111 0%,#252525 55%,#333333 100%)',
+    royal:    'linear-gradient(135deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
+    slate:    'linear-gradient(135deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
+    rose:     'linear-gradient(135deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
+    lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
+    sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+  };
   function selectTheme(btn) {
     document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('selected'));
     btn.classList.add('selected');
+    var preview = document.getElementById('profile-hero-preview');
+    if (preview) preview.style.background = _themeGradients[btn.dataset.theme] || _themeGradients.forest;
   }
 
   const titles = {
