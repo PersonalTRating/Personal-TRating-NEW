@@ -1,6 +1,6 @@
-const { createClient } = require('@supabase/supabase-js');
+import { createClient } from '@supabase/supabase-js';
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   const token = event.queryStringParameters?.token;
 
   if (!token) {

@@ -1,4 +1,4 @@
-exports.handler = async (event) => {
+export const handler = async (event) => {
   console.log('[send-review-email] invoked', event.httpMethod);
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
 
