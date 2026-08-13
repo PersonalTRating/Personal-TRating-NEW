@@ -41,7 +41,7 @@ function successPage(reviewerName) {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       ${reviewerName}'s review is now live on their trainer's profile and will count towards the BMP score.
     </div>
-    <a href="https://personalTrating.co.uk" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
+    <a href="https://personaltrating.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
       Back to Personal TRating →
     </a>
   </div>

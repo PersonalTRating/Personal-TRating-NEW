@@ -1,4 +1,5 @@
 exports.handler = async (event) => {
+  console.log('[send-review-email] invoked', event.httpMethod);
   if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method not allowed' };
 
   let body;
@@ -6,6 +7,7 @@ exports.handler = async (event) => {
   catch { return { statusCode: 400, body: 'Bad JSON' }; }
 
   const { trainerName, trainerId, reviewerName, isClient, rating, reviewText, approvalToken } = body;
+  console.log('[send-review-email] approvalToken present:', !!approvalToken, '| RESEND_API_KEY present:', !!process.env.RESEND_API_KEY);
   if (!approvalToken) return { statusCode: 400, body: 'Missing token' };
 
   const bmp      = Math.round((rating || 0) * 20);
@@ -77,9 +79,10 @@ exports.handler = async (event) => {
     }),
   });
 
+  const resBody = await res.text();
+  console.log('[send-review-email] Resend status:', res.status, '| body:', resBody);
+
   if (!res.ok) {
-    const err = await res.text();
-    console.error('Resend error:', err);
     return { statusCode: 500, body: 'Email send failed' };
   }
 
