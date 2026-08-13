@@ -526,8 +526,8 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     };
     if (clientId) payload.client_id = clientId;
 
-    const { data: inserted, error } = await supabase
-      .from('reviews').insert(payload).select('approval_token').single();
+    const { error } = await supabase
+      .from('reviews').insert(payload);
 
     if (error) {
       showError('Something went wrong — please try again.');
@@ -537,21 +537,20 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     }
 
     // Fire approval email (non-blocking — don't fail submission if email errors)
-    if (inserted?.approval_token) {
-      fetch('/.netlify/functions/send-review-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          trainerName,
-          trainerId,
-          reviewerName:   name,
-          isClient:       !!clientId,
-          rating:         selectedRating / 20,
-          reviewText:     text,
-          approvalToken:  inserted.approval_token,
-        }),
-      }).catch(() => {}); // silent — email failure shouldn't block the reviewer
-    }
+    // Use the token we already generated client-side — no need to read it back from Supabase
+    fetch('/.netlify/functions/send-review-email', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        trainerName,
+        trainerId,
+        reviewerName:   name,
+        isClient:       !!clientId,
+        rating:         selectedRating / 20,
+        reviewText:     text,
+        approvalToken:  payload.approval_token,
+      }),
+    }).catch(() => {}); // silent — email failure shouldn't block the reviewer
 
     formState.style.display   = 'none';
     thanksState.style.display = 'block';
