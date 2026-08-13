@@ -13,8 +13,9 @@ export const handler = async (event) => {
   const bmp      = Math.round((rating || 0) * 20);
   const stars    = Math.round((rating || 0) * 5);
   const dumbbells = '🏋️'.repeat(stars) + '⬜'.repeat(Math.max(0, 5 - stars));
-  const siteUrl  = process.env.SITE_URL || `https://${event.headers.host}`;
-  const approveUrl = `${siteUrl}/.netlify/functions/approve-review?token=${approvalToken}`;
+  const siteUrl    = 'https://personaltrating.com';
+  const approveUrl = `${siteUrl}/.netlify/functions/approve-review?token=${approvalToken}&action=approve`;
+  const rejectUrl  = `${siteUrl}/.netlify/functions/approve-review?token=${approvalToken}&action=reject`;
   const profileUrl = `${siteUrl}/trainers/${trainerId}`;
 
   const html = `<!DOCTYPE html>
@@ -54,7 +55,11 @@ export const handler = async (event) => {
         style="display:block;background:#3ab54a;color:white;text-decoration:none;text-align:center;padding:18px;border-radius:12px;font-weight:800;font-size:16px;margin-bottom:12px;">
         ✓ Approve This Review
       </a>
-      <p style="font-size:12px;color:#aab8ac;text-align:center;margin:0;">Click once to approve. The review will go live on ${trainerName}'s profile immediately.</p>
+      <a href="${rejectUrl}"
+        style="display:block;background:#f7f9f7;color:#c0392b;text-decoration:none;text-align:center;padding:14px;border-radius:12px;font-weight:700;font-size:14px;border:2px solid #f0d0ce;margin-bottom:12px;">
+        ✕ Reject &amp; Delete This Review
+      </a>
+      <p style="font-size:12px;color:#aab8ac;text-align:center;margin:0;">Approving makes it live immediately. Rejecting permanently deletes it.</p>
     </div>
 
     <div style="background:#f0f4f0;border-radius:0 0 16px 16px;padding:16px 32px;border:1px solid #e0e8e1;border-top:none;text-align:center;">
