@@ -184,8 +184,30 @@
   .rev-avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.78rem; flex-shrink:0; }
   .rev-name   { font-weight:700; font-size:0.85rem; }
   .rev-stars  { color:var(--gold); font-size:0.75rem; letter-spacing:1px; }
-  .rev-text   { font-size:0.8rem; color:var(--muted); margin-top:0.25rem; line-height:1.5; }
+  .rev-text   { font-size:0.8rem; color:var(--muted); margin-top:0.25rem; line-height:1.5; overflow-wrap:break-word; word-break:break-word; }
   .rev-date   { font-size:0.7rem; color:var(--muted); margin-top:0.2rem; }
+  .appeal-btn { margin-top:0.5rem; padding:0.3rem 0.75rem; border:1px solid #dc2626; background:transparent; color:#dc2626; border-radius:6px; font-size:0.72rem; font-weight:700; cursor:pointer; font-family:inherit; }
+  .appeal-btn:hover { background:#dc2626; color:white; }
+  .appeal-btn.pending { border-color:var(--muted); color:var(--muted); cursor:default; }
+  .appeal-btn.pending:hover { background:transparent; color:var(--muted); }
+  .appeal-btn.upheld { border-color:#b45309; color:#b45309; cursor:default; }
+  .appeal-btn.upheld:hover { background:transparent; color:#b45309; }
+
+  /* ── APPEAL MODAL ── */
+  .appeal-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
+  .appeal-modal-bg.open { display:flex; }
+  .appeal-modal { background:white; border-radius:16px; padding:2rem; max-width:480px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
+  .appeal-modal-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:900; color:#0d1a0e; margin-bottom:0.25rem; }
+  .appeal-modal-sub { font-size:0.8rem; color:#7a8f7c; margin-bottom:1.25rem; line-height:1.5; }
+  .appeal-modal-review { background:#f4f6f4; border-radius:10px; padding:0.9rem 1rem; margin-bottom:1.25rem; font-size:0.82rem; color:#3a4a3b; font-style:italic; line-height:1.6; }
+  .appeal-modal textarea { width:100%; box-sizing:border-box; border:1px solid #d0d8d1; border-radius:8px; padding:0.75rem; font-size:0.85rem; font-family:inherit; line-height:1.6; resize:vertical; min-height:90px; color:#0d1a0e; }
+  .appeal-modal textarea:focus { outline:none; border-color:#3ab54a; }
+  .appeal-modal-actions { display:flex; gap:0.75rem; margin-top:1rem; }
+  .appeal-submit-btn { flex:1; padding:0.7rem; background:#dc2626; color:white; border:none; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit; }
+  .appeal-submit-btn:hover { background:#b91c1c; }
+  .appeal-submit-btn:disabled { opacity:0.6; cursor:default; }
+  .appeal-cancel-btn { padding:0.7rem 1.25rem; background:#f4f6f4; color:#3a4a3b; border:none; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit; }
+  .appeal-cancel-btn:hover { background:#e8ece8; }
 
   /* ── BMP GAUGE ── */
   .bmp-wrap { display:flex; flex-direction:column; align-items:center; padding:1rem 0; }
@@ -1323,6 +1345,20 @@
   </div>
 </main>
 
+<!-- ── Appeal modal ── -->
+<div class="appeal-modal-bg" id="appeal-modal-bg">
+  <div class="appeal-modal">
+    <div class="appeal-modal-title">Appeal This Review</div>
+    <div class="appeal-modal-sub">Explain why you believe this review should be removed. Our team will review your appeal and respond within 48 hours.</div>
+    <div class="appeal-modal-review" id="appeal-modal-quote"></div>
+    <textarea id="appeal-reason" placeholder="Describe your reason for the appeal (optional)…"></textarea>
+    <div class="appeal-modal-actions">
+      <button class="appeal-cancel-btn" onclick="closeAppealModal()">Cancel</button>
+      <button class="appeal-submit-btn" id="appeal-submit-btn" onclick="submitAppeal()">Submit Appeal</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Trainer reply panel (bottom-right) ── -->
 <div id="tr-chat-panel" class="tr-chat-panel tr-chat-hidden">
   <div class="tr-chat-hdr">
@@ -1578,7 +1614,7 @@
     // ── Fetch this PT's real reviews ─────────────────────────────────────
     const { data: ptReviews } = await supabase
       .from('reviews')
-      .select('*')
+      .select('id, reviewer_name, reviewer_initials, reviewer_avatar_bg, reviewer_avatar_color, rating, review_text, created_at, appeal_status')
       .eq('trainer_id', trainer.id)
       .eq('is_verified', true)
       .order('created_at', { ascending: false });
@@ -1638,7 +1674,17 @@
             <div style="font-size:0.84rem;color:#7a8f7c;line-height:1.65;max-width:340px;margin:0 auto;">Send your first review link to a client after your next session and their verified review will appear here.</div>
           </div>`;
       } else {
-        allList.innerHTML = reviews.map((r: any) => `
+        allList.innerHTML = reviews.map((r: any) => {
+          const appealStatus = r.appeal_status;
+          let appealHtml = '';
+          if (!appealStatus) {
+            appealHtml = `<button class="appeal-btn" onclick="openAppealModal('${r.id}', \`${(r.review_text||'').replace(/`/g,'\\`').replace(/'/g,"\\'")}\`, '${r.reviewer_name}')">Appeal</button>`;
+          } else if (appealStatus === 'pending') {
+            appealHtml = `<button class="appeal-btn pending" disabled>Appeal Pending</button>`;
+          } else if (appealStatus === 'upheld') {
+            appealHtml = `<button class="appeal-btn upheld" disabled>Appeal Rejected</button>`;
+          }
+          return `
           <div class="review-item">
             <div style="width:38px;height:38px;border-radius:50%;background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;flex-shrink:0;">${r.reviewer_initials||'?'}</div>
             <div style="flex:1">
@@ -1646,8 +1692,10 @@
               <div style="display:flex;gap:2px;margin-top:0.2rem;">${_dumbbells(r.rating)}</div>
               <div style="font-size:0.75rem;color:var(--green-dark);font-weight:700;margin-top:0.25rem;">BMP assigned: ${Math.round(r.rating * 20)}%</div>
               <div class="rev-text">"${r.review_text}"</div>
+              ${appealHtml}
             </div>
-          </div>`).join('');
+          </div>`;
+        }).join('');
       }
     }
 
@@ -2833,6 +2881,73 @@
       if (window.innerWidth <= 768) closeMobMenu();
     });
   });
+
+  // ── Appeal modal ─────────────────────────────────────────────────────────
+  let _appealReviewId = null;
+
+  function openAppealModal(reviewId, reviewText, reviewerName) {
+    _appealReviewId = reviewId;
+    document.getElementById('appeal-modal-quote').textContent = `"${reviewText}" — ${reviewerName}`;
+    document.getElementById('appeal-reason').value = '';
+    document.getElementById('appeal-submit-btn').disabled = false;
+    document.getElementById('appeal-submit-btn').textContent = 'Submit Appeal';
+    document.getElementById('appeal-modal-bg').classList.add('open');
+  }
+
+  function closeAppealModal() {
+    document.getElementById('appeal-modal-bg').classList.remove('open');
+    _appealReviewId = null;
+  }
+
+  document.getElementById('appeal-modal-bg').addEventListener('click', function(e) {
+    if (e.target === this) closeAppealModal();
+  });
+
+  async function submitAppeal() {
+    if (!_appealReviewId) return;
+    const reason = document.getElementById('appeal-reason').value.trim();
+    const btn    = document.getElementById('appeal-submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting…';
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await fetch('/.netlify/functions/submit-appeal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ review_id: _appealReviewId, reason, access_token: session.access_token }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        if (err.error === 'already_appealed') {
+          alert('You have already submitted an appeal for this review.');
+        } else {
+          alert('Something went wrong. Please try again.');
+        }
+        btn.disabled = false;
+        btn.textContent = 'Submit Appeal';
+        return;
+      }
+
+      closeAppealModal();
+
+      // Update the button in the DOM immediately
+      const btns = document.querySelectorAll('.appeal-btn');
+      btns.forEach(b => {
+        if (b.getAttribute('onclick')?.includes(_appealReviewId)) {
+          b.className = 'appeal-btn pending';
+          b.disabled = true;
+          b.textContent = 'Appeal Pending';
+          b.removeAttribute('onclick');
+        }
+      });
+    } catch {
+      alert('Something went wrong. Please try again.');
+      btn.disabled = false;
+      btn.textContent = 'Submit Appeal';
+    }
+  }
 </script>
 </body>
 </html>
