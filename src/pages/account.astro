@@ -78,6 +78,29 @@
   .acc-bottom-nav button.active { color:var(--green); }
   .acc-bottom-nav .bn-icon { font-size:1.35rem; line-height:1; }
   .acc-bottom-nav .bn-label { font-size:0.6rem; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; }
+  /* ── Real-time toast ── */
+  @keyframes slideInToast {
+    from { opacity:0; transform:translateY(16px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+  @keyframes fadeOutToast {
+    from { opacity:1; transform:translateY(0); }
+    to   { opacity:0; transform:translateY(8px); }
+  }
+  .rt-toast {
+    position:fixed; bottom:1.75rem; right:1.5rem; z-index:9999;
+    background:white; border:1px solid var(--border); border-left:4px solid var(--green);
+    border-radius:12px; padding:0.9rem 1.1rem; max-width:300px;
+    box-shadow:0 8px 30px rgba(0,0,0,0.13);
+    display:flex; align-items:flex-start; gap:0.7rem;
+    animation:slideInToast 0.3s ease; text-decoration:none; color:var(--text);
+    cursor:pointer;
+  }
+  .rt-toast:hover { border-color:var(--green); }
+  @media (max-width:768px) {
+    .rt-toast { bottom:calc(68px + env(safe-area-inset-bottom)); right:0.75rem; left:0.75rem; max-width:none; }
+  }
+
   /* ── Notification bell ── */
   .notif-bell-btn {
     position:relative; background:none; border:none; cursor:pointer;
@@ -604,7 +627,28 @@
     }
   }
 
-  updateNotifBadge(unreadCount);
+  let _unreadNotifCount = unreadCount;
+  updateNotifBadge(_unreadNotifCount);
+
+  // ── Toast helper (appears regardless of which tab is active) ───────────────
+  function showToast(icon: string, title: string, body: string, link?: string) {
+    const el = document.createElement(link ? 'a' : 'div') as HTMLAnchorElement;
+    if (link) el.href = link;
+    el.className = 'rt-toast';
+    el.innerHTML = `
+      <div style="font-size:1.25rem;flex-shrink:0;">${icon}</div>
+      <div style="flex:1;min-width:0;">
+        <div style="font-weight:700;font-size:0.875rem;margin-bottom:0.1rem;">${title}</div>
+        ${body ? `<div style="font-size:0.78rem;color:var(--muted);line-height:1.5;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${body}</div>` : ''}
+      </div>
+      <button style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0;flex-shrink:0;margin-left:0.25rem;line-height:1;"
+        onclick="event.preventDefault();event.stopPropagation();this.closest('.rt-toast').remove()">✕</button>`;
+    document.body.appendChild(el);
+    setTimeout(() => {
+      el.style.animation = 'fadeOutToast 0.35s ease forwards';
+      setTimeout(() => el.remove(), 350);
+    }, 5500);
+  }
 
   // Render notifications list
   const notifListEl = document.getElementById('notif-list') as HTMLElement;
@@ -627,6 +671,30 @@
         </a>`).join('');
     }
   }
+
+  // ── Real-time: new notification ────────────────────────────────────────────
+  supabase.channel('rt-notifs-' + session.user.id)
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications',
+      filter: `user_id=eq.${session.user.id}` }, (p: any) => {
+        const n = p.new;
+        _unreadNotifCount++;
+        updateNotifBadge(_unreadNotifCount);
+
+        // Prepend card to the notifications list
+        const listEl = document.getElementById('notif-list');
+        if (listEl) {
+          const empty = listEl.querySelector('.empty-state');
+          if (empty) listEl.innerHTML = '';
+          const card = document.createElement('a');
+          card.href = n.link || '#';
+          card.className = 'notif-item-card unread';
+          card.innerHTML = `<div class="notif-icon">🎉</div><div style="flex:1;"><div class="notif-title">${n.title}</div><div class="notif-body-text">${n.body ?? ''}</div><div class="notif-time">just now</div></div>`;
+          listEl.prepend(card);
+        }
+
+        showToast('🔔', n.title, n.body ?? '', n.link ?? undefined);
+      })
+    .subscribe();
 
   // ── Messages ───────────────────────────────────────────────────────────────
   let _clConvId: string | null = null;
@@ -805,7 +873,16 @@
 
   _clConvChannel = supabase.channel(`cl-convs-${client.id}`)
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'conversations',
-      filter: `client_id=eq.${client.id}` }, () => _clLoadConvs())
+      filter: `client_id=eq.${client.id}` }, (p: any) => {
+        _clLoadConvs();
+        // Toast if a new trainer message arrived and the user isn't viewing that thread
+        if ((p.new?.client_unread_count ?? 0) > 0 && p.new?.id !== _clConvId) {
+          const td = _clConvData.get(p.new.id);
+          const name = td?.name || 'Your trainer';
+          const preview = p.new.last_message_preview || 'sent you a message';
+          showToast('💬', `New message from ${name}`, preview);
+        }
+      })
     .subscribe();
 
   _clLoadConvs();
