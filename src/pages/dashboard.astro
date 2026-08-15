@@ -1951,54 +1951,84 @@
     // ── Notifications list ────────────────────────────────────────────────
     const notifCard = document.getElementById('notif-card') as HTMLElement;
     if (notifCard) {
-      type NotifItem = { text: string; time: string; isRead: boolean; sortTs: number };
+      type NotifItem = { iconBg: string; iconColor: string; iconChar: string; badge: string; title: string; body: string; time: string; isRead: boolean; sortTs: number };
       const notifs: NotifItem[] = [];
-      // Reviews are newest-first; the first `reviewUnread` are unseen
+
       reviews.slice(0, 8).forEach((r: any, i: number) => {
-        const quote = r.review_text
-          ? `<span style="display:block;margin-top:0.4rem;font-size:0.78rem;color:var(--muted);font-style:italic;line-height:1.55;">"${r.review_text.slice(0, 140)}${r.review_text.length > 140 ? '…' : ''}"</span>`
-          : '';
+        const quote = r.review_text ? `"${r.review_text.slice(0, 140)}${r.review_text.length > 140 ? '…' : ''}"` : '';
         notifs.push({
-          text:   `<strong>New review received</strong> — ${r.reviewer_name} gave you ${r.rating} dumbbell${r.rating !== 1 ? 's' : ''}.${quote}`,
+          iconBg: '#e8f4fd', iconColor: '#3b82f6', iconChar: '💬', badge: '',
+          title: 'New review received',
+          body:  `${r.reviewer_name} gave you ${r.rating} dumbbell${r.rating !== 1 ? 's' : ''}.<br><span style="font-style:italic;color:#7a8f7c;">${quote}</span>`,
           time:   timeAgo(r.created_at),
           isRead: i >= reviewUnread,
           sortTs: new Date(r.created_at).getTime(),
         });
       });
+
       if (hasBmp && reviews.length > 0) {
         notifs.push({
-          text:   `<strong>BMP Score updated</strong> — Your score is now <strong>${trainer.bmp_score}</strong>, placing you #${rank} in the UK.`,
+          iconBg: '#eaf7ec', iconColor: '#3ab54a', iconChar: '↗', badge: '',
+          title: 'BMP Score updated',
+          body:  `Your score is now <strong style="color:#0d1a0e;">${trainer.bmp_score}</strong>, placing you <strong style="color:#3ab54a;">#${rank}</strong> in the UK.`,
           time:   timeAgo(reviews[0].created_at),
           isRead: true,
           sortTs: new Date(reviews[0].created_at).getTime() - 1,
         });
       }
-      // Appeal outcome notifications
+
       appealNotifs.forEach((n: any) => {
         const isApproved = n.type === 'appeal_approved';
-        const icon       = isApproved ? '✅' : '⚖️';
-        const noteHtml   = n.body
-          ? `<span style="display:block;margin-top:0.4rem;font-size:0.78rem;color:var(--muted);line-height:1.55;">Admin note: ${n.body}</span>`
-          : '';
         notifs.push({
-          text:   `<strong>${icon} ${n.title}</strong>${noteHtml}`,
-          time:   timeAgo(n.created_at),
+          iconBg:    isApproved ? '#eaf7ec' : '#fff8e1',
+          iconColor: isApproved ? '#3ab54a' : '#b45309',
+          iconChar:  isApproved ? '✓' : '⚖',
+          badge: '<span style="display:inline-block;font-size:0.68rem;font-weight:700;color:#3ab54a;background:#eaf7ec;padding:0.1rem 0.55rem;border-radius:20px;margin-left:0.4rem;">Appeal</span>',
+          title: n.title || '',
+          body:  n.body  || '',
+          time:  timeAgo(n.created_at),
           isRead: n.is_read ?? false,
           sortTs: new Date(n.created_at).getTime(),
         });
       });
+
       notifs.sort((a, b) => b.sortTs - a.sortTs);
+
+      const badge = (n: NotifItem) => n.badge;
+      const unreadDot = (n: NotifItem) => n.isRead ? '' : '<span style="width:8px;height:8px;border-radius:50%;background:#3ab54a;display:inline-block;flex-shrink:0;margin-top:4px;"></span>';
+
       if (notifs.length === 0) {
-        notifCard.innerHTML = `<div style="padding:3rem 1.5rem;text-align:center;"><div style="font-size:2rem;margin-bottom:0.5rem;">🔔</div><div style="font-weight:700;font-size:0.9rem;color:#0d1a0e;margin-bottom:0.25rem;">No notifications yet</div><div style="font-size:0.8rem;color:#7a8f7c;">Notifications appear when clients leave you reviews.</div></div>`;
+        notifCard.innerHTML = `
+          <div style="padding:1.5rem 1.5rem 0.75rem;">
+            <div style="font-weight:700;font-size:1rem;color:#0d1a0e;">All Notifications</div>
+            <div style="font-size:0.8rem;color:#7a8f7c;margin-top:0.15rem;">Showing most recent first</div>
+          </div>
+          <div style="padding:3rem 1.5rem;text-align:center;">
+            <div style="font-size:2rem;margin-bottom:0.5rem;">🔔</div>
+            <div style="font-weight:700;font-size:0.9rem;color:#0d1a0e;margin-bottom:0.25rem;">No notifications yet</div>
+            <div style="font-size:0.8rem;color:#7a8f7c;">Notifications appear when clients leave you reviews.</div>
+          </div>`;
       } else {
-        notifCard.innerHTML = notifs.map(n => `
-          <div class="notif-item">
-            <div class="notif-bullet${n.isRead ? ' read' : ''}"></div>
-            <div class="notif-body">
-              <div class="notif-text">${n.text}</div>
-              <div class="notif-time">${n.time}</div>
+        notifCard.innerHTML = `
+          <div style="padding:1.5rem 1.5rem 0.75rem;">
+            <div style="font-weight:700;font-size:1rem;color:#0d1a0e;">All Notifications</div>
+            <div style="font-size:0.8rem;color:#7a8f7c;margin-top:0.15rem;">Showing most recent first</div>
+          </div>
+          ${notifs.map(n => `
+          <div style="display:flex;gap:1rem;padding:1.25rem 1.5rem;border-top:1px solid #f0f4f0;align-items:flex-start;">
+            <div style="width:48px;height:48px;border-radius:50%;background:${n.iconBg};color:${n.iconColor};display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:800;flex-shrink:0;">${n.iconChar}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:0.5rem;margin-bottom:0.25rem;">
+                <div style="display:flex;align-items:center;flex-wrap:wrap;">
+                  <span style="font-weight:700;font-size:0.9rem;color:#0d1a0e;">${n.title}</span>${n.badge}
+                </div>
+                <span style="font-size:0.78rem;color:#7a8f7c;white-space:nowrap;flex-shrink:0;">${n.time}</span>
+              </div>
+              <div style="font-size:0.83rem;color:#3a4a3b;line-height:1.6;">${n.body}</div>
+              <div style="font-size:0.75rem;color:#7a8f7c;margin-top:0.3rem;">${n.time}</div>
             </div>
-          </div>`).join('');
+          </div>`).join('')}
+          <div style="padding:1.25rem 1.5rem;text-align:center;font-size:0.8rem;color:#7a8f7c;border-top:1px solid #f0f4f0;">You've reached the end of your notifications</div>`;
       }
     }
 
@@ -2590,8 +2620,7 @@
       }
       if (badge) badge.style.display = 'none';
       if (dot)   dot.style.display   = 'none';
-      // Mark all dot items in the card as read
-      document.querySelectorAll('#notif-card .notif-bullet').forEach(d => d.classList.add('read'));
+      // No DOM bullet elements to update — unread state is purely from DB/localStorage
       // Mark appeal notifications as read in the database
       var supa = window['__ptSupabase'];
       var unreadAppealIds = window['__ptUnreadAppealIds'] || [];
