@@ -196,8 +196,16 @@
         access_token: data.session!.access_token,
         refresh_token: data.session!.refresh_token,
       }));
-      // replace() prevents iOS from caching the login page in back/forward cache.
-      window.location.replace(_loginRedirect || '/dashboard');
+
+      if (_loginRedirect) {
+        window.location.replace(_loginRedirect);
+      } else {
+        // Route by role: trainers → dashboard, clients → account home
+        const userId = data.session!.user.id;
+        const { data: trainerRow } = await supabase
+          .from('trainers').select('id').eq('user_id', userId).maybeSingle();
+        window.location.replace(trainerRow ? '/dashboard' : '/account');
+      }
     }
   });
 </script>
