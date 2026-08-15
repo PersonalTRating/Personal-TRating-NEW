@@ -8,13 +8,21 @@ export const handler = async (event) => {
     return { statusCode: 400, headers: { 'Content-Type': 'text/html' }, body: errorPage('Invalid approval link.') };
   }
 
+  console.log('[approve-review] env check — URL:', !!process.env.PUBLIC_SUPABASE_URL, 'KEY:', !!process.env.PUBLIC_SUPABASE_ANON_KEY);
+
   const supabase = createClient(
     process.env.PUBLIC_SUPABASE_URL,
     process.env.PUBLIC_SUPABASE_ANON_KEY
   );
 
   if (action === 'reject') {
-    const { data, error } = await supabase.rpc('reject_review_by_token', { p_token: token });
+    let data, error;
+    try {
+      ({ data, error } = await supabase.rpc('reject_review_by_token', { p_token: token }));
+    } catch (e) {
+      console.log('[approve-review] reject rpc threw:', e.message);
+      return { statusCode: 500, headers: { 'Content-Type': 'text/html' }, body: errorPage('A server error occurred. Please try again or contact support.') };
+    }
 
     if (error || !data || data === 'not_found') {
       return {
@@ -32,7 +40,13 @@ export const handler = async (event) => {
   }
 
   // Default: approve
-  const { data, error } = await supabase.rpc('approve_review_by_token', { p_token: token });
+  let data, error;
+  try {
+    ({ data, error } = await supabase.rpc('approve_review_by_token', { p_token: token }));
+  } catch (e) {
+    console.log('[approve-review] approve rpc threw:', e.message);
+    return { statusCode: 500, headers: { 'Content-Type': 'text/html' }, body: errorPage('A server error occurred. Please try again or contact support.') };
+  }
 
   console.log('[approve-review] rpc result:', JSON.stringify({ data, error }));
 
