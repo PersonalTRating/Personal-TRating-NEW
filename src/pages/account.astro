@@ -720,16 +720,18 @@
   // Avatar preview
   const clAvPrev = document.getElementById('cl-avatar-preview') as HTMLElement;
   clAvPrev.textContent       = initials;
-  // Avatar preview — photo takes priority over initials
+  // Avatar preview — photo takes priority; colour becomes border ring when photo is set
   if (client.avatar_url) {
     clAvPrev.innerHTML = `<img src="${client.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />`;
     clAvPrev.style.background = 'transparent';
+    clAvPrev.style.border     = `4px solid ${avatarColorInit}`;
     const upBtn = document.getElementById('cl-upload-btn') as HTMLButtonElement;
     if (upBtn) upBtn.textContent = 'Replace Photo';
   } else {
     clAvPrev.textContent      = initials;
     clAvPrev.style.background = avatarBgInit;
     clAvPrev.style.color      = avatarColorInit;
+    clAvPrev.style.border     = '3px solid var(--border)';
   }
 
   // Pre-select saved colour swatch
@@ -1119,8 +1121,11 @@
 
     await supabase.from('clients').update({ avatar_url: url }).eq('user_id', session.user.id);
 
+    const selSwatch = document.querySelector('.cl-colour-swatch.selected') as HTMLElement | null;
+    const borderColor = selSwatch?.dataset.color ?? '#2a9438';
     preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" />`;
     preview.style.background = 'transparent';
+    preview.style.border     = `4px solid ${borderColor}`;
     const upBtn = document.getElementById('cl-upload-btn') as HTMLButtonElement;
     if (upBtn) upBtn.textContent = 'Replace Photo';
 
@@ -1136,8 +1141,11 @@
     document.querySelectorAll('.cl-colour-swatch').forEach(s => s.classList.remove('selected'));
     btn.classList.add('selected');
     const preview = document.getElementById('cl-avatar-preview') as HTMLElement;
-    if (preview && !preview.querySelector('img')) {
-      preview.style.background = btn.dataset.bg ?? '#eaf7ec';
+    if (!preview) return;
+    if (preview.querySelector('img')) {
+      preview.style.border = `4px solid ${btn.dataset.color ?? '#2a9438'}`;
+    } else {
+      preview.style.background = btn.dataset.bg    ?? '#eaf7ec';
       preview.style.color      = btn.dataset.color ?? '#2a9438';
     }
   };
