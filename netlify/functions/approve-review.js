@@ -54,7 +54,7 @@ export const handler = async (event) => {
     return {
       statusCode: 500,
       headers: { 'Content-Type': 'text/html' },
-      body: errorPage(`RPC error: ${error.message || error.code || JSON.stringify(error)}`),
+      body: errorPage('A server error occurred. Please try again or contact support.'),
     };
   }
 
