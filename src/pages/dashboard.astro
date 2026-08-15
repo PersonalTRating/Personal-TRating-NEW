@@ -1986,11 +1986,12 @@
     const reviewUrl = `${window.location.origin}/review/${trainer.id}`;
     if (reviewLinkEl) reviewLinkEl.value = reviewUrl;
     (window as any).__ptReviewUrl  = reviewUrl;
-    (window as any).__ptTrainerId  = trainer.id;
-    (window as any).__ptUserId     = session.user.id;
-    (window as any).__ptInitials   = trainer.avatar_initials ?? '';
-    (window as any).__ptSupabase   = supabase;
-    (window as any).__ptTrainer    = trainer;
+    (window as any).__ptTrainerId   = trainer.id;
+    (window as any).__ptTrainerName = trainer.name;
+    (window as any).__ptUserId      = session.user.id;
+    (window as any).__ptInitials    = trainer.avatar_initials ?? '';
+    (window as any).__ptSupabase    = supabase;
+    (window as any).__ptTrainer     = trainer;
 
     // Load feed on initial overview display
     loadOverviewFeed();
@@ -2905,36 +2906,59 @@
 
   async function submitAppeal() {
     if (!_appealReviewId) return;
-    const reason = document.getElementById('appeal-reason').value.trim();
-    const btn    = document.getElementById('appeal-submit-btn');
+    const reason = (document.getElementById('appeal-reason') as HTMLTextAreaElement).value.trim();
+    const btn    = document.getElementById('appeal-submit-btn') as HTMLButtonElement;
     btn.disabled = true;
     btn.textContent = 'Submitting…';
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch('/.netlify/functions/submit-appeal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ review_id: _appealReviewId, reason, access_token: session.access_token }),
+      // Call RPC directly — auth.uid() works from the frontend Supabase client
+      const { data, error } = await supabase.rpc('submit_review_appeal', {
+        p_review_id: _appealReviewId,
+        p_reason:    reason,
       });
 
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        if (err.error === 'already_appealed') {
-          alert('You have already submitted an appeal for this review.');
-        } else {
-          alert('Something went wrong. Please try again.');
-        }
+      if (error) {
+        console.error('[appeal] rpc error:', error.message);
+        alert('Something went wrong. Please try again.');
         btn.disabled = false;
         btn.textContent = 'Submit Appeal';
         return;
       }
 
+      if (data?.error === 'already_appealed') {
+        alert('You have already submitted an appeal for this review.');
+        btn.disabled = false;
+        btn.textContent = 'Submit Appeal';
+        return;
+      }
+
+      if (data?.error) {
+        alert('Something went wrong. Please try again.');
+        btn.disabled = false;
+        btn.textContent = 'Submit Appeal';
+        return;
+      }
+
+      // RPC succeeded — now fire-and-forget the email via Netlify function
+      const trainerName = (window as any).__ptTrainerName ?? 'Trainer';
+      fetch('/.netlify/functions/submit-appeal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token:         data.token,
+          reviewer_name: data.reviewer_name,
+          review_text:   data.review_text,
+          rating:        data.rating,
+          trainer_name:  trainerName,
+          reason,
+        }),
+      }).catch(() => {}); // email failure shouldn't block the UI
+
       closeAppealModal();
 
       // Update the button in the DOM immediately
-      const btns = document.querySelectorAll('.appeal-btn');
-      btns.forEach(b => {
+      document.querySelectorAll('.appeal-btn').forEach((b: any) => {
         if (b.getAttribute('onclick')?.includes(_appealReviewId)) {
           b.className = 'appeal-btn pending';
           b.disabled = true;
@@ -2942,7 +2966,8 @@
           b.removeAttribute('onclick');
         }
       });
-    } catch {
+    } catch (e) {
+      console.error('[appeal] unexpected error:', e);
       alert('Something went wrong. Please try again.');
       btn.disabled = false;
       btn.textContent = 'Submit Appeal';

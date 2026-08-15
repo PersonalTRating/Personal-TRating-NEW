@@ -1,4 +1,3 @@
-import { createClient } from '@supabase/supabase-js';
 import { Resend } from 'resend';
 
 const siteUrl = 'https://personaltrating.com';
@@ -13,63 +12,15 @@ export const handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
   }
 
-  const { review_id, reason, access_token } = body;
-  if (!review_id || !access_token) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Missing fields' }) };
+  const { token, reviewer_name, review_text, rating, trainer_name, reason } = body;
+  if (!token) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Missing token' }) };
   }
 
-  const url    = process.env.PUBLIC_SUPABASE_URL;
-  const anon   = process.env.PUBLIC_SUPABASE_ANON_KEY;
+  const removeUrl = `${siteUrl}/.netlify/functions/action-appeal?token=${token}&action=remove`;
+  const upholdUrl = `${siteUrl}/.netlify/functions/action-appeal?token=${token}&action=uphold`;
 
-  // Verify JWT
-  const authClient = createClient(url, anon);
-  const { data: { user }, error: userError } = await authClient.auth.getUser(access_token);
-  if (userError || !user) {
-    console.log('[submit-appeal] auth error:', userError?.message);
-    return { statusCode: 401, body: JSON.stringify({ error: 'unauthorized' }) };
-  }
-
-  // All DB queries use the user's JWT so RLS passes
-  const db = createClient(url, anon, {
-    global: { headers: { Authorization: `Bearer ${access_token}` } },
-    auth:   { persistSession: false },
-  });
-
-  // Look up trainer profile
-  const { data: trainer, error: trainerError } = await db
-    .from('trainers')
-    .select('id, name')
-    .eq('user_id', user.id)
-    .maybeSingle();
-
-  if (trainerError || !trainer) {
-    console.log('[submit-appeal] trainer lookup failed:', trainerError?.message, '| user_id:', user.id);
-    return { statusCode: 403, body: JSON.stringify({ error: 'unauthorized' }) };
-  }
-
-  // Submit appeal via RPC (passes trainer_id explicitly — no auth.uid() in SQL)
-  const { data, error } = await db.rpc('submit_review_appeal', {
-    p_review_id:  review_id,
-    p_trainer_id: trainer.id,
-    p_reason:     reason ?? '',
-  });
-
-  if (error) {
-    console.log('[submit-appeal] rpc error:', error.message);
-    return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
-  }
-
-  if (data?.error) {
-    const status = data.error === 'already_appealed' ? 409 : 400;
-    return { statusCode: status, body: JSON.stringify({ error: data.error }) };
-  }
-
-  // Send appeal email
-  const resend    = new Resend(process.env.RESEND_API_KEY);
-  const removeUrl = `${siteUrl}/.netlify/functions/action-appeal?token=${data.token}&action=remove`;
-  const upholdUrl = `${siteUrl}/.netlify/functions/action-appeal?token=${data.token}&action=uphold`;
-
-  const stars = '★'.repeat(Math.round(data.rating)) + '☆'.repeat(5 - Math.round(data.rating));
+  const stars = '★'.repeat(Math.round(rating ?? 0)) + '☆'.repeat(5 - Math.round(rating ?? 0));
   const reasonHtml = reason
     ? `<div style="background:#fff8e1;border-left:3px solid #f59e0b;padding:1rem 1.25rem;border-radius:0 8px 8px 0;margin:1.25rem 0;">
         <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#b45309;margin-bottom:0.4rem;">Trainer's Reason</div>
@@ -77,10 +28,12 @@ export const handler = async (event) => {
        </div>`
     : `<p style="font-size:0.85rem;color:#7a8f7c;font-style:italic;margin:1.25rem 0;">No reason provided.</p>`;
 
+  const resend = new Resend(process.env.RESEND_API_KEY);
+
   await resend.emails.send({
     from: 'Personal TRating <noreply@personaltrating.com>',
     to:   'modernisetraders@hotmail.com',
-    subject: `Review Appeal — ${trainer.name} disputes ${data.reviewer_name}'s review`,
+    subject: `Review Appeal — ${trainer_name} disputes ${reviewer_name}'s review`,
     html: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -92,13 +45,13 @@ export const handler = async (event) => {
     </div>
     <div style="padding:32px 40px;">
       <p style="font-size:0.9rem;color:#3a4a3b;line-height:1.7;margin:0 0 1.5rem;">
-        <strong>${trainer.name}</strong> has appealed a verified review left by <strong>${data.reviewer_name}</strong>.
+        <strong>${trainer_name}</strong> has appealed a verified review left by <strong>${reviewer_name}</strong>.
       </p>
       <div style="background:#f4f6f4;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:0.5rem;">
         <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">The Review</div>
         <div style="font-size:1rem;color:#f59e0b;letter-spacing:2px;margin-bottom:0.5rem;">${stars}</div>
-        <div style="font-size:0.9rem;color:#1c1c1e;line-height:1.7;font-style:italic;">"${data.review_text}"</div>
-        <div style="font-size:0.75rem;color:#7a8f7c;margin-top:0.5rem;">— ${data.reviewer_name}</div>
+        <div style="font-size:0.9rem;color:#1c1c1e;line-height:1.7;font-style:italic;">"${review_text}"</div>
+        <div style="font-size:0.75rem;color:#7a8f7c;margin-top:0.5rem;">— ${reviewer_name}</div>
       </div>
       ${reasonHtml}
       <div style="display:flex;gap:12px;margin-top:1.75rem;">
