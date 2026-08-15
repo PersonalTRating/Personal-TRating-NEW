@@ -216,6 +216,22 @@
   .empty-state-title { font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; }
   .empty-state-text  { font-size:0.82rem; color:var(--muted); line-height:1.7; max-width:340px; margin:0 auto; }
 
+  /* ── Avatar colour swatches ── */
+  .cl-colour-swatch {
+    width:40px; height:40px; border-radius:50%; border:2px solid rgba(0,0,0,0.08);
+    cursor:pointer; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:0.9rem; transition:transform 0.15s; flex-shrink:0;
+  }
+  .cl-colour-swatch:hover { transform:scale(1.12); }
+  .cl-colour-swatch.selected { box-shadow:0 0 0 2px white, 0 0 0 4px #111311; }
+  .cl-profile-input {
+    width:100%; border:1.5px solid var(--border); border-radius:8px;
+    padding:0.7rem 0.9rem; font-family:'Manrope',sans-serif; font-size:0.875rem;
+    color:var(--text); outline:none; transition:border-color 0.15s; background:white;
+  }
+  .cl-profile-input:focus { border-color:var(--green); }
+  .cl-profile-label { font-size:0.78rem; font-weight:700; color:var(--muted); display:block; margin-bottom:0.4rem; }
+
   /* ── Account info ── */
   .info-row {
     display:flex; align-items:center; justify-content:space-between;
@@ -546,22 +562,56 @@
 
   <!-- Profile section -->
   <div class="acc-section" id="acc-profile">
+
+    <!-- Avatar colour -->
+    <div class="card" style="margin-bottom:1.25rem;">
+      <div class="card-label">Appearance</div>
+      <div class="card-title">Avatar Colour</div>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;">Choose a colour for your initials — shown when you leave reviews and message trainers.</p>
+      <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
+        <div id="cl-avatar-preview" style="width:72px;height:72px;border-radius:50%;background:#eaf7ec;color:#2a9438;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;font-family:'Manrope',sans-serif;flex-shrink:0;">?</div>
+        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+          <button class="cl-colour-swatch" data-bg="#eaf7ec" data-color="#2a9438" title="Forest"   onclick="clSelectColour(this)" style="background:#eaf7ec;"><span style="color:#2a9438;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#fdf6e3" data-color="#b8860b" title="Gold"     onclick="clSelectColour(this)" style="background:#fdf6e3;"><span style="color:#b8860b;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#e8f0f7" data-color="#1a4b6b" title="Ocean"    onclick="clSelectColour(this)" style="background:#e8f0f7;"><span style="color:#1a4b6b;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#f5e8f7" data-color="#6b1a6b" title="Royal"    onclick="clSelectColour(this)" style="background:#f5e8f7;"><span style="color:#6b1a6b;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#e8ecf5" data-color="#1a2b6b" title="Navy"     onclick="clSelectColour(this)" style="background:#e8ecf5;"><span style="color:#1a2b6b;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#fef0ed" data-color="#c0451a" title="Ember"    onclick="clSelectColour(this)" style="background:#fef0ed;"><span style="color:#c0451a;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#fde8f0" data-color="#b5265e" title="Rose"     onclick="clSelectColour(this)" style="background:#fde8f0;"><span style="color:#b5265e;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#f3e8fd" data-color="#7c2dbe" title="Lavender" onclick="clSelectColour(this)" style="background:#f3e8fd;"><span style="color:#7c2dbe;">A</span></button>
+          <button class="cl-colour-swatch" data-bg="#e5f3fd" data-color="#1a6fa8" title="Sky"      onclick="clSelectColour(this)" style="background:#e5f3fd;"><span style="color:#1a6fa8;">A</span></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Name + details -->
     <div class="card">
       <div class="card-label">Account</div>
       <div class="card-title">Your Details</div>
-      <div class="info-row">
-        <div class="info-label">Name</div>
-        <div class="info-value" id="account-name">—</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+        <div>
+          <label class="cl-profile-label" for="cl-first-name">First Name</label>
+          <input id="cl-first-name" type="text" class="cl-profile-input" autocomplete="given-name" />
+        </div>
+        <div>
+          <label class="cl-profile-label" for="cl-last-name">Last Name</label>
+          <input id="cl-last-name" type="text" class="cl-profile-input" autocomplete="family-name" />
+        </div>
       </div>
       <div class="info-row">
         <div class="info-label">Email</div>
         <div class="info-value" id="account-email">—</div>
       </div>
-      <div class="info-row">
+      <div class="info-row" style="border-bottom:none;">
         <div class="info-label">Account type</div>
         <div class="info-value">Client</div>
       </div>
+      <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;">
+        <button id="cl-save-profile-btn" onclick="clSaveProfile()" style="background:var(--green);color:white;border:none;border-radius:8px;padding:0.7rem 1.75rem;font-family:'Manrope',sans-serif;font-weight:700;font-size:0.875rem;cursor:pointer;transition:background 0.15s;">Save Changes</button>
+        <span id="cl-save-status" style="font-size:0.82rem;color:var(--green);font-weight:600;display:none;">✓ Saved!</span>
+      </div>
     </div>
+
   </div>
 
 </div>
@@ -625,11 +675,39 @@
   // ── Populate UI ────────────────────────────────────────────────────────────
   const firstName = client.name.split(' ')[0];
   const initials  = client.name.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
+  const avatarBgInit    = client.avatar_bg    ?? '#eaf7ec';
+  const avatarColorInit = client.avatar_color ?? '#2a9438';
 
   (document.getElementById('welcome-name') as HTMLElement).textContent  = `Welcome back, ${firstName}.`;
-  (document.getElementById('welcome-avatar') as HTMLElement).textContent = initials;
-  (document.getElementById('account-name') as HTMLElement).textContent  = client.name;
+  const welcomeAv = document.getElementById('welcome-avatar') as HTMLElement;
+  welcomeAv.textContent = initials;
+  welcomeAv.style.background = avatarBgInit;
+  welcomeAv.style.color      = avatarColorInit;
   (document.getElementById('account-email') as HTMLElement).textContent = session.user.email ?? '—';
+
+  // ── Profile form pre-populate ──────────────────────────────────────────────
+  const nameParts = client.name.split(' ');
+  (document.getElementById('cl-first-name') as HTMLInputElement).value = nameParts[0] || '';
+  (document.getElementById('cl-last-name')  as HTMLInputElement).value = nameParts.slice(1).join(' ') || '';
+
+  // Avatar preview
+  const clAvPrev = document.getElementById('cl-avatar-preview') as HTMLElement;
+  clAvPrev.textContent       = initials;
+  clAvPrev.style.background  = avatarBgInit;
+  clAvPrev.style.color       = avatarColorInit;
+
+  // Pre-select saved colour swatch
+  const savedBg = avatarBgInit.trim().toLowerCase();
+  document.querySelectorAll('.cl-colour-swatch').forEach((el) => {
+    if ((el as HTMLElement).dataset.bg?.trim().toLowerCase() === savedBg)
+      el.classList.add('selected');
+  });
+
+  // Sidebar avatar
+  const sbAv = document.getElementById('acc-sb-avatar') as HTMLElement;
+  if (sbAv) { sbAv.textContent = initials; sbAv.style.background = avatarBgInit; sbAv.style.color = avatarColorInit; }
+  const sbName = document.getElementById('acc-sb-name') as HTMLElement;
+  if (sbName) sbName.textContent = client.name;
 
   // ── Load past reviews ──────────────────────────────────────────────────────
   const { data: reviews } = await supabase
@@ -963,6 +1041,57 @@
     .subscribe();
 
   _clLoadConvs();
+
+  // ── Profile: colour picker ─────────────────────────────────────────────────
+  (window as any).clSelectColour = function(btn: HTMLElement) {
+    document.querySelectorAll('.cl-colour-swatch').forEach(s => s.classList.remove('selected'));
+    btn.classList.add('selected');
+    const preview = document.getElementById('cl-avatar-preview') as HTMLElement;
+    if (preview) {
+      preview.style.background = btn.dataset.bg ?? '#eaf7ec';
+      preview.style.color      = btn.dataset.color ?? '#2a9438';
+    }
+  };
+
+  // ── Profile: save ──────────────────────────────────────────────────────────
+  (window as any).clSaveProfile = async function() {
+    const saveBtn  = document.getElementById('cl-save-profile-btn') as HTMLButtonElement;
+    const statusEl = document.getElementById('cl-save-status') as HTMLElement;
+    const fn = (document.getElementById('cl-first-name') as HTMLInputElement).value.trim();
+    const ln = (document.getElementById('cl-last-name')  as HTMLInputElement).value.trim();
+    const newName = [fn, ln].filter(Boolean).join(' ');
+    if (!newName) return;
+
+    const sel = document.querySelector('.cl-colour-swatch.selected') as HTMLElement | null;
+    const bg    = sel?.dataset.bg    ?? '#eaf7ec';
+    const color = sel?.dataset.color ?? '#2a9438';
+    const newInitials = newName.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
+
+    saveBtn.disabled    = true;
+    saveBtn.textContent = 'Saving…';
+
+    const { error } = await supabase.from('clients')
+      .update({ name: newName, avatar_bg: bg, avatar_color: color })
+      .eq('user_id', session.user.id);
+
+    saveBtn.disabled    = false;
+    saveBtn.textContent = 'Save Changes';
+
+    if (!error) {
+      statusEl.style.display = 'inline';
+      setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+      // Update welcome banner live
+      const wnEl = document.getElementById('welcome-name') as HTMLElement;
+      if (wnEl) wnEl.textContent = `Welcome back, ${fn}.`;
+      const waEl = document.getElementById('welcome-avatar') as HTMLElement;
+      if (waEl) { waEl.textContent = newInitials; waEl.style.background = bg; waEl.style.color = color; }
+      // Update sidebar
+      const sbAvEl   = document.getElementById('acc-sb-avatar') as HTMLElement;
+      const sbNameEl = document.getElementById('acc-sb-name')   as HTMLElement;
+      if (sbAvEl)   { sbAvEl.textContent = newInitials; sbAvEl.style.background = bg; sbAvEl.style.color = color; }
+      if (sbNameEl) sbNameEl.textContent = newName;
+    }
+  };
 
   // ── Sign out ───────────────────────────────────────────────────────────────
   document.getElementById('signout-btn')!.addEventListener('click', async () => {
