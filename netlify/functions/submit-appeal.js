@@ -18,16 +18,35 @@ export const handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing fields' }) };
   }
 
-  // Authenticated client so auth.uid() works in the SECURITY DEFINER RPC
   const supabase = createClient(
     process.env.PUBLIC_SUPABASE_URL,
-    process.env.PUBLIC_SUPABASE_ANON_KEY,
-    { global: { headers: { Authorization: `Bearer ${access_token}` } } }
+    process.env.PUBLIC_SUPABASE_ANON_KEY
   );
 
+  // Verify the JWT and get the user
+  const { data: { user }, error: userError } = await supabase.auth.getUser(access_token);
+  if (userError || !user) {
+    console.log('[submit-appeal] auth error:', userError?.message);
+    return { statusCode: 401, body: JSON.stringify({ error: 'unauthorized' }) };
+  }
+
+  // Look up their trainer profile
+  const { data: trainer, error: trainerError } = await supabase
+    .from('trainers')
+    .select('id, name')
+    .eq('user_id', user.id)
+    .maybeSingle();
+
+  if (trainerError || !trainer) {
+    console.log('[submit-appeal] trainer lookup error:', trainerError?.message);
+    return { statusCode: 403, body: JSON.stringify({ error: 'unauthorized' }) };
+  }
+
+  // Call RPC — passes trainer_id so no auth.uid() needed in SQL
   const { data, error } = await supabase.rpc('submit_review_appeal', {
-    p_review_id: review_id,
-    p_reason:    reason ?? '',
+    p_review_id:  review_id,
+    p_trainer_id: trainer.id,
+    p_reason:     reason ?? '',
   });
 
   if (error) {
@@ -36,9 +55,7 @@ export const handler = async (event) => {
   }
 
   if (data?.error) {
-    const status = data.error === 'unauthorized' ? 403
-                 : data.error === 'already_appealed' ? 409
-                 : 400;
+    const status = data.error === 'already_appealed' ? 409 : 400;
     return { statusCode: status, body: JSON.stringify({ error: data.error }) };
   }
 
@@ -58,7 +75,7 @@ export const handler = async (event) => {
   await resend.emails.send({
     from: 'Personal TRating <noreply@personaltrating.com>',
     to:   'modernisetraders@hotmail.com',
-    subject: `Review Appeal — ${data.trainer_name} disputes ${data.reviewer_name}'s review`,
+    subject: `Review Appeal — ${trainer.name} disputes ${data.reviewer_name}'s review`,
     html: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
@@ -70,7 +87,7 @@ export const handler = async (event) => {
     </div>
     <div style="padding:32px 40px;">
       <p style="font-size:0.9rem;color:#3a4a3b;line-height:1.7;margin:0 0 1.5rem;">
-        <strong>${data.trainer_name}</strong> has appealed a verified review left by <strong>${data.reviewer_name}</strong>.
+        <strong>${trainer.name}</strong> has appealed a verified review left by <strong>${data.reviewer_name}</strong>.
       </p>
 
       <div style="background:#f4f6f4;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:0.5rem;">
