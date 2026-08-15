@@ -3031,15 +3031,8 @@
   <ul>
     <li>
       <button onclick="mobNavTo('overview')" id="bn-overview" class="active">
-        <span class="nav-icon">📊</span>
-        <span class="nav-label">Overview</span>
-      </button>
-    </li>
-    <li>
-      <button onclick="mobNavTo('reviews')" id="bn-reviews">
-        <span class="nav-icon">⭐</span>
-        <span class="nav-badge" id="bn-reviews-badge">0</span>
-        <span class="nav-label">Reviews</span>
+        <span class="nav-icon">🏠</span>
+        <span class="nav-label">Home</span>
       </button>
     </li>
     <li>
@@ -3050,6 +3043,13 @@
       </button>
     </li>
     <li>
+      <button onclick="mobNavTo('reviews')" id="bn-reviews">
+        <span class="nav-icon">⭐</span>
+        <span class="nav-badge" id="bn-reviews-badge">0</span>
+        <span class="nav-label">Reviews</span>
+      </button>
+    </li>
+    <li>
       <button onclick="mobNavTo('notifications')" id="bn-notifications">
         <span class="nav-icon">🔔</span>
         <span class="nav-badge" id="bn-notif-badge">0</span>
@@ -3057,9 +3057,9 @@
       </button>
     </li>
     <li>
-      <button onclick="toggleMobMenu()" id="bn-more">
-        <span class="nav-icon">☰</span>
-        <span class="nav-label">More</span>
+      <button onclick="mobNavTo('profile')" id="bn-profile">
+        <span class="nav-icon">👤</span>
+        <span class="nav-label">Profile</span>
       </button>
     </li>
   </ul>
@@ -3067,7 +3067,7 @@
 
 <script is:inline>
   // Pages that have a dedicated bottom nav button
-  var MOB_NAV_PAGES = ['overview', 'reviews', 'messages', 'notifications'];
+  var MOB_NAV_PAGES = ['overview', 'messages', 'reviews', 'notifications', 'profile'];
 
   function syncMobNav(pageId) {
     document.querySelectorAll('.mob-bottom-nav button').forEach(function(b) {
@@ -3075,7 +3075,7 @@
     });
     var target = MOB_NAV_PAGES.indexOf(pageId) > -1
       ? document.getElementById('bn-' + pageId)
-      : document.getElementById('bn-more');
+      : null;
     if (target) target.classList.add('active');
   }
 
