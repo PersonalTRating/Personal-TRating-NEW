@@ -78,6 +78,34 @@
   .acc-bottom-nav button.active { color:var(--green); }
   .acc-bottom-nav .bn-icon { font-size:1.35rem; line-height:1; }
   .acc-bottom-nav .bn-label { font-size:0.6rem; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; }
+  /* ── Notification bell ── */
+  .notif-bell-btn {
+    position:relative; background:none; border:none; cursor:pointer;
+    padding:0.35rem 0.45rem; border-radius:8px; transition:background 0.15s;
+    font-size:1.2rem; line-height:1; display:flex; align-items:center;
+  }
+  .notif-bell-btn:hover { background:var(--off); }
+  .notif-bell-badge {
+    position:absolute; top:-2px; right:-2px;
+    background:#e53935; color:white; font-size:0.55rem; font-weight:800;
+    min-width:16px; height:16px; border-radius:8px; padding:0 3px;
+    display:none; align-items:center; justify-content:center;
+    border:1.5px solid white; font-family:'Manrope',sans-serif;
+  }
+  /* ── Notification item cards ── */
+  .notif-item-card {
+    display:flex; align-items:flex-start; gap:0.85rem;
+    background:white; border:1px solid var(--border); border-radius:12px;
+    padding:1rem 1.1rem; text-decoration:none; color:var(--text);
+    margin-bottom:0.75rem; transition:border-color 0.2s;
+  }
+  .notif-item-card.unread { border-left:3px solid var(--green); background:var(--green-light); }
+  .notif-item-card:hover { border-color:var(--green); }
+  .notif-icon { font-size:1.4rem; flex-shrink:0; margin-top:0.05rem; }
+  .notif-title { font-weight:700; font-size:0.875rem; margin-bottom:0.25rem; }
+  .notif-body-text { font-size:0.8rem; color:var(--muted); line-height:1.55; }
+  .notif-time { font-size:0.72rem; color:var(--muted); margin-top:0.35rem; }
+
   @media (max-width:768px) {
     .acc-tabs { display:none; }
     .acc-bottom-nav { display:block; }
@@ -306,6 +334,9 @@
     </a>
     <div class="topbar-right">
       <a href="/find-a-trainer" class="topbar-link">Find a PT</a>
+      <button class="notif-bell-btn" id="notif-bell-btn" title="Notifications" onclick="accTab('notifications', this)">
+        🔔<span class="notif-bell-badge" id="notif-bell-badge"></span>
+      </button>
       <button class="signout-btn" id="signout-btn">Sign Out</button>
     </div>
   </div>
@@ -327,6 +358,7 @@
     <button class="acc-tab active" data-tab="home" onclick="accTab('home', this)">🏠 Home</button>
     <button class="acc-tab" data-tab="messages" onclick="accTab('messages', this)">💬 Messages</button>
     <button class="acc-tab" data-tab="reviews" onclick="accTab('reviews', this)">⭐ Reviews</button>
+    <button class="acc-tab" data-tab="notifications" onclick="accTab('notifications', this)">🔔 Alerts <span id="notif-tab-badge" style="display:none;background:#e53935;color:white;font-size:0.58rem;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px;"></span></button>
     <button class="acc-tab" data-tab="profile" onclick="accTab('profile', this)">👤 Profile</button>
   </div>
 
@@ -403,6 +435,15 @@
     </div>
   </div>
 
+  <!-- Notifications section -->
+  <div class="acc-section" id="acc-notifications">
+    <div class="card-label" style="margin-bottom:0.25rem;">Updates</div>
+    <div class="card-title" style="margin-bottom:1.25rem;">Your Notifications</div>
+    <div id="notif-list">
+      <div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:0.85rem;">Loading…</div>
+    </div>
+  </div>
+
   <!-- Profile section -->
   <div class="acc-section" id="acc-profile">
     <div class="card">
@@ -431,6 +472,7 @@
     <li><button onclick="accTab('home', this)" id="abn-home" class="active"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></button></li>
     <li><button onclick="accTab('messages', this)" id="abn-messages"><span class="bn-icon">💬</span><span class="bn-label">Messages</span></button></li>
     <li><button onclick="accTab('reviews', this)" id="abn-reviews"><span class="bn-icon">⭐</span><span class="bn-label">Reviews</span></button></li>
+    <li><button onclick="accTab('notifications', this)" id="abn-notifications" style="position:relative;"><span class="bn-icon">🔔</span><span class="bn-label">Alerts</span><span id="abn-notif-dot" style="display:none;position:absolute;top:4px;right:18px;width:8px;height:8px;background:#e53935;border-radius:50%;border:1.5px solid white;"></span></button></li>
     <li><button onclick="accTab('profile', this)" id="abn-profile"><span class="bn-icon">👤</span><span class="bn-label">Profile</span></button></li>
   </ul>
 </nav>
@@ -525,6 +567,65 @@
         </div>
       </a>`;
     }).join('');
+  }
+
+  // ── Notifications ──────────────────────────────────────────────────────────
+  function timeAgoNotif(iso: string): string {
+    const d = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(d / 60000);
+    if (m < 2)   return 'just now';
+    if (m < 60)  return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24)  return `${h}h ago`;
+    return `${Math.floor(h / 24)}d ago`;
+  }
+
+  const { data: userNotifs } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('user_id', session.user.id)
+    .order('created_at', { ascending: false })
+    .limit(30);
+
+  const unreadCount = (userNotifs ?? []).filter((n: any) => !n.is_read).length;
+
+  function updateNotifBadge(count: number) {
+    const bellBadge = document.getElementById('notif-bell-badge') as HTMLElement;
+    const tabBadge  = document.getElementById('notif-tab-badge') as HTMLElement;
+    const dot       = document.getElementById('abn-notif-dot') as HTMLElement;
+    if (count > 0) {
+      if (bellBadge) { bellBadge.textContent = String(count); bellBadge.style.display = 'flex'; }
+      if (tabBadge)  { tabBadge.textContent  = String(count); tabBadge.style.display  = 'inline'; }
+      if (dot)         dot.style.display = 'block';
+    } else {
+      if (bellBadge) bellBadge.style.display = 'none';
+      if (tabBadge)  tabBadge.style.display  = 'none';
+      if (dot)       dot.style.display        = 'none';
+    }
+  }
+
+  updateNotifBadge(unreadCount);
+
+  // Render notifications list
+  const notifListEl = document.getElementById('notif-list') as HTMLElement;
+  if (notifListEl) {
+    if (!userNotifs || userNotifs.length === 0) {
+      notifListEl.innerHTML = `<div class="empty-state">
+        <span class="empty-state-icon">🔔</span>
+        <div class="empty-state-title">No notifications yet</div>
+        <div class="empty-state-text">You'll be notified here when your reviews are approved and go live.</div>
+      </div>`;
+    } else {
+      notifListEl.innerHTML = (userNotifs as any[]).map(n => `
+        <a href="${n.link || '#'}" class="notif-item-card${n.is_read ? '' : ' unread'}">
+          <div class="notif-icon">🎉</div>
+          <div style="flex:1;">
+            <div class="notif-title">${n.title}</div>
+            <div class="notif-body-text">${n.body ?? ''}</div>
+            <div class="notif-time">${timeAgoNotif(n.created_at)}</div>
+          </div>
+        </a>`).join('');
+    }
   }
 
   // ── Messages ───────────────────────────────────────────────────────────────
@@ -717,19 +818,26 @@
 
   // ── Tab navigation ─────────────────────────────────────────────────────────
   (window as any).accTab = function(name: string, _btn: HTMLElement) {
-    // hide all sections
     document.querySelectorAll('.acc-section').forEach(el => el.classList.remove('active'));
-    // deactivate desktop tabs
     document.querySelectorAll('.acc-tab').forEach(el => el.classList.remove('active'));
-    // deactivate bottom nav buttons
     document.querySelectorAll('.acc-bottom-nav button').forEach(el => el.classList.remove('active'));
 
-    // show target section
     document.getElementById('acc-' + name)?.classList.add('active');
-    // activate matching desktop tab
     document.querySelector(`.acc-tab[data-tab="${name}"]`)?.classList.add('active');
-    // activate matching bottom nav button
     const bnBtn = document.getElementById('abn-' + name);
     if (bnBtn) bnBtn.classList.add('active');
+
+    // Mark notifications as read when panel opened
+    if (name === 'notifications') {
+      updateNotifBadge(0);
+      // Mark unread items visually
+      document.querySelectorAll('.notif-item-card.unread').forEach(el => el.classList.remove('unread'));
+      // Persist to DB (fire and forget)
+      supabase.from('notifications')
+        .update({ is_read: true })
+        .eq('user_id', session.user.id)
+        .eq('is_read', false)
+        .then(() => {});
+    }
   };
 </script>
