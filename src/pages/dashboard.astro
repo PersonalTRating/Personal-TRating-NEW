@@ -2945,7 +2945,7 @@
       }
 
       // RPC succeeded — now fire-and-forget the email via Netlify function
-      const trainerName = (window as any).__ptTrainerName ?? 'Trainer';
+      const trainerName = window.__ptTrainerName || 'Trainer';
       fetch('/.netlify/functions/submit-appeal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -2962,8 +2962,8 @@
       closeAppealModal();
 
       // Update the button in the DOM immediately
-      document.querySelectorAll('.appeal-btn').forEach((b: any) => {
-        if (b.getAttribute('onclick')?.includes(_appealReviewId)) {
+      document.querySelectorAll('.appeal-btn').forEach(function(b) {
+        if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(_appealReviewId)) {
           b.className = 'appeal-btn pending';
           b.disabled = true;
           b.textContent = 'Appeal Pending';
