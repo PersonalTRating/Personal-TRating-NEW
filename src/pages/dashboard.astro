@@ -1353,8 +1353,8 @@
     <div class="appeal-modal-review" id="appeal-modal-quote"></div>
     <textarea id="appeal-reason" placeholder="Describe your reason for the appeal (optional)…"></textarea>
     <div class="appeal-modal-actions">
-      <button class="appeal-cancel-btn" onclick="closeAppealModal()">Cancel</button>
-      <button class="appeal-submit-btn" id="appeal-submit-btn" onclick="submitAppeal()">Submit Appeal</button>
+      <button class="appeal-cancel-btn" id="appeal-cancel-btn">Cancel</button>
+      <button class="appeal-submit-btn" id="appeal-submit-btn">Submit Appeal</button>
     </div>
   </div>
 </div>
@@ -1678,7 +1678,9 @@
           const appealStatus = r.appeal_status;
           let appealHtml = '';
           if (!appealStatus) {
-            appealHtml = `<button class="appeal-btn" onclick="openAppealModal('${r.id}', \`${(r.review_text||'').replace(/`/g,'\\`').replace(/'/g,"\\'")}\`, '${r.reviewer_name}')">Appeal</button>`;
+            const safeText = (r.review_text || '').replace(/"/g, '&quot;');
+            const safeName = (r.reviewer_name || '').replace(/"/g, '&quot;');
+            appealHtml = `<button class="appeal-btn" data-appeal-id="${r.id}" data-appeal-text="${safeText}" data-appeal-name="${safeName}">Appeal</button>`;
           } else if (appealStatus === 'pending') {
             appealHtml = `<button class="appeal-btn pending" disabled>Appeal Pending</button>`;
           } else if (appealStatus === 'upheld') {
@@ -1698,6 +1700,111 @@
         }).join('');
       }
     }
+
+    // ── Appeal modal logic (lives here so supabase is in scope) ──────────
+    let _appealReviewId: string | null = null;
+
+    const appealModalBg   = document.getElementById('appeal-modal-bg')!;
+    const appealQuoteEl   = document.getElementById('appeal-modal-quote')!;
+    const appealReasonEl  = document.getElementById('appeal-reason') as HTMLTextAreaElement;
+    const appealSubmitBtn = document.getElementById('appeal-submit-btn') as HTMLButtonElement;
+
+    function openAppealModal(reviewId: string, reviewText: string, reviewerName: string) {
+      _appealReviewId = reviewId;
+      appealQuoteEl.textContent = `"${reviewText}" — ${reviewerName}`;
+      appealReasonEl.value = '';
+      appealSubmitBtn.disabled = false;
+      appealSubmitBtn.textContent = 'Submit Appeal';
+      appealModalBg.classList.add('open');
+    }
+
+    function closeAppealModal() {
+      appealModalBg.classList.remove('open');
+      _appealReviewId = null;
+    }
+
+    document.getElementById('appeal-cancel-btn')?.addEventListener('click', closeAppealModal);
+
+    appealModalBg.addEventListener('click', (e) => {
+      if (e.target === appealModalBg) closeAppealModal();
+    });
+
+    // Event delegation — catches clicks on any appeal button in the list
+    allList?.addEventListener('click', (e: Event) => {
+      const btn = (e.target as HTMLElement).closest('[data-appeal-id]') as HTMLElement | null;
+      if (!btn || (btn as HTMLButtonElement).disabled) return;
+      openAppealModal(
+        btn.dataset.appealId!,
+        btn.dataset.appealText!,
+        btn.dataset.appealName!,
+      );
+    });
+
+    appealSubmitBtn?.addEventListener('click', async () => {
+      if (!_appealReviewId) return;
+      const reason = appealReasonEl.value.trim();
+      appealSubmitBtn.disabled = true;
+      appealSubmitBtn.textContent = 'Submitting…';
+
+      try {
+        const { data, error } = await supabase.rpc('submit_review_appeal', {
+          p_review_id: _appealReviewId,
+          p_reason:    reason,
+        });
+
+        if (error) {
+          console.error('[appeal] rpc error:', error.message);
+          alert('Something went wrong. Please try again.');
+          appealSubmitBtn.disabled = false;
+          appealSubmitBtn.textContent = 'Submit Appeal';
+          return;
+        }
+
+        if (data?.error === 'already_appealed') {
+          alert('You have already submitted an appeal for this review.');
+          appealSubmitBtn.disabled = false;
+          appealSubmitBtn.textContent = 'Submit Appeal';
+          return;
+        }
+
+        if (data?.error) {
+          alert('Something went wrong. Please try again.');
+          appealSubmitBtn.disabled = false;
+          appealSubmitBtn.textContent = 'Submit Appeal';
+          return;
+        }
+
+        // Fire-and-forget email
+        fetch('/.netlify/functions/submit-appeal', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            token:         data.token,
+            reviewer_name: data.reviewer_name,
+            review_text:   data.review_text,
+            rating:        data.rating,
+            trainer_name:  trainer.name,
+            reason,
+          }),
+        }).catch(() => {});
+
+        closeAppealModal();
+
+        // Update the clicked button immediately
+        const clickedBtn = allList?.querySelector(`[data-appeal-id="${_appealReviewId}"]`) as HTMLButtonElement | null;
+        if (clickedBtn) {
+          clickedBtn.className = 'appeal-btn pending';
+          clickedBtn.disabled = true;
+          clickedBtn.textContent = 'Appeal Pending';
+          clickedBtn.removeAttribute('data-appeal-id');
+        }
+      } catch (err) {
+        console.error('[appeal] unexpected error:', err);
+        alert('Something went wrong. Please try again.');
+        appealSubmitBtn.disabled = false;
+        appealSubmitBtn.textContent = 'Submit Appeal';
+      }
+    });
 
     // ── Time-ago helper ───────────────────────────────────────────────────
     const timeAgo = (iso: string): string => {
@@ -2883,100 +2990,6 @@
     });
   });
 
-  // ── Appeal modal ─────────────────────────────────────────────────────────
-  let _appealReviewId = null;
-
-  function openAppealModal(reviewId, reviewText, reviewerName) {
-    _appealReviewId = reviewId;
-    document.getElementById('appeal-modal-quote').textContent = `"${reviewText}" — ${reviewerName}`;
-    document.getElementById('appeal-reason').value = '';
-    document.getElementById('appeal-submit-btn').disabled = false;
-    document.getElementById('appeal-submit-btn').textContent = 'Submit Appeal';
-    document.getElementById('appeal-modal-bg').classList.add('open');
-  }
-
-  function closeAppealModal() {
-    document.getElementById('appeal-modal-bg').classList.remove('open');
-    _appealReviewId = null;
-  }
-
-  document.getElementById('appeal-modal-bg').addEventListener('click', function(e) {
-    if (e.target === this) closeAppealModal();
-  });
-
-  async function submitAppeal() {
-    if (!_appealReviewId) return;
-    const reason = document.getElementById('appeal-reason').value.trim();
-    const btn    = document.getElementById('appeal-submit-btn');
-    btn.disabled = true;
-    btn.textContent = 'Submitting…';
-
-    try {
-      // Use the supabase client exposed on window by the ES module script
-      const _supabase = window.__ptSupabase;
-      if (!_supabase) throw new Error('Supabase client not ready');
-
-      // Call RPC directly — auth.uid() works from the frontend Supabase client
-      const { data, error } = await _supabase.rpc('submit_review_appeal', {
-        p_review_id: _appealReviewId,
-        p_reason:    reason,
-      });
-
-      if (error) {
-        console.error('[appeal] rpc error:', error.message);
-        alert('Something went wrong. Please try again.');
-        btn.disabled = false;
-        btn.textContent = 'Submit Appeal';
-        return;
-      }
-
-      if (data?.error === 'already_appealed') {
-        alert('You have already submitted an appeal for this review.');
-        btn.disabled = false;
-        btn.textContent = 'Submit Appeal';
-        return;
-      }
-
-      if (data?.error) {
-        alert('Something went wrong. Please try again.');
-        btn.disabled = false;
-        btn.textContent = 'Submit Appeal';
-        return;
-      }
-
-      // RPC succeeded — now fire-and-forget the email via Netlify function
-      const trainerName = window.__ptTrainerName || 'Trainer';
-      fetch('/.netlify/functions/submit-appeal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token:         data.token,
-          reviewer_name: data.reviewer_name,
-          review_text:   data.review_text,
-          rating:        data.rating,
-          trainer_name:  trainerName,
-          reason,
-        }),
-      }).catch(() => {}); // email failure shouldn't block the UI
-
-      closeAppealModal();
-
-      // Update the button in the DOM immediately
-      document.querySelectorAll('.appeal-btn').forEach(function(b) {
-        if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(_appealReviewId)) {
-          b.className = 'appeal-btn pending';
-          b.disabled = true;
-          b.textContent = 'Appeal Pending';
-          b.removeAttribute('onclick');
-        }
-      });
-    } catch (e) {
-      console.error('[appeal] unexpected error:', e);
-      alert('Something went wrong. Please try again.');
-      btn.disabled = false;
-      btn.textContent = 'Submit Appeal';
-    }
-  }
 </script>
 </body>
 </html>
