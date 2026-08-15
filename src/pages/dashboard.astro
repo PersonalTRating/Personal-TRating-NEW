@@ -2929,7 +2929,7 @@
       + posts.map(function(p) {
         var date = new Date(p.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
         return '<div style="background:white;border:1px solid var(--border);border-radius:14px;overflow:hidden;width:100%;max-width:560px;" id="fp-' + p.id + '">'
-          + (p.image_url ? '<img src="' + p.image_url + '" style="width:100%;height:auto;display:block;" />' : '')
+          + (p.image_url ? '<div style="display:flex;justify-content:center;background:var(--off);"><img src="' + p.image_url + '" style="max-width:100%;max-height:480px;width:auto;height:auto;display:block;" /></div>' : '')
           + '<div style="padding:1rem 1.25rem;display:flex;flex-direction:column;gap:0.5rem;">'
           + (p.content ? '<div style="font-size:0.9rem;line-height:1.7;color:var(--text);">' + p.content + '</div>' : '')
           + '<div style="display:flex;align-items:center;justify-content:space-between;padding-top:0.25rem;">'
