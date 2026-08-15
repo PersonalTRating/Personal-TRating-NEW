@@ -179,19 +179,25 @@
   .chart-label { font-size:0.65rem; color:var(--muted); font-weight:600; }
 
   /* ── REVIEWS LIST ── */
-  .review-item { padding:1rem 0; border-bottom:1px solid var(--border); display:flex; gap:1rem; align-items:flex-start; }
-  .review-item:last-child { border-bottom:none; padding-bottom:0; }
-  .rev-avatar { width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.78rem; flex-shrink:0; }
-  .rev-name   { font-weight:700; font-size:0.85rem; }
-  .rev-stars  { color:var(--gold); font-size:0.75rem; letter-spacing:1px; }
-  .rev-text   { font-size:0.8rem; color:var(--muted); margin-top:0.25rem; line-height:1.5; overflow-wrap:break-word; word-break:break-word; }
-  .rev-date   { font-size:0.7rem; color:var(--muted); margin-top:0.2rem; }
-  .appeal-btn { margin-top:0.5rem; padding:0.3rem 0.75rem; border:1px solid #dc2626; background:transparent; color:#dc2626; border-radius:6px; font-size:0.72rem; font-weight:700; cursor:pointer; font-family:inherit; }
+  .rev-card { display:flex; gap:1rem; align-items:flex-start; padding:1.1rem 1.25rem; border:1px solid var(--border); border-radius:12px; margin-bottom:0.65rem; background:var(--card-bg,white); transition:box-shadow 0.15s; }
+  .rev-card:last-child { margin-bottom:0; }
+  .rev-card:hover { box-shadow:0 2px 12px rgba(0,0,0,0.06); }
+  .rev-avatar { width:42px; height:42px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.82rem; flex-shrink:0; }
+  .rev-main   { flex:1; min-width:0; }
+  .rev-meta   { display:flex; align-items:center; flex-wrap:wrap; gap:0.4rem; margin-bottom:0.3rem; }
+  .rev-name   { font-weight:700; font-size:0.88rem; color:#0d1a0e; }
+  .rev-verified { display:inline-flex; align-items:center; gap:0.2rem; font-size:0.7rem; font-weight:700; color:#1a7c2a; background:#eaf7ec; padding:0.15rem 0.5rem; border-radius:20px; }
+  .rev-date   { font-size:0.72rem; color:var(--muted); }
+  .rev-rating-row { display:flex; align-items:center; gap:0.6rem; margin-bottom:0.35rem; }
+  .rev-bmp    { font-size:0.72rem; font-weight:700; color:#3ab54a; background:#eaf7ec; padding:0.15rem 0.5rem; border-radius:20px; }
+  .rev-text   { font-size:0.82rem; color:#3a4a3b; line-height:1.6; overflow-wrap:break-word; word-break:break-word; font-style:italic; }
+  .rev-action { flex-shrink:0; display:flex; align-items:center; padding-top:0.15rem; }
+  .appeal-btn { padding:0.4rem 0.9rem; border:1.5px solid #dc2626; background:transparent; color:#dc2626; border-radius:8px; font-size:0.75rem; font-weight:700; cursor:pointer; font-family:inherit; white-space:nowrap; transition:background 0.15s,color 0.15s; }
   .appeal-btn:hover { background:#dc2626; color:white; }
-  .appeal-btn.pending { border-color:var(--muted); color:var(--muted); cursor:default; }
-  .appeal-btn.pending:hover { background:transparent; color:var(--muted); }
-  .appeal-btn.upheld { border-color:#b45309; color:#b45309; cursor:default; }
-  .appeal-btn.upheld:hover { background:transparent; color:#b45309; }
+  .appeal-btn.pending { border-color:#9ca3af; color:#9ca3af; cursor:default; background:transparent; }
+  .appeal-btn.pending:hover { background:transparent; color:#9ca3af; }
+  .appeal-btn.upheld  { border-color:#b45309; color:#b45309; cursor:default; background:transparent; }
+  .appeal-btn.upheld:hover  { background:transparent; color:#b45309; }
 
   /* ── APPEAL MODAL ── */
   .appeal-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
@@ -1697,15 +1703,21 @@
             appealHtml = `<button class="appeal-btn upheld" disabled>Appeal Rejected</button>`;
           }
           return `
-          <div class="review-item">
-            <div style="width:38px;height:38px;border-radius:50%;background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.78rem;flex-shrink:0;">${r.reviewer_initials||'?'}</div>
-            <div style="flex:1">
-              <div class="rev-name">${r.reviewer_name} <span style="font-weight:400;color:var(--muted);font-size:0.78rem;">· Verified Client · ${new Date(r.created_at).toLocaleDateString('en-GB')}</span></div>
-              <div style="display:flex;gap:2px;margin-top:0.2rem;">${_dumbbells(r.rating)}</div>
-              <div style="font-size:0.75rem;color:var(--green-dark);font-weight:700;margin-top:0.25rem;">BMP assigned: ${Math.round(r.rating * 20)}%</div>
+          <div class="rev-card">
+            <div class="rev-avatar" style="background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'}">${r.reviewer_initials||'?'}</div>
+            <div class="rev-main">
+              <div class="rev-meta">
+                <span class="rev-name">${r.reviewer_name}</span>
+                <span class="rev-verified">✓ Verified Client</span>
+                <span class="rev-date">${new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</span>
+              </div>
+              <div class="rev-rating-row">
+                <div style="display:flex;gap:2px;">${_dumbbells(r.rating)}</div>
+                <span class="rev-bmp">BMP: ${Math.round(r.rating * 20)}%</span>
+              </div>
               <div class="rev-text">"${r.review_text}"</div>
-              ${appealHtml}
             </div>
+            <div class="rev-action">${appealHtml}</div>
           </div>`;
         }).join('');
       }
