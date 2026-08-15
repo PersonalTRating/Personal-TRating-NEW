@@ -1620,6 +1620,16 @@
       .order('created_at', { ascending: false });
     const reviews = ptReviews ?? [];
 
+    // ── Fetch appeal outcome notifications ───────────────────────────────
+    const { data: ptAppealNotifs } = await supabase
+      .from('notifications')
+      .select('id, type, title, body, created_at, is_read')
+      .eq('user_id', session.user.id)
+      .in('type', ['appeal_approved', 'appeal_declined'])
+      .order('created_at', { ascending: false })
+      .limit(20);
+    const appealNotifs: any[] = ptAppealNotifs ?? [];
+
     // ── Recent reviews (overview) ────────────────────────────────────────
     const recentList = document.getElementById('recent-reviews-list');
     if (recentList) {
@@ -1907,7 +1917,9 @@
     // ── Notifications badge + read state ─────────────────────────────────
     const notifKey      = `pt_last_notif_seen_${trainer.id}`;
     const lastNotifSeen = parseInt(localStorage.getItem(notifKey) || '0', 10);
-    const unreadCount   = Math.max(0, reviews.length - lastNotifSeen);
+    const reviewUnread  = Math.max(0, reviews.length - lastNotifSeen);
+    const appealUnread  = appealNotifs.filter((n: any) => !n.is_read).length;
+    const unreadCount   = reviewUnread + appealUnread;
 
     const notifBadgeEl = document.getElementById('notif-badge') as HTMLElement;
     if (notifBadgeEl) {
@@ -1926,9 +1938,9 @@
     // ── Notifications list ────────────────────────────────────────────────
     const notifCard = document.getElementById('notif-card') as HTMLElement;
     if (notifCard) {
-      type NotifItem = { text: string; time: string; isRead: boolean };
+      type NotifItem = { text: string; time: string; isRead: boolean; sortTs: number };
       const notifs: NotifItem[] = [];
-      // Reviews are newest-first; the first `unreadCount` are unseen
+      // Reviews are newest-first; the first `reviewUnread` are unseen
       reviews.slice(0, 8).forEach((r: any, i: number) => {
         const quote = r.review_text
           ? `<span style="display:block;margin-top:0.4rem;font-size:0.78rem;color:var(--muted);font-style:italic;line-height:1.55;">"${r.review_text.slice(0, 140)}${r.review_text.length > 140 ? '…' : ''}"</span>`
@@ -1936,7 +1948,8 @@
         notifs.push({
           text:   `<strong>New review received</strong> — ${r.reviewer_name} gave you ${r.rating} dumbbell${r.rating !== 1 ? 's' : ''}.${quote}`,
           time:   timeAgo(r.created_at),
-          isRead: i >= unreadCount,
+          isRead: i >= reviewUnread,
+          sortTs: new Date(r.created_at).getTime(),
         });
       });
       if (hasBmp && reviews.length > 0) {
@@ -1944,8 +1957,24 @@
           text:   `<strong>BMP Score updated</strong> — Your score is now <strong>${trainer.bmp_score}</strong>, placing you #${rank} in the UK.`,
           time:   timeAgo(reviews[0].created_at),
           isRead: true,
+          sortTs: new Date(reviews[0].created_at).getTime() - 1,
         });
       }
+      // Appeal outcome notifications
+      appealNotifs.forEach((n: any) => {
+        const isApproved = n.type === 'appeal_approved';
+        const icon       = isApproved ? '✅' : '⚖️';
+        const noteHtml   = n.body
+          ? `<span style="display:block;margin-top:0.4rem;font-size:0.78rem;color:var(--muted);line-height:1.55;">Admin note: ${n.body}</span>`
+          : '';
+        notifs.push({
+          text:   `<strong>${icon} ${n.title}</strong>${noteHtml}`,
+          time:   timeAgo(n.created_at),
+          isRead: n.is_read ?? false,
+          sortTs: new Date(n.created_at).getTime(),
+        });
+      });
+      notifs.sort((a, b) => b.sortTs - a.sortTs);
       if (notifs.length === 0) {
         notifCard.innerHTML = `<div style="padding:3rem 1.5rem;text-align:center;"><div style="font-size:2rem;margin-bottom:0.5rem;">🔔</div><div style="font-weight:700;font-size:0.9rem;color:#0d1a0e;margin-bottom:0.25rem;">No notifications yet</div><div style="font-size:0.8rem;color:#7a8f7c;">Notifications appear when clients leave you reviews.</div></div>`;
       } else {
@@ -2097,8 +2126,9 @@
     (window as any).__ptTrainerName = trainer.name;
     (window as any).__ptUserId      = session.user.id;
     (window as any).__ptInitials    = trainer.avatar_initials ?? '';
-    (window as any).__ptSupabase    = supabase;
-    (window as any).__ptTrainer     = trainer;
+    (window as any).__ptSupabase        = supabase;
+    (window as any).__ptTrainer         = trainer;
+    (window as any).__ptUnreadAppealIds = appealNotifs.filter((n: any) => !n.is_read).map((n: any) => n.id);
 
     // Load feed on initial overview display
     loadOverviewFeed();
@@ -2549,6 +2579,14 @@
       if (dot)   dot.style.display   = 'none';
       // Mark all dot items in the card as read
       document.querySelectorAll('#notif-card .notif-bullet').forEach(d => d.classList.add('read'));
+      // Mark appeal notifications as read in the database
+      var supa = window['__ptSupabase'];
+      var unreadAppealIds = window['__ptUnreadAppealIds'] || [];
+      if (supa && unreadAppealIds.length > 0) {
+        supa.from('notifications').update({ is_read: true }).in('id', unreadAppealIds).then(function() {
+          window['__ptUnreadAppealIds'] = [];
+        });
+      }
     }
   }
 
