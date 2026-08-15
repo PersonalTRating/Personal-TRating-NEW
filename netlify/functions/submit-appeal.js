@@ -18,32 +18,37 @@ export const handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: 'Missing fields' }) };
   }
 
-  const supabase = createClient(
-    process.env.PUBLIC_SUPABASE_URL,
-    process.env.PUBLIC_SUPABASE_ANON_KEY
-  );
+  const url    = process.env.PUBLIC_SUPABASE_URL;
+  const anon   = process.env.PUBLIC_SUPABASE_ANON_KEY;
 
-  // Verify the JWT and get the user
-  const { data: { user }, error: userError } = await supabase.auth.getUser(access_token);
+  // Verify JWT
+  const authClient = createClient(url, anon);
+  const { data: { user }, error: userError } = await authClient.auth.getUser(access_token);
   if (userError || !user) {
     console.log('[submit-appeal] auth error:', userError?.message);
     return { statusCode: 401, body: JSON.stringify({ error: 'unauthorized' }) };
   }
 
-  // Look up their trainer profile
-  const { data: trainer, error: trainerError } = await supabase
+  // All DB queries use the user's JWT so RLS passes
+  const db = createClient(url, anon, {
+    global: { headers: { Authorization: `Bearer ${access_token}` } },
+    auth:   { persistSession: false },
+  });
+
+  // Look up trainer profile
+  const { data: trainer, error: trainerError } = await db
     .from('trainers')
     .select('id, name')
     .eq('user_id', user.id)
     .maybeSingle();
 
   if (trainerError || !trainer) {
-    console.log('[submit-appeal] trainer lookup error:', trainerError?.message);
+    console.log('[submit-appeal] trainer lookup failed:', trainerError?.message, '| user_id:', user.id);
     return { statusCode: 403, body: JSON.stringify({ error: 'unauthorized' }) };
   }
 
-  // Call RPC — passes trainer_id so no auth.uid() needed in SQL
-  const { data, error } = await supabase.rpc('submit_review_appeal', {
+  // Submit appeal via RPC (passes trainer_id explicitly — no auth.uid() in SQL)
+  const { data, error } = await db.rpc('submit_review_appeal', {
     p_review_id:  review_id,
     p_trainer_id: trainer.id,
     p_reason:     reason ?? '',
@@ -59,8 +64,8 @@ export const handler = async (event) => {
     return { statusCode: status, body: JSON.stringify({ error: data.error }) };
   }
 
-  // Send appeal email to admin
-  const resend = new Resend(process.env.RESEND_API_KEY);
+  // Send appeal email
+  const resend    = new Resend(process.env.RESEND_API_KEY);
   const removeUrl = `${siteUrl}/.netlify/functions/action-appeal?token=${data.token}&action=remove`;
   const upholdUrl = `${siteUrl}/.netlify/functions/action-appeal?token=${data.token}&action=uphold`;
 
@@ -89,16 +94,13 @@ export const handler = async (event) => {
       <p style="font-size:0.9rem;color:#3a4a3b;line-height:1.7;margin:0 0 1.5rem;">
         <strong>${trainer.name}</strong> has appealed a verified review left by <strong>${data.reviewer_name}</strong>.
       </p>
-
       <div style="background:#f4f6f4;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:0.5rem;">
         <div style="font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">The Review</div>
         <div style="font-size:1rem;color:#f59e0b;letter-spacing:2px;margin-bottom:0.5rem;">${stars}</div>
         <div style="font-size:0.9rem;color:#1c1c1e;line-height:1.7;font-style:italic;">"${data.review_text}"</div>
         <div style="font-size:0.75rem;color:#7a8f7c;margin-top:0.5rem;">— ${data.reviewer_name}</div>
       </div>
-
       ${reasonHtml}
-
       <div style="display:flex;gap:12px;margin-top:1.75rem;">
         <a href="${removeUrl}" style="flex:1;display:inline-block;background:#dc2626;color:white;text-decoration:none;padding:14px 0;border-radius:10px;font-weight:700;font-size:0.88rem;text-align:center;">
           Remove Review
