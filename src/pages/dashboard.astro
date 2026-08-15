@@ -1702,23 +1702,23 @@
             appealHtml = `<button class="appeal-btn upheld" disabled>Appeal Rejected</button>`;
           }
           return `
-          <div class="rev-card">
-            <div class="rev-avatar" style="background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'}">${r.reviewer_initials||'?'}</div>
-            <div class="rev-main">
-              <div class="rev-meta">
-                <span class="rev-name">${r.reviewer_name}</span>
+          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem 1.5rem;border:1px solid #e8ede9;border-radius:12px;margin-bottom:0.75rem;background:white;">
+            <div style="width:44px;height:44px;border-radius:50%;background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;">${r.reviewer_initials||'?'}</div>
+            <div style="flex:1;min-width:0;">
+              <div style="display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;margin-bottom:0.3rem;">
+                <span style="font-weight:700;font-size:0.88rem;color:#0d1a0e;">${r.reviewer_name}</span>
                 <span style="color:#c8d4c8;font-size:0.75rem;">·</span>
-                <span class="rev-verified">● Verified Client</span>
+                <span style="font-size:0.78rem;font-weight:600;color:#1a7c2a;">● Verified Client</span>
                 <span style="color:#c8d4c8;font-size:0.75rem;">·</span>
-                <span class="rev-date">${new Date(r.created_at).toLocaleDateString('en-GB')}</span>
+                <span style="font-size:0.78rem;color:#7a8f7c;">${new Date(r.created_at).toLocaleDateString('en-GB')}</span>
               </div>
-              <div class="rev-rating-row">
+              <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
                 <div style="display:flex;gap:3px;align-items:center;">${_dumbbells(r.rating)}</div>
-                <span class="rev-bmp">BMP assigned: ${Math.round(r.rating * 20)}%</span>
+                <span style="font-size:0.78rem;font-weight:700;color:#3ab54a;">BMP assigned: ${Math.round(r.rating * 20)}%</span>
               </div>
-              <div class="rev-text">"${r.review_text}"</div>
+              <div style="font-size:0.83rem;color:#3a4a3b;line-height:1.6;overflow-wrap:break-word;word-break:break-word;">"${r.review_text}"</div>
             </div>
-            <div class="rev-action">${appealHtml}</div>
+            <div style="flex-shrink:0;display:flex;align-items:center;">${appealHtml}</div>
           </div>`;
         }).join('');
       }
