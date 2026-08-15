@@ -2906,14 +2906,18 @@
 
   async function submitAppeal() {
     if (!_appealReviewId) return;
-    const reason = (document.getElementById('appeal-reason') as HTMLTextAreaElement).value.trim();
-    const btn    = document.getElementById('appeal-submit-btn') as HTMLButtonElement;
+    const reason = document.getElementById('appeal-reason').value.trim();
+    const btn    = document.getElementById('appeal-submit-btn');
     btn.disabled = true;
     btn.textContent = 'Submitting…';
 
     try {
+      // Use the supabase client exposed on window by the ES module script
+      const _supabase = window.__ptSupabase;
+      if (!_supabase) throw new Error('Supabase client not ready');
+
       // Call RPC directly — auth.uid() works from the frontend Supabase client
-      const { data, error } = await supabase.rpc('submit_review_appeal', {
+      const { data, error } = await _supabase.rpc('submit_review_appeal', {
         p_review_id: _appealReviewId,
         p_reason:    reason,
       });
