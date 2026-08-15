@@ -476,6 +476,9 @@
   .mob-bottom-nav li { position:relative; }
   @media (max-width:768px) {
     .mob-bottom-nav { display:block; }
+    #mob-sidebar-tab { display:flex !important; }
+    #mob-sidebar-tab.open { left:var(--sidebar-w); }
+    #mob-sidebar-tab.open svg { transform:rotate(180deg); }
   }
   @media (max-width: 900px) {
     #link-builder-grid { grid-template-columns:1fr !important; }
@@ -682,6 +685,11 @@
 
 <!-- Mobile overlay backdrop -->
 <div class="mob-overlay" id="mob-overlay" onclick="closeMobMenu()"></div>
+<button id="mob-sidebar-tab" onclick="toggleMobMenu()" aria-label="Open menu" style="display:none;position:fixed;left:0;top:50%;transform:translateY(-50%);z-index:198;background:#3ab54a;border:none;border-radius:0 10px 10px 0;width:22px;height:64px;cursor:pointer;padding:0;align-items:center;justify-content:center;box-shadow:2px 0 8px rgba(0,0,0,0.15);">
+  <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M2 2l6 6-6 6" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
 
 <!-- ══ MAIN ══ -->
 <main class="main">
@@ -3043,33 +3051,45 @@
 </nav>
 
 <script is:inline>
+  // Pages that have a dedicated bottom nav button
+  var MOB_NAV_PAGES = ['overview', 'profile', 'reviews', 'links'];
+
+  function syncMobNav(pageId) {
+    document.querySelectorAll('.mob-bottom-nav button').forEach(function(b) {
+      b.classList.remove('active');
+    });
+    var target = MOB_NAV_PAGES.indexOf(pageId) > -1
+      ? document.getElementById('bn-' + pageId)
+      : document.getElementById('bn-more');
+    if (target) target.classList.add('active');
+  }
+
   function toggleMobMenu() {
     document.querySelector('.sidebar').classList.toggle('mob-open');
     document.getElementById('mob-overlay').classList.toggle('active');
+    document.getElementById('mob-sidebar-tab').classList.toggle('open');
   }
   function closeMobMenu() {
     document.querySelector('.sidebar').classList.remove('mob-open');
     document.getElementById('mob-overlay').classList.remove('active');
+    document.getElementById('mob-sidebar-tab').classList.remove('open');
   }
 
   function mobNavTo(page) {
     showPage(page);
     closeMobMenu();
-    // Update active state on bottom nav
-    document.querySelectorAll('.mob-bottom-nav button').forEach(function(b) {
-      b.classList.remove('active');
-    });
-    var btn = document.getElementById('bn-' + page);
-    if (btn) btn.classList.add('active');
+    syncMobNav(page);
   }
 
-  // Sync bottom nav active state when sidebar items are tapped
+  // Sync bottom nav when any sidebar item is tapped on mobile
   document.querySelectorAll('.sb-item').forEach(function(item) {
     item.addEventListener('click', function() {
-      if (window.innerWidth <= 768) closeMobMenu();
+      if (window.innerWidth > 768) return;
+      closeMobMenu();
+      var match = (item.getAttribute('onclick') || '').match(/showPage\('([^']+)'\)/);
+      if (match) syncMobNav(match[1]);
     });
   });
-
 </script>
 </body>
 </html>
