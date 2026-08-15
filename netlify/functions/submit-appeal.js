@@ -1,6 +1,22 @@
-import { Resend } from 'resend';
-
 const siteUrl = 'https://personaltrating.com';
+
+async function sendEmail({ to, subject, html }) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method:  'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type':  'application/json',
+    },
+    body: JSON.stringify({
+      from: 'Personal TRating <noreply@personaltrating.com>',
+      to, subject, html,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    console.log('[submit-appeal] resend error:', err);
+  }
+}
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
@@ -28,11 +44,8 @@ export const handler = async (event) => {
        </div>`
     : `<p style="font-size:0.85rem;color:#7a8f7c;font-style:italic;margin:1.25rem 0;">No reason provided.</p>`;
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
-
-  await resend.emails.send({
-    from: 'Personal TRating <noreply@personaltrating.com>',
-    to:   'modernisetraders@hotmail.com',
+  await sendEmail({
+    to:      'modernisetraders@hotmail.com',
     subject: `Review Appeal — ${trainer_name} disputes ${reviewer_name}'s review`,
     html: `<!DOCTYPE html>
 <html lang="en">
@@ -70,6 +83,7 @@ export const handler = async (event) => {
 </body>
 </html>`,
   });
+
 
   return { statusCode: 200, body: JSON.stringify({ ok: true }) };
 };
