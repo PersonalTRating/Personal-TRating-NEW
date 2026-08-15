@@ -380,7 +380,6 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
           <a href={`/review/${trainer.id}`} class="btn-review">
             🏋 Leave a Verified Review
           </a>
-          <span id="hero-booking-btn"></span>
           <button class="btn-chat" id="chat-trigger-btn" onclick="openChat()">
             💬 Speak to {trainer.name} to find out more
           </button>
@@ -710,8 +709,9 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       const date    = new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
       const liked   = userLiked.has(p.id);
       const count   = likeMap[p.id] ?? 0;
-      return `<div class="feed-card">
-        ${p.image_url ? `<img src="${p.image_url}" class="feed-card-img" alt="" loading="lazy" onclick="openLightbox(this.src)" />` : ''}
+      const safeContent = (p.content || '').replace(/"/g, '&quot;');
+      return `<div class="feed-card" data-img="${p.image_url || ''}" data-content="${safeContent}" data-date="${date}" onclick="openPostLightbox(this)">
+        ${p.image_url ? `<img src="${p.image_url}" class="feed-card-img" alt="" loading="lazy" />` : ''}
         <div class="feed-card-body">
           ${p.content ? `<div class="feed-card-text">${p.content}</div>` : ''}
           <div class="feed-card-footer">
@@ -979,38 +979,64 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 
 /* ── Lightbox ── */
 #pt-lightbox {
-  position:fixed; inset:0; background:rgba(0,0,0,0.88); z-index:10000;
-  display:flex; align-items:center; justify-content:center;
+  position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:10000;
+  display:flex; align-items:center; justify-content:center; padding:1rem;
   opacity:0; pointer-events:none; transition:opacity 0.2s;
 }
 #pt-lightbox.open { opacity:1; pointer-events:all; }
-#pt-lightbox img {
-  max-width:90vw; max-height:88vh; border-radius:10px;
-  box-shadow:0 8px 48px rgba(0,0,0,0.6); object-fit:contain;
+#pt-lightbox-card {
+  background:white; border-radius:16px; overflow:hidden;
+  max-width:560px; width:100%; max-height:90vh; overflow-y:auto;
+  box-shadow:0 16px 64px rgba(0,0,0,0.5);
+  transform:translateY(12px); transition:transform 0.2s;
 }
+#pt-lightbox.open #pt-lightbox-card { transform:translateY(0); }
+#pt-lightbox-card img { width:100%; height:auto; display:block; }
+#pt-lightbox-body { padding:1.25rem 1.5rem; }
+#pt-lightbox-text { font-size:0.95rem; line-height:1.75; color:#111311; margin-bottom:0.75rem; }
+#pt-lightbox-date { font-size:0.72rem; color:#8a8f8a; }
 #pt-lightbox-close {
-  position:absolute; top:1rem; right:1.25rem;
-  background:rgba(255,255,255,0.12); border:none; color:white;
-  font-size:1.5rem; width:44px; height:44px; border-radius:50%;
+  position:absolute; top:1rem; right:1rem;
+  background:rgba(255,255,255,0.15); border:none; color:white;
+  font-size:1.3rem; width:40px; height:40px; border-radius:50%;
   cursor:pointer; display:flex; align-items:center; justify-content:center;
-  transition:background 0.15s;
+  transition:background 0.15s; z-index:1;
 }
-#pt-lightbox-close:hover { background:rgba(255,255,255,0.25); }
-.feed-card-img { cursor:zoom-in; }
+#pt-lightbox-close:hover { background:rgba(255,255,255,0.28); }
+.feed-card { cursor:pointer; }
+.feed-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.1); transform:translateY(-2px); transition:box-shadow 0.2s,transform 0.2s; }
 </style>
 
 <!-- ── LIGHTBOX ── -->
 <div id="pt-lightbox" onclick="if(event.target===this)closeLightbox()">
   <button id="pt-lightbox-close" onclick="closeLightbox()">✕</button>
-  <img id="pt-lightbox-img" src="" alt="" />
+  <div id="pt-lightbox-card">
+    <img id="pt-lightbox-img" src="" alt="" style="display:none;" />
+    <div id="pt-lightbox-body">
+      <div id="pt-lightbox-text" style="display:none;"></div>
+      <div id="pt-lightbox-date"></div>
+    </div>
+  </div>
 </div>
 
 <script>
-  (window as any).openLightbox = function(src: string) {
-    const lb  = document.getElementById('pt-lightbox')!;
-    const img = document.getElementById('pt-lightbox-img') as HTMLImageElement;
-    img.src = src;
-    lb.classList.add('open');
+  (window as any).openPostLightbox = function(el: HTMLElement) {
+    const img    = document.getElementById('pt-lightbox-img')  as HTMLImageElement;
+    const text   = document.getElementById('pt-lightbox-text') as HTMLElement;
+    const date   = document.getElementById('pt-lightbox-date') as HTMLElement;
+    const src    = el.dataset.img  || '';
+    const content= el.dataset.content || '';
+    const d      = el.dataset.date || '';
+
+    if (src) { img.src = src; img.style.display = 'block'; }
+    else { img.style.display = 'none'; }
+
+    if (content) { text.textContent = content; text.style.display = 'block'; }
+    else { text.style.display = 'none'; }
+
+    date.textContent = d;
+
+    document.getElementById('pt-lightbox')!.classList.add('open');
     document.body.style.overflow = 'hidden';
   };
   (window as any).closeLightbox = function() {
@@ -1034,19 +1060,8 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       .single();
 
     if (t) {
-      // ── Booking button in hero ──────────────────────────────────────────
-      if (t.accepts_bookings && t.booking_url) {
-        const slot = document.getElementById('hero-booking-btn');
-        if (slot) {
-          slot.innerHTML = `<a href="${t.booking_url}" target="_blank" rel="noopener noreferrer"
-            style="display:inline-flex;align-items:center;gap:0.5rem;background:white;color:#0d1a0e;padding:0.85rem 1.75rem;border-radius:8px;font-weight:700;font-size:0.92rem;text-decoration:none;">
-            📅 Book a Session</a>`;
-        }
-      }
-
-      // ── Social links section ────────────────────────────────────────────
-      const ig = t.social_instagram;
-      const fb = t.social_facebook;
+      const ig = t.social_instagram ? t.social_instagram.replace(/^@/, '') : null;
+      const fb = t.social_facebook  ? t.social_facebook.replace(/^@/, '')  : null;
       const wa = t.social_whatsapp;
       const em = t.social_email;
 
@@ -1057,10 +1072,11 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       const btnStyle = 'display:inline-flex;align-items:center;gap:0.6rem;padding:0.6rem 1.1rem;border-radius:8px;color:white;font-size:0.82rem;font-weight:700;text-decoration:none;';
 
       const links: string[] = [];
-      if (ig) links.push(`<a href="${ig}" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);">${igSvg} Instagram</a>`);
-      if (fb) links.push(`<a href="${fb}" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:#1877f2;">${fbSvg} Facebook</a>`);
-      if (wa) links.push(`<a href="https://wa.me/${wa.replace(/[^0-9]/g,'')}" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:#25d366;">${waSvg} WhatsApp</a>`);
-      if (em) links.push(`<a href="mailto:${em}" style="${btnStyle}background:#ea4335;">${emSvg} Email</a>`);
+      if (ig) links.push(`<a href="https://instagram.com/${ig}" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);">${igSvg} @${ig}</a>`);
+      if (fb) links.push(`<a href="https://facebook.com/${fb}" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:#1877f2;">${fbSvg} @${fb}</a>`);
+      if (wa) links.push(`<a href="https://wa.me/${wa.replace(/[^0-9]/g,'')}" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:#25d366;">${waSvg} ${wa}</a>`);
+      if (em) links.push(`<a href="mailto:${em}" style="${btnStyle}background:#ea4335;">${emSvg} ${em}</a>`);
+      if (t.accepts_bookings && t.booking_url) links.push(`<a href="${t.booking_url}" target="_blank" rel="noopener noreferrer" style="${btnStyle}background:#111311;">📅 Book a Session</a>`);
 
       if (links.length > 0) {
         document.getElementById('trainer-social-links')!.innerHTML = links.join('');
