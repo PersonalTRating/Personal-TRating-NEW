@@ -24,7 +24,7 @@
     position:sticky; top:0; z-index:100;
   }
   .topbar-inner {
-    max-width:900px; margin:0 auto; padding:0 2rem;
+    max-width:1100px; margin:0 auto; padding:0 2.5rem;
     display:flex; align-items:center; justify-content:space-between; height:73px;
   }
   .topbar-logo img { height:57px; width:auto; object-fit:contain; }
@@ -42,22 +42,24 @@
   .signout-btn:hover { border-color:var(--text); color:var(--text); }
 
   /* ── Page layout ── */
-  .page { max-width:900px; margin:0 auto; padding:2.5rem 2rem 4rem; }
+  .page { max-width:1100px; margin:0 auto; padding:2.5rem 2.5rem 4rem; }
 
-  /* ── Tab nav ── */
+  /* ── Tab nav (desktop) ── */
   .acc-tabs {
-    display:flex; gap:0.25rem; background:white; border:1px solid var(--border);
-    border-radius:12px; padding:0.3rem; margin-bottom:2rem;
+    display:flex; gap:0; background:white; border:none; border-radius:0;
+    padding:0; margin-bottom:2rem;
+    border-bottom:2px solid var(--border);
   }
   .acc-tab {
-    flex:1; background:none; border:none; border-radius:9px;
-    padding:0.6rem 0.5rem; font-family:'Manrope',sans-serif;
-    font-size:0.8rem; font-weight:700; color:var(--muted);
-    cursor:pointer; transition:all 0.15s; text-align:center;
-    display:flex; align-items:center; justify-content:center; gap:0.4rem;
+    flex:0 0 auto; background:none; border:none; border-radius:0;
+    border-bottom:3px solid transparent; margin-bottom:-2px;
+    padding:0.85rem 1.75rem; font-family:'Manrope',sans-serif;
+    font-size:0.875rem; font-weight:700; color:var(--muted);
+    cursor:pointer; transition:color 0.15s, border-color 0.15s;
+    text-align:center; letter-spacing:0.2px;
   }
-  .acc-tab.active { background:var(--green); color:white; }
-  .acc-tab:not(.active):hover { background:var(--off); color:var(--text); }
+  .acc-tab.active { color:var(--green); border-bottom-color:var(--green); }
+  .acc-tab:not(.active):hover { color:var(--text); }
   .acc-section { display:none; }
   .acc-section.active { display:block; }
 
@@ -434,11 +436,11 @@
 
   <!-- Tab nav (desktop) -->
   <div class="acc-tabs">
-    <button class="acc-tab active" data-tab="home" onclick="accTab('home', this)">🏠 Home</button>
-    <button class="acc-tab" data-tab="messages" onclick="accTab('messages', this)">💬 Messages</button>
-    <button class="acc-tab" data-tab="reviews" onclick="accTab('reviews', this)">⭐ Reviews</button>
-    <button class="acc-tab" data-tab="notifications" onclick="accTab('notifications', this)">🔔 Alerts <span id="notif-tab-badge" style="display:none;background:#e53935;color:white;font-size:0.58rem;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px;"></span></button>
-    <button class="acc-tab" data-tab="profile" onclick="accTab('profile', this)">👤 Profile</button>
+    <button class="acc-tab active" data-tab="home" onclick="accTab('home', this)">Home</button>
+    <button class="acc-tab" data-tab="messages" onclick="accTab('messages', this)">Messages</button>
+    <button class="acc-tab" data-tab="reviews" onclick="accTab('reviews', this)">Reviews</button>
+    <button class="acc-tab" data-tab="notifications" onclick="accTab('notifications', this)">Alerts <span id="notif-tab-badge" style="display:none;background:#e53935;color:white;font-size:0.58rem;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:3px;"></span></button>
+    <button class="acc-tab" data-tab="profile" onclick="accTab('profile', this)">Profile</button>
   </div>
 
   <!-- Home section -->
