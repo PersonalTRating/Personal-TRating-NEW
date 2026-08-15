@@ -563,32 +563,50 @@
   <!-- Profile section -->
   <div class="acc-section" id="acc-profile">
 
-    <!-- Avatar colour -->
+    <!-- Photo + colour -->
     <div class="card" style="margin-bottom:1.25rem;">
       <div class="card-label">Appearance</div>
-      <div class="card-title">Avatar Colour</div>
-      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;">Choose a colour for your initials — shown when you leave reviews and message trainers.</p>
-      <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap;">
-        <div id="cl-avatar-preview" style="width:72px;height:72px;border-radius:50%;background:#eaf7ec;color:#2a9438;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.5rem;font-family:'Manrope',sans-serif;flex-shrink:0;">?</div>
-        <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
-          <button class="cl-colour-swatch" data-bg="#eaf7ec" data-color="#2a9438" title="Forest"   onclick="clSelectColour(this)" style="background:#eaf7ec;"><span style="color:#2a9438;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#fdf6e3" data-color="#b8860b" title="Gold"     onclick="clSelectColour(this)" style="background:#fdf6e3;"><span style="color:#b8860b;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#e8f0f7" data-color="#1a4b6b" title="Ocean"    onclick="clSelectColour(this)" style="background:#e8f0f7;"><span style="color:#1a4b6b;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#f5e8f7" data-color="#6b1a6b" title="Royal"    onclick="clSelectColour(this)" style="background:#f5e8f7;"><span style="color:#6b1a6b;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#e8ecf5" data-color="#1a2b6b" title="Navy"     onclick="clSelectColour(this)" style="background:#e8ecf5;"><span style="color:#1a2b6b;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#fef0ed" data-color="#c0451a" title="Ember"    onclick="clSelectColour(this)" style="background:#fef0ed;"><span style="color:#c0451a;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#fde8f0" data-color="#b5265e" title="Rose"     onclick="clSelectColour(this)" style="background:#fde8f0;"><span style="color:#b5265e;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#f3e8fd" data-color="#7c2dbe" title="Lavender" onclick="clSelectColour(this)" style="background:#f3e8fd;"><span style="color:#7c2dbe;">A</span></button>
-          <button class="cl-colour-swatch" data-bg="#e5f3fd" data-color="#1a6fa8" title="Sky"      onclick="clSelectColour(this)" style="background:#e5f3fd;"><span style="color:#1a6fa8;">A</span></button>
+      <div class="card-title">Photo & Avatar Colour</div>
+      <div style="display:flex;gap:2.5rem;flex-wrap:wrap;align-items:flex-start;">
+
+        <!-- Photo column -->
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.75rem;flex-shrink:0;">
+          <div id="cl-avatar-preview"
+            onclick="document.getElementById('cl-avatar-file').click()"
+            style="width:88px;height:88px;border-radius:50%;background:#eaf7ec;color:#2a9438;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.6rem;font-family:'Manrope',sans-serif;cursor:pointer;overflow:hidden;border:3px solid var(--border);transition:border-color 0.15s;"
+            title="Click to upload photo">?</div>
+          <input id="cl-avatar-file" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="clHandleAvatarUpload(this)" />
+          <button id="cl-upload-btn"
+            onclick="document.getElementById('cl-avatar-file').click()"
+            style="background:none;border:1.5px solid var(--border);color:var(--muted);padding:0.35rem 0.9rem;border-radius:6px;font-size:0.75rem;font-weight:700;cursor:pointer;font-family:'Manrope',sans-serif;transition:all 0.15s;white-space:nowrap;">
+            Upload Photo
+          </button>
+        </div>
+
+        <!-- Colour column -->
+        <div style="flex:1;min-width:200px;">
+          <p class="cl-profile-label" style="margin-bottom:0.35rem;">Avatar Colour</p>
+          <p style="font-size:0.78rem;color:var(--muted);margin-bottom:1rem;line-height:1.5;">Used for your initials when no photo is set.</p>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;">
+            <button class="cl-colour-swatch" data-bg="#eaf7ec" data-color="#2a9438" title="Forest"   onclick="clSelectColour(this)" style="background:#eaf7ec;"><span style="color:#2a9438;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#fdf6e3" data-color="#b8860b" title="Gold"     onclick="clSelectColour(this)" style="background:#fdf6e3;"><span style="color:#b8860b;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#e8f0f7" data-color="#1a4b6b" title="Ocean"    onclick="clSelectColour(this)" style="background:#e8f0f7;"><span style="color:#1a4b6b;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#f5e8f7" data-color="#6b1a6b" title="Royal"    onclick="clSelectColour(this)" style="background:#f5e8f7;"><span style="color:#6b1a6b;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#e8ecf5" data-color="#1a2b6b" title="Navy"     onclick="clSelectColour(this)" style="background:#e8ecf5;"><span style="color:#1a2b6b;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#fef0ed" data-color="#c0451a" title="Ember"    onclick="clSelectColour(this)" style="background:#fef0ed;"><span style="color:#c0451a;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#fde8f0" data-color="#b5265e" title="Rose"     onclick="clSelectColour(this)" style="background:#fde8f0;"><span style="color:#b5265e;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#f3e8fd" data-color="#7c2dbe" title="Lavender" onclick="clSelectColour(this)" style="background:#f3e8fd;"><span style="color:#7c2dbe;">A</span></button>
+            <button class="cl-colour-swatch" data-bg="#e5f3fd" data-color="#1a6fa8" title="Sky"      onclick="clSelectColour(this)" style="background:#e5f3fd;"><span style="color:#1a6fa8;">A</span></button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Name + details -->
+    <!-- Name + username + details -->
     <div class="card">
       <div class="card-label">Account</div>
       <div class="card-title">Your Details</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.25rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
         <div>
           <label class="cl-profile-label" for="cl-first-name">First Name</label>
           <input id="cl-first-name" type="text" class="cl-profile-input" autocomplete="given-name" />
@@ -598,17 +616,21 @@
           <input id="cl-last-name" type="text" class="cl-profile-input" autocomplete="family-name" />
         </div>
       </div>
+      <div style="margin-bottom:1.25rem;">
+        <label class="cl-profile-label" for="cl-username">Username <span style="font-weight:400;color:var(--muted);">— shown on your reviews</span></label>
+        <div style="position:relative;">
+          <span style="position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:0.875rem;">@</span>
+          <input id="cl-username" type="text" class="cl-profile-input" style="padding-left:1.9rem;" maxlength="30" placeholder="yourname" autocomplete="off" />
+        </div>
+        <p style="font-size:0.72rem;color:var(--muted);margin-top:0.35rem;">Lowercase letters, numbers and underscores only. Must be unique.</p>
+      </div>
       <div class="info-row">
         <div class="info-label">Email</div>
         <div class="info-value" id="account-email">—</div>
       </div>
-      <div class="info-row" style="border-bottom:none;">
-        <div class="info-label">Account type</div>
-        <div class="info-value">Client</div>
-      </div>
       <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;">
         <button id="cl-save-profile-btn" onclick="clSaveProfile()" style="background:var(--green);color:white;border:none;border-radius:8px;padding:0.7rem 1.75rem;font-family:'Manrope',sans-serif;font-weight:700;font-size:0.875rem;cursor:pointer;transition:background 0.15s;">Save Changes</button>
-        <span id="cl-save-status" style="font-size:0.82rem;color:var(--green);font-weight:600;display:none;">✓ Saved!</span>
+        <span id="cl-save-status" style="font-size:0.82rem;font-weight:600;display:none;"></span>
       </div>
     </div>
 
@@ -693,8 +715,17 @@
   // Avatar preview
   const clAvPrev = document.getElementById('cl-avatar-preview') as HTMLElement;
   clAvPrev.textContent       = initials;
-  clAvPrev.style.background  = avatarBgInit;
-  clAvPrev.style.color       = avatarColorInit;
+  // Avatar preview — photo takes priority over initials
+  if (client.avatar_url) {
+    clAvPrev.innerHTML = `<img src="${client.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />`;
+    clAvPrev.style.background = 'transparent';
+    const upBtn = document.getElementById('cl-upload-btn') as HTMLButtonElement;
+    if (upBtn) upBtn.textContent = 'Replace Photo';
+  } else {
+    clAvPrev.textContent      = initials;
+    clAvPrev.style.background = avatarBgInit;
+    clAvPrev.style.color      = avatarColorInit;
+  }
 
   // Pre-select saved colour swatch
   const savedBg = avatarBgInit.trim().toLowerCase();
@@ -703,9 +734,18 @@
       el.classList.add('selected');
   });
 
+  // Username
+  (document.getElementById('cl-username') as HTMLInputElement).value = client.username ?? '';
+
   // Sidebar avatar
   const sbAv = document.getElementById('acc-sb-avatar') as HTMLElement;
-  if (sbAv) { sbAv.textContent = initials; sbAv.style.background = avatarBgInit; sbAv.style.color = avatarColorInit; }
+  if (sbAv) {
+    if (client.avatar_url) {
+      sbAv.innerHTML = `<img src="${client.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+    } else {
+      sbAv.textContent = initials; sbAv.style.background = avatarBgInit; sbAv.style.color = avatarColorInit;
+    }
+  }
   const sbName = document.getElementById('acc-sb-name') as HTMLElement;
   if (sbName) sbName.textContent = client.name;
 
@@ -1042,12 +1082,53 @@
 
   _clLoadConvs();
 
+  // ── Profile: photo upload ──────────────────────────────────────────────────
+  (window as any).clHandleAvatarUpload = async function(input: HTMLInputElement) {
+    const file = input.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      const s = document.getElementById('cl-save-status') as HTMLElement;
+      s.textContent = '❌ Image too large — max 5 MB'; s.style.color = '#e53935'; s.style.display = 'inline';
+      setTimeout(() => { s.style.display = 'none'; }, 4000);
+      return;
+    }
+    const preview = document.getElementById('cl-avatar-preview') as HTMLElement;
+    preview.innerHTML = '<div style="font-size:1.4rem;animation:spin 1s linear infinite;">⏳</div>';
+
+    const ext  = file.name.split('.').pop() || 'jpg';
+    const path = `${session.user.id}/avatar.${ext}`;
+
+    const { error: upErr } = await supabase.storage
+      .from('avatars').upload(path, file, { upsert: true, contentType: file.type });
+
+    if (upErr) {
+      preview.textContent = initials; preview.style.background = avatarBgInit; preview.style.color = avatarColorInit;
+      const s = document.getElementById('cl-save-status') as HTMLElement;
+      s.textContent = '❌ Upload failed'; s.style.color = '#e53935'; s.style.display = 'inline';
+      setTimeout(() => { s.style.display = 'none'; }, 4000);
+      return;
+    }
+
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(path);
+    const url = publicUrl + '?t=' + Date.now();
+
+    await supabase.from('clients').update({ avatar_url: url }).eq('user_id', session.user.id);
+
+    preview.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;" />`;
+    preview.style.background = 'transparent';
+    const upBtn = document.getElementById('cl-upload-btn') as HTMLButtonElement;
+    if (upBtn) upBtn.textContent = 'Replace Photo';
+
+    const sbAvEl = document.getElementById('acc-sb-avatar') as HTMLElement;
+    if (sbAvEl) sbAvEl.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+  };
+
   // ── Profile: colour picker ─────────────────────────────────────────────────
   (window as any).clSelectColour = function(btn: HTMLElement) {
     document.querySelectorAll('.cl-colour-swatch').forEach(s => s.classList.remove('selected'));
     btn.classList.add('selected');
     const preview = document.getElementById('cl-avatar-preview') as HTMLElement;
-    if (preview) {
+    if (preview && !preview.querySelector('img')) {
       preview.style.background = btn.dataset.bg ?? '#eaf7ec';
       preview.style.color      = btn.dataset.color ?? '#2a9438';
     }
@@ -1062,7 +1143,10 @@
     const newName = [fn, ln].filter(Boolean).join(' ');
     if (!newName) return;
 
-    const sel = document.querySelector('.cl-colour-swatch.selected') as HTMLElement | null;
+    const usernameRaw = (document.getElementById('cl-username') as HTMLInputElement).value.trim().toLowerCase();
+    const username    = usernameRaw.replace(/[^a-z0-9_]/g, '') || null;
+
+    const sel   = document.querySelector('.cl-colour-swatch.selected') as HTMLElement | null;
     const bg    = sel?.dataset.bg    ?? '#eaf7ec';
     const color = sel?.dataset.color ?? '#2a9438';
     const newInitials = newName.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
@@ -1071,26 +1155,33 @@
     saveBtn.textContent = 'Saving…';
 
     const { error } = await supabase.from('clients')
-      .update({ name: newName, avatar_bg: bg, avatar_color: color })
+      .update({ name: newName, username, avatar_bg: bg, avatar_color: color })
       .eq('user_id', session.user.id);
 
     saveBtn.disabled    = false;
     saveBtn.textContent = 'Save Changes';
 
-    if (!error) {
-      statusEl.style.display = 'inline';
-      setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
-      // Update welcome banner live
-      const wnEl = document.getElementById('welcome-name') as HTMLElement;
-      if (wnEl) wnEl.textContent = `Welcome back, ${fn}.`;
-      const waEl = document.getElementById('welcome-avatar') as HTMLElement;
-      if (waEl) { waEl.textContent = newInitials; waEl.style.background = bg; waEl.style.color = color; }
-      // Update sidebar
-      const sbAvEl   = document.getElementById('acc-sb-avatar') as HTMLElement;
-      const sbNameEl = document.getElementById('acc-sb-name')   as HTMLElement;
-      if (sbAvEl)   { sbAvEl.textContent = newInitials; sbAvEl.style.background = bg; sbAvEl.style.color = color; }
-      if (sbNameEl) sbNameEl.textContent = newName;
+    if (error) {
+      statusEl.textContent    = error.message.includes('unique') ? '❌ Username taken' : '❌ Save failed';
+      statusEl.style.color    = '#e53935';
+      statusEl.style.display  = 'inline';
+      setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
+      return;
     }
+
+    statusEl.textContent   = '✓ Saved!';
+    statusEl.style.color   = 'var(--green)';
+    statusEl.style.display = 'inline';
+    setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
+
+    const wnEl = document.getElementById('welcome-name') as HTMLElement;
+    if (wnEl) wnEl.textContent = `Welcome back, ${fn}.`;
+    const waEl = document.getElementById('welcome-avatar') as HTMLElement;
+    if (waEl && !waEl.querySelector('img')) { waEl.textContent = newInitials; waEl.style.background = bg; waEl.style.color = color; }
+    const sbAvEl   = document.getElementById('acc-sb-avatar') as HTMLElement;
+    const sbNameEl = document.getElementById('acc-sb-name')   as HTMLElement;
+    if (sbAvEl && !sbAvEl.querySelector('img'))   { sbAvEl.textContent = newInitials; sbAvEl.style.background = bg; sbAvEl.style.color = color; }
+    if (sbNameEl) sbNameEl.textContent = newName;
   };
 
   // ── Sign out ───────────────────────────────────────────────────────────────
