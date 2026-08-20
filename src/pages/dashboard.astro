@@ -588,6 +588,57 @@
 <script is:inline src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
+  /* ── Onboarding checklist ──────────────────────────────── */
+  .onboard-wrap {
+    background: linear-gradient(135deg, #0d1a0e 0%, #1a3d1e 100%);
+    border-radius: 16px; padding: 1.5rem 1.75rem;
+    margin-bottom: 1.5rem; position: relative; overflow: hidden;
+  }
+  .onboard-wrap::before {
+    content: ''; position: absolute; top: -40px; right: -40px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(58,181,74,0.22) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .onboard-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.1rem; gap: 1rem; }
+  .onboard-heading { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 900; color: white; margin-bottom: 0.25rem; }
+  .onboard-sub { font-size: 0.78rem; color: rgba(255,255,255,0.5); }
+  .onboard-prog-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 0.4rem; }
+  .onboard-prog-label { font-size: 0.72rem; font-weight: 700; color: rgba(255,255,255,0.4); letter-spacing: 0.5px; }
+  .onboard-prog-bar { width: 120px; height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; }
+  .onboard-prog-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+  .onboard-steps { display: flex; flex-direction: column; gap: 0.6rem; }
+  .onboard-step {
+    display: flex; align-items: center; gap: 0.9rem;
+    padding: 0.7rem 0.9rem; border-radius: 10px;
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08);
+    cursor: pointer; transition: background 0.15s, border-color 0.15s;
+    font-family: 'Manrope', sans-serif; text-align: left; width: 100%;
+    color: rgba(255,255,255,0.75); font-size: 0.85rem; font-weight: 600;
+  }
+  .onboard-step:hover { background: rgba(255,255,255,0.09); border-color: rgba(58,181,74,0.4); }
+  .onboard-step.done { background: rgba(58,181,74,0.1); border-color: rgba(58,181,74,0.3); color: rgba(255,255,255,0.45); }
+  .onboard-check {
+    width: 24px; height: 24px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.2); background: transparent;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; transition: all 0.25s;
+  }
+  .onboard-step.done .onboard-check {
+    background: var(--green); border-color: var(--green); color: white;
+  }
+  .onboard-step-label { flex: 1; }
+  .onboard-step-hint { font-size: 0.72rem; color: rgba(255,255,255,0.35); font-weight: 400; margin-top: 0.1rem; }
+  .onboard-step.done .onboard-step-hint { color: rgba(255,255,255,0.2); }
+  .onboard-arrow { font-size: 0.8rem; color: rgba(255,255,255,0.2); flex-shrink: 0; }
+  .onboard-step.done .onboard-arrow { display: none; }
+  .onboard-dismiss {
+    background: none; border: none; color: rgba(255,255,255,0.3); cursor: pointer;
+    font-size: 1rem; padding: 0.2rem; line-height: 1; flex-shrink: 0; margin-top: 0.1rem;
+    transition: color 0.15s;
+  }
+  .onboard-dismiss:hover { color: rgba(255,255,255,0.7); }
+
   /* ── New-review celebration banner ─────────────────────── */
   .review-alert {
     display: flex;
@@ -716,6 +767,26 @@
 
     <!-- ══════════ OVERVIEW ══════════ -->
     <div class="page active" id="page-overview">
+
+      <!-- Onboarding checklist — hidden once all steps done or dismissed -->
+      <div class="onboard-wrap" id="onboard-wrap" style="display:none;">
+        <div class="onboard-top">
+          <div>
+            <div class="onboard-heading">Complete your profile</div>
+            <div class="onboard-sub">A complete profile ranks higher and wins more clients</div>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:0.75rem;">
+            <div class="onboard-prog-wrap">
+              <div class="onboard-prog-label"><span id="onboard-done-count">0</span> of <span id="onboard-total-count">5</span> complete</div>
+              <div class="onboard-prog-bar"><div class="onboard-prog-fill" id="onboard-prog-fill" style="width:0%"></div></div>
+            </div>
+            <button class="onboard-dismiss" id="onboard-dismiss-btn" title="Dismiss">✕</button>
+          </div>
+        </div>
+        <div class="onboard-steps" id="onboard-steps">
+          <!-- rendered by JS -->
+        </div>
+      </div>
 
       <div class="stats-grid">
         <div class="stat-card" style="--stat-color:rgba(58,181,74,0.1)">
@@ -1549,6 +1620,95 @@
         sbBusiness.style.display = 'none';
       }
     }
+
+    // ── Onboarding checklist ─────────────────────────────────────────────
+    (function initOnboarding() {
+      const dismissKey = `pt_onboard_dismissed_${trainer.id}`;
+      if (localStorage.getItem(dismissKey)) return;
+
+      const steps = [
+        {
+          id: 'photo',
+          label: 'Add a profile photo',
+          hint: 'Clients trust a face — profiles with photos get 3× more reviews',
+          done: !!(trainer.avatar_url),
+          action: () => showPage('profile'),
+        },
+        {
+          id: 'location',
+          label: 'Set your location',
+          hint: 'Helps clients find you in local rankings',
+          done: !!(trainer.city && trainer.city.trim()),
+          action: () => showPage('profile'),
+        },
+        {
+          id: 'bio',
+          label: 'Write your bio',
+          hint: 'Tell clients about your approach and what makes you different',
+          done: !!(trainer.bio && trainer.bio.trim()),
+          action: () => showPage('profile'),
+        },
+        {
+          id: 'specialty',
+          label: 'Choose your specialisms',
+          hint: 'Weight loss, muscle gain, rehabilitation — what do you excel at?',
+          done: !!(trainer.specialty && trainer.specialty.trim()),
+          action: () => showPage('profile'),
+        },
+        {
+          id: 'link',
+          label: 'Generate your first review link',
+          hint: 'Send it to a client after your next session',
+          done: (trainer.review_count ?? 0) > 0,
+          action: () => showPage('links'),
+        },
+      ];
+
+      const doneCount = steps.filter(s => s.done).length;
+      if (doneCount === steps.length) return; // all done — hide permanently
+
+      const wrap = document.getElementById('onboard-wrap');
+      const stepsEl = document.getElementById('onboard-steps');
+      const progFill = document.getElementById('onboard-prog-fill') as HTMLElement;
+      const doneCountEl = document.getElementById('onboard-done-count');
+      const totalCountEl = document.getElementById('onboard-total-count');
+      const dismissBtn = document.getElementById('onboard-dismiss-btn');
+      if (!wrap || !stepsEl) return;
+
+      function renderChecklist() {
+        const done = steps.filter(s => s.done).length;
+        const pct = Math.round((done / steps.length) * 100);
+        if (progFill) progFill.style.width = pct + '%';
+        if (doneCountEl) doneCountEl.textContent = String(done);
+        if (totalCountEl) totalCountEl.textContent = String(steps.length);
+
+        stepsEl!.innerHTML = steps.map(s => `
+          <button class="onboard-step${s.done ? ' done' : ''}" data-step="${s.id}">
+            <div class="onboard-check">${s.done ? '✓' : ''}</div>
+            <div class="onboard-step-label">
+              <div>${s.label}</div>
+              <div class="onboard-step-hint">${s.hint}</div>
+            </div>
+            <div class="onboard-arrow">→</div>
+          </button>`).join('');
+
+        stepsEl!.querySelectorAll('.onboard-step').forEach((btn, i) => {
+          if (!steps[i].done) {
+            btn.addEventListener('click', steps[i].action);
+          }
+        });
+      }
+
+      renderChecklist();
+      wrap.style.display = '';
+
+      if (dismissBtn) {
+        dismissBtn.addEventListener('click', () => {
+          wrap.style.display = 'none';
+          localStorage.setItem(dismissKey, '1');
+        });
+      }
+    })();
 
     // ── View Public Profile link ─────────────────────────────────────────
     const profileLink = document.getElementById('view-profile-link') as HTMLAnchorElement;
