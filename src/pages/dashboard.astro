@@ -717,6 +717,10 @@
     </button>
 
     <div class="sb-section-label">Account</div>
+    <button class="sb-item" onclick="showPage('setup')">
+      <span class="sb-icon">✅</span> Getting Started
+      <span class="sb-badge" id="sb-setup-badge" style="display:none;"></span>
+    </button>
     <button class="sb-item" onclick="showPage('notifications')">
       <span class="sb-icon">🔔</span> Notifications
       <span class="sb-badge" id="notif-badge" style="display:none;">0</span>
@@ -1441,6 +1445,28 @@
 
     </div>
 
+    <!-- ══════════ GETTING STARTED ══════════ -->
+    <div class="page" id="page-setup">
+      <div class="section-eyebrow">Onboarding</div>
+      <div class="section-heading">Getting Started</div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Profile setup checklist</div>
+            <div class="card-sub" id="setup-page-sub">Complete each step to maximise your ranking</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <div style="font-size:0.78rem;font-weight:700;color:var(--muted);" id="setup-page-count"></div>
+            <div style="width:100px;height:6px;background:var(--green-mid);border-radius:3px;overflow:hidden;">
+              <div id="setup-page-bar" style="height:100%;background:var(--green);border-radius:3px;width:0%;transition:width 0.5s ease;"></div>
+            </div>
+          </div>
+        </div>
+        <div id="setup-page-steps" style="padding:0.5rem 0;"></div>
+      </div>
+    </div>
+
   </div>
 </main>
 
@@ -1623,9 +1649,6 @@
 
     // ── Onboarding checklist ─────────────────────────────────────────────
     (function initOnboarding() {
-      const dismissKey = `pt_onboard_dismissed_${trainer.id}`;
-      if (localStorage.getItem(dismissKey)) return;
-
       const steps = [
         {
           id: 'photo',
@@ -1665,7 +1688,7 @@
       ];
 
       const doneCount = steps.filter(s => s.done).length;
-      if (doneCount === steps.length) return; // all done — hide permanently
+      const pct = Math.round((doneCount / steps.length) * 100);
 
       const wrap = document.getElementById('onboard-wrap');
       const stepsEl = document.getElementById('onboard-steps');
@@ -1673,40 +1696,80 @@
       const doneCountEl = document.getElementById('onboard-done-count');
       const totalCountEl = document.getElementById('onboard-total-count');
       const dismissBtn = document.getElementById('onboard-dismiss-btn');
-      if (!wrap || !stepsEl) return;
+      const incomplete = steps.length - doneCount;
 
-      function renderChecklist() {
-        const done = steps.filter(s => s.done).length;
-        const pct = Math.round((done / steps.length) * 100);
-        if (progFill) progFill.style.width = pct + '%';
-        if (doneCountEl) doneCountEl.textContent = String(done);
-        if (totalCountEl) totalCountEl.textContent = String(steps.length);
+      // ── Sidebar badge ────────────────────────────────────────────────────
+      const setupBadge = document.getElementById('sb-setup-badge');
+      if (setupBadge) {
+        if (incomplete > 0) {
+          setupBadge.textContent = String(incomplete);
+          setupBadge.style.display = '';
+        } else {
+          setupBadge.style.display = 'none';
+        }
+      }
 
-        stepsEl!.innerHTML = steps.map(s => `
-          <button class="onboard-step${s.done ? ' done' : ''}" data-step="${s.id}">
-            <div class="onboard-check">${s.done ? '✓' : ''}</div>
-            <div class="onboard-step-label">
-              <div>${s.label}</div>
-              <div class="onboard-step-hint">${s.hint}</div>
+      // ── Setup page (always rendered) ─────────────────────────────────────
+      const pageBar   = document.getElementById('setup-page-bar') as HTMLElement;
+      const pageCount = document.getElementById('setup-page-count');
+      const pageSub   = document.getElementById('setup-page-sub');
+      const pageSteps = document.getElementById('setup-page-steps');
+      if (pageBar)   pageBar.style.width = pct + '%';
+      if (pageCount) pageCount.textContent = `${doneCount} of ${steps.length} complete`;
+      if (pageSub)   pageSub.textContent = doneCount === steps.length
+        ? 'Your profile is complete — great work!'
+        : 'Complete each step to maximise your ranking';
+      if (pageSteps) {
+        pageSteps.innerHTML = steps.map(s => `
+          <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);${s.done ? '' : 'cursor:pointer;'}" data-step-page="${s.id}" class="setup-page-row">
+            <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;${s.done ? 'background:var(--green);color:white;border:2px solid var(--green);' : 'background:white;color:var(--muted);border:2px solid var(--border);'}">
+              ${s.done ? '✓' : ''}
             </div>
-            <div class="onboard-arrow">→</div>
-          </button>`).join('');
+            <div style="flex:1;">
+              <div style="font-weight:700;font-size:0.88rem;color:${s.done ? 'var(--muted)' : 'var(--text)'};${s.done ? 'text-decoration:line-through;' : ''}">${s.label}</div>
+              <div style="font-size:0.75rem;color:var(--muted);margin-top:0.15rem;">${s.hint}</div>
+            </div>
+            ${s.done
+              ? '<div style="font-size:0.78rem;font-weight:700;color:var(--green);">Done ✓</div>'
+              : '<button style="padding:0.45rem 1rem;background:var(--green);color:white;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:\'Manrope\',sans-serif;white-space:nowrap;">Complete →</button>'
+            }
+          </div>`).join('') + '<div style="height:0.5rem;"></div>';
 
-        stepsEl!.querySelectorAll('.onboard-step').forEach((btn, i) => {
-          if (!steps[i].done) {
-            btn.addEventListener('click', steps[i].action);
-          }
+        pageSteps.querySelectorAll('.setup-page-row').forEach((row, i) => {
+          if (!steps[i].done) row.addEventListener('click', steps[i].action);
         });
       }
 
-      renderChecklist();
-      wrap.style.display = '';
-
-      if (dismissBtn) {
-        dismissBtn.addEventListener('click', () => {
-          wrap.style.display = 'none';
-          localStorage.setItem(dismissKey, '1');
-        });
+      // ── Overview widget (only when incomplete and not dismissed) ──────────
+      const dismissKey = `pt_onboard_dismissed_${trainer.id}`;
+      if (!localStorage.getItem(dismissKey) && doneCount < steps.length) {
+        function renderChecklist() {
+          const d = steps.filter(s => s.done).length;
+          const p = Math.round((d / steps.length) * 100);
+          if (progFill) progFill.style.width = p + '%';
+          if (doneCountEl) doneCountEl.textContent = String(d);
+          if (totalCountEl) totalCountEl.textContent = String(steps.length);
+          stepsEl!.innerHTML = steps.map(s => `
+            <button class="onboard-step${s.done ? ' done' : ''}" data-step="${s.id}">
+              <div class="onboard-check">${s.done ? '✓' : ''}</div>
+              <div class="onboard-step-label">
+                <div>${s.label}</div>
+                <div class="onboard-step-hint">${s.hint}</div>
+              </div>
+              <div class="onboard-arrow">→</div>
+            </button>`).join('');
+          stepsEl!.querySelectorAll('.onboard-step').forEach((btn, i) => {
+            if (!steps[i].done) btn.addEventListener('click', steps[i].action);
+          });
+        }
+        renderChecklist();
+        if (wrap) wrap.style.display = '';
+        if (dismissBtn) {
+          dismissBtn.addEventListener('click', () => {
+            if (wrap) wrap.style.display = 'none';
+            localStorage.setItem(dismissKey, '1');
+          });
+        }
       }
     })();
 
@@ -2805,6 +2868,7 @@
     notifications: ['Notifications',  'Recent activity on your account.'],
     feed:          ['My Feed',        'Share updates, classes and client progress with your audience.'],
     messages:      ['Messages',       'Direct messages from clients who reached out on your profile.'],
+    setup:         ['Getting Started','Your profile setup checklist — complete each step to maximise your ranking.'],
   };
 
   function showPage(id) {
