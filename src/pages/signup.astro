@@ -564,6 +564,16 @@
         cert,
         is_verified: false,
       });
+
+      // Send welcome email directly — don't rely on DB webhook timing
+      fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/send-welcome-email`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({ record: { name: `${firstName} ${lastName}`.trim(), email } }),
+      }).catch(() => {});
     }
 
     if (data.session) {
