@@ -281,6 +281,12 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     section > div[style*="max-width:900px"] { padding-left:1.25rem !important; padding-right:1.25rem !important; }
     .tp-rev { padding:1.25rem !important; }
     .btn-review { padding:0.75rem 1.25rem !important; font-size:0.82rem !important; }
+    /* Nav mobile */
+    .tp-nav-inner { height:64px !important; padding:0 1rem !important; }
+    .tp-nav-logo  { height:50px !important; }
+    .tp-nav-links { gap:0.6rem !important; }
+    .tp-nav-links .btn-review { padding:0.5rem 0.9rem !important; font-size:0.78rem !important; }
+    .tp-nav-text  { font-size:0.78rem !important; }
   }
 </style>
 
@@ -289,19 +295,19 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 
 <!-- ── NAV ── -->
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
-  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
+  <div class="tp-nav-inner" style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
     <a href="/" style="text-decoration:none;">
-      <img src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+      <img class="tp-nav-logo" src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
     </a>
-    <div style="display:flex;gap:1.25rem;align-items:center;">
-      <a href="/#leaderboard" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
+    <div class="tp-nav-links" style="display:flex;gap:1.25rem;align-items:center;">
+      <a href="/#leaderboard" class="tp-nav-text" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
         onmouseover="this.style.color='#111311'" onmouseout="this.style.color='#8a8f8a'">
         ← All Rankings
       </a>
       <a href={`/review/${trainer.id}`} class="btn-review" style="padding:0.6rem 1.4rem;font-size:0.875rem;">
         🏋 Leave a Review
       </a>
-      <a href="/account" id="nav-account" style="display:none;color:#111311;text-decoration:none;font-size:0.875rem;font-weight:600;">My Account</a>
+      <a href="/account" id="nav-account" class="tp-nav-text" style="display:none;color:#111311;text-decoration:none;font-size:0.875rem;font-weight:600;">My Account</a>
     </div>
   </div>
 </nav>
