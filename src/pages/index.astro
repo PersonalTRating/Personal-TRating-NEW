@@ -150,38 +150,38 @@ const cbg = (id: string): string => {
 // Placeholder reviews (social proof) — will be replaced by real reviews as platform grows
 const reviews = [
   { initials: 'TW', bg: '#fdf6e3', color: '#b8860b',
-    name: 'Tom W.', info: 'Verified Client · London', trainer: 'Personal TRating',
+    name: 'Tom W.', info: 'Verified Client · London', trainer: 'CoachCards',
     text: '"I\'d tried a few generic PT directories before but they were all the same. PTranking actually lets you filter by specialism — I found someone focused on powerlifting within minutes. Completely different experience."' },
   { initials: 'ER', bg: '#e8f7ee', color: '#1a6b3d',
-    name: 'Emma R.', info: 'Verified Client · Manchester', trainer: 'Personal TRating',
+    name: 'Emma R.', info: 'Verified Client · Manchester', trainer: 'CoachCards',
     text: '"The location search is brilliant. I could see every highly-rated trainer within a few miles of me, compare their reviews side by side, and reach out directly. Found the perfect match without any back and forth."' },
   { initials: 'RK', bg: '#eaf7ec', color: '#2a9438',
-    name: 'R. K.', info: 'Verified Client · Birmingham', trainer: 'Personal TRating',
+    name: 'R. K.', info: 'Verified Client · Birmingham', trainer: 'CoachCards',
     text: '"What sold me was being able to read verified client reviews before committing to anything. You can actually compare trainers honestly — specialisms, location, ratings — all in one place. Made the decision so easy."' },
   { initials: 'PJ', bg: '#f5e8f7', color: '#6b1a6b',
-    name: 'Priya J.', info: 'Verified Client · Leeds', trainer: 'Personal TRating',
+    name: 'Priya J.', info: 'Verified Client · Leeds', trainer: 'CoachCards',
     text: '"I needed someone who specialised in post-injury rehabilitation — a very specific niche. PTranking had a filter for exactly that. I found a qualified specialist nearby in under 10 minutes and messaged them straight from the profile."' },
   { initials: 'CB', bg: '#e8f0f7', color: '#1a4b6b',
-    name: 'C. B.', info: 'Verified Client · Edinburgh', trainer: 'Personal TRating',
+    name: 'C. B.', info: 'Verified Client · Edinburgh', trainer: 'CoachCards',
     text: '"The site is genuinely simple to use. I searched my area, filtered by goal, read a few reviews and had a trainer booked within the same evening. No confusing sign-up process, no middleman — just direct contact."' },
   { initials: 'MF', bg: '#f8f7f4', color: '#665544',
-    name: 'Marcus F.', info: 'Verified Client · Bristol', trainer: 'Personal TRating',
+    name: 'Marcus F.', info: 'Verified Client · Bristol', trainer: 'CoachCards',
     text: '"I\'d never used a PT before and didn\'t know where to start. Being able to compare trainers by reviews, location and specialism gave me the confidence to actually take the first step. Booked within a week and haven\'t looked back."' },
 ];
 ---
 
-<Layout title="Personal TRating – Find the UK's Top Personal Trainers">
+<Layout title="CoachCards – Find the UK's Top Personal Trainers">
 
 <script type="application/ld+json" is:inline>
 {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  "name": "Personal TRating",
-  "url": "https://personaltrating.com",
+  "name": "CoachCards",
+  "url": "https://coachcards.com",
   "description": "The UK's personal trainer ranking platform. Find and compare personal trainers by real, verified client reviews.",
   "potentialAction": {
     "@type": "SearchAction",
-    "target": "https://personaltrating.com/find-a-trainer?q={search_term_string}",
+    "target": "https://coachcards.com/find-a-trainer?q={search_term_string}",
     "query-input": "required name=search_term_string"
   }
 }
@@ -191,9 +191,9 @@ const reviews = [
 {
   "@context": "https://schema.org",
   "@type": "Organization",
-  "name": "Personal TRating",
-  "url": "https://personaltrating.com",
-  "logo": "https://personaltrating.com/images/logo.png",
+  "name": "CoachCards",
+  "url": "https://coachcards.com",
+  "logo": "https://coachcards.com/images/logo.png",
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "personaltrating@protonmail.com",
@@ -391,7 +391,7 @@ const reviews = [
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
     <a href="#top" style="text-decoration:none;display:flex;align-items:center;">
-      <img src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+      <img src="/images/logo.png" alt="CoachCards" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
     </a>
     <ul class="nav-links-desktop" style="display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;">
       {[['Leaderboard','#leaderboard'],['Reviews','#reviews'],['Map','#map'],['About','#about']].map(([label,href]) => (
@@ -450,7 +450,7 @@ const reviews = [
         Find a trainer who <em style="font-style:normal;color:#3ab54a;">actually</em><br>delivers results.
       </h1>
       <p class="anim-3" style="font-size:1.05rem;color:rgba(255,255,255,0.78);line-height:1.8;margin-bottom:2.5rem;max-width:470px;font-weight:400;">
-        Personal TRating ranks every UK personal trainer by verified client reviews and our BMP scoring system. No paid placements. No guesswork. The best coaches rise to the top on merit — full stop.
+        CoachCards ranks every UK personal trainer by verified client reviews and our BMP scoring system. No paid placements. No guesswork. The best coaches rise to the top on merit — full stop.
       </p>
       <div class="anim-4" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.75rem;">
         <a href="/find-a-trainer" style="background:#3ab54a;color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;transition:background 0.2s;box-shadow:0 4px 16px rgba(58,181,74,0.35);"
@@ -661,7 +661,7 @@ const reviews = [
     <div style="text-align:center;max-width:640px;margin:0 auto 4rem;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">For Clients</div>
       <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Stop guessing. Start choosing.</div>
-      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">Finding the right personal trainer used to mean word of mouth, Instagram scrolling, and hope. Personal TRating changes that.</p>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">Finding the right personal trainer used to mean word of mouth, Instagram scrolling, and hope. CoachCards changes that.</p>
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="about-features-grid">
       {[
@@ -796,12 +796,12 @@ const reviews = [
 
     <!-- Heading -->
     <div style="text-align:center;max-width:700px;margin:0 auto 5rem;">
-      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:1rem;">About Personal TRating</div>
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:1rem;">About CoachCards</div>
       <div style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;line-height:1.15;color:white;margin-bottom:1.5rem;">
         Finding a great trainer shouldn't be a gamble.
       </div>
       <p style="font-size:1rem;line-height:1.9;color:rgba(255,255,255,0.6);max-width:580px;margin:0 auto;">
-        We built Personal TRating because the fitness industry had no honest, transparent way to
+        We built CoachCards because the fitness industry had no honest, transparent way to
         compare personal trainers. Word of mouth only goes so far. Gym noticeboards aren't accountable.
         Instagram followings don't tell you if someone actually gets results. We do.
       </p>
@@ -830,7 +830,7 @@ const reviews = [
 
     <!-- Feature grid — 6 pillars -->
     <div>
-      <div style="text-align:center;font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:3rem;">Why Personal TRating</div>
+      <div style="text-align:center;font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:3rem;">Why CoachCards</div>
       <div class="about-features-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
         {[
           { icon:'✅', title:'Verified Reviews Only',         desc:'Trainers send unique links directly to real clients after sessions. No anonymous trolling, no paid placements, no fake stars.' },
@@ -889,8 +889,8 @@ const reviews = [
 <!-- ── FOOTER ── -->
 <footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:white;border-top:3px solid #3ab54a;">
   <div style="display:flex;align-items:center;gap:0.75rem;">
-    <img src="/images/logo.png" alt="Personal TRating" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
-    <p style="font-size:0.8rem;color:#8a8f8a;">© 2026 Personal TRating™ · All rights reserved · Built in the UK 🇬🇧</p>
+    <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
+    <p style="font-size:0.8rem;color:#8a8f8a;">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
     <p style="font-size:0.72rem;color:#aab8ac;margin-top:0.2rem;">Unauthorised reproduction of this platform, its design, BMP scoring methodology or content is strictly prohibited.</p>
   </div>
   <div style="display:flex;gap:2rem;">

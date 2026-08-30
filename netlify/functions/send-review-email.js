@@ -13,7 +13,7 @@ export const handler = async (event) => {
   const bmp      = Math.round((rating || 0) * 20);
   const stars    = Math.round((rating || 0) * 5);
   const dumbbells = '🏋️'.repeat(stars) + '⬜'.repeat(Math.max(0, 5 - stars));
-  const siteUrl    = 'https://personaltrating.com';
+  const siteUrl    = 'https://coachcards.com';
   const approveUrl = `${siteUrl}/.netlify/functions/approve-review?token=${approvalToken}&action=approve`;
   const rejectUrl  = `${siteUrl}/.netlify/functions/approve-review?token=${approvalToken}&action=reject`;
   const profileUrl = `${siteUrl}/trainers/${trainerId}`;
@@ -25,7 +25,7 @@ export const handler = async (event) => {
   <div style="max-width:560px;margin:0 auto;padding:32px 16px;">
 
     <div style="background:linear-gradient(135deg,#0d1a0e,#1a3d1e);border-radius:16px 16px 0 0;padding:28px 32px;text-align:center;">
-      <div style="color:#3ab54a;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">Personal TRating</div>
+      <div style="color:#3ab54a;font-size:11px;font-weight:800;letter-spacing:3px;text-transform:uppercase;margin-bottom:8px;">CoachCards</div>
       <div style="color:white;font-size:20px;font-weight:800;">New Review Pending Approval</div>
     </div>
 
@@ -77,7 +77,7 @@ export const handler = async (event) => {
       'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
     },
     body: JSON.stringify({
-      from: 'Personal TRating <onboarding@resend.dev>',
+      from: 'CoachCards <onboarding@resend.dev>',
       to: ['modernisetraders@hotmail.com'],
       subject: `⏳ New Review Pending — ${trainerName}`,
       html,

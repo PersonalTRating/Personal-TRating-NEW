@@ -1,4 +1,4 @@
-const siteUrl = 'https://personaltrating.com';
+const siteUrl = 'https://coachcards.com';
 
 async function sendEmail({ to, subject, html }) {
   const res = await fetch('https://api.resend.com/emails', {
@@ -8,7 +8,7 @@ async function sendEmail({ to, subject, html }) {
       'Content-Type':  'application/json',
     },
     body: JSON.stringify({
-      from: 'Personal TRating <onboarding@resend.dev>',
+      from: 'CoachCards <onboarding@resend.dev>',
       to, subject, html,
     }),
   });

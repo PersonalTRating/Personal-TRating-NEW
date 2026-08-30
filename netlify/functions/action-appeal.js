@@ -75,7 +75,7 @@ function confirmPage(token, action) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>${heading} — Personal TRating</title></head>
+<title>${heading} — CoachCards</title></head>
 <body style="margin:0;padding:0;background:#f7f9f7;font-family:'Helvetica Neue',Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem;box-sizing:border-box;">
   <div style="background:white;border-radius:20px;max-width:480px;width:100%;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.1);">
     <div style="background:linear-gradient(135deg,#0d1a0e,#1a3d1e);padding:28px 36px;">
@@ -95,7 +95,7 @@ function confirmPage(token, action) {
           ${btnLabel}
         </button>
       </form>
-      <a href="https://personaltrating.com" style="display:block;text-align:center;margin-top:1rem;font-size:0.78rem;color:#7a8f7c;text-decoration:none;">← Back to Personal TRating</a>
+      <a href="https://coachcards.com" style="display:block;text-align:center;margin-top:1rem;font-size:0.78rem;color:#7a8f7c;text-decoration:none;">← Back to CoachCards</a>
     </div>
   </div>
 </body>
@@ -106,7 +106,7 @@ function removedPage(reviewerName) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Review Removed — Personal TRating</title></head>
+<title>Review Removed — CoachCards</title></head>
 <body style="margin:0;padding:0;background:#f7f9f7;font-family:'Helvetica Neue',Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;">
   <div style="background:white;border-radius:20px;padding:48px 40px;max-width:420px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.08);">
     <div style="font-size:56px;margin-bottom:16px;">🗑️</div>
@@ -114,7 +114,7 @@ function removedPage(reviewerName) {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       ${reviewerName}'s review has been permanently removed. The trainer's BMP score has been recalculated and they've been notified.
     </div>
-    <a href="https://personaltrating.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to Personal TRating →</a>
+    <a href="https://coachcards.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to CoachCards →</a>
   </div>
 </body>
 </html>`;
@@ -124,7 +124,7 @@ function upheldPage(reviewerName) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Review Upheld — Personal TRating</title></head>
+<title>Review Upheld — CoachCards</title></head>
 <body style="margin:0;padding:0;background:#f7f9f7;font-family:'Helvetica Neue',Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;">
   <div style="background:white;border-radius:20px;padding:48px 40px;max-width:420px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.08);">
     <div style="font-size:56px;margin-bottom:16px;">✅</div>
@@ -132,7 +132,7 @@ function upheldPage(reviewerName) {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       ${reviewerName}'s review will remain live. The trainer has been notified of the outcome.
     </div>
-    <a href="https://personaltrating.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to Personal TRating →</a>
+    <a href="https://coachcards.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to CoachCards →</a>
   </div>
 </body>
 </html>`;
@@ -142,7 +142,7 @@ function errorPage(message) {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Appeal Error — Personal TRating</title></head>
+<title>Appeal Error — CoachCards</title></head>
 <body style="margin:0;padding:0;background:#f7f9f7;font-family:'Helvetica Neue',Arial,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh;">
   <div style="background:white;border-radius:20px;padding:48px 40px;max-width:420px;width:90%;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,0.08);">
     <div style="font-size:56px;margin-bottom:16px;">⚠️</div>

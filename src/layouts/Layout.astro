@@ -8,7 +8,7 @@ interface Props {
 
 const {
   title,
-  description = "Personal TRating ranks the UK's personal trainers by real, verified client reviews. No algorithms. No guesswork. Just honest results.",
+  description = "CoachCards ranks the UK's personal trainers by real, verified client reviews. No algorithms. No guesswork. Just honest results.",
   ogImage = '/images/og-social.png',
   canonicalUrl = Astro.url.href,
 } = Astro.props;
@@ -28,7 +28,7 @@ const {
 
     <!-- Open Graph -->
     <meta property="og:type"        content="profile" />
-    <meta property="og:site_name"   content="Personal TRating™" />
+    <meta property="og:site_name"   content="CoachCards™" />
     <meta property="og:title"       content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image"       content={ogImage} />
@@ -41,7 +41,7 @@ const {
     <meta name="twitter:image"       content={ogImage} />
 
     <!-- Plausible Analytics -->
-    <script defer data-domain="personaltrating.com" src="https://plausible.io/js/script.js"></script>
+    <script defer data-domain="coachcards.com" src="https://plausible.io/js/script.js"></script>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

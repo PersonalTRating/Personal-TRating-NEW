@@ -1,5 +1,5 @@
 ---
-// PT Dashboard — Personal TRating
+// PT Dashboard — CoachCards
 // Route: /dashboard
 ---
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PT Dashboard — Personal TRating</title>
+<title>PT Dashboard — CoachCards</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -672,7 +672,7 @@
 <aside class="sidebar">
   <div class="sb-logo">
     <a href="/for-trainers" title="Trainer Home">
-      <img src="/images/logo.png" alt="Personal TRating" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+      <img src="/images/logo.png" alt="CoachCards" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
     </a>
   </div>
 
@@ -1490,7 +1490,7 @@
     <div class="tr-chat-av" id="tr-chat-av">?</div>
     <div>
       <div class="tr-chat-name" id="tr-chat-name">…</div>
-      <div class="tr-chat-sub">Client · Personal TRating</div>
+      <div class="tr-chat-sub">Client · CoachCards</div>
     </div>
     <button class="tr-chat-close" onclick="closeMsgThread()">✕</button>
   </div>
@@ -3127,9 +3127,9 @@
   function shareLink(method) {
     const link = document.getElementById('review-link').value;
     if (method === 'whatsapp') {
-      window.open(`https://wa.me/?text=Hi! Please leave me a review on Personal TRating: ${link}`);
+      window.open(`https://wa.me/?text=Hi! Please leave me a review on CoachCards: ${link}`);
     } else {
-      window.open(`mailto:?subject=Please review my Personal TRating profile&body=Hi, I'd appreciate a review on Personal TRating: ${link}`);
+      window.open(`mailto:?subject=Please review my CoachCards profile&body=Hi, I'd appreciate a review on CoachCards: ${link}`);
     }
   }
 

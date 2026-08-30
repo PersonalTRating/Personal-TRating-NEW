@@ -1,5 +1,5 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
-const FROM_ADDRESS   = 'Personal TRating <hello@personaltrating.com>';
+const FROM_ADDRESS   = 'CoachCards <hello@coachcards.com>';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       body: JSON.stringify({
         from:    FROM_ADDRESS,
         to:      [record.email],
-        subject: `Welcome to Personal TRating, ${firstName}!`,
+        subject: `Welcome to CoachCards, ${firstName}!`,
         html,
       }),
     });
@@ -57,7 +57,7 @@ function buildEmail(firstName: string, fullName: string): string {
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Welcome to Personal TRating</title>
+<title>Welcome to CoachCards</title>
 </head>
 <body style="margin:0;padding:0;background:#f4f6f4;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f6f4;padding:40px 16px;">
@@ -68,7 +68,7 @@ function buildEmail(firstName: string, fullName: string): string {
           <span style="font-family:Georgia,serif;font-size:22px;font-weight:900;color:#0d1a0e;letter-spacing:-0.5px;"><span style="color:#3ab54a;">T</span>Rating</span>
         </div>
         <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:32px;font-weight:900;color:white;line-height:1.15;">Welcome, ${firstName}!</h1>
-        <p style="margin:0;font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6;">Your Personal TRating profile is live. Here's how to get your first verified review.</p>
+        <p style="margin:0;font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6;">Your CoachCards profile is live. Here's how to get your first verified review.</p>
       </td></tr>
       <tr><td style="background:white;padding:40px;">
         <p style="margin:0 0 28px;font-size:15px;color:#3a4a3b;line-height:1.7;">Hi ${firstName}, you're now part of the UK's first verified personal trainer ranking platform.</p>
@@ -86,14 +86,14 @@ function buildEmail(firstName: string, fullName: string): string {
           <td style="padding-left:14px;vertical-align:top;"><div style="font-weight:700;font-size:14px;color:#0d1a0e;margin-bottom:3px;">Start climbing the rankings</div><div style="font-size:13px;color:#7a8f7c;line-height:1.5;">Every verified review improves your BMP score.</div></td></tr>
         </table>
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:36px;">
-          <tr><td align="center"><a href="https://personaltrating.com/dashboard" style="display:inline-block;background:#3ab54a;color:white;font-weight:700;font-size:15px;text-decoration:none;padding:14px 36px;border-radius:10px;">Go to my dashboard &rarr;</a></td></tr>
+          <tr><td align="center"><a href="https://coachcards.com/dashboard" style="display:inline-block;background:#3ab54a;color:white;font-weight:700;font-size:15px;text-decoration:none;padding:14px 36px;border-radius:10px;">Go to my dashboard &rarr;</a></td></tr>
         </table>
         <hr style="border:none;border-top:1px solid #e8ede9;margin:0 0 28px;">
-        <p style="margin:0;font-size:13px;color:#7a8f7c;line-height:1.7;">If you have any questions, just reply to this email.<br><strong style="color:#0d1a0e;">The Personal TRating team</strong></p>
+        <p style="margin:0;font-size:13px;color:#7a8f7c;line-height:1.7;">If you have any questions, just reply to this email.<br><strong style="color:#0d1a0e;">The CoachCards team</strong></p>
       </td></tr>
       <tr><td style="background:#f4f6f4;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;">
-        <p style="margin:0 0 6px;font-size:12px;color:#aab8ac;">Personal TRating &mdash; The UK's verified PT ranking platform</p>
-        <p style="margin:0;font-size:11px;color:#c0cac1;"><a href="https://personaltrating.com/privacy" style="color:#aab8ac;text-decoration:none;">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="https://personaltrating.com/terms" style="color:#aab8ac;text-decoration:none;">Terms</a></p>
+        <p style="margin:0 0 6px;font-size:12px;color:#aab8ac;">CoachCards &mdash; The UK's verified PT ranking platform</p>
+        <p style="margin:0;font-size:11px;color:#c0cac1;"><a href="https://coachcards.com/privacy" style="color:#aab8ac;text-decoration:none;">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="https://coachcards.com/terms" style="color:#aab8ac;text-decoration:none;">Terms</a></p>
       </td></tr>
     </table>
   </td></tr>

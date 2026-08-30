@@ -14,7 +14,7 @@ const { count: totalReviews } = await supabase
 ---
 
 <Layout
-  title="For Personal Trainers · Personal TRating"
+  title="For Personal Trainers · CoachCards"
   description="List your profile free on the UK's only verified PT ranking platform. Collect verified client reviews, earn your BMP score and climb the national leaderboard."
 >
 
@@ -127,7 +127,7 @@ const { count: totalReviews } = await supabase
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
     <a href="/" style="text-decoration:none;display:flex;align-items:center;">
-      <img src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+      <img src="/images/logo.png" alt="CoachCards" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
     </a>
     <div class="ft-nav-links" style="display:flex;gap:2rem;align-items:center;">
       <a href="/find-a-trainer" class="ft-nav-link">Find a Trainer</a>
@@ -179,7 +179,7 @@ const { count: totalReviews } = await supabase
     </h1>
 
     <p class="ft-anim-3" style="font-size:1.05rem;color:rgba(255,255,255,0.72);line-height:1.8;margin-bottom:2.75rem;max-width:580px;">
-      Personal TRating is the UK's only verified PT ranking platform. Collect real reviews from your clients, earn your BMP score, and get found by people actively searching for a trainer.
+      CoachCards is the UK's only verified PT ranking platform. Collect real reviews from your clients, earn your BMP score, and get found by people actively searching for a trainer.
     </p>
 
     <div class="ft-anim-4" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:3rem;">
@@ -219,16 +219,16 @@ const { count: totalReviews } = await supabase
     <div style="text-align:center;max-width:620px;margin:0 auto 4rem;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">Why Join?</div>
       <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Everything you stand to gain.</h2>
-      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">Personal TRating is built around one idea: the best PTs should rise to the top. Here's what that means for you.</p>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">CoachCards is built around one idea: the best PTs should rise to the top. Here's what that means for you.</p>
     </div>
     <div class="ft-feature-grid">
       {[
         { icon:'💼', title:'Your business', desc:'We don\'t take a cut of your transactions and actively encourage bookings to happen off the platform. We simply facilitate the successful meeting of trainer and client.' },
         { icon:'🏆', title:'Rise on merit, not budget', desc:'The ranking algorithm cares about one thing: what your clients actually say. Solid coaches rise naturally. You cannot buy your way to the top.' },
-        { icon:'🔗', title:'Keep your existing tools', desc:'Link your Instagram, booking system, and website directly from your profile. Personal TRating works alongside your current setup — not instead of it.' },
+        { icon:'🔗', title:'Keep your existing tools', desc:'Link your Instagram, booking system, and website directly from your profile. CoachCards works alongside your current setup — not instead of it.' },
         { icon:'✨', title:'Show off your highlights', desc:'Add your specialty, certifications, and bio. Let your verified reviews speak for themselves. Clients in your area will see you at your best.' },
-        { icon:'📈', title:'Get found by serious clients', desc:'People searching Personal TRating are actively looking to hire a PT. A strong profile puts you in front of motivated, ready-to-commit clients.' },
-        { icon:'🌊', title:'Grow with the platform', desc:'As Personal TRating expands across the UK, every PT benefits. The more clients discover the platform, the more opportunities flow to top-ranked trainers.' },
+        { icon:'📈', title:'Get found by serious clients', desc:'People searching CoachCards are actively looking to hire a PT. A strong profile puts you in front of motivated, ready-to-commit clients.' },
+        { icon:'🌊', title:'Grow with the platform', desc:'As CoachCards expands across the UK, every PT benefits. The more clients discover the platform, the more opportunities flow to top-ranked trainers.' },
       ].map(f => (
         <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:14px;padding:1.75rem;">
           <div style="font-size:1.75rem;margin-bottom:0.85rem;">{f.icon}</div>
@@ -280,7 +280,7 @@ const { count: totalReviews } = await supabase
     <div style="text-align:center;margin-bottom:4rem;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">The BMP Score</div>
       <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Your ranking, explained.</h2>
-      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;max-width:580px;margin:0 auto;">BMP (Body Muscle %) is your 0–100 trust score on Personal TRating. It's designed to reward PTs who are consistently excellent — not just occasionally lucky.</p>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;max-width:580px;margin:0 auto;">BMP (Body Muscle %) is your 0–100 trust score on CoachCards. It's designed to reward PTs who are consistently excellent — not just occasionally lucky.</p>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3.5rem;" class="ft-step-grid">
@@ -471,8 +471,8 @@ const { count: totalReviews } = await supabase
 <!-- ── FOOTER ── -->
 <footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
   <div style="display:flex;align-items:center;gap:0.75rem;">
-    <img src="/images/logo.png" alt="Personal TRating" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
-    <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 Personal TRating™ · All rights reserved · Built in the UK 🇬🇧</p>
+    <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
+    <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
   </div>
   <div style="display:flex;gap:2rem;">
     {[['Home','/'],['Find a Trainer','/find-a-trainer'],['Privacy','/privacy'],['Terms','/terms']].map(([label,href]) => (

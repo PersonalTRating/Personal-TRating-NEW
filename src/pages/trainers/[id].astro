@@ -83,15 +83,15 @@ const themeAccent = themeAccents[trainer.hero_theme ?? 'forest'] ?? themeAccents
 
 // ── SEO ──────────────────────────────────────────────────────────────────────
 const trainerCity = trainer.city ?? trainer.location ?? 'the UK';
-const seoTitle = `${trainer.name} — Personal Trainer in ${trainerCity} · Personal TRating`;
+const seoTitle = `${trainer.name} — Personal Trainer in ${trainerCity} · CoachCards`;
 
 const seoParts = [
   trainer.specialty ? `Specialising in ${trainer.specialty}.` : null,
   hasReviews
     ? `Rated ${trainer.star_rating}/5 from ${reviews.length} verified client${reviews.length === 1 ? '' : 's'}.`
-    : 'New to Personal TRating — be the first to leave a review.',
+    : 'New to CoachCards — be the first to leave a review.',
   trainer.cert ? `${trainer.cert} certified.` : null,
-  `Find and rate the best personal trainers in the UK on Personal TRating.`,
+  `Find and rate the best personal trainers in the UK on CoachCards.`,
 ].filter(Boolean);
 const seoDescription = seoParts.join(' ');
 
@@ -297,7 +297,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div class="tp-nav-inner" style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
     <a href="/" style="text-decoration:none;">
-      <img class="tp-nav-logo" src="/images/logo.png" alt="Personal TRating" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+      <img class="tp-nav-logo" src="/images/logo.png" alt="CoachCards" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
     </a>
     <div class="tp-nav-links" style="display:flex;gap:1.25rem;align-items:center;">
       <a href="/#leaderboard" class="tp-nav-text" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
@@ -414,7 +414,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
       <div style="display:flex;align-items:center;gap:0.75rem;">
         <span style="background:#3ab54a;color:white;font-size:0.65rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:20px;letter-spacing:1px;text-transform:uppercase;">New</span>
-        <span style="font-size:0.85rem;color:#2a5a30;font-weight:600;">{trainer.name} has just joined Personal TRating — be the first to leave a verified review.</span>
+        <span style="font-size:0.85rem;color:#2a5a30;font-weight:600;">{trainer.name} has just joined CoachCards — be the first to leave a verified review.</span>
       </div>
       <a href={`/review/${trainer.id}`} style="font-size:0.8rem;font-weight:700;color:#2a9438;text-decoration:none;white-space:nowrap;">Leave a review →</a>
     </div>
@@ -646,7 +646,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       Worked with {trainer.name}?
     </h2>
     <p style="color:rgba(255,255,255,0.55);font-size:0.95rem;margin-bottom:2.5rem;line-height:1.8;max-width:440px;margin-left:auto;margin-right:auto;">
-      Your honest review helps other clients find great trainers and builds their BMP ranking on Personal TRating.
+      Your honest review helps other clients find great trainers and builds their BMP ranking on CoachCards.
     </p>
     <a href={`/review/${trainer.id}`} class="btn-review" style="font-size:1rem;padding:1rem 2.5rem;">
       🏋 Leave a Verified Review
@@ -658,8 +658,8 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 <!-- ── FOOTER ── -->
 <footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
   <div style="display:flex;align-items:center;gap:0.75rem;">
-    <img src="/images/logo.png" alt="Personal TRating" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
-    <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 Personal TRating™ · All rights reserved · Built in the UK 🇬🇧</p>
+    <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
+    <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
   </div>
   <div style="display:flex;gap:2rem;">
     {[['Home','/'],['Privacy','#'],['Terms','#'],['Contact','#']].map(([label,href]) => (
@@ -941,7 +941,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     <div class="chat-hdr-av" id="chat-av"></div>
     <div>
       <div class="chat-hdr-name" id="chat-hdr-name">…</div>
-      <div class="chat-hdr-sub">Personal Trainer · Personal TRating</div>
+      <div class="chat-hdr-sub">Personal Trainer · CoachCards</div>
     </div>
     <button class="chat-hdr-close" onclick="closeChat()">✕</button>
   </div>

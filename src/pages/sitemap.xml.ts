@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { supabase } from '../lib/supabase';
 
-const SITE = 'https://personaltrating.com';
+const SITE = 'https://coachcards.com';
 
 const staticPages = [
   { url: '/',               priority: '1.0' },
