@@ -65,7 +65,7 @@ function buildEmail(firstName: string, fullName: string): string {
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
       <tr><td style="background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);border-radius:16px 16px 0 0;padding:40px 40px 36px;text-align:center;">
         <div style="display:inline-block;background:white;border:2px solid #3ab54a;border-radius:10px;padding:8px 16px;margin-bottom:24px;">
-          <span style="font-family:Georgia,serif;font-size:22px;font-weight:900;color:#0d1a0e;letter-spacing:-0.5px;"><span style="color:#3ab54a;">T</span>Rating</span>
+          <span style="font-family:Georgia,serif;font-size:22px;font-weight:900;color:#0d1a0e;letter-spacing:-0.5px;"><span style="color:#3ab54a;">Coach</span>Cards</span>
         </div>
         <h1 style="margin:0 0 8px;font-family:Georgia,serif;font-size:32px;font-weight:900;color:white;line-height:1.15;">Welcome, ${firstName}!</h1>
         <p style="margin:0;font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6;">Your CoachCards profile is live. Here's how to get your first verified review.</p>
