@@ -95,7 +95,7 @@ function confirmPage(token, action) {
           ${btnLabel}
         </button>
       </form>
-      <a href="https://coachcards.com" style="display:block;text-align:center;margin-top:1rem;font-size:0.78rem;color:#7a8f7c;text-decoration:none;">← Back to CoachCards</a>
+      <a href="https://coachcards.co.uk" style="display:block;text-align:center;margin-top:1rem;font-size:0.78rem;color:#7a8f7c;text-decoration:none;">← Back to CoachCards</a>
     </div>
   </div>
 </body>
@@ -114,7 +114,7 @@ function removedPage(reviewerName) {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       ${reviewerName}'s review has been permanently removed. The trainer's BMP score has been recalculated and they've been notified.
     </div>
-    <a href="https://coachcards.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to CoachCards →</a>
+    <a href="https://coachcards.co.uk" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to CoachCards →</a>
   </div>
 </body>
 </html>`;
@@ -132,7 +132,7 @@ function upheldPage(reviewerName) {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       ${reviewerName}'s review will remain live. The trainer has been notified of the outcome.
     </div>
-    <a href="https://coachcards.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to CoachCards →</a>
+    <a href="https://coachcards.co.uk" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">Back to CoachCards →</a>
   </div>
 </body>
 </html>`;

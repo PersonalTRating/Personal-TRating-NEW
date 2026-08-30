@@ -13,7 +13,7 @@ export const handler = async (event) => {
   const bmp      = Math.round((rating || 0) * 20);
   const stars    = Math.round((rating || 0) * 5);
   const dumbbells = '🏋️'.repeat(stars) + '⬜'.repeat(Math.max(0, 5 - stars));
-  const siteUrl    = 'https://coachcards.com';
+  const siteUrl    = 'https://coachcards.co.uk';
   const approveUrl = `${siteUrl}/.netlify/functions/approve-review?token=${approvalToken}&action=approve`;
   const rejectUrl  = `${siteUrl}/.netlify/functions/approve-review?token=${approvalToken}&action=reject`;
   const profileUrl = `${siteUrl}/trainers/${trainerId}`;

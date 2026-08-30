@@ -7,4 +7,4 @@ Disallow: /account
 Disallow: /signout
 Disallow: /auth/
 
-Sitemap: https://coachcards.com/sitemap.xml
+Sitemap: https://coachcards.co.uk/sitemap.xml

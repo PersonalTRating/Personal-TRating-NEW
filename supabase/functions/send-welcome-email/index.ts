@@ -1,5 +1,5 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
-const FROM_ADDRESS   = 'CoachCards <hello@coachcards.com>';
+const FROM_ADDRESS   = 'CoachCards <hello@coachcards.co.uk>';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -86,14 +86,14 @@ function buildEmail(firstName: string, fullName: string): string {
           <td style="padding-left:14px;vertical-align:top;"><div style="font-weight:700;font-size:14px;color:#0d1a0e;margin-bottom:3px;">Start climbing the rankings</div><div style="font-size:13px;color:#7a8f7c;line-height:1.5;">Every verified review improves your BMP score.</div></td></tr>
         </table>
         <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:36px;">
-          <tr><td align="center"><a href="https://coachcards.com/dashboard" style="display:inline-block;background:#3ab54a;color:white;font-weight:700;font-size:15px;text-decoration:none;padding:14px 36px;border-radius:10px;">Go to my dashboard &rarr;</a></td></tr>
+          <tr><td align="center"><a href="https://coachcards.co.uk/dashboard" style="display:inline-block;background:#3ab54a;color:white;font-weight:700;font-size:15px;text-decoration:none;padding:14px 36px;border-radius:10px;">Go to my dashboard &rarr;</a></td></tr>
         </table>
         <hr style="border:none;border-top:1px solid #e8ede9;margin:0 0 28px;">
         <p style="margin:0;font-size:13px;color:#7a8f7c;line-height:1.7;">If you have any questions, just reply to this email.<br><strong style="color:#0d1a0e;">The CoachCards team</strong></p>
       </td></tr>
       <tr><td style="background:#f4f6f4;border-radius:0 0 16px 16px;padding:24px 40px;text-align:center;">
         <p style="margin:0 0 6px;font-size:12px;color:#aab8ac;">CoachCards &mdash; The UK's verified PT ranking platform</p>
-        <p style="margin:0;font-size:11px;color:#c0cac1;"><a href="https://coachcards.com/privacy" style="color:#aab8ac;text-decoration:none;">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="https://coachcards.com/terms" style="color:#aab8ac;text-decoration:none;">Terms</a></p>
+        <p style="margin:0;font-size:11px;color:#c0cac1;"><a href="https://coachcards.co.uk/privacy" style="color:#aab8ac;text-decoration:none;">Privacy Policy</a> &nbsp;&middot;&nbsp; <a href="https://coachcards.co.uk/terms" style="color:#aab8ac;text-decoration:none;">Terms</a></p>
       </td></tr>
     </table>
   </td></tr>

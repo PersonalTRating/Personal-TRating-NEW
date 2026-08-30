@@ -1,4 +1,4 @@
-const siteUrl = 'https://coachcards.com';
+const siteUrl = 'https://coachcards.co.uk';
 
 async function sendEmail({ to, subject, html }) {
   const res = await fetch('https://api.resend.com/emails', {

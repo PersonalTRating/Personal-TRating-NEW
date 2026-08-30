@@ -93,7 +93,7 @@ function successPage(reviewerName) {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       ${reviewerName}'s review is now live on their trainer's profile and will count towards the BMP score.
     </div>
-    <a href="https://coachcards.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
+    <a href="https://coachcards.co.uk" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
       Back to CoachCards →
     </a>
   </div>
@@ -113,7 +113,7 @@ function alreadyApprovedPage() {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       This review has already been approved and is live on the trainer's profile.
     </div>
-    <a href="https://coachcards.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
+    <a href="https://coachcards.co.uk" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
       Back to CoachCards →
     </a>
   </div>
@@ -133,7 +133,7 @@ function rejectedPage(reviewerName) {
     <div style="font-size:14px;color:#7a8f7c;line-height:1.7;margin-bottom:28px;">
       ${reviewerName}'s review has been permanently removed and will not appear on any profile.
     </div>
-    <a href="https://coachcards.com" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
+    <a href="https://coachcards.co.uk" style="display:inline-block;background:#3ab54a;color:white;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:700;font-size:14px;">
       Back to CoachCards →
     </a>
   </div>
