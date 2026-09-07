@@ -1221,7 +1221,7 @@
             <div class="card-head">
               <div>
                 <div class="card-title">Your Review Link</div>
-                <div class="card-sub">Share directly via WhatsApp or email</div>
+                <div class="card-sub">Share via WhatsApp, email, or use the Instagram Link Sticker for clickable stories</div>
               </div>
             </div>
             <div class="card-body">
@@ -1233,6 +1233,7 @@
                 <button id="share-link-btn" class="link-action-btn" onclick="shareReviewLink()" style="display:none;">📤 Share</button>
                 <button class="link-action-btn" onclick="shareLink('whatsapp')">📱 WhatsApp</button>
                 <button class="link-action-btn" onclick="shareLink('email')">📧 Email</button>
+                <button class="link-action-btn" onclick="downloadQRCode()">📷 QR Code</button>
               </div>
             </div>
           </div>
@@ -3132,6 +3133,34 @@
       window.open(`https://wa.me/?text=Hi! Please leave me a review on CoachCards: ${link}`);
     } else {
       window.open(`mailto:?subject=Please review my CoachCards profile&body=Hi, I'd appreciate a review on CoachCards: ${link}`);
+    }
+  }
+
+  async function downloadQRCode() {
+    const link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    showToast('⏳ Generating QR code…');
+    try {
+      const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=16&data=' + encodeURIComponent(link);
+      const res  = await fetch(qrUrl);
+      const blob = await res.blob();
+      // Try native share (mobile) — lets you post directly to Instagram
+      const file = new File([blob], 'coachcards-qr.png', { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({ files: [file], title: 'My CoachCards review QR code' });
+        showToast('✅ QR code shared!');
+      } else {
+        // Desktop: download the image
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = 'coachcards-qr.png';
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('✅ QR code downloaded!');
+      }
+    } catch {
+      showToast('⚠️ Could not generate QR code');
     }
   }
 
