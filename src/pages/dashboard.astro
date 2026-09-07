@@ -3087,7 +3087,7 @@
 
       // Try native share sheet first (mobile)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'My PT Rating Review Card' });
+        await navigator.share({ files: [file], title: 'My CoachCards Review Card' });
         showToast('✅ Card shared!');
       } else {
         // Desktop fallback: trigger download
@@ -3112,8 +3112,8 @@
     var link = document.getElementById('review-link').value;
     if (navigator.share) {
       navigator.share({
-        title: 'Leave me a review on PT Rating',
-        text: 'Hi! I\'d really appreciate it if you could leave me a verified review on PT Rating:',
+        title: 'Leave me a review on CoachCards',
+        text: 'Hi! I\'d really appreciate it if you could leave me a verified review on CoachCards:',
         url: link,
       }).catch(function(e) { if (e.name !== 'AbortError') copyLink(); });
     }
