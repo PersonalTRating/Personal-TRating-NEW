@@ -1224,7 +1224,7 @@
             </div>
             <div class="card-body">
               <div class="link-box">
-                <input class="link-url" id="review-link" readonly value="personalTrating.co.uk/review/...">
+                <input class="link-url" id="review-link" readonly value="coachcards.co.uk/review/...">
                 <button class="link-copy" onclick="copyLink()">Copy</button>
               </div>
               <div class="link-actions" style="margin-top:1rem;">
@@ -3005,7 +3005,7 @@
         // Logo bar — logo left, VERIFIED right, absolutely positioned for reliable rendering
         + '<div style="position:relative;align-self:stretch;height:52px;margin-bottom:16px;">'
           + '<div style="position:absolute;left:0;top:0;background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
-            + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="PTRating" />'
+            + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="CoachCards" />'
           + '</div>'
           + '<div style="position:absolute;right:0;top:18px;font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
         + '</div>'
@@ -3034,7 +3034,7 @@
         // Spacer
         + '<div style="flex:1;"></div>'
         // URL
-        + '<div style="color:rgba(255,255,255,0.22);font-size:0.58rem;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;text-transform:lowercase;">personalTrating.co.uk</div>'
+        + '<div style="color:rgba(255,255,255,0.22);font-size:0.58rem;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;text-transform:lowercase;">coachcards.co.uk</div>'
       + '</div>';
 
     // Draw QR using API — simple and reliable
@@ -3081,7 +3081,7 @@
 
       // Convert canvas to blob for both share and download
       var blob = await new Promise(function(resolve) { canvas.toBlob(resolve, 'image/png'); });
-      var file = new File([blob], 'ptrating-review-card.png', { type: 'image/png' });
+      var file = new File([blob], 'coachcards-review-card.png', { type: 'image/png' });
 
       // Try native share sheet first (mobile)
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -3091,7 +3091,7 @@
         // Desktop fallback: trigger download
         var url = URL.createObjectURL(blob);
         var link = document.createElement('a');
-        link.download = 'ptrating-review-card.png';
+        link.download = 'coachcards-review-card.png';
         link.href = url;
         link.click();
         URL.revokeObjectURL(url);
