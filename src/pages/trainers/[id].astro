@@ -163,21 +163,24 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
   }
   .bmp-info:hover .bmp-tooltip { display:block; }
 
-  /* Feed */
-  .feed-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:1.25rem; }
-  .feed-card { background:white; border-radius:14px; border:1px solid #e0e8e1; overflow:hidden; display:flex; flex-direction:column; }
-  .feed-card-img { width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
-  .feed-card-body { padding:1rem 1.1rem 1.1rem; flex:1; display:flex; flex-direction:column; gap:0.5rem; }
-  .feed-card-text { font-size:0.875rem; line-height:1.7; color:#111311; flex:1; }
-  .feed-card-footer { display:flex; align-items:center; justify-content:space-between; margin-top:0.25rem; }
-  .feed-card-date { font-size:0.7rem; color:#aab8ac; }
-  .like-btn { display:flex; align-items:center; gap:0.35rem; background:none; border:none; cursor:pointer; padding:0.3rem 0.5rem; border-radius:20px; transition:background 0.15s; }
-  .like-btn:hover { background:#fef2f2; }
-  .like-heart { font-size:1.1rem; line-height:1; transition:transform 0.15s; }
-  .like-btn:active .like-heart { transform:scale(1.3); }
-  .like-count { font-size:0.78rem; font-weight:600; color:#aab8ac; min-width:12px; }
-  .like-btn[data-liked="true"] .like-count { color:#e53935; }
-  @media (max-width:600px) { .feed-grid { grid-template-columns:1fr; } }
+  /* Feed — social style */
+  .feed-list { display:flex; flex-direction:column; gap:1.5rem; max-width:560px; margin:0 auto; }
+  .feed-post { background:white; border:1px solid #e0e8e1; border-radius:12px; overflow:hidden; }
+  .feed-post-header { display:flex; align-items:center; gap:0.75rem; padding:0.9rem 1rem; }
+  .feed-post-av { width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0; }
+  .feed-post-av-init { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.9rem; flex-shrink:0; }
+  .feed-post-name { font-size:0.9rem; font-weight:700; color:#111311; line-height:1.2; }
+  .feed-post-time { font-size:0.72rem; color:#aab8ac; margin-top:0.1rem; }
+  .feed-post-img { width:100%; aspect-ratio:1; object-fit:cover; display:block; cursor:pointer; }
+  .feed-post-actions { padding:0.65rem 0.75rem 0.35rem; display:flex; align-items:center; }
+  .feed-like-btn { display:flex; align-items:center; gap:0.4rem; background:none; border:none; cursor:pointer; padding:0.35rem 0.5rem; border-radius:6px; transition:background 0.1s; font-family:inherit; }
+  .feed-like-btn:hover { background:#fef2f2; }
+  .feed-like-icon { font-size:1.5rem; line-height:1; transition:transform 0.15s; display:block; }
+  .feed-like-btn:active .feed-like-icon { transform:scale(1.3); }
+  .feed-like-count { font-size:0.85rem; font-weight:700; color:#111311; }
+  .feed-post-caption { padding:0 1rem 0.5rem; font-size:0.875rem; line-height:1.75; color:#111311; }
+  .feed-caption-name { font-weight:700; margin-right:0.4rem; }
+  .feed-post-date { padding:0 1rem 0.9rem; font-size:0.72rem; color:#aab8ac; text-transform:uppercase; letter-spacing:0.5px; }
 
   /* ── Chat ── */
   .btn-chat {
@@ -550,7 +553,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     <h2 style="font-family:'Playfair Display',serif;font-size:1.85rem;font-weight:900;color:#111311;margin-top:0.5rem;margin-bottom:1.5rem;">
       From {trainer.name}
     </h2>
-    <div id="trainer-feed-list" class="feed-grid"></div>
+    <div id="trainer-feed-list" class="feed-list"></div>
   </div>
 </section>
 <div id="trainer-feed-data" data-trainer-id={trainer.id} style="display:none;"></div>
@@ -755,24 +758,54 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       if (l.user_id === currentUserId) userLiked.add(l.post_id);
     });
 
+    // Read trainer display data for post headers
+    const _td       = (document.getElementById('chat-trainer-data') as HTMLElement).dataset;
+    const _tName    = _td.trainerName    || '';
+    const _tAvUrl   = _td.avatarUrl      || '';
+    const _tAvInit  = _td.avatarInitials || '';
+    const _tAvBg    = _td.avatarBg       || '#eaf7ec';
+    const _tAvColor = _td.avatarColor    || '#2a9438';
+
+    const relTime = (iso: string): string => {
+      const diff = Date.now() - new Date(iso).getTime();
+      const m = Math.floor(diff / 60000);
+      const h = Math.floor(diff / 3600000);
+      const d = Math.floor(diff / 86400000);
+      if (m < 1)  return 'Just now';
+      if (m < 60) return `${m}m`;
+      if (h < 24) return `${h}h`;
+      if (d <  7) return `${d}d`;
+      return new Date(iso).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+    };
+
+    const avatarHtml = _tAvUrl
+      ? `<img class="feed-post-av" src="${_tAvUrl}" alt="" />`
+      : `<div class="feed-post-av-init" style="background:${_tAvBg};color:${_tAvColor};">${_tAvInit}</div>`;
+
     section.style.display = '';
     list.innerHTML = posts.map((p: any) => {
-      const date    = new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
-      const liked   = userLiked.has(p.id);
-      const count   = likeMap[p.id] ?? 0;
-      const safeContent = (p.content || '').replace(/"/g, '&quot;');
-      return `<div class="feed-card" data-img="${p.image_url || ''}" data-content="${safeContent}" data-date="${date}" onclick="openPostLightbox(this)">
-        ${p.image_url ? `<img src="${p.image_url}" class="feed-card-img" alt="" loading="lazy" />` : ''}
-        <div class="feed-card-body">
-          ${p.content ? `<div class="feed-card-text">${p.content}</div>` : ''}
-          <div class="feed-card-footer">
-            <div class="feed-card-date">${date}</div>
-            <button class="like-btn" id="like-btn-${p.id}" data-liked="${liked}" onclick="toggleLike('${p.id}')" title="${currentUserId ? (liked ? 'Unlike' : 'Like') : 'Sign in to like'}">
-              <span class="like-heart" style="color:${liked ? '#e53935' : '#d1d5d2'};">${liked ? '❤️' : '🤍'}</span>
-              <span class="like-count" id="like-count-${p.id}">${count > 0 ? count : ''}</span>
-            </button>
+      const date        = new Date(p.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const liked       = userLiked.has(p.id);
+      const count       = likeMap[p.id] ?? 0;
+      const safeContent = (p.content || '').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const likeTitle   = currentUserId ? (liked ? 'Unlike' : 'Like') : 'Sign in to like';
+      return `<div class="feed-post">
+        <div class="feed-post-header">
+          ${avatarHtml}
+          <div>
+            <div class="feed-post-name">${_tName}</div>
+            <div class="feed-post-time">${relTime(p.created_at)}</div>
           </div>
         </div>
+        ${p.image_url ? `<img class="feed-post-img" src="${p.image_url}" alt="" loading="lazy" data-img="${p.image_url}" data-content="${safeContent}" data-date="${date}" onclick="openPostLightbox(this)" />` : ''}
+        <div class="feed-post-actions">
+          <button class="feed-like-btn" id="like-btn-${p.id}" data-liked="${liked}" onclick="toggleLike('${p.id}')" title="${likeTitle}">
+            <span class="feed-like-icon">${liked ? '❤️' : '🤍'}</span>
+            <span class="feed-like-count" id="like-count-${p.id}">${count > 0 ? count + ' like' + (count === 1 ? '' : 's') : ''}</span>
+          </button>
+        </div>
+        ${p.content ? `<div class="feed-post-caption"><span class="feed-caption-name">${_tName}</span>${safeContent}</div>` : ''}
+        <div class="feed-post-date">${date}</div>
       </div>`;
     }).join('');
 
@@ -780,22 +813,22 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       if (!currentUserId) { window.location.href = '/login'; return; }
       const btn     = document.getElementById('like-btn-' + postId) as HTMLButtonElement;
       const countEl = document.getElementById('like-count-' + postId) as HTMLElement;
-      const heart   = btn.querySelector('.like-heart') as HTMLElement;
+      const heart   = btn.querySelector('.feed-like-icon') as HTMLElement;
       const isLiked = btn.dataset.liked === 'true';
-      const cur     = parseInt(countEl.textContent || '0', 10);
+      const curText = countEl.textContent || '';
+      const cur     = parseInt(curText) || 0;
 
-      // Optimistic update
+      const fmtLikes = (n: number) => n > 0 ? n + ' like' + (n === 1 ? '' : 's') : '';
+
       if (isLiked) {
-        btn.dataset.liked    = 'false';
-        heart.textContent    = '🤍';
-        heart.style.color    = '#d1d5d2';
-        countEl.textContent  = cur - 1 > 0 ? String(cur - 1) : '';
+        btn.dataset.liked   = 'false';
+        heart.textContent   = '🤍';
+        countEl.textContent = fmtLikes(cur - 1);
         await supabase.from('post_likes').delete().eq('post_id', postId).eq('user_id', currentUserId);
       } else {
-        btn.dataset.liked    = 'true';
-        heart.textContent    = '❤️';
-        heart.style.color    = '#e53935';
-        countEl.textContent  = String(cur + 1);
+        btn.dataset.liked   = 'true';
+        heart.textContent   = '❤️';
+        countEl.textContent = fmtLikes(cur + 1);
         await supabase.from('post_likes').insert({ post_id: postId, user_id: currentUserId });
       }
     };
@@ -1057,8 +1090,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
   transition:background 0.15s; z-index:1;
 }
 #pt-lightbox-close:hover { background:rgba(255,255,255,0.28); }
-.feed-card { cursor:pointer; }
-.feed-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.1); transform:translateY(-2px); transition:box-shadow 0.2s,transform 0.2s; }
+.feed-post-img:hover { opacity:0.95; }
 </style>
 
 <!-- ── LIGHTBOX ── -->
