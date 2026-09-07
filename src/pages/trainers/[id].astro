@@ -266,6 +266,26 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     .chat-panel { bottom:0; right:0; left:0; width:100%; border-bottom-left-radius:0; border-bottom-right-radius:0; height:72vh; }
   }
 
+  /* ── Profile gate ── */
+  #profile-gate-wrap { position:relative; }
+  #profile-gate-wrap.pg-gated { max-height:260px; overflow:hidden; }
+  #profile-gate-overlay {
+    position:absolute; bottom:0; left:0; right:0;
+    background:linear-gradient(to bottom, transparent 0%, rgba(247,249,247,0.92) 30%, #f7f9f7 60%);
+    padding:5rem 1.5rem 3rem;
+    display:flex; flex-direction:column; align-items:center; z-index:20;
+  }
+  #profile-gate-wrap:not(.pg-gated) #profile-gate-overlay { display:none; }
+  .pg-card {
+    background:white; border:1.5px solid #e0e8e1; border-radius:20px;
+    padding:2.25rem 2.5rem; text-align:center; max-width:420px; width:100%;
+    box-shadow:0 8px 40px rgba(0,0,0,0.10);
+  }
+  @media (max-width:600px) {
+    .pg-card { padding:1.75rem 1.25rem; }
+    #profile-gate-wrap.pg-gated { max-height:200px; }
+  }
+
   @media (max-width:860px) {
     .tp-hero-inner   { flex-direction:column !important; align-items:flex-start !important; gap:1.5rem !important; }
     .tp-bmp-box      { align-self:stretch !important; text-align:center !important; }
@@ -420,6 +440,9 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     </div>
   </div>
 )}
+
+<!-- ── PROFILE GATE WRAP — hidden for logged-out users ── -->
+<div id="profile-gate-wrap" class="pg-gated">
 
 <!-- ── STATS ROW — panel 1: white ── -->
 <section style="background:white;border-top:3px solid #3ab54a;border-bottom:1px solid #e0e8e1;padding:2rem 0;">
@@ -636,6 +659,28 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
   </div>
 </section>
 
+  <!-- ── Signup gate overlay ── -->
+  <div id="profile-gate-overlay">
+    <div class="pg-card">
+      <div style="font-size:2rem;margin-bottom:0.75rem;">🔒</div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:#111311;margin-bottom:0.5rem;line-height:1.2;">
+        Create a free account to view the full profile
+      </h3>
+      <p style="font-size:0.875rem;color:#6b7f6d;line-height:1.7;margin-bottom:1.75rem;">
+        See all verified reviews, stats, training locations, and more for {trainer.name}.
+      </p>
+      <a href="/signup" style="display:block;width:100%;padding:0.9rem;background:#3ab54a;color:white;border:none;border-radius:10px;font-family:'Manrope',sans-serif;font-weight:700;font-size:0.95rem;text-decoration:none;text-align:center;margin-bottom:0.85rem;box-sizing:border-box;transition:background 0.2s;"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        Create free account →
+      </a>
+      <a href="/login" style="font-size:0.82rem;color:#8a8f8a;text-decoration:none;font-weight:600;">
+        Already have an account? <span style="color:#2a9438;">Sign in</span>
+      </a>
+    </div>
+  </div>
+
+</div><!-- /profile-gate-wrap -->
+
 <!-- ── CTA — panel 4: dark ── -->
 <section style="padding:5.5rem 0;background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);text-align:center;">
   <div style="max-width:560px;margin:0 auto;padding:0 2.5rem;">
@@ -761,6 +806,9 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
   import { supabase } from '../../lib/supabase';
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
+    // Lift the profile gate for any logged-in user
+    document.getElementById('profile-gate-wrap')?.classList.remove('pg-gated');
+
     const { data: trainerRow } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
     if (trainerRow) {
       // Hide every review CTA and chat button — trainers cannot leave reviews or self-chat
