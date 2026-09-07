@@ -14,10 +14,12 @@
     --border: #e0e8e1; --text: #0d1a0e; --muted: #7a8f7c; --off: #f7f9f7;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
+  html { overflow-x:hidden; max-width:100%; }
   body {
     font-family:'Manrope',sans-serif; color:var(--text);
-    min-height:100vh; display:flex;
+    min-height:100vh; display:flex; overflow-x:hidden; max-width:100%;
   }
+  input, select, textarea { font-size:max(16px, 1em); }
 
   /* ── Left panel ── */
   .auth-left {

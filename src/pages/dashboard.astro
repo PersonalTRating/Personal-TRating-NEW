@@ -27,8 +27,10 @@
     --sidebar-w:   240px;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior:smooth; }
-  body { background:var(--off); font-family:'Manrope',sans-serif; color:var(--text); display:flex; min-height:100vh; }
+  html { scroll-behavior:smooth; overflow-x:hidden; max-width:100%; }
+  body { background:var(--off); font-family:'Manrope',sans-serif; color:var(--text); display:flex; min-height:100vh; overflow-x:hidden; max-width:100%; }
+  /* Prevent iOS auto-zoom on input focus */
+  input, select, textarea { font-size:max(16px, 1em); }
 
   /* ── SIDEBAR ── */
   .sidebar {
