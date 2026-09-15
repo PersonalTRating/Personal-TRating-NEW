@@ -2838,32 +2838,30 @@
 
     var reader = new FileReader();
     reader.onload = function(e) {
-      var img = document.getElementById('crop-img') as HTMLImageElement;
+      var img = document.getElementById('crop-img');
       img.onload = function() {
         _cropNatW = img.naturalWidth;
         _cropNatH = img.naturalHeight;
-        // Fit to cover the circle at default zoom
         var minScale = Math.max(CROP_SIZE / _cropNatW, CROP_SIZE / _cropNatH);
         _cropScale = minScale;
         _cropOffX  = 0;
         _cropOffY  = 0;
-        var slider = document.getElementById('crop-zoom') as HTMLInputElement;
+        var slider = document.getElementById('crop-zoom');
         slider.min   = String(Math.round(minScale * 100));
         slider.max   = String(Math.round(minScale * 300));
         slider.value = String(Math.round(minScale * 100));
         applyCropTransform();
-        document.getElementById('crop-modal')!.classList.add('open');
+        document.getElementById('crop-modal').classList.add('open');
       };
-      img.src = e.target!.result as string;
+      img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   }
 
   function applyCropTransform() {
-    var img = document.getElementById('crop-img') as HTMLImageElement;
+    var img = document.getElementById('crop-img');
     var w = _cropNatW * _cropScale;
     var h = _cropNatH * _cropScale;
-    // Clamp so image always covers the circle
     var maxOffX = (w - CROP_SIZE) / 2;
     var maxOffY = (h - CROP_SIZE) / 2;
     _cropOffX = Math.max(-maxOffX, Math.min(maxOffX, _cropOffX));
@@ -2882,37 +2880,36 @@
   }
 
   function closeCropModal() {
-    document.getElementById('crop-modal')!.classList.remove('open');
+    document.getElementById('crop-modal').classList.remove('open');
     _cropFile = null;
   }
 
   // Drag handlers on the crop stage
   (function() {
-    var stage = document.getElementById('crop-stage')!;
-    stage.addEventListener('mousedown',  function(e: MouseEvent)  { _cropDragging = true;  _cropLastX = e.clientX; _cropLastY = e.clientY; e.preventDefault(); });
-    stage.addEventListener('touchstart', function(e: TouchEvent)  { _cropDragging = true;  _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY; }, { passive:true });
-    window.addEventListener('mousemove', function(e: MouseEvent)  { if (!_cropDragging) return; _cropOffX += e.clientX - _cropLastX; _cropOffY += e.clientY - _cropLastY; _cropLastX = e.clientX; _cropLastY = e.clientY; applyCropTransform(); });
-    window.addEventListener('touchmove', function(e: TouchEvent)  { if (!_cropDragging) return; _cropOffX += e.touches[0].clientX - _cropLastX; _cropOffY += e.touches[0].clientY - _cropLastY; _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY; applyCropTransform(); }, { passive:true });
+    var stage = document.getElementById('crop-stage');
+    if (!stage) return;
+    stage.addEventListener('mousedown',  function(e) { _cropDragging = true;  _cropLastX = e.clientX; _cropLastY = e.clientY; e.preventDefault(); });
+    stage.addEventListener('touchstart', function(e) { _cropDragging = true;  _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY; }, { passive:true });
+    window.addEventListener('mousemove', function(e) { if (!_cropDragging) return; _cropOffX += e.clientX - _cropLastX; _cropOffY += e.clientY - _cropLastY; _cropLastX = e.clientX; _cropLastY = e.clientY; applyCropTransform(); });
+    window.addEventListener('touchmove', function(e) { if (!_cropDragging) return; _cropOffX += e.touches[0].clientX - _cropLastX; _cropOffY += e.touches[0].clientY - _cropLastY; _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY; applyCropTransform(); }, { passive:true });
     window.addEventListener('mouseup',   function() { _cropDragging = false; });
     window.addEventListener('touchend',  function() { _cropDragging = false; });
   })();
 
   async function saveCrop() {
-    var saveBtn = document.querySelector('.crop-save') as HTMLButtonElement;
+    var saveBtn = document.querySelector('.crop-save');
     saveBtn.textContent = 'Saving…';
     saveBtn.disabled = true;
 
-    // Render the cropped square to a canvas
     var canvas = document.createElement('canvas');
     canvas.width = canvas.height = 400;
-    var ctx = canvas.getContext('2d')!;
-    var img = document.getElementById('crop-img') as HTMLImageElement;
+    var ctx = canvas.getContext('2d');
+    var img = document.getElementById('crop-img');
 
     var w = _cropNatW * _cropScale;
     var h = _cropNatH * _cropScale;
     var left = (CROP_SIZE - w) / 2 + _cropOffX;
     var top  = (CROP_SIZE - h) / 2 + _cropOffY;
-    // Source rect in natural image coords
     var sx = -left / _cropScale;
     var sy = -top  / _cropScale;
     var sw = CROP_SIZE / _cropScale;
@@ -2938,7 +2935,7 @@
 
       await window['__ptSupabase'].from('trainers').update({ avatar_url: urlWithBust }).eq('id', trainerId);
 
-      var preview = document.getElementById('profile-avatar-preview')!;
+      var preview = document.getElementById('profile-avatar-preview');
       preview.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;" />';
       preview.style.background = 'transparent';
       var uploadBtn = document.getElementById('avatar-upload-btn');
