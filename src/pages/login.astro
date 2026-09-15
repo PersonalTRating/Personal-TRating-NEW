@@ -135,6 +135,10 @@
     <h1>Welcome back</h1>
     <p class="auth-sub">Sign in to your PT dashboard</p>
 
+    <div id="confirmed-banner" style="display:none;background:#eaf7ec;border:1px solid #b8ddc0;color:#1a5c22;padding:0.75rem 1rem;border-radius:8px;font-size:0.85rem;font-weight:600;margin-bottom:1rem;">
+      ✅ Email confirmed! Sign in to access your account.
+    </div>
+
     <div class="auth-error" id="error-msg"></div>
 
     <form id="login-form">
@@ -167,6 +171,11 @@
 
   const _loginParams   = new URLSearchParams(window.location.search);
   const _loginRedirect = _loginParams.get('redirect') || null;
+
+  if (_loginParams.get('confirmed') === '1') {
+    const banner = document.getElementById('confirmed-banner');
+    if (banner) banner.style.display = 'block';
+  }
 
   // No auto-redirect on login page — let the user sign in explicitly.
   // (Auto-redirect caused loops when a stale session for a different account was cached.)

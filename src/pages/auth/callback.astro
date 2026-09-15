@@ -42,13 +42,6 @@
   <script>
     import { supabase } from '../../lib/supabase';
 
-    async function redirectByRole() {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { window.location.href = '/login'; return; }
-      const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
-      window.location.href = trainer ? '/dashboard' : '/account';
-    }
-
     (async () => {
       // ── PKCE flow ──────────────────────────────────────────────────────
       const params = new URLSearchParams(window.location.search);
@@ -56,24 +49,30 @@
 
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
-        if (!error) { await redirectByRole(); return; }
-        showError('Confirmation failed: ' + error.message);
+        if (error) { showError('Confirmation failed: ' + error.message); return; }
+        // Sign out immediately so they log in fresh
+        await supabase.auth.signOut();
+        window.location.href = '/login?confirmed=1';
         return;
       }
 
       // ── Implicit / hash flow ───────────────────────────────────────────
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) { await redirectByRole(); return; }
+      if (session) {
+        await supabase.auth.signOut();
+        window.location.href = '/login?confirmed=1';
+        return;
+      }
 
-      // Wait briefly — supabase-js processes the hash asynchronously
       const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, sess) => {
         if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && sess) {
           subscription.unsubscribe();
-          await redirectByRole();
+          await supabase.auth.signOut();
+          window.location.href = '/login?confirmed=1';
         }
       });
 
-      // Safety net: if nothing resolves in 8 seconds, send to login
+      // Safety net
       setTimeout(() => {
         subscription.unsubscribe();
         window.location.href = '/login';
