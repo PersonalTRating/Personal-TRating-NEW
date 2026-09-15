@@ -436,7 +436,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 
 <!-- ── NEW TRAINER BANNER ── -->
 {!hasReviews && (
-  <div style="background:linear-gradient(90deg,#eaf7ec,#f4f9f4);border-bottom:1px solid #c3e6c8;padding:0.85rem 0;">
+  <div id="tp-new-banner" style="background:linear-gradient(90deg,#eaf7ec,#f4f9f4);border-bottom:1px solid #c3e6c8;padding:0.85rem 0;">
     <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.75rem;">
       <div style="display:flex;align-items:center;gap:0.75rem;">
         <span style="background:#3ab54a;color:white;font-size:0.65rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:20px;letter-spacing:1px;text-transform:uppercase;">New</span>
@@ -455,34 +455,34 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
   <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
     <div class="tp-stats-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;">
 
-      <div class="tp-stat bmp-info">
+      <div class="tp-stat bmp-info" id="tp-bmp-stat">
         <div class="bmp-tooltip">Scored 0–100 using rating quality (up to 70 pts) + verified review volume (up to 30 pts).</div>
         <div style="font-size:0.62rem;color:#8a8f8a;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:0.5rem;">BMP Score ⓘ</div>
         {hasBmp ? (
-          <div style="font-size:2.1rem;font-weight:900;color:#2a9438;line-height:1;">{trainer.bmp_score}</div>
+          <div id="tp-bmp-val" style="font-size:2.1rem;font-weight:900;color:#2a9438;line-height:1;">{trainer.bmp_score}</div>
         ) : (
-          <div style="font-size:0.9rem;font-weight:700;color:#c0ccc1;line-height:1.3;margin-top:0.25rem;">Ranking<br/>in progress</div>
+          <div id="tp-bmp-val" style="font-size:0.9rem;font-weight:700;color:#c0ccc1;line-height:1.3;margin-top:0.25rem;">Ranking<br/>in progress</div>
         )}
         <div style="font-size:0.7rem;color:#8a8f8a;margin-top:0.25rem;">Body Muscle %</div>
       </div>
 
-      <div class="tp-stat">
+      <div class="tp-stat" id="tp-rating-stat">
         <div style="font-size:0.62rem;color:#8a8f8a;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:0.5rem;">Rating</div>
         {hasReviews ? (
           <>
-            <div style="font-size:2.1rem;font-weight:900;color:#111311;line-height:1;">{trainer.star_rating}</div>
-            <div style="margin-top:0.35rem;display:flex;gap:3px;justify-content:center;">
+            <div id="tp-rating-val" style="font-size:2.1rem;font-weight:900;color:#111311;line-height:1;">{trainer.star_rating}</div>
+            <div id="tp-rating-stars" style="margin-top:0.35rem;display:flex;gap:3px;justify-content:center;">
               <span set:html={bmpDumbbells(trainer.bmp_score, 14)} />
             </div>
           </>
         ) : (
-          <div style="font-size:0.82rem;font-weight:600;color:#c0ccc1;margin-top:0.4rem;line-height:1.4;">No reviews<br/>yet</div>
+          <div id="tp-rating-val" style="font-size:0.82rem;font-weight:600;color:#c0ccc1;margin-top:0.4rem;line-height:1.4;">No reviews<br/>yet</div>
         )}
       </div>
 
       <div class="tp-stat">
         <div style="font-size:0.62rem;color:#8a8f8a;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:0.5rem;">Reviews</div>
-        <div style="font-size:2.1rem;font-weight:900;color:#111311;line-height:1;">{reviews.length}</div>
+        <div id="tp-reviews-val" style="font-size:2.1rem;font-weight:900;color:#111311;line-height:1;">{reviews.length}</div>
         <div style="font-size:0.7rem;color:#8a8f8a;margin-top:0.25rem;">Verified clients</div>
       </div>
 
@@ -1195,6 +1195,51 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 
     await supabase.from('profile_views').insert({ trainer_id: trainerId });
     localStorage.setItem(key, String(Date.now()));
+  })();
+</script>
+
+<!-- Live stats patch — overrides stale SSG data with current Supabase values -->
+<script>
+  import { supabase } from '../../lib/supabase';
+  (async () => {
+    const trainerId = (document.getElementById('trainer-feed-data') as HTMLElement | null)?.dataset.trainerId;
+    if (!trainerId) return;
+
+    // Fetch live trainer row and approved review count in parallel
+    const [trainerRes, reviewsRes] = await Promise.all([
+      supabase.from('trainers').select('bmp_score, star_rating').eq('id', trainerId).single(),
+      supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('trainer_id', trainerId).eq('is_verified', true),
+    ]);
+
+    const liveBmp    = trainerRes.data?.bmp_score  ?? 0;
+    const liveRating = trainerRes.data?.star_rating ?? 0;
+    const liveCount  = reviewsRes.count             ?? 0;
+
+    // Patch BMP score
+    const bmpVal = document.getElementById('tp-bmp-val');
+    if (bmpVal) {
+      if (liveBmp > 0) {
+        bmpVal.style.cssText = 'font-size:2.1rem;font-weight:900;color:#2a9438;line-height:1;';
+        bmpVal.textContent = String(liveBmp);
+      }
+    }
+
+    // Patch rating
+    const ratingVal = document.getElementById('tp-rating-val');
+    if (ratingVal && liveCount > 0 && liveRating > 0) {
+      ratingVal.style.cssText = 'font-size:2.1rem;font-weight:900;color:#111311;line-height:1;';
+      ratingVal.textContent = String(liveRating);
+    }
+
+    // Patch reviews count
+    const reviewsVal = document.getElementById('tp-reviews-val');
+    if (reviewsVal) reviewsVal.textContent = String(liveCount);
+
+    // Hide "new trainer" banner if they now have reviews
+    if (liveCount > 0) {
+      const banner = document.getElementById('tp-new-banner');
+      if (banner) banner.style.display = 'none';
+    }
   })();
 </script>
 </Layout>
