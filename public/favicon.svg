@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="8" fill="#3ab54a"/>
-  <text x="16" y="22" font-family="Georgia,serif" font-size="14" font-weight="700" fill="white" text-anchor="middle">PT</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="16" fill="#0d1a0e"/>
+  <text x="50" y="62" font-family="Arial Black, Arial, sans-serif" font-weight="900" font-size="44" fill="#ffffff" text-anchor="middle" letter-spacing="-1">CC</text>
+  <rect x="18" y="72" width="64" height="5" rx="2.5" fill="#3ab54a"/>
 </svg>
