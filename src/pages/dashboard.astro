@@ -3205,23 +3205,27 @@
         imageTimeout: 10000,
       });
 
-      // Convert canvas to blob for both share and download
+      // Convert canvas to blob
       var blob = await new Promise(function(resolve) { canvas.toBlob(resolve, 'image/png'); });
-      var file = new File([blob], 'coachcards-review-card.png', { type: 'image/png' });
 
-      // Try native share sheet first (mobile)
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      // On touch-only devices (phones/tablets) use native share so they can post to Instagram etc.
+      // On desktop always download directly — no share sheet.
+      var isTouchOnly = navigator.maxTouchPoints > 1 && !window.matchMedia('(pointer:fine)').matches;
+      var file = new File([blob], 'coachcards-review-card.png', { type: 'image/png' });
+      if (isTouchOnly && navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: 'My CoachCards Review Card' });
         showToast('✅ Card shared!');
       } else {
-        // Desktop fallback: trigger download
         var url = URL.createObjectURL(blob);
-        var link = document.createElement('a');
-        link.download = 'coachcards-review-card.png';
-        link.href = url;
-        link.click();
+        var a = document.createElement('a');
+        a.download = 'coachcards-review-card.png';
+        a.href = url;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('✅ Card saved — share to your Story!');
+        showToast('✅ Card downloaded!');
       }
     } catch(e) {
       if (e && e.name !== 'AbortError') {
@@ -3273,8 +3277,9 @@
         canvas.getContext('2d').drawImage(img, 0, 0, 400, 400);
         canvas.toBlob(function(blob) {
           if (!blob) { window.open(qrUrl, '_blank'); showToast('✅ QR opened — right-click to save'); return; }
+          var isTouchOnly = navigator.maxTouchPoints > 1 && !window.matchMedia('(pointer:fine)').matches;
           var file = new File([blob], 'coachcards-qr.png', { type: 'image/png' });
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          if (isTouchOnly && navigator.canShare && navigator.canShare({ files: [file] })) {
             navigator.share({ files: [file], title: 'My CoachCards QR code' }).catch(function() {});
             showToast('✅ QR code shared!');
           } else {
