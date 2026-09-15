@@ -281,6 +281,38 @@
   }
   .avatar-preview-circle:hover { border-color:var(--green); }
 
+  /* ── Crop modal ────────────────────────────────────────── */
+  #crop-modal {
+    display:none; position:fixed; inset:0; z-index:9000;
+    background:rgba(0,0,0,0.72); align-items:center; justify-content:center;
+  }
+  #crop-modal.open { display:flex; }
+  .crop-box {
+    background:white; border-radius:20px; padding:1.75rem;
+    width:340px; max-width:95vw; box-shadow:0 20px 60px rgba(0,0,0,0.35);
+  }
+  .crop-box h3 { font-size:1rem; font-weight:800; color:#0d1a0e; margin-bottom:0.25rem; }
+  .crop-box p  { font-size:0.78rem; color:#7a8f7c; margin-bottom:1.25rem; }
+  #crop-stage {
+    width:280px; height:280px; margin:0 auto 1.25rem;
+    border-radius:50%; overflow:hidden; position:relative;
+    cursor:grab; background:#111; user-select:none;
+    box-shadow:0 0 0 4px #3ab54a;
+  }
+  #crop-stage:active { cursor:grabbing; }
+  #crop-img {
+    position:absolute; transform-origin:0 0;
+    pointer-events:none; max-width:none;
+  }
+  .crop-zoom-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem; }
+  .crop-zoom-row label { font-size:0.75rem; font-weight:700; color:#444; white-space:nowrap; }
+  #crop-zoom { flex:1; accent-color:#3ab54a; }
+  .crop-actions { display:flex; gap:0.75rem; }
+  .crop-cancel { flex:1; padding:0.75rem; background:white; border:1.5px solid #e0e8e1; border-radius:8px; font-family:'Manrope',sans-serif; font-weight:700; font-size:0.875rem; cursor:pointer; color:#444; }
+  .crop-cancel:hover { background:#f4f6f4; }
+  .crop-save   { flex:2; padding:0.75rem; background:#3ab54a; border:none; border-radius:8px; font-family:'Manrope',sans-serif; font-weight:700; font-size:0.875rem; cursor:pointer; color:white; }
+  .crop-save:hover { background:#2a9438; }
+
   /* ── Colour swatches ───────────────────────────────────── */
   .colour-swatch {
     width:38px; height:38px; border-radius:50%;
@@ -1508,6 +1540,25 @@
 </div>
 
 <div class="copy-toast" id="copy-toast">✅ Link copied to clipboard!</div>
+
+<!-- ── Avatar crop modal ── -->
+<div id="crop-modal">
+  <div class="crop-box">
+    <h3>Adjust your profile photo</h3>
+    <p>Drag to reposition · use the slider to zoom</p>
+    <div id="crop-stage">
+      <img id="crop-img" src="" alt="" draggable="false" />
+    </div>
+    <div class="crop-zoom-row">
+      <label>🔍 Zoom</label>
+      <input id="crop-zoom" type="range" min="100" max="300" value="100" step="1" oninput="cropZoom(this.value)" />
+    </div>
+    <div class="crop-actions">
+      <button class="crop-cancel" onclick="closeCropModal()">Cancel</button>
+      <button class="crop-save"   onclick="saveCrop()">Save Photo</button>
+    </div>
+  </div>
+</div>
 
 <script>
   import { supabase } from '../lib/supabase';
@@ -2770,61 +2821,135 @@
 </script>
 
 <script is:inline>
-  // ── Avatar photo upload ──────────────────────────────────────────────────
-  async function handleAvatarUpload(input) {
-    const file = input.files[0];
+  // ── Avatar crop state ────────────────────────────────────────────────────
+  var _cropFile = null;
+  var _cropOffX = 0, _cropOffY = 0;
+  var _cropScale = 1;
+  var _cropNatW = 0, _cropNatH = 0;
+  var _cropDragging = false, _cropLastX = 0, _cropLastY = 0;
+  var CROP_SIZE = 280; // px — matches #crop-stage
+
+  function handleAvatarUpload(input) {
+    var file = input.files[0];
+    input.value = '';
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) { showToast('❌ Image too large — max 5 MB'); return; }
+    _cropFile = file;
 
-    // Size guard — 5 MB max
-    if (file.size > 5 * 1024 * 1024) {
-      showToast('❌ Image too large — max 5 MB');
-      return;
-    }
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var img = document.getElementById('crop-img') as HTMLImageElement;
+      img.onload = function() {
+        _cropNatW = img.naturalWidth;
+        _cropNatH = img.naturalHeight;
+        // Fit to cover the circle at default zoom
+        var minScale = Math.max(CROP_SIZE / _cropNatW, CROP_SIZE / _cropNatH);
+        _cropScale = minScale;
+        _cropOffX  = 0;
+        _cropOffY  = 0;
+        var slider = document.getElementById('crop-zoom') as HTMLInputElement;
+        slider.min   = String(Math.round(minScale * 100));
+        slider.max   = String(Math.round(minScale * 300));
+        slider.value = String(Math.round(minScale * 100));
+        applyCropTransform();
+        document.getElementById('crop-modal')!.classList.add('open');
+      };
+      img.src = e.target!.result as string;
+    };
+    reader.readAsDataURL(file);
+  }
 
-    const preview   = document.getElementById('profile-avatar-preview');
-    const trainerId = window['__ptTrainerId'];
-    const userId    = window['__ptUserId'];
-    if (!trainerId || !userId) return;
+  function applyCropTransform() {
+    var img = document.getElementById('crop-img') as HTMLImageElement;
+    var w = _cropNatW * _cropScale;
+    var h = _cropNatH * _cropScale;
+    // Clamp so image always covers the circle
+    var maxOffX = (w - CROP_SIZE) / 2;
+    var maxOffY = (h - CROP_SIZE) / 2;
+    _cropOffX = Math.max(-maxOffX, Math.min(maxOffX, _cropOffX));
+    _cropOffY = Math.max(-maxOffY, Math.min(maxOffY, _cropOffY));
+    var left = (CROP_SIZE - w) / 2 + _cropOffX;
+    var top  = (CROP_SIZE - h) / 2 + _cropOffY;
+    img.style.width  = w + 'px';
+    img.style.height = h + 'px';
+    img.style.left   = left + 'px';
+    img.style.top    = top  + 'px';
+  }
 
-    preview.innerHTML = '<div style="font-size:1.4rem;animation:spin 1s linear infinite;">⏳</div>';
+  function cropZoom(val) {
+    _cropScale = parseInt(val) / 100;
+    applyCropTransform();
+  }
 
-    // Use user ID as folder so the storage RLS policy matches auth.uid()
-    const ext  = file.name.split('.').pop() || 'jpg';
-    const path = `${userId}/avatar.${ext}`;
+  function closeCropModal() {
+    document.getElementById('crop-modal')!.classList.remove('open');
+    _cropFile = null;
+  }
 
-    const { error: uploadErr } = await window['__ptSupabase'].storage
-      .from('avatars')
-      .upload(path, file, { upsert: true, contentType: file.type });
+  // Drag handlers on the crop stage
+  (function() {
+    var stage = document.getElementById('crop-stage')!;
+    stage.addEventListener('mousedown',  function(e: MouseEvent)  { _cropDragging = true;  _cropLastX = e.clientX; _cropLastY = e.clientY; e.preventDefault(); });
+    stage.addEventListener('touchstart', function(e: TouchEvent)  { _cropDragging = true;  _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY; }, { passive:true });
+    window.addEventListener('mousemove', function(e: MouseEvent)  { if (!_cropDragging) return; _cropOffX += e.clientX - _cropLastX; _cropOffY += e.clientY - _cropLastY; _cropLastX = e.clientX; _cropLastY = e.clientY; applyCropTransform(); });
+    window.addEventListener('touchmove', function(e: TouchEvent)  { if (!_cropDragging) return; _cropOffX += e.touches[0].clientX - _cropLastX; _cropOffY += e.touches[0].clientY - _cropLastY; _cropLastX = e.touches[0].clientX; _cropLastY = e.touches[0].clientY; applyCropTransform(); }, { passive:true });
+    window.addEventListener('mouseup',   function() { _cropDragging = false; });
+    window.addEventListener('touchend',  function() { _cropDragging = false; });
+  })();
 
-    if (uploadErr) {
-      showToast('❌ Upload failed — ' + uploadErr.message);
-      // Restore initials
-      preview.textContent = window['__ptInitials'] || '?';
-      return;
-    }
+  async function saveCrop() {
+    var saveBtn = document.querySelector('.crop-save') as HTMLButtonElement;
+    saveBtn.textContent = 'Saving…';
+    saveBtn.disabled = true;
 
-    const { data: { publicUrl } } = window['__ptSupabase'].storage
-      .from('avatars')
-      .getPublicUrl(path);
+    // Render the cropped square to a canvas
+    var canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 400;
+    var ctx = canvas.getContext('2d')!;
+    var img = document.getElementById('crop-img') as HTMLImageElement;
 
-    // Cache-bust the URL
-    const urlWithBust = publicUrl + '?t=' + Date.now();
+    var w = _cropNatW * _cropScale;
+    var h = _cropNatH * _cropScale;
+    var left = (CROP_SIZE - w) / 2 + _cropOffX;
+    var top  = (CROP_SIZE - h) / 2 + _cropOffY;
+    // Source rect in natural image coords
+    var sx = -left / _cropScale;
+    var sy = -top  / _cropScale;
+    var sw = CROP_SIZE / _cropScale;
+    var sh = CROP_SIZE / _cropScale;
+    ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 400, 400);
 
-    await window['__ptSupabase'].from('trainers')
-      .update({ avatar_url: urlWithBust })
-      .eq('id', trainerId);
+    canvas.toBlob(async function(blob) {
+      var trainerId = window['__ptTrainerId'];
+      var userId    = window['__ptUserId'];
+      var path = userId + '/avatar.jpg';
 
-    // Update preview
-    preview.innerHTML = `<img src="${urlWithBust}" style="width:100%;height:100%;object-fit:cover;" />`;
-    preview.style.background = 'transparent';
-    var uploadBtn = document.getElementById('avatar-upload-btn');
-    if (uploadBtn) uploadBtn.textContent = 'Replace Photo';
+      var { error: uploadErr } = await window['__ptSupabase'].storage
+        .from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
 
-    // Update sidebar
-    const sbAv = document.querySelector('.sb-avatar');
-    if (sbAv) sbAv.innerHTML = `<img src="${urlWithBust}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      if (uploadErr) {
+        showToast('❌ Upload failed — ' + uploadErr.message);
+        saveBtn.textContent = 'Save Photo'; saveBtn.disabled = false;
+        return;
+      }
 
-    showToast('✅ Photo uploaded!');
+      var { data: { publicUrl } } = window['__ptSupabase'].storage.from('avatars').getPublicUrl(path);
+      var urlWithBust = publicUrl + '?t=' + Date.now();
+
+      await window['__ptSupabase'].from('trainers').update({ avatar_url: urlWithBust }).eq('id', trainerId);
+
+      var preview = document.getElementById('profile-avatar-preview')!;
+      preview.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;" />';
+      preview.style.background = 'transparent';
+      var uploadBtn = document.getElementById('avatar-upload-btn');
+      if (uploadBtn) uploadBtn.textContent = 'Replace Photo';
+      var sbAv = document.querySelector('.sb-avatar');
+      if (sbAv) sbAv.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+
+      showToast('✅ Photo saved!');
+      closeCropModal();
+      saveBtn.textContent = 'Save Photo'; saveBtn.disabled = false;
+    }, 'image/jpeg', 0.92);
   }
 
   // ── Colour swatch selection ──────────────────────────────────────────────
