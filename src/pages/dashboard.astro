@@ -1737,7 +1737,7 @@
           id: 'link',
           label: 'Generate your first review link',
           hint: 'Send it to a client after your next session',
-          done: (trainer.review_count ?? 0) > 0,
+          done: !!trainer.id,
           action: () => showPage('links'),
         },
       ];
