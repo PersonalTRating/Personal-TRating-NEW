@@ -3259,32 +3259,45 @@
     }
   }
 
-  async function downloadQRCode() {
-    const link = document.getElementById('review-link').value;
+  function downloadQRCode() {
+    var link = document.getElementById('review-link').value;
     if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
     showToast('⏳ Generating QR code…');
-    try {
-      const qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=16&data=' + encodeURIComponent(link);
-      const res  = await fetch(qrUrl);
-      const blob = await res.blob();
-      // Try native share (mobile) — lets you post directly to Instagram
-      const file = new File([blob], 'coachcards-qr.png', { type: 'image/png' });
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({ files: [file], title: 'My CoachCards review QR code' });
-        showToast('✅ QR code shared!');
-      } else {
-        // Desktop: download the image
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href     = url;
-        a.download = 'coachcards-qr.png';
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('✅ QR code downloaded!');
+    var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=16&data=' + encodeURIComponent(link);
+    var img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = function() {
+      try {
+        var canvas = document.createElement('canvas');
+        canvas.width = 400; canvas.height = 400;
+        canvas.getContext('2d').drawImage(img, 0, 0, 400, 400);
+        canvas.toBlob(function(blob) {
+          if (!blob) { window.open(qrUrl, '_blank'); showToast('✅ QR opened — right-click to save'); return; }
+          var file = new File([blob], 'coachcards-qr.png', { type: 'image/png' });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({ files: [file], title: 'My CoachCards QR code' }).catch(function() {});
+            showToast('✅ QR code shared!');
+          } else {
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'coachcards-qr.png';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast('✅ QR code downloaded!');
+          }
+        }, 'image/png');
+      } catch(e) {
+        window.open(qrUrl, '_blank');
+        showToast('✅ QR opened — right-click to save');
       }
-    } catch {
-      showToast('⚠️ Could not generate QR code');
-    }
+    };
+    img.onerror = function() {
+      window.open(qrUrl, '_blank');
+      showToast('✅ QR opened — right-click to save');
+    };
+    img.src = qrUrl;
   }
 
   function filterRank(el) {
