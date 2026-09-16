@@ -1737,7 +1737,7 @@
           id: 'link',
           label: 'Generate your first review link',
           hint: 'Send it to a client after your next session',
-          done: !!trainer.id,
+          done: !!localStorage.getItem('cc_links_visited_' + trainer.id),
           action: () => showPage('links'),
         },
       ];
@@ -3020,7 +3020,23 @@
     if (id === 'overview') loadOverviewFeed();
 
     // Build share card when navigating to the links page
-    if (id === 'links') setTimeout(buildShareCard, 80);
+    if (id === 'links') {
+      setTimeout(buildShareCard, 80);
+      // Mark "Generate review link" step as done
+      var tid = window['__ptTrainerId'];
+      if (tid) localStorage.setItem('cc_links_visited_' + tid, '1');
+      // Update the checklist step live if it's still showing
+      var linkStep = document.querySelector('[data-step="link"]');
+      if (linkStep && !linkStep.classList.contains('done')) {
+        linkStep.classList.add('done');
+        var badge = document.getElementById('sb-setup-badge');
+        if (badge) {
+          var n = parseInt(badge.textContent || '1', 10) - 1;
+          if (n <= 0) badge.style.display = 'none';
+          else badge.textContent = String(n);
+        }
+      }
+    }
 
     // Mark notifications as read when the user opens that page
     if (id === 'notifications') {
