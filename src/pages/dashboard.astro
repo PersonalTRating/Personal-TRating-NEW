@@ -1690,7 +1690,9 @@
         sbAvatarEl.textContent = trainer.avatar_initials ?? '';
       }
     }
-    (document.querySelector('.sb-pt-name')  as HTMLElement).textContent = trainer.name;
+    const sbPtName = document.querySelector('.sb-pt-name') as HTMLElement;
+    const isComplete = !!(trainer.avatar_url && trainer.city?.trim() && trainer.bio?.trim() && trainer.specialty?.trim());
+    sbPtName.innerHTML = trainer.name + (isComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
     (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${trainer.location}`;
     const sbBusiness = document.querySelector('.sb-pt-business') as HTMLElement;
     if (sbBusiness) {
@@ -2613,7 +2615,9 @@
       showToast('❌ Save failed — please try again.');
     } else {
       // Update sidebar live
-      (document.querySelector('.sb-pt-name')  as HTMLElement).textContent = name;
+      const sbName = document.querySelector('.sb-pt-name') as HTMLElement;
+      const savedComplete = !!(trainer.avatar_url && city && bio && specialty);
+      sbName.innerHTML = name + (savedComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
       (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${location}`;
       const sbAv = document.querySelector('.sb-avatar') as HTMLElement;
       if (sbAv && !sbAv.querySelector('img')) {

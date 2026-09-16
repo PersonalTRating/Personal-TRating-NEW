@@ -26,12 +26,13 @@ const rankClr = (r: number) =>
 interface Gym { name: string; location: string; }
 
 const allTrainers = raw.map((t: any, i: number) => ({
-  id:         t.id,
-  name:       t.name || '',
-  username:   t.username || '',
-  city:       t.city || t.location || '',
-  spec:       t.specialty || '',
-  cert:       t.cert || '',
+  id:              t.id,
+  name:            t.name || '',
+  username:        t.username || '',
+  city:            t.city || t.location || '',
+  spec:            t.specialty || '',
+  cert:            t.cert || '',
+  profileComplete: !!(t.avatar_url && (t.city || t.location) && t.bio?.trim() && t.specialty?.trim()),
   bmp:        t.bmp_score ?? 0,
   revCount:   t.review_count || 0,
   rank:       i + 1,
@@ -176,6 +177,14 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
         <div class="fpc-mid">
           <div class="fpc-name-row">
             <span class="fpc-name">{t.name}</span>
+            {t.profileComplete && (
+              <span class="verified-tick" title="Profile complete">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
+                  <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+            )}
             {t.cert && <span class="fpc-cert">{t.cert}</span>}
           </div>
           {t.username && <div style="font-size:0.75rem;color:#7a8f7c;font-weight:600;margin-bottom:0.2rem;">@{t.username}</div>}
@@ -295,6 +304,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
   .fpc-mid  { flex:1; min-width:0; }
   .fpc-name-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.3rem; }
   .fpc-name { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:#111311; }
+  .verified-tick { display:inline-flex; align-items:center; flex-shrink:0; }
   .fpc-cert { font-size:0.68rem; font-weight:700; color:#2a9438; background:#eaf7ec; padding:0.18rem 0.55rem; border-radius:10px; border:1px solid #c3e6c8; white-space:nowrap; }
   .fpc-meta { font-size:0.82rem; color:#8a8f8a; display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem; }
   .fpc-bio  { font-size:0.83rem; color:#5a6b5c; font-style:italic; line-height:1.55; padding:0.55rem 0.75rem; background:#f4f9f5; border-left:3px solid #c3e6c8; border-radius:0 6px 6px 0; margin-bottom:0.5rem; }

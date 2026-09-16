@@ -32,6 +32,8 @@ const reviews    = trainerReviews || [];
 const hasReviews = reviews.length > 0;
 const hasBmp     = hasReviews;
 
+const isProfileComplete = !!(trainer.avatar_url && trainer.city?.trim() && trainer.bio?.trim() && trainer.specialty?.trim());
+
 const starCounts = [5, 4, 3, 2, 1].map(s => ({
   star:  s,
   count: reviews.filter(r => Math.round(r.rating) === s).length,
@@ -379,8 +381,16 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
           )}
         </div>
 
-        <h1 class="tp-hero-name" style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;color:white;line-height:1.08;margin-bottom:0.25rem;">
+        <h1 class="tp-hero-name" style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;color:white;line-height:1.08;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
           {trainer.name}
+          {isProfileComplete && (
+            <span id="tp-verified-tick" title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;">
+              <svg width="26" height="26" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
+                <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          )}
         </h1>
 
         {(trainer as any).username && (
@@ -1207,7 +1217,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 
     // Fetch live trainer row and approved review count in parallel
     const [trainerRes, reviewsRes] = await Promise.all([
-      supabase.from('trainers').select('bmp_score, star_rating').eq('id', trainerId).single(),
+      supabase.from('trainers').select('bmp_score, star_rating, avatar_url, city, bio, specialty').eq('id', trainerId).single(),
       supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('trainer_id', trainerId).eq('is_verified', true),
     ]);
 
@@ -1239,6 +1249,24 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     if (liveCount > 0) {
       const banner = document.getElementById('tp-new-banner');
       if (banner) banner.style.display = 'none';
+    }
+
+    // Show/hide verified tick based on live profile completeness
+    const td = trainerRes.data;
+    const liveComplete = !!(td?.avatar_url && td?.city?.trim() && td?.bio?.trim() && td?.specialty?.trim());
+    const tickEl = document.getElementById('tp-verified-tick') as HTMLElement | null;
+    if (tickEl) {
+      tickEl.style.display = liveComplete ? 'inline-flex' : 'none';
+    } else if (liveComplete) {
+      const h1 = document.querySelector('.tp-hero-name');
+      if (h1) {
+        const tick = document.createElement('span');
+        tick.id = 'tp-verified-tick';
+        tick.title = 'Profile complete';
+        tick.style.cssText = 'display:inline-flex;align-items:center;flex-shrink:0;';
+        tick.innerHTML = '<svg width="26" height="26" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        h1.appendChild(tick);
+      }
     }
   })();
 </script>
