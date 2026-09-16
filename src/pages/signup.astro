@@ -584,6 +584,16 @@
       successMsg.innerHTML     = `✅ <strong>Almost there!</strong> We've sent a confirmation email to <strong>${email}</strong>. Click the link to activate your account, then <a href="/login" style="color:var(--green-dark)">sign in here</a>.<br><br><span id="t-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendTrainer()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
       successMsg.style.display = 'block';
       submitBtn.textContent    = 'Check your email ✉️';
+
+      // Listen for confirmation from another device (e.g. mobile) — redirect automatically
+      if (data.user) {
+        const ch = supabase.channel('email-confirm:' + data.user.id)
+          .on('broadcast', { event: 'confirmed' }, () => {
+            ch.unsubscribe();
+            window.location.href = '/login?confirmed=1';
+          })
+          .subscribe();
+      }
     }
   });
 
@@ -638,6 +648,17 @@
       successMsg.innerHTML     = `✅ <strong>Account created!</strong> We've sent a confirmation email to <strong>${email}</strong>. ${afterMsg}<br><br><span id="c-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendClient()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
       successMsg.style.display = 'block';
       submitBtn.textContent    = 'Check your email ✉️';
+
+      // Listen for confirmation from another device (e.g. mobile) — redirect automatically
+      if (data.user) {
+        const loginDest = _reviewDest ? `/login?redirect=${encodeURIComponent(_reviewDest)}&confirmed=1` : '/login?confirmed=1';
+        const ch = supabase.channel('email-confirm:' + data.user.id)
+          .on('broadcast', { event: 'confirmed' }, () => {
+            ch.unsubscribe();
+            window.location.href = loginDest;
+          })
+          .subscribe();
+      }
     }
   });
 </script>

@@ -50,7 +50,22 @@
       if (code) {
         const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (error) { showError('Confirmation failed: ' + error.message); return; }
-        // Sign out immediately so they log in fresh
+
+        // Broadcast to the desktop signup page so it auto-redirects to login
+        const { data: { session: cs } } = await supabase.auth.getSession();
+        if (cs) {
+          await new Promise<void>((resolve) => {
+            const ch = supabase.channel('email-confirm:' + cs.user.id);
+            ch.subscribe((status) => {
+              if (status === 'SUBSCRIBED') {
+                ch.send({ type: 'broadcast', event: 'confirmed', payload: {} })
+                  .finally(() => { supabase.realtime.removeChannel(ch); resolve(); });
+              }
+            });
+            setTimeout(resolve, 3000); // safety timeout
+          });
+        }
+
         await supabase.auth.signOut();
         window.location.href = '/login?confirmed=1';
         return;
