@@ -84,6 +84,16 @@
   .sb-item:hover { color:white; background:rgba(255,255,255,0.05); }
   .sb-item.active { color:white; background:rgba(58,181,74,0.12); border-left-color:var(--green); }
   .sb-icon { font-size:1rem; width:20px; text-align:center; }
+  .sb-ext-item {
+    display:flex; align-items:center; gap:0.65rem;
+    padding:0.5rem 1.25rem 0.5rem 2rem;
+    cursor:pointer; background:none; border:none; border-left:2px solid transparent;
+    color:rgba(255,255,255,0.45); font-size:0.78rem; font-weight:600;
+    width:100%; text-align:left; font-family:'Manrope',sans-serif;
+    text-decoration:none; transition:color 0.15s, background 0.15s;
+  }
+  .sb-ext-item:hover { color:#3ab54a; background:rgba(255,255,255,0.04); }
+  .sb-ext-icon { font-size:0.85rem; width:18px; text-align:center; }
   .sb-badge {
     margin-left:auto; background:var(--green); color:white;
     font-size:0.62rem; font-weight:800; padding:0.15rem 0.45rem;
@@ -773,6 +783,12 @@
     <button class="sb-item" onclick="window.location.href='/for-trainers'">
       <span class="sb-icon">🏠</span> Home Page
     </button>
+    <a class="sb-ext-item" href="/" target="_blank" rel="noopener">
+      <span class="sb-ext-icon">🌐</span> CoachCards Home ↗
+    </a>
+    <a class="sb-ext-item" id="sb-profile-link" href="#" target="_blank" rel="noopener">
+      <span class="sb-ext-icon">👁</span> My Public Profile ↗
+    </a>
 
     <div class="sb-section-label">Main</div>
     <button class="sb-item active" onclick="showPage('overview')">
@@ -1714,6 +1730,10 @@
 
   // Mark this browser as a trainer session for instant redirect on home page
   localStorage.setItem('cc_trainer', '1');
+
+  // Wire public profile link in sidebar
+  const sbProfileLink = document.getElementById('sb-profile-link') as HTMLAnchorElement | null;
+  if (sbProfileLink) sbProfileLink.href = '/trainers/' + trainer.id;
 
   // Store ID for save/update operations
   let trainerId: string | null = trainer?.id ?? null;
