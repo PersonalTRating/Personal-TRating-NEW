@@ -135,8 +135,10 @@
     <h1>Welcome back</h1>
     <p class="auth-sub">Sign in to your PT dashboard</p>
 
-    <div id="confirmed-banner" style="display:none;background:#eaf7ec;border:1px solid #b8ddc0;color:#1a5c22;padding:0.75rem 1rem;border-radius:8px;font-size:0.85rem;font-weight:600;margin-bottom:1rem;">
-      ✅ Email confirmed! Sign in to access your account.
+    <div id="confirmed-banner" style="display:none;background:linear-gradient(135deg,#eaf7ec 0%,#d0f0d4 100%);border:1.5px solid #3ab54a;border-radius:12px;padding:1.25rem 1.25rem 1rem;margin-bottom:1.5rem;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.4rem;">🎉</div>
+      <div style="font-size:1rem;font-weight:800;color:#1a5c22;margin-bottom:0.25rem;">Email confirmed!</div>
+      <div style="font-size:0.82rem;color:#2a7a38;font-weight:500;line-height:1.5;">Your account is ready. Enter your details below to sign in.</div>
     </div>
 
     <div class="auth-error" id="error-msg"></div>
@@ -175,6 +177,11 @@
   if (_loginParams.get('confirmed') === '1') {
     const banner = document.getElementById('confirmed-banner');
     if (banner) banner.style.display = 'block';
+    // Swap heading and subtitle to match the confirmed state
+    const h1 = document.querySelector('.auth-card h1') as HTMLElement | null;
+    const sub = document.querySelector('.auth-card .auth-sub') as HTMLElement | null;
+    if (h1) h1.textContent = 'Welcome to CoachCards';
+    if (sub) sub.textContent = 'Sign in to set up your profile';
   }
 
   // No auto-redirect on login page — let the user sign in explicitly.
