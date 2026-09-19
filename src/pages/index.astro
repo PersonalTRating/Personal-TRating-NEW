@@ -8,6 +8,7 @@ const { data: topTrainers } = await supabase
   .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio')
   .eq('is_active', true)
   .gt('bmp_score', 0)
+  .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
   .limit(200);
 
