@@ -2913,35 +2913,44 @@
     ctx.drawImage(img, sx, sy, sw, sh, 0, 0, 400, 400);
 
     canvas.toBlob(async function(blob) {
-      var trainerId = window['__ptTrainerId'];
-      var userId    = window['__ptUserId'];
-      var path = userId + '/avatar.jpg';
+      try {
+        if (!blob) throw new Error('Could not process image — try a different photo.');
 
-      var { error: uploadErr } = await window['__ptSupabase'].storage
-        .from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+        var trainerId = window['__ptTrainerId'];
+        var userId    = window['__ptUserId'];
+        if (!trainerId || !userId) throw new Error('Session expired — please refresh and try again.');
 
-      if (uploadErr) {
-        showToast('❌ Upload failed — ' + uploadErr.message);
-        saveBtn.textContent = 'Save Photo'; saveBtn.disabled = false;
-        return;
+        var path = userId + '/avatar.jpg';
+
+        var { error: uploadErr } = await window['__ptSupabase'].storage
+          .from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
+
+        if (uploadErr) throw new Error(uploadErr.message);
+
+        var { data: urlData } = window['__ptSupabase'].storage.from('avatars').getPublicUrl(path);
+        var publicUrl = urlData && urlData.publicUrl;
+        if (!publicUrl) throw new Error('Could not get photo URL — please try again.');
+        var urlWithBust = publicUrl + '?t=' + Date.now();
+
+        var { error: updateErr } = await window['__ptSupabase'].from('trainers').update({ avatar_url: urlWithBust }).eq('id', trainerId);
+        if (updateErr) throw new Error(updateErr.message);
+
+        var preview = document.getElementById('profile-avatar-preview');
+        preview.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;" />';
+        preview.style.background = 'transparent';
+        var uploadBtn = document.getElementById('avatar-upload-btn');
+        if (uploadBtn) uploadBtn.textContent = 'Replace Photo';
+        var sbAv = document.querySelector('.sb-avatar');
+        if (sbAv) sbAv.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
+
+        showToast('✅ Photo saved!');
+        closeCropModal();
+      } catch (err) {
+        showToast('❌ ' + (err.message || 'Upload failed — please try again.'));
+      } finally {
+        saveBtn.textContent = 'Save Photo';
+        saveBtn.disabled = false;
       }
-
-      var { data: { publicUrl } } = window['__ptSupabase'].storage.from('avatars').getPublicUrl(path);
-      var urlWithBust = publicUrl + '?t=' + Date.now();
-
-      await window['__ptSupabase'].from('trainers').update({ avatar_url: urlWithBust }).eq('id', trainerId);
-
-      var preview = document.getElementById('profile-avatar-preview');
-      preview.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;" />';
-      preview.style.background = 'transparent';
-      var uploadBtn = document.getElementById('avatar-upload-btn');
-      if (uploadBtn) uploadBtn.textContent = 'Replace Photo';
-      var sbAv = document.querySelector('.sb-avatar');
-      if (sbAv) sbAv.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
-
-      showToast('✅ Photo saved!');
-      closeCropModal();
-      saveBtn.textContent = 'Save Photo'; saveBtn.disabled = false;
     }, 'image/jpeg', 0.92);
   }
 
