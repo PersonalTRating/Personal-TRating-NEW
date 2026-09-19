@@ -760,7 +760,7 @@
     <button class="sb-item" onclick="showPage('links')">
       <span class="sb-icon">🔗</span> Review Links
     </button>
-    <button class="sb-item" onclick="window.open('/find-a-trainer','_blank')">
+    <button class="sb-item" onclick="showPage('rankings')">
       <span class="sb-icon">🏆</span> Rankings
     </button>
     <button class="sb-item" onclick="showPage('feed')">
@@ -914,6 +914,27 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Leaderboard preview -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">UK Leaderboard</div>
+            <div class="card-sub">Top trainers by BMP score — your position highlighted</div>
+          </div>
+          <button class="card-link" onclick="showPage('rankings')">Full leaderboard →</button>
+        </div>
+        <div class="card-body" style="padding:0;">
+          <table class="rank-table" id="ov-rank-tbody-wrap" style="width:100%;">
+            <thead>
+              <tr><th style="padding-left:1.5rem;">#</th><th>Trainer</th><th>City</th><th style="padding-right:1.5rem;">BMP</th></tr>
+            </thead>
+            <tbody id="ov-rank-tbody">
+              <tr><td colspan="4" style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Loading rankings…</td></tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -2521,30 +2542,35 @@
       .from('trainers')
       .select('id, name, username, city, location, bmp_score, avatar_initials, avatar_bg, avatar_color')
       .eq('is_active', true)
-      .gt('bmp_score', 0)
+      .gt('review_count', 0)
       .order('bmp_score', { ascending: false })
-      .limit(10);
+      .limit(20);
 
-    const rankTbody = document.getElementById('rank-tbody') as HTMLElement;
-    const posClasses = ['r1','r2','r3'];
-    if (rankTbody) {
-      if (leaderboard && leaderboard.length > 0) {
-        rankTbody.innerHTML = leaderboard.map((pt: any, i: number) => {
+    const _renderRankRows = (rows: any[], tbody: HTMLElement, limit: number) => {
+      const posClasses = ['r1','r2','r3'];
+      if (rows && rows.length > 0) {
+        const display = rows.slice(0, limit);
+        tbody.innerHTML = display.map((pt: any, i: number) => {
           const isYou = pt.id === trainer.id;
           return `<tr ${isYou ? 'class="you"' : ''}>
-            <td class="rank-pos ${posClasses[i] ?? ''}">${i + 1}</td>
+            <td class="rank-pos ${posClasses[i] ?? ''}" style="padding-left:1.5rem;">${i + 1}</td>
             <td><div style="display:flex;align-items:center;gap:0.5rem;">
               <div class="rank-avatar" style="background:${pt.avatar_bg || '#eaf7ec'};color:${pt.avatar_color || '#2a9438'};">${pt.avatar_initials || '?'}</div>
               <div><div>${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}</div>${pt.username ? '<div style="font-size:0.68rem;color:#7a8f7c;font-weight:600;">@' + pt.username + '</div>' : ''}</div>
             </div></td>
-            <td>${pt.city || pt.location}</td>
-            <td><strong>${pt.bmp_score}</strong></td>
+            <td>${pt.city || pt.location || '—'}</td>
+            <td style="padding-right:1.5rem;"><strong>${pt.bmp_score}</strong></td>
           </tr>`;
         }).join('');
       } else {
-        rankTbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2.5rem;color:#7a8f7c;font-size:0.85rem;">Rankings appear once PTs collect verified reviews.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:2.5rem;color:#7a8f7c;font-size:0.85rem;">Rankings appear once PTs collect verified reviews.</td></tr>`;
       }
-    }
+    };
+
+    const rankTbody   = document.getElementById('rank-tbody')    as HTMLElement;
+    const ovRankTbody = document.getElementById('ov-rank-tbody') as HTMLElement;
+    if (rankTbody)   _renderRankRows(leaderboard ?? [], rankTbody, 20);
+    if (ovRankTbody) _renderRankRows(leaderboard ?? [], ovRankTbody, 7);
 
     // ── Mini gauge on Rankings page ───────────────────────────────────────
     const miniScore  = document.getElementById('mini-gauge-score')  as HTMLElement;
