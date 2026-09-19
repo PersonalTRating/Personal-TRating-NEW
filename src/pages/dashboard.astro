@@ -2402,9 +2402,10 @@
       (window as any).cpInitFromTrainer(trainer);
     }
 
-    // Set hero preview background to match saved theme
+    // Set hero preview background to match saved theme (cpInitFromTrainer handles picker state)
     const _heroPreviewEl = document.getElementById('profile-hero-preview');
     if (_heroPreviewEl) {
+      const _currentTheme: string = (trainer as any).hero_theme ?? 'forest';
       const _grads: Record<string,string> = {
         forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
         midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
@@ -2415,7 +2416,9 @@
         lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
         sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
       };
-      _heroPreviewEl.style.background = _grads[currentTheme] ?? _grads.forest;
+      _heroPreviewEl.style.background = _currentTheme.startsWith('#')
+        ? `linear-gradient(135deg,${_currentTheme}cc 0%,${_currentTheme}88 100%)`
+        : (_grads[_currentTheme] ?? _grads.forest);
     }
 
     // ── Profile completeness banner ───────────────────────────────────────
@@ -2563,6 +2566,7 @@
 
   // ── Save Profile (exposed globally so onclick can call it) ──────────────
   (window as any).saveProfile = async () => {
+    try {
     if (!trainerId) return;
 
     const firstName    = (document.getElementById('profile-firstname') as HTMLInputElement).value.trim();
@@ -2611,7 +2615,7 @@
       .eq('id', trainerId);
 
     if (error) {
-      showToast('❌ Save failed — please try again.');
+      showToast('❌ Save failed: ' + (error.message || JSON.stringify(error)));
     } else {
       // Update sidebar live
       const sbName = document.querySelector('.sb-pt-name') as HTMLElement;
@@ -2637,6 +2641,10 @@
         else { sbBiz.style.display = 'none'; }
       }
       showToast('✅ Profile saved successfully!');
+    }
+    } catch (err: any) {
+      console.error('[saveProfile]', err);
+      showToast('❌ Save error: ' + (err?.message || String(err)));
     }
   };
 
@@ -2932,7 +2940,7 @@
         var { error: uploadErr } = await window['__ptSupabase'].storage
           .from('avatars').upload(path, blob, { upsert: true, contentType: 'image/jpeg' });
 
-        if (uploadErr) throw new Error(uploadErr.message);
+        if (uploadErr) throw new Error('Photo upload: ' + (uploadErr.message || uploadErr.error || JSON.stringify(uploadErr)));
 
         var { data: urlData } = window['__ptSupabase'].storage.from('avatars').getPublicUrl(path);
         var publicUrl = urlData && urlData.publicUrl;
@@ -2940,7 +2948,7 @@
         var urlWithBust = publicUrl + '?t=' + Date.now();
 
         var { error: updateErr } = await window['__ptSupabase'].from('trainers').update({ avatar_url: urlWithBust }).eq('id', trainerId);
-        if (updateErr) throw new Error(updateErr.message);
+        if (updateErr) throw new Error('DB update: ' + (updateErr.message || updateErr.error || JSON.stringify(updateErr)));
 
         var preview = document.getElementById('profile-avatar-preview');
         preview.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;" />';
@@ -3530,7 +3538,8 @@
     const toast = document.getElementById('copy-toast');
     toast.textContent = msg;
     toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
+    var dur = msg && msg.startsWith('❌') ? 5000 : 2500;
+    setTimeout(() => toast.classList.remove('show'), dur);
   }
 
   // ── Feed post functions ──────────────────────────────────────────────────
