@@ -1452,7 +1452,7 @@
         <!-- Score breakdown -->
         <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.25rem 1.5rem;margin-top:0.5rem;">
           <div style="font-weight:800;font-size:0.92rem;color:white;margin-bottom:0.2rem;">Your Score Breakdown</div>
-          <div style="font-size:0.75rem;color:#5a6b5c;margin-bottom:1rem;">What's driving your BMP</div>
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">What's driving your BMP</div>
           <div id="score-breakdown-body">
             <div style="text-align:center;color:#5a6b5c;font-size:0.82rem;padding:0.5rem 0;">Loading…</div>
           </div>
@@ -2310,10 +2310,10 @@
           else if (daysSince < 180) { recencyLabel = 'Fair'; recencyPct = 35; }
         }
         breakdownEl.innerHTML = `
-          <div class="progress-row"><span class="progress-label">Star Rating</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${starPct}%"></div></div><span class="progress-val">${trainer.star_rating ?? '—'}</span></div>
-          <div class="progress-row"><span class="progress-label">Review Volume</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${volPct}%"></div></div><span class="progress-val">${trainer.review_count ?? 0}</span></div>
-          <div class="progress-row"><span class="progress-label">Recency</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${recencyPct}%"></div></div><span class="progress-val">${recencyLabel}</span></div>
-          <div class="progress-row"><span class="progress-label">Profile</span><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${profileScore}%"></div></div><span class="progress-val">${profileScore}%</span></div>`;
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Star Rating</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${starPct}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${trainer.star_rating ?? '—'}</span></div>
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Review Volume</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${volPct}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${trainer.review_count ?? 0}</span></div>
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Recency</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${recencyPct}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${recencyLabel}</span></div>
+          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Profile</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${profileScore}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${profileScore}%</span></div>`;
       }
     }
 
