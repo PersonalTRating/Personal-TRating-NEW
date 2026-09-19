@@ -582,11 +582,11 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
   import { supabase } from '../lib/supabase';
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
-    const { data: trainerRow } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+    const { data: trainerRow } = await supabase.from('trainers').select('id, name').eq('user_id', session.user.id).maybeSingle();
     if (trainerRow) {
       const accountEl = document.getElementById('nav-account')! as HTMLAnchorElement;
       accountEl.href        = '/dashboard';
-      accountEl.textContent = 'My Dashboard →';
+      accountEl.textContent = (trainerRow.name ? trainerRow.name + ' · ' : '') + 'My Dashboard →';
       accountEl.style.display = '';
     } else {
       const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();

@@ -1278,7 +1278,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const accountEl = document.getElementById('nav-account')! as HTMLAnchorElement;
       accountEl.href         = '/dashboard';
       accountEl.style.display = '';
-      accountEl.textContent  = 'My Dashboard →';
+      accountEl.textContent  = (trainerRow.name ? trainerRow.name + ' · ' : '') + 'My Dashboard →';
       document.getElementById('nav-signout')!.style.display = '';
       document.getElementById('mob-signin')!.style.display  = 'none';
       document.getElementById('mob-signup')!.style.display  = 'none';
@@ -1286,7 +1286,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const mobEl = document.getElementById('mob-account')! as HTMLAnchorElement;
       mobEl.href         = '/dashboard';
       mobEl.style.display = 'block';
-      mobEl.textContent  = 'My Dashboard';
+      mobEl.textContent  = (trainerRow.name ? trainerRow.name + ' · ' : '') + 'My Dashboard';
     } else {
       const { data: client } = await supabase.from('clients').select('id, name').eq('user_id', session.user.id).maybeSingle();
       if (client) {

@@ -488,7 +488,7 @@ const { count: totalReviews } = await supabase
   import { supabase } from '../lib/supabase';
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
-    const { data: trainer } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
+    const { data: trainer } = await supabase.from('trainers').select('id, name').eq('user_id', session.user.id).maybeSingle();
     if (trainer) {
       // Nav: swap "Sign In" + "List Your Profile Free" for "My Dashboard" + sign out
       const navSignin  = document.getElementById('ft-nav-signin');
@@ -496,7 +496,7 @@ const { count: totalReviews } = await supabase
       const navSignout = document.getElementById('ft-nav-signout');
       if (navSignin) navSignin.style.display = 'none';
       if (navCta) {
-        navCta.textContent  = 'My Dashboard →';
+        navCta.textContent  = (trainer.name ? trainer.name + ' · ' : '') + 'My Dashboard →';
         (navCta as HTMLAnchorElement).href = '/dashboard';
       }
       if (navSignout) navSignout.style.display = '';
