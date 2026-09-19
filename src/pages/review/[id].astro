@@ -13,11 +13,41 @@ export async function getStaticPaths() {
 const { id } = Astro.params;
 const { data: trainer } = await supabase
   .from('trainers')
-  .select('id, name, username, business_name, location, specialty, avatar_initials, avatar_bg, avatar_color, star_rating, review_count')
+  .select('id, name, username, business_name, location, specialty, avatar_initials, avatar_bg, avatar_color, avatar_url, hero_theme, star_rating, review_count')
   .eq('id', id)
   .maybeSingle();
 
 if (!trainer) return Astro.redirect('/');
+
+// Hero background helpers (same logic as trainers/[id].astro)
+function _hexToRGB(hex: string): [number,number,number] {
+  const h = hex.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function _darkenHex(hex: string, f: number): string {
+  const [r,g,b] = _hexToRGB(hex);
+  return '#'+[r,g,b].map(v=>('0'+Math.round(v*(1-f)).toString(16)).slice(-2)).join('');
+}
+function _heroGradient(hex: string): string {
+  const [r,g,b] = _hexToRGB(hex);
+  const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+  const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.90,0.82,0.72] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
+  return `linear-gradient(160deg,${_darkenHex(hex,f0)} 0%,${_darkenHex(hex,f1)} 55%,${_darkenHex(hex,f2)} 100%)`;
+}
+const _heroThemePresets: Record<string,string> = {
+  forest:   'linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
+  midnight: 'linear-gradient(160deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
+  charcoal: 'linear-gradient(160deg,#111111 0%,#252525 55%,#333333 100%)',
+  royal:    'linear-gradient(160deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
+  slate:    'linear-gradient(160deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
+  rose:     'linear-gradient(160deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
+  lavender: 'linear-gradient(160deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
+  sky:      'linear-gradient(160deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+};
+const _ht = (trainer as any).hero_theme ?? '';
+const heroBackground = _ht.startsWith('#')
+  ? _heroGradient(_ht)
+  : (_heroThemePresets[_ht] ?? _heroThemePresets.forest);
+const avatarBorderColor = (trainer as any).avatar_color ?? 'rgba(255,255,255,0.2)';
 
 const specialtyEmoji: Record<string, string> = {
   'Strength & Conditioning': '💪', 'Weight Loss': '🔥',
@@ -57,7 +87,6 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
 
   /* ── Hero ── */
   .rv-hero {
-    background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);
     padding:2.5rem 1.5rem 4rem; text-align:center; position:relative;
   }
   .rv-hero::after {
@@ -219,10 +248,13 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
 </nav>
 
 <!-- Hero -->
-<div class="rv-hero">
+<div id="rv-hero" class="rv-hero" style={`background:${heroBackground};`}>
 <div>
-  <div class="rv-avatar" style={`background:${trainer.avatar_bg};`}>
-    <span style={`color:${trainer.avatar_color};`}>{trainer.avatar_initials}</span>
+  <div class="rv-avatar" style={`background:${trainer.avatar_bg ?? '#eaf7ec'};border-color:${avatarBorderColor};`}>
+    {(trainer as any).avatar_url
+      ? <img src={(trainer as any).avatar_url} alt={trainer.name} style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+      : <span style={`color:${trainer.avatar_color ?? '#2a9438'};`}>{trainer.avatar_initials}</span>
+    }
   </div>
   <div class="rv-name">{trainer.name}</div>
   {(trainer as any).username && <div style="font-size:0.9rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:0.2rem;margin-bottom:0.25rem;">@{(trainer as any).username}</div>}
@@ -327,6 +359,55 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
   const dataEl      = document.getElementById('rv-data') as HTMLElement;
   const trainerId   = dataEl.dataset.trainerId!;
   const trainerName = dataEl.dataset.trainerName!;
+
+  // ── Live patch: hero background + avatar photo (SSG may be stale) ──────────
+  (async () => {
+    const { data: t } = await supabase
+      .from('trainers')
+      .select('avatar_url, avatar_color, hero_theme')
+      .eq('id', trainerId)
+      .single();
+    if (!t) return;
+
+    // Patch hero background
+    const heroEl = document.getElementById('rv-hero');
+    if (heroEl && t.hero_theme) {
+      function __darken(hex: string, f: number): string {
+        const h = hex.replace('#','');
+        const [r,g,b] = [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+        return '#'+[r,g,b].map((v: number)=>('0'+Math.round(v*(1-f)).toString(16)).slice(-2)).join('');
+      }
+      const presets: Record<string,string> = {
+        forest:'linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
+        midnight:'linear-gradient(160deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
+        charcoal:'linear-gradient(160deg,#111111 0%,#252525 55%,#333333 100%)',
+        royal:'linear-gradient(160deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
+        slate:'linear-gradient(160deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
+        rose:'linear-gradient(160deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
+        lavender:'linear-gradient(160deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
+        sky:'linear-gradient(160deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+      };
+      if (t.hero_theme.startsWith('#')) {
+        const h2 = t.hero_theme;
+        const hx = h2.replace('#','');
+        const lum = (0.299*parseInt(hx.slice(0,2),16)+0.587*parseInt(hx.slice(2,4),16)+0.114*parseInt(hx.slice(4,6),16))/255;
+        const [f0,f1,f2]: [number,number,number] = lum>0.5?[0.90,0.82,0.72]:lum>0.2?[0.78,0.64,0.46]:[0.62,0.38,0.12];
+        heroEl.style.background = `linear-gradient(160deg,${__darken(h2,f0)} 0%,${__darken(h2,f1)} 55%,${__darken(h2,f2)} 100%)`;
+      } else {
+        heroEl.style.background = presets[t.hero_theme] ?? presets.forest;
+      }
+    }
+
+    // Patch avatar photo + ring
+    if (t.avatar_url) {
+      const av = document.querySelector('.rv-avatar') as HTMLElement | null;
+      if (av) {
+        av.innerHTML = `<img src="${t.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+        av.style.background = 'transparent';
+        if (t.avatar_color) av.style.borderColor = t.avatar_color;
+      }
+    }
+  })();
 
   // ── Logo link — intercept before auth resolves so native href="/" can't fire ──
   const logoLink = document.getElementById('rv-logo-link') as HTMLAnchorElement;
