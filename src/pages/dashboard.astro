@@ -1712,6 +1712,9 @@
     throw new Error('no-profile');
   }
 
+  // Mark this browser as a trainer session for instant redirect on home page
+  localStorage.setItem('cc_trainer', '1');
+
   // Store ID for save/update operations
   let trainerId: string | null = trainer?.id ?? null;
 
@@ -2994,6 +2997,7 @@
 
   // ── Sign out ─────────────────────────────────────────────────────────────
   document.getElementById('sign-out-btn')?.addEventListener('click', async () => {
+    localStorage.removeItem('cc_trainer');
     await supabase.auth.signOut();
     window.location.href = '/';
   });
