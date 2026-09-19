@@ -73,6 +73,15 @@ function _lightenHex(hex: string, f: number): string {
   const [r,g,b] = _hexToRGB(hex);
   return '#'+[r,g,b].map(v=>('0'+Math.round(v+(255-v)*f).toString(16)).slice(-2)).join('');
 }
+function _luminanceHex(hex: string): number {
+  const [r,g,b] = _hexToRGB(hex);
+  return (0.299*r + 0.587*g + 0.114*b) / 255;
+}
+function _heroGradient(hex: string): string {
+  const lum = _luminanceHex(hex);
+  const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.90,0.82,0.72] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
+  return `linear-gradient(135deg,${_darkenHex(hex,f0)} 0%,${_darkenHex(hex,f1)} 55%,${_darkenHex(hex,f2)} 100%)`;
+}
 
 const heroThemes: Record<string, string> = {
   forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
@@ -86,7 +95,7 @@ const heroThemes: Record<string, string> = {
 };
 const _isHex = (trainer.hero_theme ?? '').startsWith('#');
 const heroBackground = _isHex
-  ? `linear-gradient(135deg,${_darkenHex(trainer.hero_theme!,0.62)} 0%,${_darkenHex(trainer.hero_theme!,0.38)} 55%,${_darkenHex(trainer.hero_theme!,0.12)} 100%)`
+  ? _heroGradient(trainer.hero_theme!)
   : (heroThemes[trainer.hero_theme ?? 'forest'] ?? heroThemes.forest);
 
 // Accent colours for box borders
@@ -1241,6 +1250,12 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       const [r,g,b] = _hexToRGB(hex);
       return '#'+[r,g,b].map((v: number)=>('0'+Math.round(v*(1-f)).toString(16)).slice(-2)).join('');
     }
+    function _heroGradient(hex: string): string {
+      const [r,g,b] = _hexToRGB(hex);
+      const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
+      const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.90,0.82,0.72] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
+      return `linear-gradient(135deg,${_darkenHex(hex,f0)} 0%,${_darkenHex(hex,f1)} 55%,${_darkenHex(hex,f2)} 100%)`;
+    }
 
     // Fetch live trainer row and approved review count in parallel
     const [trainerRes, reviewsRes] = await Promise.all([
@@ -1268,7 +1283,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
           sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
         };
         heroEl.style.background = liveTheme.startsWith('#')
-          ? `linear-gradient(135deg,${_darkenHex(liveTheme,0.62)} 0%,${_darkenHex(liveTheme,0.38)} 55%,${_darkenHex(liveTheme,0.12)} 100%)`
+          ? _heroGradient(liveTheme)
           : (heroThemes[liveTheme] ?? heroThemes.forest);
       }
     }

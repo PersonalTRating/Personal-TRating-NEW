@@ -3010,7 +3010,12 @@
     return cpRGBtoHex(Math.round(r+(255-r)*factor),Math.round(g+(255-g)*factor),Math.round(b+(255-b)*factor));
   }
   function cpHeroGradient(hex) {
-    return 'linear-gradient(135deg,'+cpDarken(hex,0.62)+' 0%,'+cpDarken(hex,0.38)+' 55%,'+cpDarken(hex,0.12)+' 100%)';
+    var lum = cpLuminance(hex);
+    var f0, f1, f2;
+    if (lum > 0.5)      { f0=0.90; f1=0.82; f2=0.72; }
+    else if (lum > 0.2) { f0=0.78; f1=0.64; f2=0.46; }
+    else                { f0=0.62; f1=0.38; f2=0.12; }
+    return 'linear-gradient(135deg,'+cpDarken(hex,f0)+' 0%,'+cpDarken(hex,f1)+' 55%,'+cpDarken(hex,f2)+' 100%)';
   }
   function cpLuminance(hex) {
     var [r,g,b]=cpHexToRGB(hex);
