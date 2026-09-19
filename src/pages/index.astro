@@ -1279,7 +1279,7 @@ document.addEventListener('DOMContentLoaded', function () {
   const { data: { session } } = await supabase.auth.getSession();
   if (session) {
     const { data: trainerRow } = await supabase.from('trainers').select('id, name').eq('user_id', session.user.id).maybeSingle();
-    if (trainerRow) {
+    if (trainerRow && !new URLSearchParams(window.location.search).has('cv')) {
       window.location.replace('/for-trainers');
     } else {
       const { data: client } = await supabase.from('clients').select('id, name').eq('user_id', session.user.id).maybeSingle();
