@@ -2636,24 +2636,28 @@
 
     const _rkCard = (pt: any, i: number) => {
       const isYou = pt.id === trainer.id;
-      const bmp = pt.bmp_score ?? 0;
+      const bmp   = pt.bmp_score ?? 0;
       const av = pt.avatar_url
         ? `<img src="${pt.avatar_url}" style="width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="">`
-        : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#eaf7ec'};color:${pt.avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;">${pt.avatar_initials||'?'}</div>`;
-      const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
+      const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
       const meta = [pt.city||pt.location ? '📍 '+(pt.city||pt.location) : '', pt.specialty ? '🏋 '+pt.specialty : ''].filter(Boolean).join('  ·  ');
-      return `<a href="/trainers/${pt.id}" target="_blank" class="rk-card${isYou ? ' rk-you' : ''}">
-        <div class="rk-num">${String(i+1).padStart(2,'0')}</div>
+      const glow = isYou
+        ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
+        : 'border:2px solid #7defa0;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);background:#111311;';
+      return `<a href="/trainers/${pt.id}" target="_blank" style="display:flex;align-items:center;gap:1rem;${glow}border-radius:12px;padding:1rem 1.25rem;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:#3ab54a;width:2.25rem;flex-shrink:0;">${String(i+1).padStart(2,'0')}</div>
         ${av}
-        <div class="rk-info">
-          <div class="rk-name">${pt.name} ${tick}${isYou ? '<span class="rk-you-pill">YOU</span>' : ''}</div>
-          ${pt.username ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.38);font-weight:600;margin-top:0.1rem;">@${pt.username}</div>` : ''}
-          <div class="rk-meta" style="margin-top:0.25rem;">${meta}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:800;font-size:0.92rem;color:white;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-family:'Manrope',sans-serif;">${pt.name} ${tick} ${youPill}</div>
+          ${pt.username ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.38);font-weight:600;margin-top:0.1rem;font-family:'Manrope',sans-serif;">@${pt.username}</div>` : ''}
+          <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.25rem;font-family:'Manrope',sans-serif;">${meta}</div>
         </div>
-        <div class="rk-bmp">
-          <div class="rk-bmp-score">${bmp > 0 ? bmp : '—'}</div>
-          <div class="rk-bmp-label">BMP</div>
-          <div style="margin-top:0.35rem;display:flex;gap:2px;">${_rkDumbbells(bmp)}</div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:white;line-height:1;">${bmp > 0 ? bmp : '—'}</div>
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.15rem;font-family:'Manrope',sans-serif;">BMP</div>
+          <div style="margin-top:0.35rem;display:flex;gap:2px;justify-content:flex-end;">${_rkDumbbells(bmp)}</div>
         </div>
       </a>`;
     };
