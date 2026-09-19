@@ -1288,11 +1288,25 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       }
     }
 
-    // Patch avatar ring colour with live avatar_color
+    // Patch avatar — replace initials div with photo if one exists
+    const liveAvatarUrl   = trainerRes.data?.avatar_url   as string | null;
     const liveAvatarColor = trainerRes.data?.avatar_color as string | null;
-    if (liveAvatarColor) {
-      const avatarImg = document.querySelector('.tp-hero-inner img') as HTMLElement | null;
-      if (avatarImg) avatarImg.style.border = `4px solid ${liveAvatarColor}`;
+    const heroInner = document.querySelector('.tp-hero-inner');
+    if (heroInner && liveAvatarUrl) {
+      const firstChild = heroInner.firstElementChild as HTMLElement | null;
+      const border = `4px solid ${liveAvatarColor ?? 'rgba(255,255,255,0.3)'}`;
+      const existingImg = heroInner.querySelector('img');
+      if (existingImg) {
+        // Photo already shown — just ensure ring colour is current
+        existingImg.style.border = border;
+      } else if (firstChild) {
+        // Currently showing initials div — swap in the photo
+        const img = document.createElement('img');
+        img.src = liveAvatarUrl;
+        img.alt = '';
+        img.style.cssText = `width:120px;height:120px;border-radius:50%;object-fit:cover;flex-shrink:0;${border};box-shadow:0 8px 32px rgba(0,0,0,0.35);`;
+        heroInner.replaceChild(img, firstChild);
+      }
     }
 
     // Patch BMP score
