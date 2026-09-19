@@ -234,7 +234,7 @@
   .bmp-rank-val    { font-size:1.1rem; font-weight:800; color:var(--green-dark); }
   .bmp-rank-label  { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
 
-  /* ── RANKING TABLE ── */
+  /* ── RANKING TABLE (overview) ── */
   .rank-table { width:100%; border-collapse:collapse; }
   .rank-table th { text-align:left; padding:0.6rem 1rem; font-size:0.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-weight:700; border-bottom:1px solid var(--border); background:var(--off); }
   .rank-table td { padding:0.9rem 1rem; font-size:0.85rem; border-bottom:1px solid var(--border); vertical-align:middle; }
@@ -247,6 +247,27 @@
   .rank-pos.r3  { color:#a07040; }
   .rank-you-tag { background:var(--green); color:white; font-size:0.6rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:20px; margin-left:0.5rem; letter-spacing:0.5px; }
   .rank-avatar  { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.72rem; }
+
+  /* ── RANKINGS PAGE — glowing cards ── */
+  .rk-card {
+    display:flex; align-items:center; gap:1rem;
+    background:#111311; border:2px solid #7defa0; border-left:2px solid #7defa0;
+    border-radius:12px; padding:1rem 1.25rem;
+    box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5);
+    text-decoration:none; transition:box-shadow 0.2s, transform 0.15s; cursor:pointer;
+  }
+  .rk-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6); transform:translateY(-2px); }
+  .rk-card.rk-you { border-color:#3ab54a; background:#0d1a0e; box-shadow:0 0 10px #3ab54a, 0 0 28px rgba(58,181,74,1), 0 0 60px rgba(58,181,74,0.7); }
+  .rk-num  { font-family:'Playfair Display',serif; font-size:1.25rem; font-weight:900; color:#3ab54a; width:2.25rem; flex-shrink:0; }
+  .rk-av   { width:52px; height:52px; border-radius:50%; flex-shrink:0; object-fit:cover; }
+  .rk-av-init { display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.9rem; }
+  .rk-info { flex:1; min-width:0; }
+  .rk-name { font-weight:800; font-size:0.92rem; color:white; display:flex; align-items:center; gap:0.4rem; }
+  .rk-you-pill { background:#3ab54a; color:white; font-size:0.58rem; font-weight:800; padding:0.15rem 0.5rem; border-radius:20px; letter-spacing:0.5px; }
+  .rk-meta { font-size:0.75rem; color:rgba(255,255,255,0.45); margin-top:0.2rem; }
+  .rk-bmp  { text-align:right; flex-shrink:0; }
+  .rk-bmp-score { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; color:white; line-height:1; }
+  .rk-bmp-label { font-size:0.62rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-top:0.15rem; }
 
   /* ── PROFILE FORM ── */
   .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
@@ -1355,70 +1376,81 @@
     <!-- ══════════ RANKINGS ══════════ -->
     <div class="page" id="page-rankings">
       <div class="section-eyebrow">Leaderboard Position</div>
-      <div class="section-heading">Your Rankings</div>
+      <div class="section-heading">UK Leaderboard</div>
 
-      <div class="rank-filters">
-        <button class="rank-filter active">🇬🇧 UK Overall</button>
-        <button class="rank-filter" onclick="filterRank(this)">📍 London</button>
-        <button class="rank-filter" onclick="filterRank(this)">💪 Strength</button>
-        <button class="rank-filter" onclick="filterRank(this)">This Month</button>
-        <button class="rank-filter" onclick="filterRank(this)">All Time</button>
+      <!-- Your position banner (shown once data loads) -->
+      <div id="rk-you-banner" style="display:none;background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 100%);border:2px solid #3ab54a;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:none;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:1rem;flex:1;min-width:0;">
+          <div id="rk-you-avatar" style="width:52px;height:52px;border-radius:50%;background:var(--green-mid);color:var(--green-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0;border:2px solid #3ab54a;"></div>
+          <div>
+            <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.2rem;">Your Position</div>
+            <div id="rk-you-name" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:white;"></div>
+            <div id="rk-you-city" style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:0.1rem;"></div>
+          </div>
+        </div>
+        <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+          <div style="text-align:center;">
+            <div id="rk-you-rank" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#3ab54a;line-height:1;">—</div>
+            <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:0.2rem;">UK Rank</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="rk-you-bmp" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
+            <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:0.2rem;">BMP Score</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="rk-you-reviews" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
+            <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:0.2rem;">Reviews</div>
+          </div>
+        </div>
       </div>
 
-      <div class="three-col">
-        <div class="card" style="margin-bottom:0;">
-          <div class="card-head">
-            <div>
-              <div class="card-title">UK Leaderboard</div>
-              <div class="card-sub">Top 7 — ranked by BMP score</div>
-            </div>
-          </div>
-          <table class="rank-table">
-            <thead>
-              <tr><th>#</th><th>Trainer</th><th>City</th><th>BMP</th></tr>
-            </thead>
-            <tbody id="rank-tbody">
-              <tr><td colspan="4" style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Loading rankings…</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <!-- Search + filters -->
+      <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
+        <input id="rk-search" type="text" placeholder="Search by name or city…"
+          style="flex:1;min-width:200px;padding:0.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.875rem;outline:none;background:white;"
+          oninput="rkFilter()" />
+        <select id="rk-spec" onchange="rkFilter()"
+          style="padding:0.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.875rem;background:white;cursor:pointer;outline:none;">
+          <option value="">All Specialties</option>
+          <option>Strength &amp; Conditioning</option>
+          <option>Weight Loss</option>
+          <option>HIIT</option>
+          <option>Rehabilitation</option>
+          <option>Nutrition</option>
+          <option>Sports Performance</option>
+          <option>Muscle Building</option>
+          <option>Hyrox</option>
+          <option>Yoga &amp; Pilates</option>
+          <option>Boxing</option>
+          <option>Running</option>
+        </select>
+      </div>
 
-        <div style="display:flex;flex-direction:column;gap:1.25rem;">
-          <div class="card" style="margin-bottom:0;">
-            <div class="card-head">
-              <div>
-                <div class="card-title">Your Position</div>
-                <div class="card-sub">How you compare nationally</div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="bmp-wrap" style="padding:0.5rem 0;">
-                <div class="bmp-circle" id="mini-gauge-circle" style="width:110px;height:110px;background:var(--green-mid);">
-                  <div class="bmp-inner" style="width:84px;height:84px;">
-                    <div class="bmp-score" id="mini-gauge-score" style="font-size:1.5rem;">—</div>
-                    <div class="bmp-label-small">BMP</div>
-                  </div>
-                </div>
-                <div class="bmp-rank-info">
-                  <div class="bmp-rank-val" id="mini-gauge-rank" style="font-size:1rem;">🔒 Rank unlocks with first review</div>
-                  <div class="bmp-rank-label" id="mini-gauge-sub">Collect verified reviews to rank</div>
-                </div>
-              </div>
-            </div>
-          </div>
+      <!-- Trainer cards list -->
+      <div id="rk-list" style="display:flex;flex-direction:column;gap:0.75rem;">
+        <div style="text-align:center;padding:3rem;color:var(--muted);font-size:0.9rem;">Loading leaderboard…</div>
+      </div>
 
-          <div class="card" style="margin-bottom:0;">
-            <div class="card-head">
-              <div>
-                <div class="card-title">Score Breakdown</div>
-                <div class="card-sub">What's driving your BMP</div>
-              </div>
-            </div>
-            <div class="card-body" id="score-breakdown-body" style="padding-top:1rem;">
-              <div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.5rem 0;">Loading…</div>
-            </div>
+      <!-- Score breakdown (kept below the list) -->
+      <div class="card" style="margin-top:1.5rem;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Your Score Breakdown</div>
+            <div class="card-sub">What's driving your BMP</div>
           </div>
         </div>
+        <div class="card-body" id="score-breakdown-body" style="padding-top:1rem;">
+          <div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.5rem 0;">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Hidden elements kept for JS compatibility -->
+      <div style="display:none;">
+        <tbody id="rank-tbody"></tbody>
+        <div id="mini-gauge-circle"></div>
+        <div id="mini-gauge-score"></div>
+        <div id="mini-gauge-rank"></div>
+        <div id="mini-gauge-sub"></div>
       </div>
     </div>
 
@@ -2540,17 +2572,17 @@
     // ── Rankings table (dynamic) ──────────────────────────────────────────
     const { data: leaderboard } = await supabase
       .from('trainers')
-      .select('id, name, username, city, location, bmp_score, avatar_initials, avatar_bg, avatar_color')
+      .select('id, name, username, city, location, specialty, bmp_score, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url')
       .eq('is_active', true)
       .gt('review_count', 0)
       .order('bmp_score', { ascending: false })
-      .limit(20);
+      .limit(100);
 
+    // ── Overview mini-table ───────────────────────────────────────────────
     const _renderRankRows = (rows: any[], tbody: HTMLElement, limit: number) => {
       const posClasses = ['r1','r2','r3'];
       if (rows && rows.length > 0) {
-        const display = rows.slice(0, limit);
-        tbody.innerHTML = display.map((pt: any, i: number) => {
+        tbody.innerHTML = rows.slice(0, limit).map((pt: any, i: number) => {
           const isYou = pt.id === trainer.id;
           return `<tr ${isYou ? 'class="you"' : ''}>
             <td class="rank-pos ${posClasses[i] ?? ''}" style="padding-left:1.5rem;">${i + 1}</td>
@@ -2571,6 +2603,75 @@
     const ovRankTbody = document.getElementById('ov-rank-tbody') as HTMLElement;
     if (rankTbody)   _renderRankRows(leaderboard ?? [], rankTbody, 20);
     if (ovRankTbody) _renderRankRows(leaderboard ?? [], ovRankTbody, 7);
+
+    // ── Rankings page — glowing cards ────────────────────────────────────
+    const rkData = leaderboard ?? [];
+    const rkList = document.getElementById('rk-list') as HTMLElement;
+
+    const _rkCard = (pt: any, i: number) => {
+      const isYou = pt.id === trainer.id;
+      const av = pt.avatar_url
+        ? `<img src="${pt.avatar_url}" class="rk-av" alt="" onerror="this.outerHTML='<div class=\\'rk-av rk-av-init\\'  style=\\'background:${pt.avatar_bg||'#eaf7ec'};color:${pt.avatar_color||'#2a9438'};width:52px;height:52px;\\'>${pt.avatar_initials||'?'}</div>'">`
+        : `<div class="rk-av rk-av-init" style="width:52px;height:52px;background:${pt.avatar_bg||'#eaf7ec'};color:${pt.avatar_color||'#2a9438'};">${pt.avatar_initials||'?'}</div>`;
+      const metaParts = [];
+      if (pt.city || pt.location) metaParts.push('📍 ' + (pt.city || pt.location));
+      if (pt.specialty)           metaParts.push('🏋 ' + pt.specialty);
+      return `<a href="/trainers/${pt.id}" class="rk-card${isYou ? ' rk-you' : ''}">
+        <div class="rk-num">${String(i+1).padStart(2,'0')}</div>
+        ${av}
+        <div class="rk-info">
+          <div class="rk-name">${pt.name}${isYou ? '<span class="rk-you-pill">YOU</span>' : ''}</div>
+          <div class="rk-meta">${metaParts.join(' · ')}</div>
+        </div>
+        <div class="rk-bmp">
+          <div class="rk-bmp-score">${pt.bmp_score ?? '—'}</div>
+          <div class="rk-bmp-label">BMP</div>
+        </div>
+      </a>`;
+    };
+
+    const _rkRender = (rows: any[]) => {
+      if (!rkList) return;
+      if (!rows.length) {
+        rkList.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--muted);font-size:0.9rem;">No trainers found.</div>`;
+        return;
+      }
+      rkList.innerHTML = rows.map((pt, i) => _rkCard(pt, i)).join('');
+    };
+
+    _rkRender(rkData);
+
+    // Wire search + filter
+    (window as any)._rkAll = rkData;
+    (window as any).rkFilter = () => {
+      const q    = (document.getElementById('rk-search') as HTMLInputElement)?.value.toLowerCase() ?? '';
+      const spec = (document.getElementById('rk-spec')   as HTMLSelectElement)?.value.toLowerCase() ?? '';
+      const filtered = (window as any)._rkAll.filter((pt: any) => {
+        const nm = (pt.name || '').toLowerCase();
+        const ct = (pt.city || pt.location || '').toLowerCase();
+        const sp = (pt.specialty || '').toLowerCase();
+        return (!q || nm.includes(q) || ct.includes(q))
+            && (!spec || sp.includes(spec));
+      });
+      _rkRender(filtered);
+    };
+
+    // Populate "Your Position" banner
+    const yourIdx = rkData.findIndex((pt: any) => pt.id === trainer.id);
+    const rkBanner = document.getElementById('rk-you-banner') as HTMLElement;
+    if (rkBanner && yourIdx >= 0) {
+      const you = rkData[yourIdx] as any;
+      const rkYouAv = document.getElementById('rk-you-avatar') as HTMLElement;
+      rkYouAv.textContent = you.avatar_initials || '?';
+      rkYouAv.style.background = you.avatar_bg || 'var(--green-mid)';
+      rkYouAv.style.color      = you.avatar_color || 'var(--green-dark)';
+      (document.getElementById('rk-you-name') as HTMLElement).textContent = you.name;
+      (document.getElementById('rk-you-city') as HTMLElement).textContent = you.city || you.location || '';
+      (document.getElementById('rk-you-rank') as HTMLElement).textContent = `#${yourIdx + 1}`;
+      (document.getElementById('rk-you-bmp')  as HTMLElement).textContent = String(you.bmp_score ?? '—');
+      (document.getElementById('rk-you-reviews') as HTMLElement).textContent = String(you.review_count ?? trainer.review_count ?? '—');
+      rkBanner.style.display = 'flex';
+    }
 
     // ── Mini gauge on Rankings page ───────────────────────────────────────
     const miniScore  = document.getElementById('mini-gauge-score')  as HTMLElement;
@@ -3560,10 +3661,7 @@
     img.src = qrUrl;
   }
 
-  function filterRank(el) {
-    document.querySelectorAll('.rank-filter').forEach(f => f.classList.remove('active'));
-    el.classList.add('active');
-  }
+  function filterRank(_el: HTMLElement) { /* replaced by rkFilter */ }
 
   function showToast(msg) {
     const toast = document.getElementById('copy-toast');
