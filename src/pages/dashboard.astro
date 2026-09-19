@@ -1646,6 +1646,13 @@
   // Store ID for save/update operations
   let trainerId: string | null = trainer?.id ?? null;
 
+  // Expose critical globals immediately so inline-script functions (saveCrop, etc.)
+  // can use them even if later init code throws before the main assignment block.
+  (window as any).__ptTrainerId = trainerId;
+  (window as any).__ptUserId    = session.user.id;
+  (window as any).__ptSupabase  = supabase;
+  (window as any).__ptTrainer   = trainer;
+
   // ── Gyms ────────────────────────────────────────────────────────────────────
   let trainerGyms: { name: string; location: string }[] = [];
 
