@@ -61,6 +61,19 @@ const emoji = specialtyEmoji[trainer.specialty] ?? '🏋️';
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
 
+// Helpers for free-colour hero backgrounds
+function _hexToRGB(hex: string): [number,number,number] {
+  const h = hex.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+}
+function _darkenHex(hex: string, f: number): string {
+  const [r,g,b] = _hexToRGB(hex);
+  return '#'+[r,g,b].map(v=>('0'+Math.round(v*(1-f)).toString(16)).slice(-2)).join('');
+}
+function _lightenHex(hex: string, f: number): string {
+  const [r,g,b] = _hexToRGB(hex);
+  return '#'+[r,g,b].map(v=>('0'+Math.round(v+(255-v)*f).toString(16)).slice(-2)).join('');
+}
+
 const heroThemes: Record<string, string> = {
   forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
   midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
@@ -71,9 +84,12 @@ const heroThemes: Record<string, string> = {
   lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
   sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
 };
-const heroBackground = heroThemes[trainer.hero_theme ?? 'forest'] ?? heroThemes.forest;
+const _isHex = (trainer.hero_theme ?? '').startsWith('#');
+const heroBackground = _isHex
+  ? `linear-gradient(135deg,${_darkenHex(trainer.hero_theme!,0.62)} 0%,${_darkenHex(trainer.hero_theme!,0.38)} 55%,${_darkenHex(trainer.hero_theme!,0.12)} 100%)`
+  : (heroThemes[trainer.hero_theme ?? 'forest'] ?? heroThemes.forest);
 
-// Accent colours for box borders — reflect each theme on the white content sections
+// Accent colours for box borders
 const themeAccents: Record<string, string> = {
   forest:   '#b8ddc0',
   midnight: '#aabce0',
@@ -84,7 +100,9 @@ const themeAccents: Record<string, string> = {
   lavender: '#c8aae8',
   sky:      '#aacce0',
 };
-const themeAccent = themeAccents[trainer.hero_theme ?? 'forest'] ?? themeAccents.forest;
+const themeAccent = _isHex
+  ? _lightenHex(trainer.hero_theme!, 0.55)
+  : (themeAccents[trainer.hero_theme ?? 'forest'] ?? themeAccents.forest);
 
 // ── SEO ──────────────────────────────────────────────────────────────────────
 const trainerCity = trainer.city ?? trainer.location ?? 'the UK';
