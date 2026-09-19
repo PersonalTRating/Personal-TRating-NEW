@@ -359,7 +359,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 </nav>
 
 <!-- ── PROFILE HERO ── -->
-<section style={`background:${heroBackground};padding:4rem 0 3.5rem;`}>
+<section id="tp-hero-section" style={`background:${heroBackground};padding:4rem 0 3.5rem;`}>
   <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
 
     <a href="/#leaderboard" style="color:rgba(255,255,255,0.45);font-size:0.82rem;font-weight:500;text-decoration:none;display:inline-block;margin-bottom:2.25rem;transition:color 0.2s;"
@@ -1233,15 +1233,52 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     const trainerId = (document.getElementById('trainer-feed-data') as HTMLElement | null)?.dataset.trainerId;
     if (!trainerId) return;
 
+    // Hex colour helpers (mirror of server-side frontmatter functions)
+    function _hexToRGB(hex: string): [number,number,number] {
+      const h = hex.replace('#',''); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];
+    }
+    function _darkenHex(hex: string, f: number): string {
+      const [r,g,b] = _hexToRGB(hex);
+      return '#'+[r,g,b].map((v: number)=>('0'+Math.round(v*(1-f)).toString(16)).slice(-2)).join('');
+    }
+
     // Fetch live trainer row and approved review count in parallel
     const [trainerRes, reviewsRes] = await Promise.all([
-      supabase.from('trainers').select('bmp_score, star_rating, avatar_url, city, bio, specialty').eq('id', trainerId).single(),
+      supabase.from('trainers').select('bmp_score, star_rating, avatar_url, avatar_color, city, bio, specialty, hero_theme').eq('id', trainerId).single(),
       supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('trainer_id', trainerId).eq('is_verified', true),
     ]);
 
     const liveBmp    = trainerRes.data?.bmp_score  ?? 0;
     const liveRating = trainerRes.data?.star_rating ?? 0;
     const liveCount  = reviewsRes.count             ?? 0;
+
+    // Patch hero background with live hero_theme (SSG bakes the build-time value)
+    const liveTheme = trainerRes.data?.hero_theme as string | null;
+    if (liveTheme) {
+      const heroEl = document.getElementById('tp-hero-section');
+      if (heroEl) {
+        const heroThemes: Record<string,string> = {
+          forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
+          midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
+          charcoal: 'linear-gradient(135deg,#111111 0%,#252525 55%,#333333 100%)',
+          royal:    'linear-gradient(135deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
+          slate:    'linear-gradient(135deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
+          rose:     'linear-gradient(135deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
+          lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
+          sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+        };
+        heroEl.style.background = liveTheme.startsWith('#')
+          ? `linear-gradient(135deg,${_darkenHex(liveTheme,0.62)} 0%,${_darkenHex(liveTheme,0.38)} 55%,${_darkenHex(liveTheme,0.12)} 100%)`
+          : (heroThemes[liveTheme] ?? heroThemes.forest);
+      }
+    }
+
+    // Patch avatar ring colour with live avatar_color
+    const liveAvatarColor = trainerRes.data?.avatar_color as string | null;
+    if (liveAvatarColor) {
+      const avatarImg = document.querySelector('.tp-hero-inner img') as HTMLElement | null;
+      if (avatarImg) avatarImg.style.border = `4px solid ${liveAvatarColor}`;
+    }
 
     // Patch BMP score
     const bmpVal = document.getElementById('tp-bmp-val');
