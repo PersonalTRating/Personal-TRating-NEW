@@ -176,7 +176,8 @@ const reviews = [
 
 <script is:inline>
   if (typeof localStorage !== 'undefined' && localStorage.getItem('cc_trainer') === '1') {
-    window.location.replace('/for-trainers');
+    var _params = new URLSearchParams(window.location.search);
+    if (!_params.has('cv')) window.location.replace('/for-trainers');
   }
 </script>
 
