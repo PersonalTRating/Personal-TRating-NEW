@@ -871,7 +871,7 @@ const reviews = [
 </section>
 
 <!-- ── CTA ── -->
-<section style="padding:6rem 0;text-align:center;background:white;border-top:3px solid #3ab54a;">
+<section id="pt-cta-section" style="padding:6rem 0;text-align:center;background:white;border-top:3px solid #3ab54a;">
   <div style="max-width:580px;margin:0 auto;padding:0 2.5rem;">
     <div style="display:inline-block;background:#eaf7ec;color:#2a9438;padding:0.4rem 1rem;border-radius:20px;font-size:0.72rem;font-weight:700;margin-bottom:1.5rem;letter-spacing:1.5px;text-transform:uppercase;">
       Free to Join
@@ -1279,6 +1279,8 @@ document.addEventListener('DOMContentLoaded', function () {
       accountEl.href         = '/dashboard';
       accountEl.style.display = '';
       accountEl.textContent  = (trainerRow.name ? trainerRow.name + ' · ' : '') + 'My Dashboard →';
+      const ptCta = document.getElementById('pt-cta-section');
+      if (ptCta) ptCta.style.display = 'none';
       document.getElementById('nav-signout')!.style.display = '';
       document.getElementById('mob-signin')!.style.display  = 'none';
       document.getElementById('mob-signup')!.style.display  = 'none';
