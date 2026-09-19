@@ -268,6 +268,13 @@
   .rk-bmp  { text-align:right; flex-shrink:0; }
   .rk-bmp-score { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; color:white; line-height:1; }
   .rk-bmp-label { font-size:0.62rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.35); margin-top:0.15rem; }
+  .rk-chip {
+    padding:0.4rem 0.9rem; border-radius:20px; cursor:pointer;
+    border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.75);
+    font-size:0.78rem; font-weight:600; font-family:'Manrope',sans-serif;
+    background:rgba(255,255,255,0.06); transition:all 0.15s;
+  }
+  .rk-chip:hover, .rk-chip.rk-chip-active { border-color:#3ab54a; color:#3ab54a; background:rgba(58,181,74,0.1); }
 
   /* ── PROFILE FORM ── */
   .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
@@ -1374,83 +1381,92 @@
     </div>
 
     <!-- ══════════ RANKINGS ══════════ -->
-    <div class="page" id="page-rankings">
-      <div class="section-eyebrow">Leaderboard Position</div>
-      <div class="section-heading">UK Leaderboard</div>
+    <div class="page" id="page-rankings" style="margin:-2rem -2.5rem;">
+      <div style="background:#111311;min-height:calc(100vh - 60px);padding:2rem 2.5rem;">
 
-      <!-- Your position banner (shown once data loads) -->
-      <div id="rk-you-banner" style="display:none;background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 100%);border:2px solid #3ab54a;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:none;align-items:center;gap:1.5rem;flex-wrap:wrap;">
-        <div style="display:flex;align-items:center;gap:1rem;flex:1;min-width:0;">
-          <div id="rk-you-avatar" style="width:52px;height:52px;border-radius:50%;background:var(--green-mid);color:var(--green-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0;border:2px solid #3ab54a;"></div>
-          <div>
-            <div style="font-size:0.7rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.2rem;">Your Position</div>
-            <div id="rk-you-name" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:white;"></div>
-            <div id="rk-you-city" style="font-size:0.78rem;color:rgba(255,255,255,0.5);margin-top:0.1rem;"></div>
+        <!-- Your position banner -->
+        <div id="rk-you-banner" style="display:none;background:linear-gradient(135deg,#0d2a12 0%,#1a3d1e 100%);border:2px solid #3ab54a;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:2rem;align-items:center;gap:1.5rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:1rem;flex:1;min-width:0;">
+            <div id="rk-you-avatar" style="width:52px;height:52px;border-radius:50%;background:var(--green-mid);color:var(--green-dark);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1rem;flex-shrink:0;border:2px solid #3ab54a;"></div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.2rem;">Your Position</div>
+              <div id="rk-you-name" style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:900;color:white;"></div>
+              <div id="rk-you-city" style="font-size:0.78rem;color:rgba(255,255,255,0.45);margin-top:0.1rem;"></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:2rem;flex-wrap:wrap;">
+            <div style="text-align:center;">
+              <div id="rk-you-rank" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#3ab54a;line-height:1;">—</div>
+              <div style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.2rem;">UK Rank</div>
+            </div>
+            <div style="text-align:center;">
+              <div id="rk-you-bmp" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
+              <div style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.2rem;">BMP Score</div>
+            </div>
+            <div style="text-align:center;">
+              <div id="rk-you-reviews" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
+              <div style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.2rem;">Reviews</div>
+            </div>
           </div>
         </div>
-        <div style="display:flex;gap:2rem;flex-wrap:wrap;">
-          <div style="text-align:center;">
-            <div id="rk-you-rank" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#3ab54a;line-height:1;">—</div>
-            <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:0.2rem;">UK Rank</div>
-          </div>
-          <div style="text-align:center;">
-            <div id="rk-you-bmp" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
-            <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:0.2rem;">BMP Score</div>
-          </div>
-          <div style="text-align:center;">
-            <div id="rk-you-reviews" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
-            <div style="font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-top:0.2rem;">Reviews</div>
+
+        <!-- Heading -->
+        <div style="margin-bottom:1.5rem;">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.4rem;">FIND A TRAINER</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.75rem;font-weight:900;color:white;margin-bottom:0.25rem;">Browse Top-Ranked UK PTs</div>
+          <div style="color:#5a6b5c;font-size:0.85rem;">Search, filter and compare by BMP score, city and specialty</div>
+        </div>
+
+        <!-- Search bar -->
+        <div style="display:flex;gap:0.6rem;margin-bottom:1.25rem;">
+          <input id="rk-search" type="text" placeholder="city or trainer name…" oninput="rkFilter()"
+            style="flex:1;padding:0.85rem 1.1rem;border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.07);color:white;font-family:'Manrope',sans-serif;font-size:0.875rem;outline:none;" />
+          <button onclick="rkFilter()" style="padding:0.85rem 1.4rem;background:#3ab54a;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.875rem;cursor:pointer;font-family:'Manrope',sans-serif;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">Search →</button>
+        </div>
+
+        <!-- Specialty chips -->
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+          <button class="rk-chip rk-chip-active" onclick="rkSetSpec(this,'')">All</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'strength')">💪 Strength</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'weight loss')">🏋 Weight Loss</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'hiit')">🏃 HIIT &amp; Cardio</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'rehabilitation')">🩺 Rehabilitation</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'nutrition')">🥗 Nutrition</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'sports')">⚽ Sports</button>
+        </div>
+
+        <!-- Count -->
+        <div id="rk-count-txt" style="font-size:0.78rem;color:#5a6b5c;margin-bottom:1rem;"></div>
+
+        <!-- Trainer cards -->
+        <div id="rk-list" style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="text-align:center;padding:3rem;color:#5a6b5c;font-size:0.9rem;">Loading leaderboard…</div>
+        </div>
+
+        <!-- Browse Full Directory -->
+        <div style="text-align:center;margin-top:2rem;padding-bottom:1.5rem;">
+          <a href="/find-a-trainer" target="_blank" style="display:inline-flex;align-items:center;gap:0.6rem;background:#3ab54a;color:white;font-weight:700;font-size:0.9rem;padding:0.85rem 2.25rem;border-radius:30px;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">Browse Full Directory →</a>
+          <p style="font-size:0.75rem;color:#4a5e4a;margin-top:0.6rem;">Filter by city, specialty &amp; BMP score across all UK trainers</p>
+        </div>
+
+        <!-- Score breakdown -->
+        <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:1.25rem 1.5rem;margin-top:0.5rem;">
+          <div style="font-weight:800;font-size:0.92rem;color:white;margin-bottom:0.2rem;">Your Score Breakdown</div>
+          <div style="font-size:0.75rem;color:#5a6b5c;margin-bottom:1rem;">What's driving your BMP</div>
+          <div id="score-breakdown-body">
+            <div style="text-align:center;color:#5a6b5c;font-size:0.82rem;padding:0.5rem 0;">Loading…</div>
           </div>
         </div>
-      </div>
 
-      <!-- Search + filters -->
-      <div style="display:flex;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap;align-items:center;">
-        <input id="rk-search" type="text" placeholder="Search by name or city…"
-          style="flex:1;min-width:200px;padding:0.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.875rem;outline:none;background:white;"
-          oninput="rkFilter()" />
-        <select id="rk-spec" onchange="rkFilter()"
-          style="padding:0.7rem 1rem;border:1.5px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.875rem;background:white;cursor:pointer;outline:none;">
-          <option value="">All Specialties</option>
-          <option>Strength &amp; Conditioning</option>
-          <option>Weight Loss</option>
-          <option>HIIT</option>
-          <option>Rehabilitation</option>
-          <option>Nutrition</option>
-          <option>Sports Performance</option>
-          <option>Muscle Building</option>
-          <option>Hyrox</option>
-          <option>Yoga &amp; Pilates</option>
-          <option>Boxing</option>
-          <option>Running</option>
-        </select>
-      </div>
-
-      <!-- Trainer cards list -->
-      <div id="rk-list" style="display:flex;flex-direction:column;gap:0.75rem;">
-        <div style="text-align:center;padding:3rem;color:var(--muted);font-size:0.9rem;">Loading leaderboard…</div>
-      </div>
-
-      <!-- Score breakdown (kept below the list) -->
-      <div class="card" style="margin-top:1.5rem;">
-        <div class="card-head">
-          <div>
-            <div class="card-title">Your Score Breakdown</div>
-            <div class="card-sub">What's driving your BMP</div>
-          </div>
+        <!-- Hidden for JS compatibility -->
+        <div style="display:none;">
+          <div id="rank-tbody"></div>
+          <div id="mini-gauge-circle"></div>
+          <div id="mini-gauge-score"></div>
+          <div id="mini-gauge-rank"></div>
+          <div id="mini-gauge-sub"></div>
         </div>
-        <div class="card-body" id="score-breakdown-body" style="padding-top:1rem;">
-          <div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.5rem 0;">Loading…</div>
-        </div>
-      </div>
 
-      <!-- Hidden elements kept for JS compatibility -->
-      <div style="display:none;">
-        <div id="rank-tbody"></div>
-        <div id="mini-gauge-circle"></div>
-        <div id="mini-gauge-score"></div>
-        <div id="mini-gauge-rank"></div>
-        <div id="mini-gauge-sub"></div>
       </div>
     </div>
 
@@ -2608,50 +2624,71 @@
     const rkData = leaderboard ?? [];
     const rkList = document.getElementById('rk-list') as HTMLElement;
 
+    const _rkDumbbells = (bmp: number) => {
+      const n = bmp > 0 ? Math.min(5, Math.ceil(bmp / 20)) : 0;
+      let s = '';
+      for (let i = 0; i < 5; i++) {
+        const c  = i < n ? '#FFB800' : 'rgba(255,255,255,0.12)';
+        s += `<svg viewBox="0 0 28 12" width="13" height="7" style="display:inline-block;vertical-align:middle;"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}"/><rect x="8" y="3.5" width="12" height="5" fill="${c}"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}"/></svg>`;
+      }
+      return s;
+    };
+
     const _rkCard = (pt: any, i: number) => {
       const isYou = pt.id === trainer.id;
+      const bmp = pt.bmp_score ?? 0;
       const av = pt.avatar_url
-        ? `<img src="${pt.avatar_url}" class="rk-av" alt="" onerror="this.outerHTML='<div class=\\'rk-av rk-av-init\\'  style=\\'background:${pt.avatar_bg||'#eaf7ec'};color:${pt.avatar_color||'#2a9438'};width:52px;height:52px;\\'>${pt.avatar_initials||'?'}</div>'">`
-        : `<div class="rk-av rk-av-init" style="width:52px;height:52px;background:${pt.avatar_bg||'#eaf7ec'};color:${pt.avatar_color||'#2a9438'};">${pt.avatar_initials||'?'}</div>`;
-      const metaParts = [];
-      if (pt.city || pt.location) metaParts.push('📍 ' + (pt.city || pt.location));
-      if (pt.specialty)           metaParts.push('🏋 ' + pt.specialty);
-      return `<a href="/trainers/${pt.id}" class="rk-card${isYou ? ' rk-you' : ''}">
+        ? `<img src="${pt.avatar_url}" style="width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="">`
+        : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#eaf7ec'};color:${pt.avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;">${pt.avatar_initials||'?'}</div>`;
+      const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" style="flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      const meta = [pt.city||pt.location ? '📍 '+(pt.city||pt.location) : '', pt.specialty ? '🏋 '+pt.specialty : ''].filter(Boolean).join('  ·  ');
+      return `<a href="/trainers/${pt.id}" target="_blank" class="rk-card${isYou ? ' rk-you' : ''}">
         <div class="rk-num">${String(i+1).padStart(2,'0')}</div>
         ${av}
         <div class="rk-info">
-          <div class="rk-name">${pt.name}${isYou ? '<span class="rk-you-pill">YOU</span>' : ''}</div>
-          <div class="rk-meta">${metaParts.join(' · ')}</div>
+          <div class="rk-name">${pt.name} ${tick}${isYou ? '<span class="rk-you-pill">YOU</span>' : ''}</div>
+          ${pt.username ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.38);font-weight:600;margin-top:0.1rem;">@${pt.username}</div>` : ''}
+          <div class="rk-meta" style="margin-top:0.25rem;">${meta}</div>
         </div>
         <div class="rk-bmp">
-          <div class="rk-bmp-score">${pt.bmp_score ?? '—'}</div>
+          <div class="rk-bmp-score">${bmp > 0 ? bmp : '—'}</div>
           <div class="rk-bmp-label">BMP</div>
+          <div style="margin-top:0.35rem;display:flex;gap:2px;">${_rkDumbbells(bmp)}</div>
         </div>
       </a>`;
     };
 
     const _rkRender = (rows: any[]) => {
       if (!rkList) return;
+      const countEl = document.getElementById('rk-count-txt') as HTMLElement;
       if (!rows.length) {
-        rkList.innerHTML = `<div style="text-align:center;padding:3rem;color:var(--muted);font-size:0.9rem;">No trainers found.</div>`;
+        rkList.innerHTML = `<div style="text-align:center;padding:3rem;color:#5a6b5c;font-size:0.9rem;">No trainers found.</div>`;
+        if (countEl) countEl.textContent = '';
         return;
       }
+      if (countEl) countEl.textContent = rows.length + ' trainer' + (rows.length !== 1 ? 's' : '');
       rkList.innerHTML = rows.map((pt, i) => _rkCard(pt, i)).join('');
     };
 
     _rkRender(rkData);
 
-    // Wire search + filter
-    (window as any)._rkAll = rkData;
+    // Wire search + specialty chips
+    (window as any)._rkAll    = rkData;
+    (window as any)._rkSpec   = '';
+    (window as any).rkSetSpec = (btn: HTMLElement, spec: string) => {
+      document.querySelectorAll('.rk-chip').forEach(c => c.classList.remove('rk-chip-active'));
+      btn.classList.add('rk-chip-active');
+      (window as any)._rkSpec = spec;
+      (window as any).rkFilter();
+    };
     (window as any).rkFilter = () => {
-      const q    = (document.getElementById('rk-search') as HTMLInputElement)?.value.toLowerCase() ?? '';
-      const spec = (document.getElementById('rk-spec')   as HTMLSelectElement)?.value.toLowerCase() ?? '';
+      const q    = ((document.getElementById('rk-search') as HTMLInputElement)?.value || '').toLowerCase();
+      const spec = (window as any)._rkSpec || '';
       const filtered = (window as any)._rkAll.filter((pt: any) => {
         const nm = (pt.name || '').toLowerCase();
         const ct = (pt.city || pt.location || '').toLowerCase();
         const sp = (pt.specialty || '').toLowerCase();
-        return (!q || nm.includes(q) || ct.includes(q))
-            && (!spec || sp.includes(spec));
+        return (!q || nm.includes(q) || ct.includes(q)) && (!spec || sp.includes(spec));
       });
       _rkRender(filtered);
     };
