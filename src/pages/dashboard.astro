@@ -1446,7 +1446,7 @@
 
       <!-- Hidden elements kept for JS compatibility -->
       <div style="display:none;">
-        <tbody id="rank-tbody"></tbody>
+        <div id="rank-tbody"></div>
         <div id="mini-gauge-circle"></div>
         <div id="mini-gauge-score"></div>
         <div id="mini-gauge-rank"></div>
@@ -3661,7 +3661,7 @@
     img.src = qrUrl;
   }
 
-  function filterRank(_el: HTMLElement) { /* replaced by rkFilter */ }
+  function filterRank(_el) { /* replaced by rkFilter */ }
 
   function showToast(msg) {
     const toast = document.getElementById('copy-toast');
