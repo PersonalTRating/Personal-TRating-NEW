@@ -1289,6 +1289,21 @@ document.addEventListener('DOMContentLoaded', function () {
     const { data: trainerRow } = await supabase.from('trainers').select('id, name').eq('user_id', session.user.id).maybeSingle();
     if (trainerRow && !new URLSearchParams(window.location.search).has('cv')) {
       window.location.replace('/for-trainers');
+    } else if (trainerRow) {
+      // Trainer viewing customer home via ?cv=1 — show their dashboard button
+      const firstName = trainerRow.name ? trainerRow.name.split(' ')[0] : '';
+      document.getElementById('nav-signin')!.style.display  = 'none';
+      document.getElementById('nav-signup')!.style.display  = 'none';
+      const accountEl = document.getElementById('nav-account') as HTMLAnchorElement;
+      accountEl.style.display = '';
+      accountEl.href          = '/dashboard';
+      accountEl.textContent   = (firstName ? firstName + ' · ' : '') + 'My Dashboard →';
+      document.getElementById('mob-signin')!.style.display   = 'none';
+      document.getElementById('mob-signup')!.style.display   = 'none';
+      const mobAcc = document.getElementById('mob-account') as HTMLAnchorElement;
+      mobAcc.style.display  = 'block';
+      mobAcc.href           = '/dashboard';
+      mobAcc.textContent    = (firstName ? firstName + ' · ' : '') + 'My Dashboard →';
     } else {
       const { data: client } = await supabase.from('clients').select('id, name').eq('user_id', session.user.id).maybeSingle();
       if (client) {
