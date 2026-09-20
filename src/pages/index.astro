@@ -176,8 +176,16 @@ const reviews = [
 
 <script is:inline>
   if (typeof localStorage !== 'undefined' && localStorage.getItem('cc_trainer') === '1') {
-    var _params = new URLSearchParams(window.location.search);
-    if (!_params.has('cv')) window.location.replace('/for-trainers');
+    // Only redirect if there is an active Supabase session — clears stale flag for signed-out users
+    var _hasSession = Object.keys(localStorage).some(function(k) {
+      return k.startsWith('sb-') && k.endsWith('-auth-token');
+    });
+    if (_hasSession) {
+      var _params = new URLSearchParams(window.location.search);
+      if (!_params.has('cv')) window.location.replace('/for-trainers');
+    } else {
+      localStorage.removeItem('cc_trainer');
+    }
   }
 </script>
 
