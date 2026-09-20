@@ -966,23 +966,18 @@
       </div>
 
       <!-- Leaderboard preview -->
-      <div class="card" style="margin-bottom:1.25rem;">
-        <div class="card-head">
+      <div class="card" style="margin-bottom:1.25rem;overflow:hidden;">
+        <div class="card-head" style="background:#0d1a0e;border-bottom:1px solid rgba(58,181,74,0.15);">
           <div>
-            <div class="card-title">UK Leaderboard</div>
-            <div class="card-sub">Top trainers by BMP score — your position highlighted</div>
+            <div class="card-title" style="color:white;">UK Leaderboard</div>
+            <div class="card-sub" style="color:rgba(255,255,255,0.45);">Top trainers by BMP score — your position highlighted</div>
           </div>
-          <button class="card-link" onclick="showPage('rankings')">Full leaderboard →</button>
+          <button class="card-link" onclick="showPage('rankings')" style="color:#3ab54a;">Full leaderboard →</button>
         </div>
-        <div class="card-body" style="padding:0;">
-          <table class="rank-table" id="ov-rank-tbody-wrap" style="width:100%;">
-            <thead>
-              <tr><th style="padding-left:1.5rem;">#</th><th>Trainer</th><th>City</th><th style="padding-right:1.5rem;">BMP</th></tr>
-            </thead>
-            <tbody id="ov-rank-tbody">
-              <tr><td colspan="4" style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Loading rankings…</td></tr>
-            </tbody>
-          </table>
+        <div class="card-body" style="padding:0.75rem;background:#0d1a0e;border-radius:0 0 16px 16px;display:flex;flex-direction:column;gap:0.6rem;">
+          <div id="ov-rk-list" style="display:flex;flex-direction:column;gap:0.6rem;">
+            <div style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Loading rankings…</div>
+          </div>
         </div>
       </div>
 
@@ -2642,10 +2637,8 @@
       }
     };
 
-    const rankTbody   = document.getElementById('rank-tbody')    as HTMLElement;
-    const ovRankTbody = document.getElementById('ov-rank-tbody') as HTMLElement;
-    if (rankTbody)   _renderRankRows(leaderboard ?? [], rankTbody, 20);
-    if (ovRankTbody) _renderRankRows(leaderboard ?? [], ovRankTbody, 7);
+    const rankTbody = document.getElementById('rank-tbody') as HTMLElement;
+    if (rankTbody) _renderRankRows(leaderboard ?? [], rankTbody, 20);
 
     // ── Rankings page — glowing cards ────────────────────────────────────
     const rkData = leaderboard ?? [];
@@ -2702,6 +2695,15 @@
     };
 
     _rkRender(rkData);
+
+    // Overview leaderboard — same glowing cards, top 7
+    const ovRkList = document.getElementById('ov-rk-list') as HTMLElement;
+    if (ovRkList) {
+      const ovData = leaderboard ?? [];
+      ovRkList.innerHTML = ovData.length
+        ? ovData.slice(0, 7).map((pt: any, i: number) => _rkCard(pt, i)).join('')
+        : `<div style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Rankings appear once PTs collect verified reviews.</div>`;
+    }
 
     // Wire search + specialty chips
     (window as any)._rkAll    = rkData;
