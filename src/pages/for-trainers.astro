@@ -490,16 +490,19 @@ const { count: totalReviews } = await supabase
   if (session) {
     const { data: trainer } = await supabase.from('trainers').select('id, name').eq('user_id', session.user.id).maybeSingle();
     if (trainer) {
-      // Nav: swap "Sign In" + "List Your Profile Free" for "My Dashboard" + sign out
+      const label = (trainer.name ? trainer.name.split(' ')[0] + ' · ' : '') + 'My Dashboard →';
+      // Desktop nav
       const navSignin  = document.getElementById('ft-nav-signin');
       const navCta     = document.getElementById('ft-nav-cta');
       const navSignout = document.getElementById('ft-nav-signout');
       if (navSignin) navSignin.style.display = 'none';
-      if (navCta) {
-        navCta.textContent  = (trainer.name ? trainer.name + ' · ' : '') + 'My Dashboard →';
-        (navCta as HTMLAnchorElement).href = '/dashboard';
-      }
+      if (navCta) { navCta.textContent = label; (navCta as HTMLAnchorElement).href = '/dashboard'; }
       if (navSignout) navSignout.style.display = '';
+      // Mobile nav
+      const mobSignin = document.getElementById('ft-mob-signin');
+      const mobCta    = document.getElementById('ft-mob-cta') as HTMLAnchorElement | null;
+      if (mobSignin) mobSignin.style.display = 'none';
+      if (mobCta)    { mobCta.textContent = label; mobCta.href = '/dashboard'; }
       // Hero: swap signup CTA for dashboard link
       const heroCta = document.getElementById('ft-hero-cta') as HTMLAnchorElement | null;
       if (heroCta) {
