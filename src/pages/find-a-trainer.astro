@@ -63,7 +63,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
       <img src="/images/logo.png" alt="CoachCards" style="height:68px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
     </a>
     <div style="display:flex;gap:1.5rem;align-items:center;">
-      <a href="/" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
+      <a href="/" id="fat-home-link" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
          onmouseover="this.style.color='#111311'" onmouseout="this.style.color='#8a8f8a'">
         ← Home
       </a>
@@ -321,6 +321,13 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
   .fpc-cta       { background:#3ab54a; color:white; font-weight:700; font-size:0.85rem; padding:0.65rem 1.5rem; border-radius:25px; text-decoration:none; white-space:nowrap; transition:background 0.2s; }
   .fpc-cta:hover { background:#2a9438; }
 
+  /* Mobile nav */
+  @media (max-width:620px) {
+    nav > div { height:60px !important; padding:0 1.1rem !important; }
+    nav img   { height:44px !important; }
+    #fat-home-link { display:none !important; }
+    #nav-account   { font-size:0.78rem !important; }
+  }
   /* Mobile cards */
   @media (max-width:620px) {
     .fat-hero-h1  { font-size:2.2rem; }
@@ -586,7 +593,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
     if (trainerRow) {
       const accountEl = document.getElementById('nav-account')! as HTMLAnchorElement;
       accountEl.href        = '/dashboard';
-      accountEl.textContent = (trainerRow.name ? trainerRow.name + ' · ' : '') + 'My Dashboard →';
+      accountEl.textContent = (trainerRow.name ? trainerRow.name.split(' ')[0] + ' · ' : '') + 'My Dashboard →';
       accountEl.style.display = '';
     } else {
       const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
