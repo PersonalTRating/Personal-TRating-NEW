@@ -532,8 +532,11 @@
   }
   @media (max-width: 480px) {
     .stats-grid  { grid-template-columns:1fr 1fr; gap:0.75rem; }
-    .topbar-btn  { display:none; }
-    .topbar-left h1 { font-size:1.15rem; }
+    .topbar-btn       { display:none; }
+    .topbar-signout   { display:none; }
+    .topbar-left      { min-width:0; overflow:hidden; }
+    .topbar-left h1   { font-size:1.15rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .topbar-left p    { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .content { padding-bottom:80px; }
   }
 
@@ -834,6 +837,7 @@
 
   <div class="sb-footer">
     <a href="#" class="sb-footer-link">Help</a>
+    <button id="sign-out-btn-sb" class="sb-footer-link" style="background:none;border:none;cursor:pointer;font-family:'Manrope',sans-serif;margin-left:auto;">Sign Out</button>
   </div>
 </aside>
 
@@ -3016,11 +3020,13 @@
   _fetchUnreadBadge();
 
   // ── Sign out ─────────────────────────────────────────────────────────────
-  document.getElementById('sign-out-btn')?.addEventListener('click', async () => {
+  const doSignOut = async () => {
     localStorage.removeItem('cc_trainer');
     await supabase.auth.signOut();
     window.location.href = '/';
-  });
+  };
+  document.getElementById('sign-out-btn')?.addEventListener('click', doSignOut);
+  document.getElementById('sign-out-btn-sb')?.addEventListener('click', doSignOut);
 </script>
 
 <script is:inline>
