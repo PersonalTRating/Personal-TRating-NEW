@@ -79,8 +79,8 @@ function _luminanceHex(hex: string): number {
 }
 function _heroGradient(hex: string): string {
   const lum = _luminanceHex(hex);
-  const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.83,0.68,0.48] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
-  return `linear-gradient(135deg,${_darkenHex(hex,f0)} 0%,${_darkenHex(hex,f1)} 55%,${_darkenHex(hex,f2)} 100%)`;
+  const fMid = lum > 0.5 ? 0.82 : lum > 0.2 ? 0.70 : 0.52;
+  return `linear-gradient(to right,#050403 0%,${_darkenHex(hex,fMid)} 50%,${hex} 100%)`;
 }
 
 const heroThemes: Record<string, string> = {
@@ -371,8 +371,8 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
 <section id="tp-hero-section" style={`background:${heroBackground};padding:4rem 0 3.5rem;`}>
   <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
 
-    <a href="/#leaderboard" style="color:rgba(255,255,255,0.45);font-size:0.82rem;font-weight:500;text-decoration:none;display:inline-block;margin-bottom:2.25rem;transition:color 0.2s;"
-      onmouseover="this.style.color='rgba(255,255,255,0.8)'" onmouseout="this.style.color='rgba(255,255,255,0.45)'">
+    <a href="/#leaderboard" style="color:rgba(255,255,255,0.7);font-size:0.82rem;font-weight:500;text-decoration:none;display:inline-block;margin-bottom:2.25rem;transition:color 0.2s;"
+      onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
       ← Back to Rankings
     </a>
 
@@ -421,26 +421,26 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
         </h1>
 
         {(trainer as any).username && (
-          <div style="font-size:0.95rem;color:rgba(255,255,255,0.5);font-weight:600;margin-bottom:0.4rem;letter-spacing:0.3px;">
+          <div style="font-size:0.95rem;color:rgba(255,255,255,0.75);font-weight:600;margin-bottom:0.4rem;letter-spacing:0.3px;">
             @{(trainer as any).username}
           </div>
         )}
 
         {trainer.business_name && (
-          <div style="font-size:1rem;color:rgba(255,255,255,0.6);font-weight:600;margin-bottom:0.75rem;">
+          <div style="font-size:1rem;color:rgba(255,255,255,0.85);font-weight:600;margin-bottom:0.75rem;">
             {trainer.business_name}
           </div>
         )}
 
         <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.75rem;">
           {(trainer.city || trainer.location) && (
-            <span style="color:rgba(255,255,255,0.6);font-size:0.88rem;">📍 {trainer.city ?? trainer.location}</span>
+            <span style="color:rgba(255,255,255,0.85);font-size:0.88rem;">📍 {trainer.city ?? trainer.location}</span>
           )}
           {hasReviews && (
             <div style="display:flex;align-items:center;gap:0.5rem;">
               <span set:html={bmpDumbbells(trainer.bmp_score, 17)} />
               <span style="color:white;font-weight:700;font-size:0.9rem;">{trainer.star_rating}</span>
-              <span style="color:rgba(255,255,255,0.4);font-size:0.82rem;">({reviews.length} verified reviews)</span>
+              <span style="color:rgba(255,255,255,0.65);font-size:0.82rem;">({reviews.length} verified reviews)</span>
             </div>
           )}
         </div>
@@ -1253,8 +1253,8 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     function _heroGradient(hex: string): string {
       const [r,g,b] = _hexToRGB(hex);
       const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
-      const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.83,0.68,0.48] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
-      return `linear-gradient(135deg,${_darkenHex(hex,f0)} 0%,${_darkenHex(hex,f1)} 55%,${_darkenHex(hex,f2)} 100%)`;
+      const fMid = lum > 0.5 ? 0.82 : lum > 0.2 ? 0.70 : 0.52;
+      return `linear-gradient(to right,#050403 0%,${_darkenHex(hex,fMid)} 50%,${hex} 100%)`;
     }
 
     // Fetch live trainer row and approved review count in parallel
