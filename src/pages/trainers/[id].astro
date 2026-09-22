@@ -84,14 +84,14 @@ function _heroGradient(hex: string): string {
 }
 
 const heroThemes: Record<string, string> = {
-  forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
-  midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
-  charcoal: 'linear-gradient(135deg,#111111 0%,#252525 55%,#333333 100%)',
-  royal:    'linear-gradient(135deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
-  slate:    'linear-gradient(135deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
-  rose:     'linear-gradient(135deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
-  lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
-  sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+  forest:   'linear-gradient(to right,#050403 0%,#1a3d1e 50%,#2a5a30 100%)',
+  midnight: 'linear-gradient(to right,#050403 0%,#1a2240 50%,#2a3a6a 100%)',
+  charcoal: 'linear-gradient(to right,#050403 0%,#252525 50%,#333333 100%)',
+  royal:    'linear-gradient(to right,#050403 0%,#2d1a4a 50%,#4a2a7a 100%)',
+  slate:    'linear-gradient(to right,#050403 0%,#1a2c40 50%,#2a3e58 100%)',
+  rose:     'linear-gradient(to right,#050403 0%,#6b1a3a 50%,#8b2252 100%)',
+  lavender: 'linear-gradient(to right,#050403 0%,#3a1a6b 50%,#5c2a8b 100%)',
+  sky:      'linear-gradient(to right,#050403 0%,#1a3a6b 50%,#2a5a8b 100%)',
 };
 const _isHex = (trainer.hero_theme ?? '').startsWith('#');
 const heroBackground = _isHex
@@ -1273,14 +1273,14 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
       const heroEl = document.getElementById('tp-hero-section');
       if (heroEl) {
         const heroThemes: Record<string,string> = {
-          forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
-          midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
-          charcoal: 'linear-gradient(135deg,#111111 0%,#252525 55%,#333333 100%)',
-          royal:    'linear-gradient(135deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
-          slate:    'linear-gradient(135deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
-          rose:     'linear-gradient(135deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
-          lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
-          sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+          forest:   'linear-gradient(to right,#050403 0%,#1a3d1e 50%,#2a5a30 100%)',
+          midnight: 'linear-gradient(to right,#050403 0%,#1a2240 50%,#2a3a6a 100%)',
+          charcoal: 'linear-gradient(to right,#050403 0%,#252525 50%,#333333 100%)',
+          royal:    'linear-gradient(to right,#050403 0%,#2d1a4a 50%,#4a2a7a 100%)',
+          slate:    'linear-gradient(to right,#050403 0%,#1a2c40 50%,#2a3e58 100%)',
+          rose:     'linear-gradient(to right,#050403 0%,#6b1a3a 50%,#8b2252 100%)',
+          lavender: 'linear-gradient(to right,#050403 0%,#3a1a6b 50%,#5c2a8b 100%)',
+          sky:      'linear-gradient(to right,#050403 0%,#1a3a6b 50%,#2a5a8b 100%)',
         };
         heroEl.style.background = liveTheme.startsWith('#')
           ? _heroGradient(liveTheme)

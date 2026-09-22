@@ -2505,17 +2505,17 @@
     if (_heroPreviewEl) {
       const _currentTheme: string = (trainer as any).hero_theme ?? 'forest';
       const _grads: Record<string,string> = {
-        forest:   'linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%)',
-        midnight: 'linear-gradient(135deg,#0a0f1e 0%,#1a2240 55%,#2a3a6a 100%)',
-        charcoal: 'linear-gradient(135deg,#111111 0%,#252525 55%,#333333 100%)',
-        royal:    'linear-gradient(135deg,#1a0a2e 0%,#2d1a4a 55%,#4a2a7a 100%)',
-        slate:    'linear-gradient(135deg,#0a1828 0%,#1a2c40 55%,#2a3e58 100%)',
-        rose:     'linear-gradient(135deg,#3d0a1e 0%,#6b1a3a 55%,#8b2252 100%)',
-        lavender: 'linear-gradient(135deg,#1e0a3d 0%,#3a1a6b 55%,#5c2a8b 100%)',
-        sky:      'linear-gradient(135deg,#0a1e3d 0%,#1a3a6b 55%,#2a5a8b 100%)',
+        forest:   'linear-gradient(to right,#050403 0%,#1a3d1e 50%,#2a5a30 100%)',
+        midnight: 'linear-gradient(to right,#050403 0%,#1a2240 50%,#2a3a6a 100%)',
+        charcoal: 'linear-gradient(to right,#050403 0%,#252525 50%,#333333 100%)',
+        royal:    'linear-gradient(to right,#050403 0%,#2d1a4a 50%,#4a2a7a 100%)',
+        slate:    'linear-gradient(to right,#050403 0%,#1a2c40 50%,#2a3e58 100%)',
+        rose:     'linear-gradient(to right,#050403 0%,#6b1a3a 50%,#8b2252 100%)',
+        lavender: 'linear-gradient(to right,#050403 0%,#3a1a6b 50%,#5c2a8b 100%)',
+        sky:      'linear-gradient(to right,#050403 0%,#1a3a6b 50%,#2a5a8b 100%)',
       };
       _heroPreviewEl.style.background = _currentTheme.startsWith('#')
-        ? `linear-gradient(135deg,${_currentTheme}cc 0%,${_currentTheme}88 100%)`
+        ? (window as any).cpHeroGradient?.(_currentTheme) ?? `linear-gradient(to right,#050403 0%,${_currentTheme} 100%)`
         : (_grads[_currentTheme] ?? _grads.forest);
     }
 
@@ -3218,11 +3218,8 @@
   }
   function cpHeroGradient(hex) {
     var lum = cpLuminance(hex);
-    var f0, f1, f2;
-    if (lum > 0.5)      { f0=0.90; f1=0.82; f2=0.72; }
-    else if (lum > 0.2) { f0=0.78; f1=0.64; f2=0.46; }
-    else                { f0=0.62; f1=0.38; f2=0.12; }
-    return 'linear-gradient(135deg,'+cpDarken(hex,f0)+' 0%,'+cpDarken(hex,f1)+' 55%,'+cpDarken(hex,f2)+' 100%)';
+    var fMid = lum > 0.5 ? 0.82 : lum > 0.2 ? 0.70 : 0.52;
+    return 'linear-gradient(to right,#050403 0%,'+cpDarken(hex,fMid)+' 50%,'+hex+' 100%)';
   }
   function cpLuminance(hex) {
     var [r,g,b]=cpHexToRGB(hex);
