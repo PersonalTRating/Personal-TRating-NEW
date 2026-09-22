@@ -770,8 +770,10 @@
       const date    = new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
       const bmp     = t?.bmp_score ?? 0;
       const bmpDisp = bmp % 1 === 0 ? String(bmp) : bmp.toFixed(1);
-      const filled  = Math.min(5, Math.round(bmp / 20));
-      const dbs     = '🏋️'.repeat(filled) + '<span style="opacity:0.22">' + '🏋️'.repeat(5 - filled) + '</span>';
+      const filled  = bmp >= 90 ? 5 : bmp >= 70 ? 4 : bmp >= 50 ? 3 : bmp >= 25 ? 2 : bmp > 0 ? 1 : 0;
+      const _dbA = (w: number) => { const h = Math.round(w * 21 / 44); return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>`; };
+      const _dbI = (w: number) => { const h = Math.round(w * 21 / 44); return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>`; };
+      const dbs = Array.from({length:5}, (_:any, i:number) => i < filled ? _dbA(15) : _dbI(15)).join('');
       const revCount = t?.review_count ?? 0;
       return `<a href="/trainers/${r.trainer_id}" class="review-item">
         <div class="review-left">

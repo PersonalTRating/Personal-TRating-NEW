@@ -12,14 +12,14 @@ const { data: trainersData } = await supabase
 
 const raw = trainersData || [];
 
-const dbSvg = (filled: boolean): string => {
-  const c  = filled ? '#FFB800' : '#d4dbd5';
-  const sk = filled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
-  return `<svg viewBox="0 0 28 12" width="15" height="7" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/></svg>`;
+const dbSvg = (filled: boolean, w = 15): string => {
+  const h = Math.round(w * 21 / 44);
+  if (filled) return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>`;
+  return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>`;
 };
-const makeDumbbells = (bmp: number) => {
-  const n = bmp > 0 ? Math.min(5, Math.ceil(bmp / 20)) : 0;
-  return Array.from({ length: 5 }, (_, i) => dbSvg(i < n)).join('');
+const makeDumbbells = (bmp: number, w = 15) => {
+  const n = bmp >= 90 ? 5 : bmp >= 70 ? 4 : bmp >= 50 ? 3 : bmp >= 25 ? 2 : bmp > 0 ? 1 : 0;
+  return Array.from({ length: 5 }, (_, i) => dbSvg(i < n, w)).join('');
 };
 const rankClr = (r: number) =>
   r === 0 ? '#b8860b' : r === 1 ? '#888888' : r === 2 ? '#b07040' : '#8a8f8a';

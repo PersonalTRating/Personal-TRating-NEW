@@ -39,10 +39,9 @@ const distinctCities = new Set(
 
 // Dumbbell SVG helpers (consistent with trainer profile page)
 const db = (filled: boolean, w = 18): string => {
-  const c  = filled ? '#FFB800' : '#d4dbd5';
-  const sk = filled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
-  const h  = Math.round(w * 0.46);
-  return `<svg viewBox="0 0 28 12" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/></svg>`;
+  const h = Math.round(w * 21 / 44);
+  if (filled) return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>`;
+  return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>`;
 };
 const dumbbells = (rating: number, w = 18): string => {
   const n = Math.min(5, Math.max(0, Math.round(rating ?? 0)));
@@ -54,7 +53,7 @@ const rankColor = (r: number) =>
 
 const previewTrainers = leaderboard.slice(0, 3).map((t: any, i: number) => {
   const bmp    = t.bmp_score ?? 0;
-  const filled = bmp > 0 ? Math.min(5, Math.ceil(bmp / 20)) : 0;
+  const filled = bmp >= 90 ? 5 : bmp >= 70 ? 4 : bmp >= 50 ? 3 : bmp >= 25 ? 2 : bmp > 0 ? 1 : 0;
   const dbs    = Array.from({ length: 5 }, (_: any, j: number) => db(j < filled, 13)).join('');
   const avatar = t.avatar_url
     ? `<img src="${t.avatar_url}" width="44" height="44" style="width:44px;min-width:44px;height:44px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="" />`
@@ -1070,16 +1069,12 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function dbSvg(filled) {
-    var c  = filled ? '#FFB800' : '#d4dbd5';
-    var sk = filled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
-    return '<svg viewBox="0 0 28 12" width="13" height="6" style="display:inline-block;vertical-align:middle;" aria-hidden="true">' +
-      '<rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="' + c + '" stroke="' + sk + '" stroke-width="0.7"/>' +
-      '<rect x="8" y="3.5" width="12" height="5" fill="' + c + '" stroke="' + sk + '" stroke-width="0.7"/>' +
-      '<rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="' + c + '" stroke="' + sk + '" stroke-width="0.7"/></svg>';
+    if (filled) return '<svg viewBox="0 0 44 21" width="13" height="7" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>';
+    return '<svg viewBox="0 0 44 21" width="13" height="7" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>';
   }
 
   function renderCard(pt, rank) {
-    var filledDBs = (pt.bmp_score > 0) ? Math.min(5, Math.ceil((pt.bmp_score || 0) / 20)) : 0;
+    var filledDBs = (function(b){return b>=90?5:b>=70?4:b>=50?3:b>=25?2:b>0?1:0;})(pt.bmp_score||0);
     var avatar = pt.avatar_url
       ? '<img src="' + pt.avatar_url + '" alt="" class="lbc-av" width="40" height="40" style="width:40px;min-width:40px;height:40px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid #e0e8e1;">'
       : '<div class="lbc-av" style="background:' + (pt.avatar_bg || '#eaf7ec') + ';color:' + (pt.avatar_color || '#2a9438') + ';">' + (pt.avatar_initials || '?') + '</div>';
@@ -1148,12 +1143,11 @@ document.addEventListener('DOMContentLoaded', function () {
       var avatar = t.avatar_url
         ? '<img src="' + t.avatar_url + '" alt="" width="36" height="36" style="width:36px;min-width:36px;height:36px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid #e0e8e1;">'
         : '<div style="width:36px;min-width:36px;height:36px;border-radius:50%;background:' + (t.avatar_bg || '#eaf7ec') + ';color:' + (t.avatar_color || '#2a9438') + ';display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.72rem;flex-shrink:0;">' + (t.avatar_initials || '?') + '</div>';
-      var geoFilled = (t.bmp_score > 0) ? Math.min(5, Math.ceil((t.bmp_score || 0) / 20)) : 0;
+      var b = t.bmp_score || 0; var geoFilled = b>=90?5:b>=70?4:b>=50?3:b>=25?2:b>0?1:0;
       var dbs = '';
       for (var s = 0; s < 5; s++) {
-        var gc = s < geoFilled ? '#FFB800' : '#d4dbd5';
-        var gsk = s < geoFilled ? 'rgba(0,0,0,0.3)' : 'rgba(0,0,0,0.08)';
-        dbs += '<svg viewBox="0 0 28 12" width="10" height="5" style="display:inline-block;vertical-align:middle;"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="' + gc + '" stroke="' + gsk + '" stroke-width="0.7"/></svg>';
+        if (s < geoFilled) dbs += '<svg viewBox="0 0 44 21" width="10" height="5" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>';
+        else dbs += '<svg viewBox="0 0 44 21" width="10" height="5" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>';
       }
       return '<a href="/trainers/' + t.id + '" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.75rem;text-decoration:none;background:white;border:2px solid #7defa0;border-left:2px solid #7defa0;border-radius:10px;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);">' +
         '<div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;font-weight:900;color:#3ab54a;width:1.75rem;flex-shrink:0;line-height:1;">' + String(i + 1).padStart(2, '0') + '</div>' +

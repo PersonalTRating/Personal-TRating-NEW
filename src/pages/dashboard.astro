@@ -1653,12 +1653,11 @@
 <script>
   import { supabase } from '../lib/supabase';
 
-  // ── Dumbbell SVG helper (matches trainer profile) ───────────────────────
+  // ── Dumbbell SVG helper ─────────────────────────────────────────────────
   function _db(filled: boolean, w = 18): string {
-    const c  = filled ? '#FFB800' : '#e0e8e1';
-    const sk = filled ? '#e6a800' : '#c8d4c8';
-    const h  = Math.round(w * 12 / 28);
-    return `<svg viewBox="0 0 28 12" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="8" y="3.5" width="12" height="5" fill="${c}" stroke="${sk}" stroke-width="0.7"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}" stroke="${sk}" stroke-width="0.7"/></svg>`;
+    const h = Math.round(w * 21 / 44);
+    if (filled) return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>`;
+    return `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>`;
   }
   function _dumbbells(rating: number, w = 18): string {
     const n = Math.min(5, Math.max(0, Math.round(rating)));
@@ -2652,11 +2651,12 @@
     const rkList = document.getElementById('rk-list') as HTMLElement;
 
     const _rkDumbbells = (bmp: number) => {
-      const n = bmp > 0 ? Math.min(5, Math.ceil(bmp / 20)) : 0;
+      const n = bmp >= 90 ? 5 : bmp >= 70 ? 4 : bmp >= 50 ? 3 : bmp >= 25 ? 2 : bmp > 0 ? 1 : 0;
       let s = '';
       for (let i = 0; i < 5; i++) {
-        const c  = i < n ? '#FFB800' : 'rgba(255,255,255,0.12)';
-        s += `<svg viewBox="0 0 28 12" width="13" height="7" style="display:inline-block;vertical-align:middle;"><rect x="0" y="0.5" width="8" height="11" rx="2.5" fill="${c}"/><rect x="8" y="3.5" width="12" height="5" fill="${c}"/><rect x="20" y="0.5" width="8" height="11" rx="2.5" fill="${c}"/></svg>`;
+        const w = 13, h = Math.round(13 * 21 / 44);
+        if (i < n) s += `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>`;
+        else s += `<svg viewBox="0 0 44 21" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>`;
       }
       return s;
     };

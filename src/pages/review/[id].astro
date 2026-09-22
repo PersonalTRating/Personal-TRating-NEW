@@ -158,17 +158,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     background:var(--green); border:3px solid white;
     box-shadow:0 2px 8px rgba(58,181,74,0.45); cursor:pointer;
   }
-  .bmp-dbs {
-    position:relative; display:inline-block;
-    font-size:2.8rem; line-height:1; user-select:none;
-    margin-bottom:0.5rem;
-  }
-  .bmp-dbs-bg   { white-space:nowrap; filter:grayscale(1) opacity(0.25); letter-spacing:0.1rem; }
-  .bmp-dbs-fill {
-    position:absolute; top:0; left:0; overflow:hidden;
-    white-space:nowrap; width:0%; letter-spacing:0.1rem;
-    transition:width 0.05s linear;
-  }
+  .bmp-dbs { display:flex; gap:4px; justify-content:center; margin-bottom:0.5rem; }
   .bmp-dbs-wrap { display:flex; justify-content:center; margin-bottom:0.4rem; }
   .bmp-label {
     text-align:center; font-size:0.8rem; font-weight:600;
@@ -288,10 +278,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
         </div>
         <input type="range" id="bmp-slider" class="bmp-slider" min="0" max="100" value="0" step="1">
         <div class="bmp-dbs-wrap">
-          <div class="bmp-dbs" id="bmp-dbs">
-            <div class="bmp-dbs-bg">🏋️🏋️🏋️🏋️🏋️</div>
-            <div class="bmp-dbs-fill" id="bmp-dbs-fill">🏋️🏋️🏋️🏋️🏋️</div>
-          </div>
+          <div class="bmp-dbs" id="bmp-dbs"></div>
         </div>
         <div class="bmp-label" id="bmp-label">Drag the slider to rate</div>
 
@@ -341,7 +328,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     <div class="rv-thanks" id="rv-thanks">
       <span class="rv-thanks-icon" id="rv-thanks-icon">⏳</span>
       <h2 id="rv-thanks-name">Thank you!</h2>
-      <div class="rv-thanks-stars" id="rv-thanks-stars">🏋️🏋️🏋️🏋️🏋️</div>
+      <div class="rv-thanks-stars" id="rv-thanks-stars"></div>
       <p id="rv-thanks-body">Your review has been submitted and is currently being verified by our team. It will appear on their profile within 24 hours.</p>
       <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1.75rem;">Every review is checked to keep CoachCards honest and trustworthy.</p>
       <a href="/" class="rv-back">← Explore CoachCards</a>
@@ -479,10 +466,21 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
   // ── BMP Slider ─────────────────────────────────────────────────────────────
   let selectedRating = 0; // percentage 0-100
 
-  const slider     = document.getElementById('bmp-slider')   as HTMLInputElement;
-  const pctDisplay = document.getElementById('bmp-pct')      as HTMLElement;
-  const dbsFill    = document.getElementById('bmp-dbs-fill') as HTMLElement;
-  const labelEl    = document.getElementById('bmp-label')    as HTMLElement;
+  const slider     = document.getElementById('bmp-slider') as HTMLInputElement;
+  const pctDisplay = document.getElementById('bmp-pct')    as HTMLElement;
+  const bmpDbsEl   = document.getElementById('bmp-dbs')    as HTMLElement;
+  const labelEl    = document.getElementById('bmp-label')  as HTMLElement;
+
+  function _dbSvg(filled: boolean): string {
+    if (filled) return '<svg viewBox="0 0 44 21" width="36" height="18" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>';
+    return '<svg viewBox="0 0 44 21" width="36" height="18" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>';
+  }
+  function _dbRow(pct: number): string {
+    const n = pct >= 90 ? 5 : pct >= 70 ? 4 : pct >= 50 ? 3 : pct >= 25 ? 2 : pct > 0 ? 1 : 0;
+    return Array.from({length:5}, (_,i) => _dbSvg(i < n)).join('');
+  }
+
+  bmpDbsEl.innerHTML = _dbRow(0);
 
   function bmpLabel(pct: number): string {
     if (pct === 0)  return 'Drag the slider to rate';
@@ -499,10 +497,10 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
   }
 
   slider.addEventListener('input', () => {
-    selectedRating        = parseInt(slider.value);
+    selectedRating         = parseInt(slider.value);
     pctDisplay.textContent = String(selectedRating);
     labelEl.textContent    = bmpLabel(selectedRating);
-    dbsFill.style.width    = selectedRating + '%';
+    bmpDbsEl.innerHTML     = _dbRow(selectedRating);
     updateSliderTrack(selectedRating);
   });
 
