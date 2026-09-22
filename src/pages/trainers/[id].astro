@@ -79,7 +79,7 @@ function _luminanceHex(hex: string): number {
 }
 function _heroGradient(hex: string): string {
   const lum = _luminanceHex(hex);
-  const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.90,0.82,0.72] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
+  const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.83,0.68,0.48] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
   return `linear-gradient(135deg,${_darkenHex(hex,f0)} 0%,${_darkenHex(hex,f1)} 55%,${_darkenHex(hex,f2)} 100%)`;
 }
 
@@ -1253,7 +1253,7 @@ const bmpDumbbells = (bmp: number, w = 20): string => {
     function _heroGradient(hex: string): string {
       const [r,g,b] = _hexToRGB(hex);
       const lum = (0.299*r + 0.587*g + 0.114*b) / 255;
-      const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.90,0.82,0.72] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
+      const [f0,f1,f2]: [number,number,number] = lum > 0.5 ? [0.83,0.68,0.48] : lum > 0.2 ? [0.78,0.64,0.46] : [0.62,0.38,0.12];
       return `linear-gradient(135deg,${_darkenHex(hex,f0)} 0%,${_darkenHex(hex,f1)} 55%,${_darkenHex(hex,f2)} 100%)`;
     }
 
