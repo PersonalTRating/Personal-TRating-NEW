@@ -471,16 +471,18 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
   const bmpDbsEl   = document.getElementById('bmp-dbs')    as HTMLElement;
   const labelEl    = document.getElementById('bmp-label')  as HTMLElement;
 
-  function _dbSvg(filled: boolean): string {
-    if (filled) return '<svg viewBox="0 0 44 21" width="36" height="18" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><ellipse cx="22" cy="20.5" rx="17" ry="1.5" fill="#39ff14" opacity="0.22"/><circle cx="10" cy="10" r="9" fill="#1a1a1a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#161616"/><circle cx="34" cy="10" r="9" fill="#1a1a1a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#7fff00" stroke-width="1.5" opacity="0.95"/></svg>';
-    return '<svg viewBox="0 0 44 21" width="36" height="18" style="display:inline-block;vertical-align:middle;opacity:0.28;" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#2a2a2a"/><circle cx="10" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="10" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/><rect x="19" y="8" width="6" height="4" rx="1.5" fill="#252525"/><circle cx="34" cy="10" r="9" fill="#2a2a2a"/><circle cx="34" cy="10" r="5.5" fill="#0d0d0d"/><circle cx="34" cy="10" r="7.5" fill="none" stroke="#444" stroke-width="1.5"/></svg>';
-  }
-  function _dbRow(pct: number): string {
-    const n = pct >= 90 ? 5 : pct >= 70 ? 4 : pct >= 50 ? 3 : pct >= 25 ? 2 : pct > 0 ? 1 : 0;
-    return Array.from({length:5}, (_,i) => _dbSvg(i < n)).join('');
+  function _bmpDumbbell(pct: number, w = 60): string {
+    const score = Math.max(0, Math.min(100, pct || 0));
+    const h = Math.round(w * 0.42);
+    const fw = ((score / 100) * 42).toFixed(2);
+    const hi = score >= 90;
+    const hiRing = (cx: number): string => hi ? `<circle cx="${cx}" cy="21" r="14.2" fill="none" stroke="#39e858" stroke-width="1.3" opacity="0.55"/>` : '';
+    const plate = (cx: number): string => `<circle cx="${cx}" cy="21" r="15" fill="#0a0a0a"/><circle cx="${cx}" cy="21" r="13.5" fill="#1e1e1e"/><circle cx="${cx}" cy="21" r="10.5" fill="#131313"/><circle cx="${cx}" cy="21" r="4.5" fill="#0a0a0a"/><ellipse cx="${cx - 5}" cy="13" rx="5" ry="3" fill="white" opacity="0.06" transform="rotate(-20,${cx - 5},13)"/>${hiRing(cx)}`;
+    const fill = score > 0 ? `<rect x="29" y="16" width="${fw}" height="10" fill="#39e858"/><rect x="29" y="16" width="${fw}" height="3.5" fill="white" opacity="0.15"/><rect x="29" y="22" width="${fw}" height="4" fill="black" opacity="0.15"/>` : '';
+    return `<svg viewBox="0 0 100 42" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle;" aria-hidden="true"><rect x="10" y="15" width="80" height="12" rx="4" fill="#151515"/><rect x="10" y="15" width="80" height="4" rx="2" fill="white" opacity="0.03"/>${fill}${plate(15)}${plate(85)}</svg>`;
   }
 
-  bmpDbsEl.innerHTML = _dbRow(0);
+  bmpDbsEl.innerHTML = _bmpDumbbell(0);
 
   function bmpLabel(pct: number): string {
     if (pct === 0)  return 'Drag the slider to rate';
@@ -500,7 +502,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     selectedRating         = parseInt(slider.value);
     pctDisplay.textContent = String(selectedRating);
     labelEl.textContent    = bmpLabel(selectedRating);
-    bmpDbsEl.innerHTML     = _dbRow(selectedRating);
+    bmpDbsEl.innerHTML     = _bmpDumbbell(selectedRating);
     updateSliderTrack(selectedRating);
   });
 
