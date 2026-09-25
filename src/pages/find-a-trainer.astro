@@ -1,6 +1,7 @@
 ﻿---
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
+import TrainerCard from '../components/TrainerCard.astro';
 
 const { data: trainersData } = await supabase
   .from('trainers')
@@ -12,17 +13,6 @@ const { data: trainersData } = await supabase
 
 const raw = trainersData || [];
 
-const bmpDumbbell = (bmp: number, w = 52): string => {
-  const score = Math.max(0, Math.min(100, bmp || 0));
-  const h = Math.round(w * 0.42);
-  const fw = ((score / 100) * 42).toFixed(2);
-  const hi = score >= 90;
-  const hiRing = (cx: number): string => hi ? `<circle cx="${cx}" cy="21" r="14.2" fill="none" stroke="#39e858" stroke-width="1.3" opacity="0.55"/>` : '';
-  const plate = (cx: number): string => `<circle cx="${cx}" cy="21" r="15" fill="#0a0a0a"/><circle cx="${cx}" cy="21" r="13.5" fill="#1e1e1e"/><circle cx="${cx}" cy="21" r="10.5" fill="#131313"/><circle cx="${cx}" cy="21" r="4.5" fill="#0a0a0a"/><ellipse cx="${cx - 5}" cy="13" rx="5" ry="3" fill="white" opacity="0.06" transform="rotate(-20,${cx - 5},13)"/>${hiRing(cx)}`;
-  const fill = score > 0 ? `<rect x="29" y="16" width="${fw}" height="10" fill="#39e858"/><rect x="29" y="16" width="${fw}" height="3.5" fill="white" opacity="0.15"/><rect x="29" y="22" width="${fw}" height="4" fill="black" opacity="0.15"/>` : '';
-  const glow = score >= 95 ? ';filter:drop-shadow(0 0 8px rgba(57,232,88,0.65))' : '';
-  return `<svg viewBox="0 0 100 42" width="${w}" height="${h}" style="display:inline-block;vertical-align:middle${glow};" aria-hidden="true"><rect x="10" y="15" width="80" height="12" rx="4" fill="#151515"/><rect x="10" y="15" width="80" height="4" rx="2" fill="white" opacity="0.03"/>${fill}${plate(15)}${plate(85)}</svg>`;
-};
 const rankClr = (r: number) =>
   r === 0 ? '#b8860b' : r === 1 ? '#888888' : r === 2 ? '#b07040' : '#8a8f8a';
 
@@ -36,17 +26,17 @@ const allTrainers = raw.map((t: any, i: number) => ({
   spec:            t.specialty || '',
   cert:            t.cert || '',
   profileComplete: !!(t.avatar_url && (t.city || t.location) && t.bio?.trim() && t.specialty?.trim()),
-  bmp:        t.bmp_score ?? 0,
-  revCount:   t.review_count || 0,
-  rank:       i + 1,
-  rankColor:  rankClr(i),
-  avatar:     t.avatar_url
-    ? `<img src="${t.avatar_url}" alt="" class="fpc-av" width="72" height="72" style="width:72px;min-width:72px;height:72px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:3px solid #e8f0e9;" onerror="this.outerHTML='<div class=\\'fpc-av fpc-av-init\\'  style=\\'background:${t.avatar_bg||'#eaf7ec'};color:${t.avatar_color||'#2a9438'};width:72px;min-width:72px;height:72px;\\'>${t.avatar_initials||'?'}</div>'">`
-    : `<div class="fpc-av fpc-av-init" style="background:${t.avatar_bg||'#eaf7ec'};color:${t.avatar_color||'#2a9438'};">${t.avatar_initials||'?'}</div>`,
-  dbs:        bmpDumbbell(t.bmp_score || 0, 48),
-  bioSnip:    t.bio ? String(t.bio).replace(/<[^>]+>/g,'').trim().slice(0,120) : '',
-  bioLong:    t.bio ? String(t.bio).replace(/<[^>]+>/g,'').trim().length > 120 : false,
-  gyms:       (Array.isArray(t.gyms) ? t.gyms : []) as Gym[],
+  bmp:             t.bmp_score ?? 0,
+  revCount:        t.review_count || 0,
+  starRating:      t.star_rating ?? 0,
+  rank:            i + 1,
+  rankColor:       rankClr(i),
+  avatarUrl:       t.avatar_url || undefined,
+  avatarInitials:  t.avatar_initials || '?',
+  avatarBg:        t.avatar_bg || '#eaf7ec',
+  avatarColor:     t.avatar_color || '#2a9438',
+  bio:             t.bio || '',
+  gyms:            (Array.isArray(t.gyms) ? t.gyms : []) as Gym[],
 }));
 
 const totalReviews = allTrainers.reduce((s, t) => s + t.revCount, 0);
@@ -143,70 +133,26 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
   <div style="max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:1rem;" id="fat-list-inner">
 
     {allTrainers.map(t => (
-      <div
-        class="fpc"
-        data-bmp={String(t.bmp)}
-        data-reviews={String(t.revCount)}
-        data-name={t.name.toLowerCase()}
-        data-username={t.username.toLowerCase()}
-        data-city={t.city.toLowerCase()}
-        data-spec={t.spec.toLowerCase()}
-      >
-        <!-- LEFT: rank + photo -->
-        <div class="fpc-left">
-          <div class="fpc-rank">{String(t.rank).padStart(2, '0')}</div>
-          <Fragment set:html={t.avatar} />
-        </div>
-
-        <!-- MID: all text info -->
-        <div class="fpc-mid">
-          <div class="fpc-name-row">
-            <span class="fpc-name">{t.name}</span>
-            {t.profileComplete && (
-              <span class="verified-tick" title="Profile complete">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
-                  <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-            )}
-            {t.cert && <span class="fpc-cert">{t.cert}</span>}
-          </div>
-          {t.username && <div style="font-size:0.75rem;color:#7a8f7c;font-weight:600;margin-bottom:0.2rem;">@{t.username}</div>}
-          {(t.city || t.spec) && (
-            <div class="fpc-meta">
-              {t.city && <span>📍 {t.city}</span>}
-              {t.city && t.spec && <span style="color:#d4dbd5;">·</span>}
-              {t.spec && <span>🏋 {t.spec}</span>}
-            </div>
-          )}
-          {t.bioSnip && (
-            <div class="fpc-bio">"{t.bioSnip}{t.bioLong ? '…' : ''}"</div>
-          )}
-          {t.gyms.length > 0 && (
-            <div class="fpc-gyms">
-              {t.gyms.slice(0, 2).map((g: any) => (
-                <span class="fpc-gym">🏢 {g.name}{g.location ? ' · ' + g.location : ''}</span>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <!-- RIGHT: BMP + CTA -->
-        <div class="fpc-right">
-          <div class="fpc-bmp-wrap">
-            {t.revCount === 0 ? (
-              <div style="font-size:0.72rem;font-weight:700;color:#3ab54a;line-height:1.3;margin-bottom:0.25rem;">Be first<br/>to review</div>
-            ) : (
-              <div class="fpc-bmp-num">{t.bmp || '—'}</div>
-            )}
-            <div class="fpc-bmp-lbl">BMP Score</div>
-            <div class="fpc-dbs"><Fragment set:html={t.dbs} /></div>
-            <div class="fpc-rev">{t.revCount === 0 ? '0 reviews' : `${t.revCount} ${t.revCount === 1 ? 'review' : 'reviews'}`}</div>
-          </div>
-          <a href={"/trainers/" + t.id} class="fpc-cta">View Profile →</a>
-        </div>
-      </div>
+      <TrainerCard
+        id={t.id}
+        name={t.name}
+        username={t.username}
+        city={t.city}
+        spec={t.spec}
+        cert={t.cert}
+        bmpScore={t.bmp}
+        revCount={t.revCount}
+        starRating={t.starRating}
+        rank={t.rank}
+        rankColor={t.rankColor}
+        profileComplete={t.profileComplete}
+        avatarUrl={t.avatarUrl}
+        avatarInitials={t.avatarInitials}
+        avatarBg={t.avatarBg}
+        avatarColor={t.avatarColor}
+        bio={t.bio}
+        gyms={t.gyms}
+      />
     ))}
 
     <!-- Empty state -->
@@ -277,34 +223,6 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
   .vt-btn  { padding:0.28rem 0.85rem; border-radius:16px; border:none; background:transparent; font-size:0.78rem; font-weight:600; color:#8a8f8a; cursor:pointer; transition:all 0.15s; font-family:'Manrope',sans-serif; white-space:nowrap; }
   .vt-active { background:white; color:#111311; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
 
-  /* ── Profile card ── */
-  .fpc { background:white; border:1px solid #e0e8e1; border-left:4px solid #3ab54a; border-radius:16px; padding:1.5rem; display:flex; align-items:flex-start; gap:1.5rem; transition:box-shadow 0.2s, transform 0.15s; }
-  .fpc:hover { box-shadow:0 6px 28px rgba(0,0,0,0.08); transform:translateY(-2px); }
-
-  .fpc-left { display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex-shrink:0; }
-  .fpc-rank { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900; white-space:nowrap; color:#3ab54a; }
-  .fpc-av   { width:72px; min-width:72px; height:72px; border-radius:50%; object-fit:cover; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1rem; flex-shrink:0; }
-  .fpc-av-init { }
-
-  .fpc-mid  { flex:1; min-width:0; }
-  .fpc-name-row { display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.3rem; }
-  .fpc-name { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:#111311; }
-  .verified-tick { display:inline-flex; align-items:center; flex-shrink:0; }
-  .fpc-cert { font-size:0.68rem; font-weight:700; color:#2a9438; background:#eaf7ec; padding:0.18rem 0.55rem; border-radius:10px; border:1px solid #c3e6c8; white-space:nowrap; }
-  .fpc-meta { font-size:0.82rem; color:#8a8f8a; display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem; }
-  .fpc-bio  { font-size:0.83rem; color:#5a6b5c; font-style:italic; line-height:1.55; padding:0.55rem 0.75rem; background:#f4f9f5; border-left:3px solid #c3e6c8; border-radius:0 6px 6px 0; margin-bottom:0.5rem; }
-  .fpc-gyms { display:flex; flex-wrap:wrap; gap:0.35rem; }
-  .fpc-gym  { font-size:0.74rem; color:#5a6b5c; background:#f0f7f1; border:1px solid #d4e8d6; padding:0.2rem 0.6rem; border-radius:20px; }
-
-  .fpc-right     { display:flex; flex-direction:column; align-items:flex-end; justify-content:space-between; gap:1rem; flex-shrink:0; text-align:right; min-width:130px; }
-  .fpc-bmp-wrap  { }
-  .fpc-bmp-num   { font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:900; color:#111311; line-height:1; }
-  .fpc-bmp-lbl   { font-size:0.58rem; color:#8a8f8a; letter-spacing:1.5px; text-transform:uppercase; font-weight:700; margin-top:0.1rem; }
-  .fpc-dbs       { display:flex; gap:2px; justify-content:flex-end; margin-top:0.3rem; }
-  .fpc-rev       { font-size:0.7rem; color:#8a8f8a; margin-top:0.2rem; }
-  .fpc-cta       { background:#3ab54a; color:white; font-weight:700; font-size:0.85rem; padding:0.65rem 1.5rem; border-radius:25px; text-decoration:none; white-space:nowrap; transition:background 0.2s; }
-  .fpc-cta:hover { background:#2a9438; }
-
   /* Mobile nav */
   @media (max-width:620px) {
     nav > div { height:60px !important; padding:0 1.1rem !important; }
@@ -312,7 +230,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
     #fat-home-link { display:none !important; }
     #nav-account   { font-size:0.78rem !important; }
   }
-  /* Mobile cards */
+  /* Mobile hero + search */
   @media (max-width:620px) {
     .fat-hero-h1  { font-size:2.2rem; }
     .fat-stats    { gap:1.5rem; }
@@ -320,12 +238,6 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
     .fat-search-wrap { border-radius:14px; padding:0.35rem 0.35rem 0.35rem 1rem; gap:0.5rem; }
     .fat-search-btn  { padding:0.65rem 1.1rem; font-size:0.85rem; }
     .fat-stat-div { display:none; }
-    .fpc         { flex-direction:column; gap:0.8rem; padding:1.1rem; }
-    .fpc-left    { flex-direction:row; align-items:center; gap:0.75rem; }
-    .fpc-right   { flex-direction:row; align-items:center; justify-content:space-between; text-align:left; min-width:0; width:100%; padding-top:0.75rem; border-top:1px solid #e8f0e9; gap:0.75rem; }
-    .fpc-bmp-num { font-size:1.8rem; }
-    .fpc-dbs     { justify-content:flex-start; }
-    .fpc-cta     { padding:0.6rem 1.2rem; font-size:0.8rem; }
   }
 </style>
 

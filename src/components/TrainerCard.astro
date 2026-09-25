@@ -1,0 +1,225 @@
+---
+import { bmpDumbbell } from '../lib/bmpDumbbell';
+
+interface Gym { name: string; location: string; }
+
+interface Props {
+  id: string;
+  name: string;
+  username?: string;
+  city?: string;
+  spec?: string;
+  cert?: string;
+  bmpScore: number;
+  revCount: number;
+  starRating?: number;
+  rank?: number;
+  rankColor?: string;
+  profileComplete?: boolean;
+  avatarUrl?: string;
+  avatarInitials?: string;
+  avatarBg?: string;
+  avatarColor?: string;
+  bio?: string;
+  gyms?: Gym[];
+}
+
+const {
+  id,
+  name,
+  username = '',
+  city = '',
+  spec = '',
+  cert = '',
+  bmpScore = 0,
+  revCount = 0,
+  starRating,
+  rank,
+  profileComplete,
+  avatarUrl,
+  avatarInitials = '?',
+  avatarBg = '#eaf7ec',
+  avatarColor = '#2a9438',
+  bio = '',
+  gyms = [],
+} = Astro.props;
+
+const dbs = bmpDumbbell(bmpScore, 48);
+const bioClean = bio ? bio.replace(/<[^>]+>/g, '').trim() : '';
+const bioSnip = bioClean.slice(0, 120);
+const bioLong = bioClean.length > 120;
+const specTags = spec ? spec.split(/[,\/&]/).map(s => s.trim()).filter(Boolean) : [];
+const onerrorHtml = `this.outerHTML='<div class="fpc-av fpc-av-init" style="background:${avatarBg};color:${avatarColor};width:72px;min-width:72px;height:72px;">${avatarInitials}</div>'`;
+---
+
+<div
+  class="fpc"
+  data-bmp={String(bmpScore)}
+  data-reviews={String(revCount)}
+  data-name={name.toLowerCase()}
+  data-username={username.toLowerCase()}
+  data-city={city.toLowerCase()}
+  data-spec={spec.toLowerCase()}
+>
+  <!-- rank + photo -->
+  <div class="fpc-left">
+    {rank != null && <div class="fpc-rank">{String(rank).padStart(2, '0')}</div>}
+    {avatarUrl ? (
+      <img
+        src={avatarUrl}
+        alt={name}
+        class="fpc-av"
+        width="72"
+        height="72"
+        onerror={onerrorHtml}
+      />
+    ) : (
+      <div class="fpc-av fpc-av-init" style={`background:${avatarBg};color:${avatarColor};width:72px;min-width:72px;height:72px;`}>
+        {avatarInitials}
+      </div>
+    )}
+  </div>
+
+  <!-- text info -->
+  <div class="fpc-mid">
+    <div class="fpc-name-row">
+      <span class="fpc-name">{name}</span>
+      {profileComplete && (
+        <span class="fpc-verified" title="Profile complete">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-label="Verified">
+            <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
+            <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      )}
+      {cert && <span class="fpc-cert">{cert}</span>}
+    </div>
+
+    {username && <div class="fpc-username">@{username}</div>}
+
+    <div class="fpc-meta">
+      {city && <span class="fpc-meta-loc">📍 {city}</span>}
+      {specTags.map(tag => (
+        <span class="fpc-spec-tag">{tag}</span>
+      ))}
+    </div>
+
+    {bioSnip && (
+      <div class="fpc-bio">"{bioSnip}{bioLong ? '…' : ''}"</div>
+    )}
+
+    {gyms.length > 0 && (
+      <div class="fpc-gyms">
+        {gyms.slice(0, 2).map((g: Gym) => (
+          <span class="fpc-gym">🏢 {g.name}{g.location ? ' · ' + g.location : ''}</span>
+        ))}
+      </div>
+    )}
+  </div>
+
+  <!-- BMP + CTA -->
+  <div class="fpc-right">
+    <div class="fpc-bmp-wrap">
+      {revCount === 0 ? (
+        <div class="fpc-first-review">Be first<br/>to review</div>
+      ) : (
+        <div class="fpc-bmp-num">{bmpScore || '—'}</div>
+      )}
+      <div class="fpc-bmp-lbl">BMP Score</div>
+      <div class="fpc-dbs"><Fragment set:html={dbs} /></div>
+      {starRating != null && starRating > 0 && revCount > 0 && (
+        <div class="fpc-stars">★ {starRating.toFixed(1)}</div>
+      )}
+      <div class="fpc-rev">
+        {revCount === 0 ? '0 reviews' : `${revCount} ${revCount === 1 ? 'review' : 'reviews'}`}
+      </div>
+    </div>
+    <a href={`/trainers/${id}`} class="fpc-cta">View CoachCard →</a>
+  </div>
+</div>
+
+<style is:global>
+  .fpc {
+    background: white;
+    border: 1px solid #e0e8e1;
+    border-left: 4px solid #3ab54a;
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    transition: box-shadow 0.2s, transform 0.15s;
+  }
+  .fpc:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.08); transform: translateY(-2px); }
+
+  .fpc-left { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; flex-shrink: 0; }
+  .fpc-rank { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; white-space: nowrap; color: #3ab54a; }
+  .fpc-av {
+    width: 72px; min-width: 72px; height: 72px;
+    border-radius: 50%; object-fit: cover;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1.1rem; flex-shrink: 0;
+    border: 3px solid #e8f0e9; overflow: hidden;
+  }
+  .fpc-av-init { }
+
+  .fpc-mid { flex: 1; min-width: 0; }
+  .fpc-name-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
+  .fpc-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #111311; }
+  .fpc-verified { display: inline-flex; align-items: center; flex-shrink: 0; }
+  .fpc-cert { font-size: 0.68rem; font-weight: 700; color: #2a9438; background: #eaf7ec; padding: 0.18rem 0.55rem; border-radius: 10px; border: 1px solid #c3e6c8; white-space: nowrap; }
+  .fpc-username { font-size: 0.75rem; color: #7a8f7c; font-weight: 600; margin-bottom: 0.25rem; }
+  .fpc-meta { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+  .fpc-meta-loc { font-size: 0.82rem; color: #8a8f8a; }
+  .fpc-spec-tag {
+    font-size: 0.71rem; font-weight: 600;
+    background: #f0f7f1; color: #2a7a38;
+    border: 1px solid #c3e6c8;
+    padding: 0.15rem 0.55rem; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .fpc-bio {
+    font-size: 0.83rem; color: #5a6b5c; font-style: italic; line-height: 1.55;
+    padding: 0.55rem 0.75rem;
+    background: #f4f9f5; border-left: 3px solid #c3e6c8;
+    border-radius: 0 6px 6px 0; margin-bottom: 0.5rem;
+  }
+  .fpc-gyms { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+  .fpc-gym { font-size: 0.74rem; color: #5a6b5c; background: #f0f7f1; border: 1px solid #d4e8d6; padding: 0.2rem 0.6rem; border-radius: 20px; }
+
+  .fpc-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-shrink: 0; text-align: right; min-width: 130px; }
+  .fpc-bmp-wrap { }
+  .fpc-bmp-num { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; color: #111311; line-height: 1; }
+  .fpc-first-review { font-size: 0.72rem; font-weight: 700; color: #3ab54a; line-height: 1.3; margin-bottom: 0.25rem; }
+  .fpc-bmp-lbl { font-size: 0.58rem; color: #8a8f8a; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-top: 0.1rem; }
+  .fpc-dbs { display: flex; gap: 2px; justify-content: flex-end; margin-top: 0.3rem; }
+  .fpc-stars { font-size: 0.75rem; color: #b8860b; font-weight: 700; margin-top: 0.2rem; }
+  .fpc-rev { font-size: 0.7rem; color: #8a8f8a; margin-top: 0.15rem; }
+  .fpc-cta {
+    background: #3ab54a; color: white; font-weight: 700; font-size: 0.85rem;
+    padding: 0.65rem 1.5rem; border-radius: 25px;
+    text-decoration: none; white-space: nowrap;
+    transition: background 0.2s;
+    font-family: 'Manrope', sans-serif;
+  }
+  .fpc-cta:hover { background: #2a9438; }
+  .fpc-cta:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
+
+  @media (max-width: 620px) {
+    .fpc { flex-direction: column; gap: 0.8rem; padding: 1.1rem; }
+    .fpc-left { flex-direction: row; align-items: center; gap: 0.75rem; }
+    .fpc-right {
+      flex-direction: row; align-items: center; justify-content: space-between;
+      text-align: left; min-width: 0; width: 100%;
+      padding-top: 0.75rem; border-top: 1px solid #e8f0e9; gap: 0.75rem;
+    }
+    .fpc-bmp-num { font-size: 1.8rem; }
+    .fpc-dbs { justify-content: flex-start; }
+    .fpc-cta { padding: 0.6rem 1.2rem; font-size: 0.8rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fpc { transition: none; }
+    .fpc-cta { transition: none; }
+  }
+</style>
