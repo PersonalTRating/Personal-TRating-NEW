@@ -180,7 +180,7 @@ const maskName = (name: string): string => {
   }
   .bmp-info:hover .bmp-tooltip { display:block; }
 
-  .trend-info { position:relative; cursor:help; display:inline-flex; }
+  .trend-info { position:relative; cursor:default; display:inline-flex; }
   .trend-tooltip {
     display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
     width:230px; background:#1a0505; color:rgba(255,255,255,0.85); font-size:0.72rem;
@@ -459,7 +459,7 @@ const maskName = (name: string): string => {
 
       <!-- BMP Score box -->
       {hasBmp && (
-        <div class="tp-bmp-box bmp-info" style="text-align:center;background:rgba(255,255,255,0.07);border-radius:16px;padding:1.5rem 2rem;border:1px solid rgba(255,255,255,0.12);flex-shrink:0;">
+        <div class="tp-bmp-box bmp-info" style="text-align:center;background:rgba(255,255,255,0.47);border-radius:16px;padding:1.5rem 2rem;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;">
           <div class="bmp-tooltip">
             BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Recent Momentum (up to 10 pts). Only verified reviews count.
           </div>
