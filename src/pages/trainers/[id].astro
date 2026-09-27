@@ -180,6 +180,19 @@ const maskName = (name: string): string => {
   }
   .bmp-info:hover .bmp-tooltip { display:block; }
 
+  .trend-info { position:relative; cursor:help; display:inline-flex; }
+  .trend-tooltip {
+    display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+    width:230px; background:#1a0505; color:rgba(255,255,255,0.85); font-size:0.72rem;
+    padding:0.65rem 0.85rem; border-radius:8px; line-height:1.6; text-align:left; z-index:10;
+    box-shadow:0 4px 16px rgba(0,0,0,0.35);
+  }
+  .trend-tooltip::after {
+    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    border:6px solid transparent; border-top-color:#1a0505;
+  }
+  .trend-info:hover .trend-tooltip { display:block; }
+
   /* Feed — social style */
   .feed-list { display:flex; flex-direction:column; gap:1.5rem; max-width:560px; margin:0 auto; }
   .feed-post { background:white; border:1px solid #e0e8e1; border-radius:12px; overflow:hidden; }
@@ -426,7 +439,10 @@ const maskName = (name: string): string => {
             <span style="color:white;font-weight:700;font-size:0.9rem;">{trainer.bmp_score}</span>
             <span style="color:rgba(255,255,255,0.65);font-size:0.82rem;">BMP · {reviews.length} verified {reviews.length === 1 ? 'review' : 'reviews'}</span>
             {trainer.is_trending && (
-              <span title="This trainer is trending — they've received 4+ verified reviews in the last 30 days across at least 2 separate weeks." style="display:inline-flex;align-items:center;gap:3px;background:rgba(180,0,0,0.12);color:#cc0000;font-size:0.6rem;font-weight:800;letter-spacing:1.5px;padding:0.2rem 0.55rem;border-radius:20px;border:1px solid rgba(180,0,0,0.35);cursor:help;">🔥 TRENDING</span>
+              <div class="trend-info">
+                <span style="display:inline-flex;align-items:center;gap:3px;background:rgba(180,0,0,0.12);color:#cc0000;font-size:0.6rem;font-weight:800;letter-spacing:1.5px;padding:0.2rem 0.55rem;border-radius:20px;border:1px solid rgba(180,0,0,0.35);">🔥 TRENDING</span>
+                <div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div>
+              </div>
             )}
           </div>
         </div>
@@ -451,7 +467,10 @@ const maskName = (name: string): string => {
           <div style="font-size:3.5rem;font-weight:900;color:#3ab54a;line-height:1;">{trainer.bmp_score}</div>
           <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:0.35rem;font-weight:500;">out of 100</div>
           {trainer.is_trending && (
-            <div title="This trainer is trending — they've received 4+ verified reviews in the last 30 days across at least 2 separate weeks." style="margin-top:0.75rem;display:inline-flex;align-items:center;gap:4px;background:rgba(180,0,0,0.12);color:#cc0000;font-size:0.6rem;font-weight:800;letter-spacing:1.5px;padding:0.25rem 0.6rem;border-radius:20px;border:1px solid rgba(180,0,0,0.4);cursor:help;">🔥 TRENDING</div>
+            <div class="trend-info" style="margin-top:0.75rem;">
+              <div style="display:inline-flex;align-items:center;gap:4px;background:rgba(180,0,0,0.12);color:#cc0000;font-size:0.6rem;font-weight:800;letter-spacing:1.5px;padding:0.25rem 0.6rem;border-radius:20px;border:1px solid rgba(180,0,0,0.4);">🔥 TRENDING</div>
+              <div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div>
+            </div>
           )}
         </div>
       )}

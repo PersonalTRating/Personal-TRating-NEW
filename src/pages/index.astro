@@ -357,6 +357,18 @@ const reviews = [
   }
   .lbc-trend-row  { display:flex; align-items:center; gap:1.25rem; }
   .lbc-rank--hot  { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:900; width:2.5rem; flex-shrink:0; line-height:1; color:#1a1a1a; text-align:center; }
+  .trend-info { position:relative; cursor:help; display:inline-flex; }
+  .trend-tooltip {
+    display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
+    width:220px; background:#1a0505; color:rgba(255,255,255,0.88); font-size:0.72rem;
+    padding:0.65rem 0.85rem; border-radius:8px; line-height:1.6; text-align:left; z-index:20;
+    box-shadow:0 4px 16px rgba(0,0,0,0.35); pointer-events:none;
+  }
+  .trend-tooltip::after {
+    content:''; position:absolute; top:100%; left:50%; transform:translateX(-50%);
+    border:6px solid transparent; border-top-color:#1a0505;
+  }
+  .trend-info:hover .trend-tooltip { display:block; }
   .lbc-hot-banner {
     margin-top:0.65rem;
     padding:0.65rem 0.9rem;
@@ -1183,7 +1195,7 @@ const reviews = [
       var bannerText  = recentCount >= 4
         ? recentCount + ' verified reviews in the last 30 days'
         : 'Strong recent activity';
-      var trendingBadge = '<span title="This trainer is trending — they\'ve received 4+ verified reviews in the last 30 days across at least 2 separate weeks." style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;cursor:help;">🔥 TRENDING</span>';
+      var trendingBadge = '<div class="trend-info"><span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;">🔥 TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></div>';
 
       return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending">' +
         // ── Main row ──────────────────────────────────────────────────────
