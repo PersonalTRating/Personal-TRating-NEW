@@ -1183,7 +1183,7 @@ const reviews = [
       var bannerText  = recentCount >= 4
         ? recentCount + ' verified reviews in the last 30 days'
         : 'Strong recent activity';
-      var trendingBadge = '<span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;">🔥 TRENDING</span>';
+      var trendingBadge = '<span title="This trainer is trending — they\'ve received 4+ verified reviews in the last 30 days across at least 2 separate weeks." style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;cursor:help;">🔥 TRENDING</span>';
 
       return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending">' +
         // ── Main row ──────────────────────────────────────────────────────
