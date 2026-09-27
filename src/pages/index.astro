@@ -12,7 +12,7 @@ const [
 ] = await Promise.all([
   supabase
     .from('trainers')
-    .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history')
+    .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history')
     .eq('is_active', true)
     .gt('bmp_score', 0)
     .gt('review_count', 0)
@@ -342,6 +342,30 @@ const reviews = [
   /* Leaderboard section — white cards on dark green */
   #leaderboard .lb-card { border:2px solid #7defa0; border-left:2px solid #7defa0; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5); }
   #leaderboard .lb-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6); transform:translateY(-2px); }
+
+  /* ── Trending card — red hot override ── */
+  .lb-card--trending {
+    flex-direction:column !important; align-items:stretch !important;
+    background:#fffaf8 !important;
+    border:2px solid rgba(255,90,0,0.55) !important;
+    border-left:4px solid #ff4500 !important;
+    box-shadow:0 0 14px rgba(255,69,0,0.4), 0 0 32px rgba(255,100,0,0.22), 0 4px 16px rgba(0,0,0,0.1) !important;
+  }
+  .lb-card--trending:hover {
+    box-shadow:0 0 22px rgba(255,69,0,0.55), 0 0 48px rgba(255,100,0,0.3), 0 6px 20px rgba(0,0,0,0.12) !important;
+    transform:translateY(-2px) !important;
+  }
+  .lbc-trend-row  { display:flex; align-items:center; gap:1.25rem; }
+  .lbc-rank--hot  { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:900; width:2.5rem; flex-shrink:0; line-height:1; color:#1a1a1a; text-align:center; }
+  .lbc-hot-banner {
+    margin-top:0.65rem;
+    padding:0.65rem 0.9rem;
+    background:linear-gradient(90deg,rgba(255,69,0,0.07),rgba(255,130,0,0.04));
+    border-radius:8px;
+    border:1px solid rgba(255,100,0,0.2);
+    display:flex; align-items:center; gap:0.65rem;
+  }
+
   /* Find-a-trainer preview — dark section card glow */
   #find-preview a[href^="/trainers/"] { border:2px solid #7defa0 !important; border-left:2px solid #7defa0 !important; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important; }
   #leaderboard p { color:rgba(255,255,255,0.5); }
@@ -1133,27 +1157,83 @@ const reviews = [
     var bmpDisplay = revCount === 0 ? 'Be first to review' : pt.bmp_score;
     var bmpStyle   = revCount === 0 ? 'font-size:0.7rem;font-weight:700;color:#3ab54a;line-height:1.3;' : '';
     var lbComplete = !!(pt.avatar_url && (pt.city || pt.location) && pt.bio && pt.specialty);
-    var lbTick = lbComplete ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;margin-left:4px;"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
-    // Trending badge
-    var trendBadge = pt.is_trending
-      ? '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(255,160,0,0.15);color:#e65c00;font-size:0.6rem;font-weight:800;letter-spacing:1px;padding:0.18rem 0.5rem;border-radius:20px;border:1px solid rgba(255,120,0,0.3);margin-left:6px;vertical-align:middle;line-height:1;flex-shrink:0;">TRENDING</span>'
-      : '';
-    // Rank movement (compared to last week's snapshot)
-    var moveBadge = '';
+    var lbTick = lbComplete ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
+
+    // Rank movement from weekly snapshot
+    var moveHtml = '';
     if (pt.rank_history && pt.rank_history.length >= 2) {
       var prevRank = pt.rank_history[pt.rank_history.length - 2].rank;
       var move = prevRank - rank;
-      if (move > 0) {
-        moveBadge = '<span style="font-size:0.6rem;font-weight:800;color:#2a9438;margin-left:2px;line-height:1;">▲' + move + '</span>';
-      } else if (move < 0) {
-        moveBadge = '<span style="font-size:0.6rem;font-weight:800;color:#c0392b;margin-left:2px;line-height:1;">▼' + Math.abs(move) + '</span>';
-      }
+      if (move > 0)      moveHtml = '<span style="font-size:0.58rem;font-weight:800;color:#2a9438;line-height:1;">▲' + move + '</span>';
+      else if (move < 0) moveHtml = '<span style="font-size:0.58rem;font-weight:800;color:#c0392b;line-height:1;">▼' + Math.abs(move) + '</span>';
     }
+
+    // BMP change from snapshot
+    var bmpChangeHtml = '';
+    if (pt.rank_history && pt.rank_history.length >= 2) {
+      var prevBmp = pt.rank_history[pt.rank_history.length - 2].bmp;
+      var bmpDiff = Math.round(((pt.bmp_score || 0) - prevBmp) * 10) / 10;
+      if (bmpDiff > 0)      bmpChangeHtml = '<div style="font-size:0.68rem;font-weight:800;color:#2a9438;margin-top:0.15rem;">+' + bmpDiff + ' this month</div>';
+      else if (bmpDiff < 0) bmpChangeHtml = '<div style="font-size:0.68rem;font-weight:800;color:#c0392b;margin-top:0.15rem;">' + bmpDiff + ' this month</div>';
+    }
+
+    // ── TRENDING card — red hot layout ──────────────────────────────────────
+    if (pt.is_trending) {
+      var recentCount = pt.recent_review_count || 0;
+      var bannerText  = recentCount >= 4
+        ? recentCount + ' verified reviews in the last 30 days'
+        : 'Strong recent activity';
+      var trendingBadge = '<span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#ff4500,#ff6b00);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(255,69,0,0.45);white-space:nowrap;flex-shrink:0;">🔥 TRENDING</span>';
+
+      return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending">' +
+        // ── Main row ──────────────────────────────────────────────────────
+        '<div class="lbc-trend-row">' +
+          // Rank + movement (stacked vertically)
+          '<div class="lbc-rank--hot">' +
+            String(rank).padStart(2, '0') +
+            (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
+          '</div>' +
+          // Avatar
+          avatar +
+          // Name + details
+          '<div class="lbc-mid">' +
+            '<div class="lbc-top">' +
+              '<div class="lbc-name">' + pt.name + '</div>' +
+              lbTick +
+              trendingBadge +
+              cert +
+            '</div>' +
+            (pt.username ? '<div style="font-size:0.68rem;color:#8a8f8a;font-weight:600;margin-bottom:0.15rem;">@' + pt.username + '</div>' : '') +
+            (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
+            (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
+          '</div>' +
+          // BMP score
+          '<div class="lbc-bmp">' +
+            '<div style="font-size:0.58rem;color:#ff6b00;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;">BMP</div>' +
+            '<div class="lbc-bmp-score">' + bmpDisplay + '</div>' +
+            '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
+            (bmpChangeHtml || '<div class="lbc-bmp-rev">' + revText + '</div>') +
+          '</div>' +
+        '</div>' +
+        // ── Hot banner ────────────────────────────────────────────────────
+        '<div class="lbc-hot-banner">' +
+          '<span style="font-size:1rem;flex-shrink:0;">🔥</span>' +
+          '<div>' +
+            '<span style="font-size:0.78rem;font-weight:800;color:#cc3d00;">' + bannerText + '</span>' +
+            '<span style="font-size:0.73rem;color:#8a8f8a;margin-left:0.4rem;">· Consistently earning strong reviews on CoachCards.</span>' +
+          '</div>' +
+        '</div>' +
+      '</a>';
+    }
+
+    // ── Standard card ───────────────────────────────────────────────────────
     return '<a href="/trainers/' + pt.id + '" class="lb-card">' +
-      '<div class="lbc-rank">' + String(rank).padStart(2, '0') + moveBadge + '</div>' +
+      '<div class="lbc-rank">' + String(rank).padStart(2, '0') +
+        (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
+      '</div>' +
       '<div class="lbc-mid">' +
-        '<div class="lbc-top">' + avatar + '<div class="lbc-name" style="display:flex;align-items:center;flex-wrap:wrap;gap:3px;">' + pt.name + lbTick + trendBadge + '</div>' + cert + '</div>' +
-        (pt.username ? '<div style="font-size:0.68rem;color:rgba(255,255,255,0.4);font-weight:600;margin-bottom:0.2rem;">@' + pt.username + '</div>' : '') +
+        '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + '</div>' +
+        (pt.username ? '<div style="font-size:0.68rem;color:#8a8f8a;font-weight:600;margin-bottom:0.2rem;">@' + pt.username + '</div>' : '') +
         (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
         (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
       '</div>' +
@@ -1161,7 +1241,7 @@ const reviews = [
         '<div class="lbc-bmp-label">BMP</div>' +
         '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
         '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
-        '<div class="lbc-bmp-rev">' + revText + '</div>' +
+        (bmpChangeHtml || '<div class="lbc-bmp-rev">' + revText + '</div>') +
       '</div>' +
     '</a>';
   }
