@@ -465,13 +465,14 @@ const reviews = [
   }
   .hc-bmp:hover .bmp-tooltip { display:block; }
   .hc-bmp-num    {
-    font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900;
+    font-family:'Playfair Display',serif; font-size:1.55rem; font-weight:900;
     color:#3ab54a; line-height:1; display:block;
   }
   .hc-bmp-lbl    {
-    font-size:0.5rem; color:rgba(255,255,255,0.3); letter-spacing:1px;
-    text-transform:uppercase; font-weight:700;
+    font-size:0.5rem; color:rgba(255,255,255,0.35); letter-spacing:1.2px;
+    text-transform:uppercase; font-weight:700; display:block; margin-bottom:0.1rem;
   }
+  .hc-bmp-db     { display:flex; justify-content:flex-end; margin-top:0.2rem; }
 
   @media (max-width:900px) { .hc-name { max-width:90px; } }
   @media (max-width:600px) {
@@ -1457,6 +1458,7 @@ const reviews = [
     var bmpNum = revCount === 0
       ? '<span class="hc-bmp-num" style="font-size:0.62rem;line-height:1.3;">First<br>review</span>'
       : '<span class="hc-bmp-num">' + (t.bmp_score || '—') + '</span>';
+    var hcDbs = revCount > 0 ? bmpDumbbell(t.bmp_score || 0, 38) : '';
 
     return '<a class="hc-card' + (trending ? ' hc-card--trending' : '') + '" href="/trainers/' + t.id + '">' +
       '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
@@ -1466,7 +1468,7 @@ const reviews = [
         (meta       ? '<div class="hc-meta">'  + meta      + '</div>' : '') +
         (statsHtml  ? '<div>'                  + statsHtml + '</div>' : '') +
       '</div>' +
-      '<div class="hc-bmp">' + bmpNum + '<span class="hc-bmp-lbl">BMP</span><div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
+      '<div class="hc-bmp"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div class="hc-bmp-db">' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
     '</a>';
   }
 
