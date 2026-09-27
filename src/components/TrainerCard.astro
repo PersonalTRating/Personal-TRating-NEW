@@ -48,7 +48,7 @@ const dbs = bmpDumbbell(bmpScore, 48);
 const bioClean = bio ? bio.replace(/<[^>]+>/g, '').trim() : '';
 const bioSnip = bioClean.slice(0, 120);
 const bioLong = bioClean.length > 120;
-const specTags = spec ? spec.split(/[,\/&]/).map(s => s.trim()).filter(Boolean) : [];
+const specTags = spec ? spec.split(/[,\/]/).map(s => s.trim()).filter(Boolean) : [];
 const onerrorHtml = `this.outerHTML='<div class="fpc-av fpc-av-init" style="background:${avatarBg};color:${avatarColor};width:72px;min-width:72px;height:72px;">${avatarInitials}</div>'`;
 ---
 
