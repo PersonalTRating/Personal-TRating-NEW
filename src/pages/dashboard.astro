@@ -1422,9 +1422,35 @@
             <div class="card-body" style="padding:1.1rem 1.5rem;">
               <textarea id="sc-custom-msg" rows="2" maxlength="80"
                 placeholder="I'd love your feedback 🙏"
-                oninput="buildShareCard(); document.getElementById('sc-msg-count').textContent = this.value.length + ' / 80';"
+                oninput="buildShareCard(); document.getElementById('sc-msg-count').textContent = this.value.length + ' / 80'; updateSharePreview();"
                 style="width:100%;padding:0.65rem 0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.84rem;color:var(--text);resize:none;line-height:1.5;outline:none;box-sizing:border-box;"></textarea>
-              <div id="sc-msg-count" style="font-size:0.7rem;color:var(--muted);margin-top:0.3rem;text-align:right;">0 / 80</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.3rem;">
+                <button id="preview-msg-btn"
+                  onclick="toggleSharePreview()"
+                  aria-expanded="false"
+                  aria-controls="share-preview-panel"
+                  style="background:none;border:none;font-family:'Manrope',sans-serif;font-size:0.78rem;font-weight:600;color:var(--green);cursor:pointer;padding:0;display:inline-flex;align-items:center;gap:0.3rem;line-height:1;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                  Preview message
+                  <svg class="prev-chevron" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div id="sc-msg-count" style="font-size:0.7rem;color:var(--muted);">0 / 80</div>
+              </div>
+              <div id="share-preview-panel"
+                role="region"
+                aria-label="Message preview"
+                style="display:none;margin-top:0.65rem;border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+                <div style="display:flex;border-bottom:1px solid var(--border);" role="tablist" aria-label="Preview channel">
+                  <button id="prev-tab-whatsapp" role="tab" aria-selected="true" onclick="setPreviewTab('whatsapp')"
+                    style="flex:1;padding:0.52rem 0;font-family:'Manrope',sans-serif;font-size:0.74rem;font-weight:700;border:none;border-right:1px solid var(--border);cursor:pointer;background:var(--green);color:white;transition:background 0.15s,color 0.15s;">WhatsApp</button>
+                  <button id="prev-tab-sms" role="tab" aria-selected="false" onclick="setPreviewTab('sms')"
+                    style="flex:1;padding:0.52rem 0;font-family:'Manrope',sans-serif;font-size:0.74rem;font-weight:600;border:none;border-right:1px solid var(--border);cursor:pointer;background:white;color:var(--text);transition:background 0.15s,color 0.15s;">SMS</button>
+                  <button id="prev-tab-email" role="tab" aria-selected="false" onclick="setPreviewTab('email')"
+                    style="flex:1;padding:0.52rem 0;font-family:'Manrope',sans-serif;font-size:0.74rem;font-weight:600;border:none;cursor:pointer;background:white;color:var(--text);transition:background 0.15s,color 0.15s;">Email</button>
+                </div>
+                <pre id="share-preview-text"
+                  style="margin:0;padding:0.9rem 1rem;font-family:'Manrope',sans-serif;font-size:0.8rem;color:var(--text);white-space:pre-wrap;word-break:break-word;line-height:1.65;background:#f6fbf7;min-height:4.5rem;"></pre>
+              </div>
             </div>
           </div>
 
@@ -3744,6 +3770,35 @@
     if (btn) { btn.disabled = false; btn.innerHTML = '⬇️ Save Card'; }
   }
 
+  // ── Central share-message builder ───────────────────────────────────────
+  function getShareData() {
+    var link      = document.getElementById('review-link').value;
+    var customEl  = document.getElementById('sc-custom-msg');
+    var custom    = (customEl && customEl.value.trim()) ? customEl.value.trim() : "I'd love your feedback 🙏";
+    var name      = window.__ptTrainerName || '';
+    var firstName = name ? name.split(' ')[0] : '';
+    return { link: link, custom: custom, name: name, firstName: firstName };
+  }
+
+  function buildReviewMessage(channel) {
+    var d = getShareData();
+    if (channel === 'whatsapp') {
+      return d.custom + '\n\nIf you\'ve trained with me, you can leave me a verified review on CoachCards here:\n\n' + d.link;
+    }
+    if (channel === 'sms') {
+      return d.custom + ' Leave me a verified CoachCards review here: ' + d.link;
+    }
+    if (channel === 'email') {
+      var sign = d.firstName ? ',\n' + d.firstName : '!';
+      return {
+        subject: 'Could you leave me a CoachCards review?',
+        body: 'Hi,\n\n' + d.custom + '\n\nIf you\'ve trained with me, I\'d really appreciate you leaving a verified review on CoachCards.\n\n' + d.link + '\n\nThanks' + sign
+      };
+    }
+    return d.custom + '\n\nLeave me a verified review on CoachCards:\n' + d.link;
+  }
+  // ────────────────────────────────────────────────────────────────────────
+
   function copyUrlBtn(btn) {
     var link = document.getElementById('review-link').value;
     if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
@@ -3768,29 +3823,27 @@
   function shareWhatsApp() {
     var link = document.getElementById('review-link').value;
     if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
-    var msg = document.getElementById('sc-custom-msg') ? document.getElementById('sc-custom-msg').value.trim() : '';
-    var text = msg ? msg + '\n\n' + link : 'Hi! I\'d really appreciate a quick review on CoachCards:\n\n' + link;
-    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+    window.open('https://wa.me/?text=' + encodeURIComponent(buildReviewMessage('whatsapp')), '_blank');
   }
 
   function shareSMS() {
     var link = document.getElementById('review-link').value;
     if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
-    var msg = 'Hi! Could you leave me a quick review on CoachCards? ' + link;
+    var text = buildReviewMessage('sms');
     var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile) {
-      window.open('sms:?body=' + encodeURIComponent(msg));
+      window.open('sms:?body=' + encodeURIComponent(text));
     } else {
-      navigator.clipboard.writeText(link).catch(() => {});
-      showToast('📋 Link copied — paste it into your SMS app');
+      navigator.clipboard.writeText(text).catch(function() {});
+      showToast('📋 Message copied — paste it into your SMS app');
     }
   }
 
   function shareEmail() {
     var link = document.getElementById('review-link').value;
     if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
-    var name = window.__ptTrainerName || 'me';
-    window.open('mailto:?subject=' + encodeURIComponent('Please review ' + name + ' on CoachCards') + '&body=' + encodeURIComponent('Hi,\n\nI\'d really appreciate it if you could leave me a verified review on CoachCards. It takes less than 2 minutes:\n\n' + link + '\n\nThanks!'));
+    var em = buildReviewMessage('email');
+    window.open('mailto:?subject=' + encodeURIComponent(em.subject) + '&body=' + encodeURIComponent(em.body));
   }
 
   function shareInstagram() {
@@ -3818,17 +3871,70 @@
   function shareNative() {
     var link = document.getElementById('review-link').value;
     if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    var d = getShareData();
+    var bodyText = d.custom + '\n\nLeave me a verified review on CoachCards:';
     if (navigator.share) {
-      navigator.share({
-        title: 'Leave me a review on CoachCards',
-        text: 'I\'d really appreciate a quick verified review:',
-        url: link,
-      }).catch(function(e) { if (e.name !== 'AbortError') { navigator.clipboard.writeText(link).catch(() => {}); showToast('✅ Link copied!'); } });
+      navigator.share({ title: 'Leave a CoachCards review', text: bodyText, url: link })
+        .catch(function(e) {
+          if (e.name !== 'AbortError') {
+            navigator.clipboard.writeText(buildReviewMessage('generic')).catch(function() {});
+            showToast('✅ Message copied!');
+          }
+        });
     } else {
-      navigator.clipboard.writeText(link).catch(() => {});
-      showToast('✅ Link copied to clipboard!');
+      navigator.clipboard.writeText(buildReviewMessage('generic')).catch(function() {});
+      showToast('✅ Message copied to clipboard!');
     }
   }
+
+  // ── Message preview ──────────────────────────────────────────────────────
+  var _prevChannel = 'whatsapp';
+
+  function toggleSharePreview() {
+    var panel = document.getElementById('share-preview-panel');
+    var btn   = document.getElementById('preview-msg-btn');
+    if (!panel || !btn) return;
+    var open = panel.style.display !== 'none';
+    panel.style.display = open ? 'none' : 'block';
+    btn.setAttribute('aria-expanded', String(!open));
+    var chevron = btn.querySelector('.prev-chevron');
+    if (chevron) chevron.style.transform = open ? '' : 'rotate(180deg)';
+    if (!open) updateSharePreview();
+  }
+
+  function setPreviewTab(channel) {
+    _prevChannel = channel;
+    ['whatsapp', 'sms', 'email'].forEach(function(c) {
+      var el = document.getElementById('prev-tab-' + c);
+      if (!el) return;
+      var active = c === channel;
+      el.setAttribute('aria-selected', String(active));
+      el.style.background  = active ? 'var(--green)' : 'white';
+      el.style.color       = active ? 'white' : 'var(--text)';
+      el.style.borderColor = active ? 'var(--green)' : 'var(--border)';
+      el.style.fontWeight  = active ? '700' : '600';
+    });
+    updateSharePreview();
+  }
+
+  function updateSharePreview() {
+    var panel = document.getElementById('share-preview-panel');
+    if (!panel || panel.style.display === 'none') return;
+    var pre = document.getElementById('share-preview-text');
+    if (!pre) return;
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) {
+      pre.textContent = '(Load your dashboard to see the preview)';
+      return;
+    }
+    if (_prevChannel === 'email') {
+      var em = buildReviewMessage('email');
+      pre.textContent = 'SUBJECT: ' + em.subject + '\n\n' + em.body;
+    } else {
+      pre.textContent = buildReviewMessage(_prevChannel);
+    }
+  }
+  // ────────────────────────────────────────────────────────────────────────
 
   function downloadQRCode() {
     var link = document.getElementById('review-link').value;
