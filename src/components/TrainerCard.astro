@@ -249,7 +249,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   .trend-tooltip {
     display: none;
     position: absolute;
-    bottom: calc(100% + 8px);
+    top: calc(100% + 6px);
     left: 50%;
     transform: translateX(-50%);
     width: 230px;
@@ -267,11 +267,11 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   .trend-tooltip::after {
     content: '';
     position: absolute;
-    top: 100%;
+    bottom: 100%;
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: #1a0505;
+    border-bottom-color: #1a0505;
   }
   .trend-info:hover .trend-tooltip { display: block; }
 
