@@ -315,8 +315,8 @@ const reviews = [
     border:6px solid transparent; border-bottom-color:#051a08;
   }
   .lbc-bmp:hover .bmp-tooltip { display:block; }
-  .lbc-bmp-label  { font-size:0.58rem; color:rgba(255,255,255,0.35); letter-spacing:1.2px; text-transform:uppercase; }
-  .lbc-bmp-score  { font-size:1.7rem; font-weight:800; color:#3ab54a; line-height:1.1; }
+  .lbc-bmp-label  { font-family:'Manrope',sans-serif; font-size:0.58rem; color:rgba(255,255,255,0.35); letter-spacing:1.5px; text-transform:uppercase; font-weight:700; }
+  .lbc-bmp-score  { font-family:'Manrope',sans-serif; font-size:1.7rem; font-weight:800; color:#3ab54a; line-height:1.1; }
   .lbc-bmp-dbs   { display:flex; gap:2px; justify-content:flex-end; margin-top:0.2rem; }
   .lbc-bmp-rev   { font-size:0.7rem; color:rgba(255,255,255,0.3); margin-top:0.15rem; }
 
@@ -465,12 +465,12 @@ const reviews = [
   }
   .hc-bmp:hover .bmp-tooltip { display:block; }
   .hc-bmp-num    {
-    font-family:'Playfair Display',serif; font-size:1.55rem; font-weight:900;
+    font-family:'Manrope',sans-serif; font-size:1.55rem; font-weight:800;
     color:#3ab54a; line-height:1; display:block;
   }
   .hc-bmp-lbl    {
-    font-size:0.5rem; color:rgba(255,255,255,0.35); letter-spacing:1.2px;
-    text-transform:uppercase; font-weight:700; display:block; margin-bottom:0.1rem;
+    font-family:'Manrope',sans-serif; font-size:0.5rem; color:rgba(255,255,255,0.35);
+    letter-spacing:1.5px; text-transform:uppercase; font-weight:700; display:block; margin-bottom:0.1rem;
   }
   .hc-bmp-db     { display:flex; justify-content:flex-end; margin-top:0.2rem; }
 
@@ -821,7 +821,7 @@ const reviews = [
             )}
           </div>
           <div style="text-align:right;flex-shrink:0;">
-            <div style="font-family:'Playfair Display',serif;font-weight:900;font-size:1.3rem;color:#3ab54a;line-height:1;">{t.bmp}</div>
+            <div style="font-family:'Manrope',sans-serif;font-weight:800;font-size:1.3rem;color:#3ab54a;line-height:1;">{t.bmp}</div>
             <div style="font-size:0.5rem;color:rgba(255,255,255,0.35);letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:0.15rem;">BMP</div>
             <div style="display:flex;gap:2px;justify-content:flex-end;"><Fragment set:html={t.dbs} /></div>
           </div>

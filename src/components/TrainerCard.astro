@@ -1,4 +1,6 @@
 ---
+import { bmpDumbbell } from '../lib/bmpDumbbell';
+
 interface Props {
   id: string;
   name: string;
@@ -107,6 +109,9 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
       <span class="trc-bmp-num">{bmpDisplay}</span>
     ) : (
       <span class="trc-bmp-first">First<br/>review</span>
+    )}
+    {bmpDisplay != null && (
+      <div class="trc-bmp-db"><Fragment set:html={bmpDumbbell(bmpScore, 38)} /></div>
     )}
     <div class="bmp-tooltip">BMP — Body Muscle Percentage.<br/>CoachCards' verified ranking score:<br/><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br/>Calculated from real, verified client reviews only.</div>
   </div>
@@ -258,6 +263,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   .trc-bmp:hover .bmp-tooltip { display: block; }
   .trc-bmp-lbl {
     display: block;
+    font-family: 'Manrope', sans-serif;
     font-size: 0.58rem;
     color: rgba(255,255,255,0.35);
     letter-spacing: 1.5px;
@@ -265,12 +271,13 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     font-weight: 700;
   }
   .trc-bmp-num {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Manrope', sans-serif;
     font-size: 1.75rem;
-    font-weight: 900;
+    font-weight: 800;
     color: #3ab54a;
     line-height: 1;
   }
+  .trc-bmp-db { display: flex; justify-content: flex-end; margin-top: 0.2rem; }
   .trc-bmp-first {
     font-size: 0.68rem;
     font-weight: 700;
