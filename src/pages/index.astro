@@ -243,10 +243,11 @@ const reviews = [
     background:rgba(8,16,9,0.95); border-radius:14px; padding:1.1rem 1.4rem;
     border:1px solid rgba(58,181,74,0.18); border-left:3px solid rgba(58,181,74,0.45);
     text-decoration:none; color:inherit;
+    position:relative; z-index:1;
     transition:box-shadow 0.2s ease, transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease;
     cursor:pointer;
   }
-  .lb-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12); transform:translateY(-3px); border-color:rgba(58,181,74,0.38); }
+  .lb-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12); transform:translateY(-3px); border-color:rgba(58,181,74,0.38); z-index:10; }
   .lb-card:focus-visible { outline:3px solid #3ab54a; outline-offset:3px; }
 
   /* Stage 1 — selected card lifts */
