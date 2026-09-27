@@ -1351,7 +1351,7 @@ const reviews = [
         ? '<div class="lbc-detail" style="color:rgba(220,80,40,0.95);">🔥 ' + recentCount + ' verified ' + (recentCount === 1 ? 'review' : 'reviews') + ' in the last 30 days</div>'
         : '';
 
-      return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending">' +
+      return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending" style="view-transition-name:tc-' + pt.id + ';">' +
         '<div class="lbc-rank">' + String(rank).padStart(2, '0') +
           (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
         '</div>' +
@@ -1378,7 +1378,7 @@ const reviews = [
     }
 
     // ── Standard card ───────────────────────────────────────────────────────
-    return '<a href="/trainers/' + pt.id + '" class="lb-card">' +
+    return '<a href="/trainers/' + pt.id + '" class="lb-card" style="view-transition-name:tc-' + pt.id + ';">' +
       '<div class="lbc-rank">' + String(rank).padStart(2, '0') +
         (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
       '</div>' +
@@ -1460,7 +1460,7 @@ const reviews = [
       : '<span class="hc-bmp-num">' + (t.bmp_score || '—') + '</span>';
     var hcDbs = revCount > 0 ? bmpDumbbell(t.bmp_score || 0, 38) : '';
 
-    return '<a class="hc-card' + (trending ? ' hc-card--trending' : '') + '" href="/trainers/' + t.id + '">' +
+    return '<a class="hc-card' + (trending ? ' hc-card--trending' : '') + '" href="/trainers/' + t.id + '" style="view-transition-name:tc-' + t.id + ';">' +
       '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
       av +
       '<div class="hc-mid">' +

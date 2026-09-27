@@ -381,25 +381,38 @@ const maskName = (name: string): string => {
     .tp-nav-text  { font-size:0.78rem !important; }
   }
 
-  /* ── View Transition: profile entry ──────────────────────── */
+  /* ── View Transition: card expands → profile hero ──────── */
   @keyframes vt-profile-in  { from { opacity:0; transform:translateY(9px); } to { opacity:1; transform:translateY(0); } }
   @keyframes vt-root-out    { to   { opacity:0; } }
   @keyframes vt-rm-fade     { from { opacity:0; } to { opacity:1; } }
+  @keyframes vt-content-out { to   { opacity:0; } }
+  @keyframes vt-content-in  { from { opacity:0; } to { opacity:1; } }
 
-  ::view-transition-old(root)  { animation:220ms ease-in  both vt-root-out; }
-  ::view-transition-new(root)  { animation:360ms ease-out both vt-profile-in; }
+  /* All named groups morph their bounding box (card → hero expand) */
+  ::view-transition-group(*) {
+    animation-duration: 480ms;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  /* Card content fades out quickly as the box expands */
+  ::view-transition-old(*) { animation: 160ms ease-out both vt-content-out; }
+  /* Hero content reveals after the box has expanded */
+  ::view-transition-new(*) { animation: 300ms 200ms ease-in both vt-content-in; }
 
-  /* Shared element morphing: avatar + name glide smoothly */
+  /* Root: page-level fade (overrides * rules for root) */
+  ::view-transition-old(root) { animation: 220ms ease-in  both vt-root-out; }
+  ::view-transition-new(root) { animation: 360ms ease-out both vt-profile-in; }
+
+  /* Avatar + name glide in sync with card expand */
   ::view-transition-group(trainer-avatar),
   ::view-transition-group(trainer-name) {
-    animation-duration:380ms;
-    animation-timing-function:cubic-bezier(0.4,0,0.2,1);
+    animation-duration: 480ms;
+    animation-timing-function: cubic-bezier(0.4,0,0.2,1);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    ::view-transition-old(root), ::view-transition-new(root) { animation:120ms ease both vt-rm-fade; }
-    ::view-transition-group(trainer-avatar),
-    ::view-transition-group(trainer-name) { animation-duration:120ms; }
+    ::view-transition-group(*) { animation-duration: 120ms; }
+    ::view-transition-old(*), ::view-transition-new(*) { animation-duration: 120ms; }
+    ::view-transition-old(root), ::view-transition-new(root) { animation: 120ms ease both vt-rm-fade; }
   }
 </style>
 
@@ -426,7 +439,7 @@ const maskName = (name: string): string => {
 </nav>
 
 <!-- ── PROFILE HERO ── -->
-<section id="tp-hero-section" style={`background:${heroBackground};padding:4rem 0 3.5rem;`}>
+<section id="tp-hero-section" style={`background:${heroBackground};padding:4rem 0 3.5rem;view-transition-name:tc-${trainer.id};`}>
   <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
 
     <a href="/#leaderboard" style="color:rgba(255,255,255,0.7);font-size:0.82rem;font-weight:500;text-decoration:none;display:inline-block;margin-bottom:2.25rem;transition:color 0.2s;"
