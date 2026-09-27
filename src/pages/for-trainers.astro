@@ -283,20 +283,27 @@ const { count: totalReviews } = await supabase
       <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;max-width:580px;margin:0 auto;">BMP (Body Muscle %) is your 0–100 trust score on CoachCards. It's designed to reward PTs who are consistently excellent — not just occasionally lucky.</p>
     </div>
 
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3.5rem;" class="ft-step-grid">
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-bottom:3.5rem;" class="ft-step-grid">
       <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
         <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
           <div style="background:#eaf7ec;color:#2a9438;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #c3e6c8;">UP TO 70 PTS</div>
-          <div style="font-weight:800;font-size:1rem;color:#111311;">Quality Score</div>
+          <div style="font-weight:800;font-size:1rem;color:#111311;">Review Quality</div>
         </div>
-        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">The majority of your BMP score comes from your <strong style="color:#111311;">average star rating</strong> across all verified reviews. A trainer with consistently high ratings will always rank near the top.</p>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">The foundation of your BMP score. Based on your <strong style="color:#111311;">verified average rating</strong>, smoothed to stop a handful of reviews from overstating your score. Consistent excellence wins here.</p>
       </div>
       <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
         <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
-          <div style="background:#e8f0f7;color:#1a4b6b;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #b3cce0;">UP TO 30 PTS</div>
-          <div style="font-weight:800;font-size:1rem;color:#111311;">Volume Score</div>
+          <div style="background:#e8f0f7;color:#1a4b6b;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #b3cce0;">UP TO 20 PTS</div>
+          <div style="font-weight:800;font-size:1rem;color:#111311;">Review Confidence</div>
         </div>
-        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">A meaningful bonus based on the <strong style="color:#111311;">number of verified reviews</strong> you've collected — 3 points per review, up to a maximum of 30. It rewards trainers who build a consistent track record over time.</p>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">A logarithmic bonus for <strong style="color:#111311;">review volume</strong>. The first 10 reviews earn most of the score, then it tapers — rewards track record without giving infinite points for mass reviews.</p>
+      </div>
+      <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;">
+          <div style="background:#fff3e0;color:#e65c00;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.3rem 0.65rem;border-radius:20px;border:1.5px solid #ffcc80;">UP TO 10 PTS</div>
+          <div style="font-weight:800;font-size:1rem;color:#111311;">Recent Momentum</div>
+        </div>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">Rewards <strong style="color:#111311;">consistent recent activity</strong>. Reviews in the last 7 days carry 3× more weight than reviews from last month. A steady flow beats a one-off burst every time.</p>
       </div>
     </div>
 
@@ -305,8 +312,8 @@ const { count: totalReviews } = await supabase
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="ft-proof-grid">
         {[
           { icon:'🎯', title:'A fair playing field', desc:'Every PT starts at zero. Your score grows purely through verified client feedback — no pay-to-win, no favouritism.' },
-          { icon:'📈', title:'Keep improving', desc:'One bad review won\'t ruin you. Consistent quality over time is what drives your score up — the formula rewards the long game.' },
-          { icon:'🔍', title:'Full transparency', desc:'You can see exactly how your BMP is calculated at any time. No black box — just your average rating and your review count.' },
+          { icon:'📈', title:'Rewards staying active', desc:'The momentum component means trainers who keep collecting reviews rank higher. Going quiet costs you — staying active rewards you.' },
+          { icon:'🔍', title:'Full transparency', desc:'You can see your score breakdown at any time in your dashboard. No black box — the three components are clearly defined.' },
         ].map(w => (
           <div style="text-align:center;">
             <div style="font-size:1.75rem;margin-bottom:0.65rem;">{w.icon}</div>
@@ -411,7 +418,7 @@ const { count: totalReviews } = await supabase
         { q:'Is it really free?',
           a:'Yes, completely. There are no subscription tiers, no premium listings, no credit card required. Every PT gets the same profile, the same tools, and the same shot at the top of the leaderboard.' },
         { q:'What is the BMP score?',
-          a:'BMP (Body Muscle %) is our 0–100 ranking score. It combines review quality (up to 70 points) with review volume (up to 30 points). Only verified reviews count — unverified submissions never touch your score. It\'s formula-driven, transparent, and cannot be bought or gamed.' },
+          a:'BMP (Body Muscle %) is our 0–100 ranking score. It combines Review Quality (up to 70 pts), Review Confidence based on volume (up to 20 pts), and Recent Momentum for consistent activity (up to 10 pts). Only verified reviews count — unverified submissions never touch your score. It\'s formula-driven, transparent, and cannot be bought or gamed.' },
         { q:'Are reviews verified?',
           a:'Every single one. When someone submits a review it goes straight to our team for manual approval before it appears anywhere on the platform. Anything suspicious, spammy, or fake gets rejected and deleted — it never reaches your profile or your score.' },
         { q:'What if I get a bad review?',

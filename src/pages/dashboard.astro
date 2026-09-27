@@ -1949,7 +1949,9 @@
     const bmpChangeEl  = document.getElementById('stat-bmp-change');
     const revChangeEl  = document.getElementById('stat-reviews-change');
     const viewChangeEl = document.getElementById('stat-views-change');
-    if (bmpChangeEl)  bmpChangeEl.textContent  = hasBmp ? 'Based on verified reviews'    : 'Earn your first review to unlock';
+    if (bmpChangeEl)  bmpChangeEl.textContent  = hasBmp
+      ? ((trainer as any).is_trending ? '🔥 Trending · based on verified reviews' : 'Based on verified reviews')
+      : 'Earn your first review to unlock';
     if (revChangeEl)  revChangeEl.textContent  = (trainer.review_count ?? 0) > 0 ? `${trainer.review_count} verified reviews` : 'No reviews yet — send your first link';
 
     // ── Profile views ─────────────────────────────────────────────────────
@@ -2310,28 +2312,51 @@
       if (!hasBmp) {
         breakdownEl.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.75rem 0;">Collect reviews to unlock your score breakdown.</div>`;
       } else {
-        const starPct    = Math.round(((trainer.star_rating ?? 0) / 5) * 100);
-        const volComp    = Math.min((trainer.review_count ?? 0) * 2, 30);
-        const volPct     = Math.round((volComp / 30) * 100);
-        let profileScore = 0;
-        if (trainer.bio)       profileScore += 25;
-        if (trainer.city)      profileScore += 25;
-        if (trainer.cert)      profileScore += 25;
-        if (trainer.specialty) profileScore += 25;
-        const mostRecent  = reviews[0];
-        let recencyLabel  = 'Low';
-        let recencyPct    = 15;
-        if (mostRecent) {
-          const daysSince = (Date.now() - new Date(mostRecent.created_at).getTime()) / 86400000;
-          if (daysSince < 14)  { recencyLabel = 'High'; recencyPct = 100; }
-          else if (daysSince < 60)  { recencyLabel = 'Good'; recencyPct = 65; }
-          else if (daysSince < 180) { recencyLabel = 'Fair'; recencyPct = 35; }
-        }
-        breakdownEl.innerHTML = `
-          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Star Rating</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${starPct}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${trainer.star_rating ?? '—'}</span></div>
-          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Review Volume</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${volPct}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${trainer.review_count ?? 0}</span></div>
-          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Recency</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${recencyPct}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${recencyLabel}</span></div>
-          <div style="display:flex;align-items:center;gap:1rem;padding:0.6rem 0;"><span style="font-size:0.78rem;font-weight:600;color:white;width:120px;flex-shrink:0;font-family:'Manrope',sans-serif;">Profile</span><div style="flex:1;height:8px;background:rgba(58,181,74,0.2);border-radius:4px;overflow:hidden;"><div style="height:100%;background:#3ab54a;border-radius:4px;width:${profileScore}%;"></div></div><span style="font-size:0.78rem;font-weight:700;color:white;width:40px;text-align:right;font-family:'Manrope',sans-serif;">${profileScore}%</span></div>`;
+        // BMP v2 — client-side approximation matching the server formula
+        const n          = trainer.review_count ?? 0;
+        const sumRatings = (trainer.star_rating ?? 0) * n;
+        const smoothedAvg = (sumRatings + 5 * 3.5) / (n + 5);
+        const qualityPts  = Math.round(Math.min((smoothedAvg / 5) * 70, 70) * 10) / 10;
+        const qualityPct  = Math.round((qualityPts / 70) * 100);
+
+        const confPts  = Math.round(Math.min(Math.log(n + 1) / Math.log(51), 1) * 20 * 10) / 10;
+        const confPct  = Math.round((confPts / 20) * 100);
+
+        // Momentum: approximate from last review date (server has full per-review data)
+        const now = Date.now();
+        let momPts = 0;
+        reviews.forEach((r: any) => {
+          const age = (now - new Date(r.created_at).getTime()) / 86400000;
+          if (r.rating >= 3.5) {
+            if (age <= 7)  momPts += 3.0;
+            else if (age <= 30) momPts += 1.5;
+            else if (age <= 90) momPts += 0.75;
+          }
+        });
+        momPts = Math.round(Math.min(momPts / 7.5, 1) * 10 * 10) / 10;
+        const momPct = Math.round((momPts / 10) * 100);
+
+        const trendHtml = (trainer as any).is_trending
+          ? `<div style="margin-top:1rem;padding:0.65rem 0.9rem;background:rgba(255,160,0,0.12);border:1px solid rgba(255,160,0,0.3);border-radius:8px;display:flex;align-items:center;gap:0.5rem;">
+               <span style="font-size:0.75rem;font-weight:800;color:#ff9800;letter-spacing:1px;">TRENDING</span>
+               <span style="font-size:0.72rem;color:rgba(255,255,255,0.55);">You're gaining momentum — keep collecting reviews.</span>
+             </div>`
+          : '';
+
+        const row = (label: string, pct: number, val: string | number) =>
+          `<div style="display:flex;align-items:center;gap:1rem;padding:0.55rem 0;">
+             <span style="font-size:0.75rem;font-weight:600;color:rgba(255,255,255,0.75);width:130px;flex-shrink:0;font-family:'Manrope',sans-serif;">${label}</span>
+             <div style="flex:1;height:7px;background:rgba(58,181,74,0.18);border-radius:4px;overflow:hidden;">
+               <div style="height:100%;background:#3ab54a;border-radius:4px;width:${pct}%;transition:width 0.6s ease;"></div>
+             </div>
+             <span style="font-size:0.75rem;font-weight:700;color:white;width:44px;text-align:right;font-family:'Manrope',sans-serif;">${val} pts</span>
+           </div>`;
+
+        breakdownEl.innerHTML =
+          row('Review Quality', qualityPct, qualityPts) +
+          row('Confidence', confPct, confPts) +
+          row('Momentum', momPct, momPts) +
+          trendHtml;
       }
     }
 

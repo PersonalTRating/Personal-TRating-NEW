@@ -22,6 +22,7 @@ interface Props {
   avatarColor?: string;
   bio?: string;
   gyms?: Gym[];
+  isTrending?: boolean;
 }
 
 const {
@@ -42,6 +43,7 @@ const {
   avatarColor = '#2a9438',
   bio = '',
   gyms = [],
+  isTrending = false,
 } = Astro.props;
 
 const dbs = bmpDumbbell(bmpScore, 48);
@@ -93,6 +95,7 @@ const onerrorHtml = `this.outerHTML='<div class="fpc-av fpc-av-init" style="back
         </span>
       )}
       {cert && <span class="fpc-cert">{cert}</span>}
+      {isTrending && <span class="fpc-trending">TRENDING</span>}
     </div>
 
     {username && <div class="fpc-username">@{username}</div>}
@@ -165,6 +168,7 @@ const onerrorHtml = `this.outerHTML='<div class="fpc-av fpc-av-init" style="back
   .fpc-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #111311; }
   .fpc-verified { display: inline-flex; align-items: center; flex-shrink: 0; }
   .fpc-cert { font-size: 0.68rem; font-weight: 700; color: #2a9438; background: #eaf7ec; padding: 0.18rem 0.55rem; border-radius: 10px; border: 1px solid #c3e6c8; white-space: nowrap; }
+  .fpc-trending { font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; color: #e65c00; background: rgba(255,160,0,0.12); border: 1px solid rgba(255,120,0,0.3); padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; }
   .fpc-username { font-size: 0.75rem; color: #7a8f7c; font-weight: 600; margin-bottom: 0.25rem; }
   .fpc-meta { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
   .fpc-meta-loc { font-size: 0.82rem; color: #8a8f8a; }
