@@ -127,9 +127,6 @@ const onerrorHtml = `this.outerHTML='<div class="fpc-av fpc-av-init" style="back
       )}
       <div class="fpc-bmp-lbl">BMP Score</div>
       <div class="fpc-dbs"><Fragment set:html={dbs} /></div>
-      {starRating != null && starRating > 0 && revCount > 0 && (
-        <div class="fpc-stars">★ {starRating.toFixed(1)}</div>
-      )}
       <div class="fpc-rev">
         {revCount === 0 ? '0 reviews' : `${revCount} ${revCount === 1 ? 'review' : 'reviews'}`}
       </div>
@@ -193,8 +190,7 @@ const onerrorHtml = `this.outerHTML='<div class="fpc-av fpc-av-init" style="back
   .fpc-first-review { font-size: 0.72rem; font-weight: 700; color: #3ab54a; line-height: 1.3; margin-bottom: 0.25rem; }
   .fpc-bmp-lbl { font-size: 0.58rem; color: #8a8f8a; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-top: 0.1rem; }
   .fpc-dbs { display: flex; gap: 2px; justify-content: flex-end; margin-top: 0.3rem; }
-  .fpc-stars { font-size: 0.75rem; color: #b8860b; font-weight: 700; margin-top: 0.2rem; }
-  .fpc-rev { font-size: 0.7rem; color: #8a8f8a; margin-top: 0.15rem; }
+.fpc-rev { font-size: 0.7rem; color: #8a8f8a; margin-top: 0.15rem; }
   .fpc-cta {
     background: #3ab54a; color: white; font-weight: 700; font-size: 0.85rem;
     padding: 0.65rem 1.5rem; border-radius: 25px;
