@@ -433,6 +433,29 @@
     transition:all 0.2s;
   }
   .link-action-btn:hover { border-color:var(--green); color:var(--green-dark); }
+
+  /* ── Share Hub ── */
+  .share-section-lbl {
+    font-size:0.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:0.55rem;
+  }
+  .share-grid {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0.55rem;
+  }
+  .share-btn {
+    display:flex; align-items:center; justify-content:center; gap:0.45rem;
+    padding:0.7rem 0.5rem; border-radius:9px; font-size:0.79rem; font-weight:600;
+    cursor:pointer; font-family:'Manrope',sans-serif; transition:all 0.18s;
+    border:1.5px solid; white-space:nowrap; min-width:0; line-height:1.2;
+  }
+  .share-btn svg { flex-shrink:0; }
+  .share-btn-fill { background:var(--green); color:white; border-color:var(--green); }
+  .share-btn-fill:hover { background:var(--green-dark); border-color:var(--green-dark); }
+  .share-btn-outline { background:white; color:var(--text); border-color:var(--border); }
+  .share-btn-outline:hover { border-color:var(--green); color:var(--green-dark); background:var(--green-light); }
+  @media (max-width:620px) {
+    .share-grid { grid-template-columns:1fr 1fr; }
+  }
   .link-history-row {
     display:flex; align-items:center; gap:1rem; padding:0.9rem 1.5rem;
     border-bottom:1px solid var(--border); font-size:0.84rem;
@@ -1319,24 +1342,71 @@
             </div>
           </div>
 
-          <!-- Review link -->
+          <!-- Share Your Review Link hub -->
           <div class="card" style="margin-bottom:0;">
             <div class="card-head">
               <div>
-                <div class="card-title">Your Review Link</div>
-                <div class="card-sub">Share via WhatsApp, email, or use the Instagram Link Sticker for clickable stories</div>
+                <div class="card-title">Share your review link</div>
+                <div class="card-sub">Send your personal CoachCards review link directly to clients.</div>
               </div>
             </div>
-            <div class="card-body">
-              <div class="link-box">
+            <div class="card-body" style="padding:1.25rem 1.5rem;">
+
+              <!-- URL + Copy -->
+              <div class="share-section-lbl">Your personal review link</div>
+              <div class="link-box" style="margin-bottom:0;">
                 <input class="link-url" id="review-link" readonly value="coachcards.co.uk/review/...">
-                <button class="link-copy" onclick="copyLink()">Copy</button>
+                <button class="link-copy" id="copy-url-btn" onclick="copyUrlBtn(this)" aria-label="Copy review link">Copy</button>
               </div>
-              <div class="link-actions" style="margin-top:1rem;">
-                <button id="share-link-btn" class="link-action-btn" onclick="shareReviewLink()" style="display:none;">📤 Share</button>
-                <button class="link-action-btn" onclick="shareLink('whatsapp')">📱 WhatsApp</button>
-                <button class="link-action-btn" onclick="shareLink('email')">📧 Email</button>
-                <button class="link-action-btn" onclick="downloadQRCode()">📷 QR Code</button>
+
+              <!-- Send Directly -->
+              <div class="share-section-lbl" style="margin-top:1.25rem;">Send directly</div>
+              <div class="share-grid">
+                <button class="share-btn share-btn-fill" onclick="shareWhatsApp()" aria-label="Share via WhatsApp">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                  WhatsApp
+                </button>
+                <button class="share-btn share-btn-fill" onclick="shareSMS()" aria-label="Share via SMS">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  SMS
+                </button>
+                <button class="share-btn share-btn-outline" onclick="shareEmail()" aria-label="Share via Email">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  Email
+                </button>
+                <button class="share-btn share-btn-outline" id="copy-link-btn" onclick="copyShareBtn(this)" aria-label="Copy link to clipboard">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                  Copy Link
+                </button>
+              </div>
+
+              <!-- Share Publicly -->
+              <div class="share-section-lbl" style="margin-top:1.25rem;">Share publicly</div>
+              <div class="share-grid">
+                <button class="share-btn share-btn-outline" onclick="shareInstagram()" aria-label="Share on Instagram">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                  Instagram
+                </button>
+                <button class="share-btn share-btn-outline" onclick="shareFacebook()" aria-label="Share on Facebook">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  Facebook
+                </button>
+                <button class="share-btn share-btn-outline" onclick="shareLinkedIn()" aria-label="Share on LinkedIn">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                  LinkedIn
+                </button>
+                <button class="share-btn share-btn-outline" onclick="shareNative()" aria-label="More sharing options">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  More
+                </button>
+              </div>
+
+              <!-- QR Code -->
+              <div style="text-align:center;margin-top:1.25rem;padding-top:1.1rem;border-top:1px solid var(--border);">
+                <button class="link-action-btn" onclick="downloadQRCode()" aria-label="Download QR code">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                  Show QR Code
+                </button>
               </div>
             </div>
           </div>
@@ -3674,30 +3744,89 @@
     if (btn) { btn.disabled = false; btn.innerHTML = '⬇️ Save Card'; }
   }
 
-  function shareReviewLink() {
+  function copyUrlBtn(btn) {
     var link = document.getElementById('review-link').value;
-    if (navigator.share) {
-      navigator.share({
-        title: 'Leave me a review on CoachCards',
-        text: 'Hi! I\'d really appreciate it if you could leave me a verified review on CoachCards:',
-        url: link,
-      }).catch(function(e) { if (e.name !== 'AbortError') copyLink(); });
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    navigator.clipboard.writeText(link).then(function() {
+      btn.textContent = 'Copied ✓';
+      btn.disabled = true;
+      setTimeout(function() { btn.textContent = 'Copy'; btn.disabled = false; }, 2200);
+    }).catch(function() { showToast('⚠️ Could not copy — try manually'); });
+  }
+
+  function copyShareBtn(btn) {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    navigator.clipboard.writeText(link).then(function() {
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
+      btn.disabled = true;
+      setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2200);
+    }).catch(function() { showToast('⚠️ Could not copy — try manually'); });
+  }
+
+  function shareWhatsApp() {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    var msg = document.getElementById('sc-custom-msg') ? document.getElementById('sc-custom-msg').value.trim() : '';
+    var text = msg ? msg + '\n\n' + link : 'Hi! I\'d really appreciate a quick review on CoachCards:\n\n' + link;
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  }
+
+  function shareSMS() {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    var msg = 'Hi! Could you leave me a quick review on CoachCards? ' + link;
+    var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (isMobile) {
+      window.open('sms:?body=' + encodeURIComponent(msg));
+    } else {
+      navigator.clipboard.writeText(link).catch(() => {});
+      showToast('📋 Link copied — paste it into your SMS app');
     }
   }
 
-  function copyLink() {
-    const link = document.getElementById('review-link').value;
-    navigator.clipboard.writeText(link).catch(() => {});
-    showToast('✅ Link copied to clipboard!');
+  function shareEmail() {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    var name = window.__ptTrainerName || 'me';
+    window.open('mailto:?subject=' + encodeURIComponent('Please review ' + name + ' on CoachCards') + '&body=' + encodeURIComponent('Hi,\n\nI\'d really appreciate it if you could leave me a verified review on CoachCards. It takes less than 2 minutes:\n\n' + link + '\n\nThanks!'));
   }
 
+  function shareInstagram() {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    navigator.clipboard.writeText(link).then(function() {
+      showToast('✅ Link copied — paste it as your Instagram Link Sticker');
+      var storyCard = document.getElementById('instagram-story-card');
+      if (storyCard) { storyCard.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    }).catch(function() { showToast('⚠️ Could not copy — copy it manually then open Instagram'); });
+  }
 
-  function shareLink(method) {
-    const link = document.getElementById('review-link').value;
-    if (method === 'whatsapp') {
-      window.open(`https://wa.me/?text=Hi! Please leave me a review on CoachCards: ${link}`);
+  function shareFacebook() {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link), '_blank');
+  }
+
+  function shareLinkedIn() {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(link), '_blank');
+  }
+
+  function shareNative() {
+    var link = document.getElementById('review-link').value;
+    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (navigator.share) {
+      navigator.share({
+        title: 'Leave me a review on CoachCards',
+        text: 'I\'d really appreciate a quick verified review:',
+        url: link,
+      }).catch(function(e) { if (e.name !== 'AbortError') { navigator.clipboard.writeText(link).catch(() => {}); showToast('✅ Link copied!'); } });
     } else {
-      window.open(`mailto:?subject=Please review my CoachCards profile&body=Hi, I'd appreciate a review on CoachCards: ${link}`);
+      navigator.clipboard.writeText(link).catch(() => {});
+      showToast('✅ Link copied to clipboard!');
     }
   }
 
