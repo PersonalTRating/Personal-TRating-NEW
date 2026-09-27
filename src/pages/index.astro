@@ -347,12 +347,12 @@ const reviews = [
   .lb-card--trending {
     flex-direction:column !important; align-items:stretch !important;
     background:#fffaf8 !important;
-    border:2px solid rgba(255,90,0,0.55) !important;
-    border-left:4px solid #ff4500 !important;
-    box-shadow:0 0 14px rgba(255,69,0,0.4), 0 0 32px rgba(255,100,0,0.22), 0 4px 16px rgba(0,0,0,0.1) !important;
+    border:2px solid rgba(200,0,0,0.55) !important;
+    border-left:4px solid #cc0000 !important;
+    box-shadow:0 0 14px rgba(180,0,0,0.4), 0 0 32px rgba(180,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1) !important;
   }
   .lb-card--trending:hover {
-    box-shadow:0 0 22px rgba(255,69,0,0.55), 0 0 48px rgba(255,100,0,0.3), 0 6px 20px rgba(0,0,0,0.12) !important;
+    box-shadow:0 0 22px rgba(180,0,0,0.55), 0 0 48px rgba(180,0,0,0.3), 0 6px 20px rgba(0,0,0,0.12) !important;
     transform:translateY(-2px) !important;
   }
   .lbc-trend-row  { display:flex; align-items:center; gap:1.25rem; }
@@ -360,9 +360,9 @@ const reviews = [
   .lbc-hot-banner {
     margin-top:0.65rem;
     padding:0.65rem 0.9rem;
-    background:linear-gradient(90deg,rgba(255,69,0,0.07),rgba(255,130,0,0.04));
+    background:linear-gradient(90deg,rgba(180,0,0,0.07),rgba(180,0,0,0.03));
     border-radius:8px;
-    border:1px solid rgba(255,100,0,0.2);
+    border:1px solid rgba(180,0,0,0.2);
     display:flex; align-items:center; gap:0.65rem;
   }
 
@@ -1183,7 +1183,7 @@ const reviews = [
       var bannerText  = recentCount >= 4
         ? recentCount + ' verified reviews in the last 30 days'
         : 'Strong recent activity';
-      var trendingBadge = '<span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#ff4500,#ff6b00);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(255,69,0,0.45);white-space:nowrap;flex-shrink:0;">🔥 TRENDING</span>';
+      var trendingBadge = '<span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;">🔥 TRENDING</span>';
 
       return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending">' +
         // ── Main row ──────────────────────────────────────────────────────
@@ -1209,7 +1209,7 @@ const reviews = [
           '</div>' +
           // BMP score
           '<div class="lbc-bmp">' +
-            '<div style="font-size:0.58rem;color:#ff6b00;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;">BMP</div>' +
+            '<div style="font-size:0.58rem;color:#cc0000;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;">BMP</div>' +
             '<div class="lbc-bmp-score">' + bmpDisplay + '</div>' +
             '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
             (bmpChangeHtml || '<div class="lbc-bmp-rev">' + revText + '</div>') +
@@ -1219,7 +1219,7 @@ const reviews = [
         '<div class="lbc-hot-banner">' +
           '<span style="font-size:1rem;flex-shrink:0;">🔥</span>' +
           '<div>' +
-            '<span style="font-size:0.78rem;font-weight:800;color:#cc3d00;">' + bannerText + '</span>' +
+            '<span style="font-size:0.78rem;font-weight:800;color:#9e0000;">' + bannerText + '</span>' +
             '<span style="font-size:0.73rem;color:#8a8f8a;margin-left:0.4rem;">· Consistently earning strong reviews on CoachCards.</span>' +
           '</div>' +
         '</div>' +
