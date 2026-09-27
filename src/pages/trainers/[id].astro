@@ -180,6 +180,45 @@ const maskName = (name: string): string => {
   }
   .bmp-info:hover .bmp-tooltip { display:block; }
 
+  /* BMP Panel — premium dark redesign */
+  .bmp-panel {
+    background: linear-gradient(160deg, #091909 0%, #050c06 100%);
+    border: 1.5px solid rgba(58,181,74,0.42);
+    border-radius: 16px;
+    padding: 1.5rem 1.75rem 1.25rem;
+    text-align: center;
+    flex-shrink: 0;
+    min-width: 170px;
+    box-shadow: 0 0 0 1px rgba(58,181,74,0.06), 0 0 22px rgba(58,181,74,0.14), 0 4px 28px rgba(0,0,0,0.5);
+  }
+  .bmp-panel-label {
+    font-size: 0.58rem;
+    color: rgba(255,255,255,0.42);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .bmp-panel-score {
+    font-size: 3.5rem;
+    font-weight: 900;
+    color: #3ab54a;
+    line-height: 1;
+    text-shadow: 0 0 28px rgba(58,181,74,0.32);
+  }
+  .bmp-panel-sub {
+    font-size: 0.65rem;
+    color: rgba(255,255,255,0.32);
+    margin-top: 0.3rem;
+    font-weight: 500;
+  }
+  .bmp-panel-db {
+    margin-top: 0.9rem;
+    display: flex;
+    justify-content: center;
+  }
+  .bmp-db-svg { width: 68%; max-width: 150px; }
+
   .trend-info { position:relative; cursor:default; display:inline-flex; }
   .trend-tooltip {
     display:none; position:absolute; top:calc(100% + 6px); left:50%; transform:translateX(-50%);
@@ -478,23 +517,67 @@ const maskName = (name: string): string => {
         </div>
       </div>
 
-      <!-- BMP Score box -->
+      <!-- BMP Score panel — premium dark -->
       {hasBmp && (
-        <div class="tp-bmp-box bmp-info" style="text-align:center;background:rgba(255,255,255,0.47);border-radius:16px;padding:1.5rem 2rem;border:1px solid rgba(255,255,255,0.35);flex-shrink:0;">
+        <div class="tp-bmp-box bmp-panel bmp-info" id="bmp-panel-hero">
           <div class="bmp-tooltip">
             BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Recent Momentum (up to 10 pts). Only verified reviews count.
           </div>
-          <div style="font-size:0.6rem;color:rgba(255,255,255,0.45);letter-spacing:2px;text-transform:uppercase;font-weight:700;margin-bottom:0.35rem;">BMP Score ⓘ</div>
-          <div style="font-size:3.5rem;font-weight:900;color:#3ab54a;line-height:1;">{trainer.bmp_score}</div>
-          <div style="font-size:0.68rem;color:rgba(255,255,255,0.4);margin-top:0.35rem;font-weight:500;">out of 100</div>
-          {trainer.is_trending && (
-            <div class="trend-info" style="margin-top:0.75rem;">
-              <div style="display:inline-flex;align-items:center;gap:4px;background:rgba(180,0,0,0.12);color:#cc0000;font-size:0.6rem;font-weight:800;letter-spacing:1.5px;padding:0.25rem 0.6rem;border-radius:20px;border:1px solid rgba(180,0,0,0.4);">🔥 TRENDING</div>
-              <div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div>
-            </div>
-          )}
+          <div class="bmp-panel-label">BMP SCORE ⓘ</div>
+          <div class="bmp-panel-score">{trainer.bmp_score}</div>
+          <div class="bmp-panel-sub">out of 100</div>
+          <div class="bmp-panel-db">
+            <svg class="bmp-db-svg" viewBox="0 0 100 42" aria-hidden="true">
+              <rect x="10" y="15" width="80" height="12" rx="4" fill="#151515"/>
+              <rect x="10" y="15" width="80" height="4"  rx="2" fill="white" opacity="0.03"/>
+              <rect class="db-fill-main" x="29" y="16" width="0" height="10"  fill="#3ab54a" data-target={(((trainer.bmp_score || 0) / 100) * 42).toFixed(2)}/>
+              <rect class="db-fill-hi"   x="29" y="16" width="0" height="3.5" fill="white"   opacity="0.15"/>
+              <rect class="db-fill-lo"   x="29" y="22" width="0" height="4"   fill="black"   opacity="0.15"/>
+              <circle cx="15" cy="21" r="15"   fill="#0a0a0a"/>
+              <circle cx="15" cy="21" r="13.5" fill="#1e1e1e"/>
+              <circle cx="15" cy="21" r="10.5" fill="#131313"/>
+              <circle cx="15" cy="21" r="4.5"  fill="#0a0a0a"/>
+              <ellipse cx="10" cy="13" rx="5" ry="3" fill="white" opacity="0.06" transform="rotate(-20,10,13)"/>
+              <circle cx="85" cy="21" r="15"   fill="#0a0a0a"/>
+              <circle cx="85" cy="21" r="13.5" fill="#1e1e1e"/>
+              <circle cx="85" cy="21" r="10.5" fill="#131313"/>
+              <circle cx="85" cy="21" r="4.5"  fill="#0a0a0a"/>
+              <ellipse cx="80" cy="13" rx="5" ry="3" fill="white" opacity="0.06" transform="rotate(-20,80,13)"/>
+            </svg>
+          </div>
         </div>
       )}
+
+<script is:inline>
+(function () {
+  var panel = document.getElementById('bmp-panel-hero');
+  if (!panel) return;
+  var fill = panel.querySelector('.db-fill-main');
+  var hi   = panel.querySelector('.db-fill-hi');
+  var lo   = panel.querySelector('.db-fill-lo');
+  if (!fill) return;
+  var target = parseFloat(fill.getAttribute('data-target') || '0');
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    fill.setAttribute('width', String(target));
+    hi && hi.setAttribute('width', String(target));
+    lo && lo.setAttribute('width', String(target));
+    return;
+  }
+  var duration = 700;
+  var startTime = null;
+  function step(ts) {
+    if (!startTime) startTime = ts;
+    var t = Math.min(1, (ts - startTime) / duration);
+    var ease = 1 - Math.pow(1 - t, 3);
+    var w = (target * ease).toFixed(2);
+    fill.setAttribute('width', w);
+    hi && hi.setAttribute('width', w);
+    lo && lo.setAttribute('width', w);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+})();
+</script>
 
     </div>
   </div>
