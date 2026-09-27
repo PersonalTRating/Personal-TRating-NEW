@@ -5,7 +5,7 @@ import TrainerCard from '../components/TrainerCard.astro';
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, gyms, is_trending')
+  .select('id, name, username, location, city, specialty, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
@@ -13,34 +13,23 @@ const { data: trainersData } = await supabase
 
 const raw = trainersData || [];
 
-const rankClr = (r: number) =>
-  r === 0 ? '#b8860b' : r === 1 ? '#888888' : r === 2 ? '#b07040' : '#8a8f8a';
-
-interface Gym { name: string; location: string; }
-
 const allTrainers = raw.map((t: any, i: number) => ({
-  id:              t.id,
-  name:            t.name || '',
-  username:        t.username || '',
-  city:            t.city || t.location || '',
-  spec:            t.specialty || '',
-  cert:            t.cert || '',
-  profileComplete: !!(t.avatar_url && (t.city || t.location) && t.bio?.trim() && t.specialty?.trim()),
-  bmp:             t.bmp_score ?? 0,
-  revCount:        t.review_count || 0,
-  starRating:      t.star_rating ?? 0,
-  rank:            i + 1,
-  rankColor:       rankClr(i),
-  avatarUrl:       t.avatar_url || undefined,
-  avatarInitials:  t.avatar_initials || '?',
-  avatarBg:        t.avatar_bg || '#eaf7ec',
-  avatarColor:     t.avatar_color || '#2a9438',
-  bio:             t.bio || '',
-  gyms:            (Array.isArray(t.gyms) ? t.gyms : []) as Gym[],
-  isTrending:      t.is_trending === true,
+  id:                 t.id,
+  name:               t.name || '',
+  city:               t.city || t.location || '',
+  spec:               t.specialty || '',
+  profileComplete:    !!(t.avatar_url && (t.city || t.location) && t.bio?.trim() && t.specialty?.trim()),
+  bmp:                t.bmp_score ?? 0,
+  revCount:           t.review_count || 0,
+  recentReviewCount:  t.recent_review_count || 0,
+  rank:               i + 1,
+  avatarUrl:          t.avatar_url || undefined,
+  avatarInitials:     t.avatar_initials || '?',
+  avatarBg:           t.avatar_bg || '#0d1a0e',
+  avatarColor:        t.avatar_color || '#3ab54a',
+  isTrending:         t.is_trending === true,
 }));
 
-const totalReviews = allTrainers.reduce((s, t) => s + t.revCount, 0);
 const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning','HIIT','Rehabilitation','Nutrition','Sports Performance','Hyrox','Yoga & Pilates','Boxing','Running'];
 ---
 
@@ -130,37 +119,32 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
 </div>
 
 <!-- ── LIST VIEW ── -->
-<div id="fat-list-view" style="background:#f5f7f5;min-height:60vh;padding:2rem 0 5rem;">
+<div id="fat-list-view" style="background:#0a120b;min-height:60vh;padding:2rem 0 5rem;">
   <div style="max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:1rem;" id="fat-list-inner">
 
     {allTrainers.map(t => (
       <TrainerCard
         id={t.id}
         name={t.name}
-        username={t.username}
         city={t.city}
         spec={t.spec}
-        cert={t.cert}
         bmpScore={t.bmp}
         revCount={t.revCount}
-        starRating={t.starRating}
+        recentReviewCount={t.recentReviewCount}
         rank={t.rank}
-        rankColor={t.rankColor}
         profileComplete={t.profileComplete}
         avatarUrl={t.avatarUrl}
         avatarInitials={t.avatarInitials}
         avatarBg={t.avatarBg}
         avatarColor={t.avatarColor}
-        bio={t.bio}
-        gyms={t.gyms}
         isTrending={t.isTrending}
       />
     ))}
 
     <!-- Empty state -->
-    <div id="fat-empty" style="display:none;text-align:center;padding:5rem 2rem;color:#8a8f8a;">
+    <div id="fat-empty" style="display:none;text-align:center;padding:5rem 2rem;color:rgba(255,255,255,0.4);">
       <div style="font-size:2.5rem;margin-bottom:1rem;">🔍</div>
-      <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.4rem;color:#111311;">No trainers found</div>
+      <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.4rem;color:rgba(255,255,255,0.8);">No trainers found</div>
       <div style="font-size:0.88rem;">Try a different city, region or specialty</div>
     </div>
 
@@ -170,7 +154,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
 <!-- ── MAP VIEW ── -->
 <div id="fat-map-view" style="display:none;">
   <div id="fat-map" style="height:70vh;min-height:480px;width:100%;"></div>
-  <div id="fat-map-note" style="text-align:center;padding:0.75rem;font-size:0.78rem;color:#8a8f8a;background:#f5f7f5;border-top:1px solid #e0e8e1;">
+  <div id="fat-map-note" style="text-align:center;padding:0.75rem;font-size:0.78rem;color:rgba(255,255,255,0.4);background:#0a120b;border-top:1px solid rgba(255,255,255,0.08);">
     Showing trainers matched to known UK cities. Click a pin to view.
   </div>
 </div>
@@ -276,7 +260,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
   var listView  = document.getElementById('fat-list-view');
   var mapView   = document.getElementById('fat-map-view');
   var listInner = document.getElementById('fat-list-inner');
-  var cards     = Array.from(document.querySelectorAll('.fpc'));
+  var cards     = Array.from(document.querySelectorAll('.trc'));
 
   var regionMap = {
     'scotland':        ['glasgow','edinburgh','aberdeen','dundee','inverness','stirling','perth','falkirk','ayr','paisley','hamilton','livingston','greenock','kirkcaldy','dunfermline','motherwell'],
@@ -342,9 +326,8 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
         if (regionCities) {
           mQ = regionCities.some(function (c) { return city.indexOf(c) !== -1; });
         } else {
-          var username = card.getAttribute('data-username') || '';
           var q = activeSearch.replace(/^@/, '');
-          mQ = name.indexOf(q) !== -1 || city.indexOf(q) !== -1 || username.indexOf(q) !== -1;
+          mQ = name.indexOf(q) !== -1 || city.indexOf(q) !== -1;
         }
       }
       var mS = !activeSpec || spec.indexOf(activeSpec) !== -1;
@@ -456,8 +439,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
       placed++;
       var bmp  = card.getAttribute('data-bmp') || '—';
       var name = (card.getAttribute('data-name') || '').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
-      var ctaEl = card.querySelector('.fpc-cta');
-      var href  = ctaEl ? ctaEl.getAttribute('href') : '#';
+      var href = card.getAttribute('href') || '#';
       var jitter = [(Math.random()-0.5)*0.04, (Math.random()-0.5)*0.08];
       var icon = L.divIcon({
         className: '',

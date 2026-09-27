@@ -240,13 +240,13 @@ const reviews = [
   /* ── Leaderboard card ── */
   .lb-card {
     display:flex; align-items:center; gap:1.25rem;
-    background:white; border-radius:14px; padding:1.1rem 1.4rem;
-    border:1px solid #e0e8e1; border-left:4px solid #3ab54a;
+    background:rgba(8,16,9,0.95); border-radius:14px; padding:1.1rem 1.4rem;
+    border:1px solid rgba(58,181,74,0.18); border-left:3px solid rgba(58,181,74,0.45);
     text-decoration:none; color:inherit;
     transition:box-shadow 0.2s ease, transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease;
     cursor:pointer;
   }
-  .lb-card:hover { box-shadow:0 6px 24px rgba(0,0,0,0.08); transform:translateY(-3px); }
+  .lb-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12); transform:translateY(-3px); border-color:rgba(58,181,74,0.38); }
   .lb-card:focus-visible { outline:3px solid #3ab54a; outline-offset:3px; }
 
   /* Stage 1 — selected card lifts */
@@ -295,40 +295,38 @@ const reviews = [
     .lb-card.lb-touch       { transform:none !important; }
   }
   .lbc-rank  { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:900; width:2.5rem; flex-shrink:0; line-height:1; color:#3ab54a; }
-  .lbc-av    { width:42px; min-width:42px; height:42px; border-radius:50%; flex-shrink:0; object-fit:cover; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; border:2px solid rgba(0,0,0,0.06); }
+  .lbc-av    { width:42px; min-width:42px; height:42px; border-radius:50%; flex-shrink:0; object-fit:cover; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; border:2px solid rgba(255,255,255,0.12); }
   .lbc-mid   { flex:1; min-width:0; }
   .lbc-top   { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.3rem; }
-  .lbc-name  { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:#111311; }
-  .lbc-cert  { font-size:0.68rem; font-weight:600; color:#2a9438; background:#eaf7ec; padding:0.15rem 0.5rem; border-radius:10px; border:1px solid #c3e6c8; white-space:nowrap; }
-  .lbc-detail { font-size:0.78rem; color:#8a8f8a; margin-top:0.18rem; display:flex; align-items:center; gap:0.35rem; }
+  .lbc-name  { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:white; }
+  .lbc-cert  { font-size:0.68rem; font-weight:600; color:#3ab54a; background:rgba(58,181,74,0.12); padding:0.15rem 0.5rem; border-radius:10px; border:1px solid rgba(58,181,74,0.28); white-space:nowrap; }
+  .lbc-detail { font-size:0.78rem; color:rgba(255,255,255,0.42); margin-top:0.18rem; display:flex; align-items:center; gap:0.35rem; }
   .lbc-bmp   { text-align:right; flex-shrink:0; }
-  .lbc-bmp-label  { font-size:0.58rem; color:#8a8f8a; letter-spacing:1.2px; text-transform:uppercase; }
-  .lbc-bmp-score  { font-size:1.7rem; font-weight:800; color:#111311; line-height:1.1; }
+  .lbc-bmp-label  { font-size:0.58rem; color:rgba(255,255,255,0.35); letter-spacing:1.2px; text-transform:uppercase; }
+  .lbc-bmp-score  { font-size:1.7rem; font-weight:800; color:#3ab54a; line-height:1.1; }
   .lbc-bmp-dbs   { display:flex; gap:2px; justify-content:flex-end; margin-top:0.2rem; }
-  .lbc-bmp-rev   { font-size:0.7rem; color:#8a8f8a; margin-top:0.15rem; }
+  .lbc-bmp-rev   { font-size:0.7rem; color:rgba(255,255,255,0.3); margin-top:0.15rem; }
 
   @media (max-width:600px) {
     #lb-list .lb-card:nth-child(n+4) { display:none; }
     .lb-card {
       flex-direction:column; align-items:stretch; gap:0.3rem;
       padding:1.1rem 1.1rem 1rem;
-      border:2px solid #7defa0 !important;
-      border-left:2px solid #7defa0 !important;
-      box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important;
+      border:1px solid rgba(58,181,74,0.35) !important;
+      border-left:3px solid rgba(58,181,74,0.55) !important;
       border-radius:16px !important;
     }
     .lbc-rank  { display:none; }
-    .lbc-bmp   { text-align:left; display:flex; align-items:center; gap:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(58,181,74,0.2); margin-top:0.35rem; }
+    .lbc-bmp   { text-align:left; display:flex; align-items:center; gap:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(58,181,74,0.15); margin-top:0.35rem; }
     .lbc-bmp-score { font-size:1.3rem; }
     .lbc-bmp-dbs   { justify-content:flex-start; margin-top:0; }
     .lbc-bmp-rev   { margin-top:0; }
     #lb-list > div { display:flex; flex-direction:column; gap:1rem; }
     #find-preview a[href^="/trainers/"] {
-      border:2px solid #7defa0 !important;
-      border-left:2px solid #7defa0 !important;
-      background:rgba(255,255,255,0.06) !important;
+      border:1px solid rgba(58,181,74,0.35) !important;
+      border-left:3px solid rgba(58,181,74,0.55) !important;
+      background:rgba(8,16,9,0.95) !important;
       border-radius:16px !important;
-      box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important;
     }
     #find-preview > div > div[style*="flex-direction:column"] { gap:1rem !important; }
   }
@@ -458,24 +456,22 @@ const reviews = [
     .hc-bmp-num { font-size:1.1rem; }
   }
 
-  /* Leaderboard section — white cards on dark green */
-  #leaderboard .lb-card { border:2px solid #7defa0; border-left:2px solid #7defa0; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5); }
-  #leaderboard .lb-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6); transform:translateY(-2px); }
+  /* Leaderboard section — dark cards on dark green background */
+  #leaderboard .lb-card { border-color:rgba(58,181,74,0.28); box-shadow:0 2px 12px rgba(0,0,0,0.35); }
+  #leaderboard .lb-card:hover { border-color:rgba(58,181,74,0.5); box-shadow:0 4px 18px rgba(0,0,0,0.45), 0 0 12px rgba(58,181,74,0.15); transform:translateY(-2px); }
 
-  /* ── Trending card — red hot override ── */
+  /* ── Trending card — red hot override (same dimensions as standard) ── */
   .lb-card--trending {
-    flex-direction:column !important; align-items:stretch !important;
-    background:#fffaf8 !important;
-    border:2px solid rgba(200,0,0,0.55) !important;
-    border-left:4px solid #cc0000 !important;
-    box-shadow:0 0 14px rgba(180,0,0,0.4), 0 0 32px rgba(180,0,0,0.22), 0 4px 16px rgba(0,0,0,0.1) !important;
+    background:rgba(20,4,4,0.96) !important;
+    border:1px solid rgba(200,0,0,0.5) !important;
+    border-left:3px solid #cc0000 !important;
+    box-shadow:0 0 8px rgba(150,0,0,0.45), 0 0 18px rgba(150,0,0,0.2), 0 2px 12px rgba(0,0,0,0.35) !important;
   }
   .lb-card--trending:hover {
-    box-shadow:0 0 22px rgba(180,0,0,0.55), 0 0 48px rgba(180,0,0,0.3), 0 6px 20px rgba(0,0,0,0.12) !important;
+    border-color:rgba(220,0,0,0.7) !important;
+    box-shadow:0 4px 18px rgba(0,0,0,0.45), 0 0 14px rgba(160,0,0,0.55), 0 0 28px rgba(150,0,0,0.25) !important;
     transform:translateY(-2px) !important;
   }
-  .lbc-trend-row  { display:flex; align-items:center; gap:1.25rem; }
-  .lbc-rank--hot  { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:900; width:2.5rem; flex-shrink:0; line-height:1; color:#1a1a1a; text-align:center; }
   .trend-info { position:relative; cursor:default; display:inline-flex; }
   .trend-tooltip {
     display:none; position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%);
@@ -488,17 +484,8 @@ const reviews = [
     border:6px solid transparent; border-top-color:#1a0505;
   }
   .trend-info:hover .trend-tooltip { display:block; }
-  .lbc-hot-banner {
-    margin-top:0.65rem;
-    padding:0.65rem 0.9rem;
-    background:linear-gradient(90deg,rgba(180,0,0,0.07),rgba(180,0,0,0.03));
-    border-radius:8px;
-    border:1px solid rgba(180,0,0,0.2);
-    display:flex; align-items:center; gap:0.65rem;
-  }
-
-  /* Find-a-trainer preview — dark section card glow */
-  #find-preview a[href^="/trainers/"] { border:2px solid #7defa0 !important; border-left:2px solid #7defa0 !important; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important; }
+  /* Find-a-trainer preview section */
+  #find-preview a[href^="/trainers/"] { border-color:rgba(58,181,74,0.3) !important; box-shadow:0 2px 12px rgba(0,0,0,0.35) !important; }
   #leaderboard p { color:rgba(255,255,255,0.5); }
 
   /* Review card hover */
@@ -1277,7 +1264,7 @@ const reviews = [
 
   function renderCard(pt, rank) {
     var avatar = pt.avatar_url
-      ? '<img src="' + pt.avatar_url + '" alt="" class="lbc-av" width="40" height="40" style="width:40px;min-width:40px;height:40px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid #e0e8e1;">'
+      ? '<img src="' + pt.avatar_url + '" alt="" class="lbc-av" width="40" height="40" style="width:40px;min-width:40px;height:40px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.12);">'
       : '<div class="lbc-av" style="background:' + (pt.avatar_bg || '#eaf7ec') + ';color:' + (pt.avatar_color || '#2a9438') + ';">' + (pt.avatar_initials || '?') + '</div>';
     var cert = pt.cert ? '<span class="lbc-cert">' + pt.cert + '</span>' : '';
     var city = pt.city || pt.location || '';
@@ -1308,51 +1295,46 @@ const reviews = [
       else if (bmpDiff < 0) bmpChangeHtml = '<div style="font-size:0.68rem;font-weight:800;color:#c0392b;margin-top:0.15rem;">' + bmpDiff + ' this month</div>';
     }
 
-    // ── TRENDING card — red hot layout ──────────────────────────────────────
+    // ── Recent reviews line (all trainers) ─────────────────────────────────
+    var recentCount  = pt.recent_review_count || 0;
+    var reviewsLine  = '';
+    if (revCount === 0) {
+      reviewsLine = '<div class="lbc-detail" style="color:#3ab54a;">Be first to review</div>';
+    } else if (recentCount >= 1) {
+      var rWord = recentCount === 1 ? 'review' : 'reviews';
+      reviewsLine = '<div class="lbc-detail" style="color:rgba(220,100,60,0.9);">🔥 ' + recentCount + ' verified ' + rWord + ' in the last 30 days</div>';
+    } else {
+      reviewsLine = '<div class="lbc-bmp-rev">' + revText + '</div>';
+    }
+
+    // ── TRENDING card ────────────────────────────────────────────────────────
     if (pt.is_trending) {
-      var recentCount = pt.recent_review_count || 0;
-      var bannerText  = recentCount >= 4
-        ? recentCount + ' verified reviews in the last 30 days'
-        : 'Strong recent activity';
       var trendingBadge = '<div class="trend-info"><span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;">🔥 TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></div>';
+      var hotReviews = recentCount >= 1
+        ? '<div class="lbc-detail" style="color:rgba(220,80,40,0.95);">🔥 ' + recentCount + ' verified ' + (recentCount === 1 ? 'review' : 'reviews') + ' in the last 30 days</div>'
+        : '';
 
       return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending">' +
-        // ── Main row ──────────────────────────────────────────────────────
-        '<div class="lbc-trend-row">' +
-          // Rank + movement (stacked vertically)
-          '<div class="lbc-rank--hot">' +
-            String(rank).padStart(2, '0') +
-            (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
-          '</div>' +
-          // Avatar
-          avatar +
-          // Name + details
-          '<div class="lbc-mid">' +
-            '<div class="lbc-top">' +
-              '<div class="lbc-name">' + pt.name + '</div>' +
-              lbTick +
-              trendingBadge +
-              cert +
-            '</div>' +
-            (pt.username ? '<div style="font-size:0.68rem;color:#8a8f8a;font-weight:600;margin-bottom:0.15rem;">@' + pt.username + '</div>' : '') +
-            (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
-            (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
-          '</div>' +
-          // BMP score
-          '<div class="lbc-bmp">' +
-            '<div style="font-size:0.58rem;color:#cc0000;letter-spacing:1.2px;text-transform:uppercase;font-weight:700;">BMP</div>' +
-            '<div class="lbc-bmp-score">' + bmpDisplay + '</div>' +
-            '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
-            (bmpChangeHtml || '<div class="lbc-bmp-rev">' + revText + '</div>') +
-          '</div>' +
+        '<div class="lbc-rank">' + String(rank).padStart(2, '0') +
+          (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
         '</div>' +
-        // ── Hot banner ────────────────────────────────────────────────────
-        '<div class="lbc-hot-banner">' +
-          '<span style="font-size:1rem;flex-shrink:0;">🔥</span>' +
-          '<div>' +
-            '<span style="font-size:0.78rem;font-weight:800;color:#9e0000;">' + bannerText + '</span>' +
-            '<span style="font-size:0.73rem;color:#8a8f8a;margin-left:0.4rem;">· Consistently earning strong reviews on CoachCards.</span>' +
+        avatar +
+        '<div class="lbc-mid">' +
+          '<div class="lbc-top">' +
+            '<div class="lbc-name">' + pt.name + '</div>' +
+            lbTick +
+            trendingBadge +
+            cert +
           '</div>' +
+          (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
+          (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
+          hotReviews +
+        '</div>' +
+        '<div class="lbc-bmp">' +
+          '<div class="lbc-bmp-label">BMP</div>' +
+          '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
+          '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
+          (bmpChangeHtml || '') +
         '</div>' +
       '</a>';
     }
@@ -1364,15 +1346,15 @@ const reviews = [
       '</div>' +
       '<div class="lbc-mid">' +
         '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + '</div>' +
-        (pt.username ? '<div style="font-size:0.68rem;color:#8a8f8a;font-weight:600;margin-bottom:0.2rem;">@' + pt.username + '</div>' : '') +
         (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
         (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
+        reviewsLine +
       '</div>' +
       '<div class="lbc-bmp">' +
         '<div class="lbc-bmp-label">BMP</div>' +
         '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
         '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
-        (bmpChangeHtml || '<div class="lbc-bmp-rev">' + revText + '</div>') +
+        (bmpChangeHtml || '') +
       '</div>' +
     '</a>';
   }
@@ -1387,9 +1369,9 @@ const reviews = [
     if (pillEl) { pillEl.textContent = pill || ''; pillEl.style.display = pill ? '' : 'none'; }
     if (!el) return;
     if (trainers.length === 0) {
-      el.innerHTML = '<div style="text-align:center;padding:4rem 2rem;background:white;border-radius:16px;border:1px dashed #c3e6c8;">' +
+      el.innerHTML = '<div style="text-align:center;padding:4rem 2rem;background:rgba(8,16,9,0.8);border-radius:16px;border:1px dashed rgba(58,181,74,0.25);">' +
         '<div style="font-size:2rem;margin-bottom:0.75rem;">🏋</div>' +
-        '<div style="font-family:\'Playfair Display\',serif;font-size:1.25rem;font-weight:700;color:#111311;margin-bottom:0.5rem;">No trainers nearby yet</div>' +
+        '<div style="font-family:\'Playfair Display\',serif;font-size:1.25rem;font-weight:700;color:white;margin-bottom:0.5rem;">No trainers nearby yet</div>' +
         '<div style="color:#8a8f8a;font-size:0.9rem;">Be the first PT in your area to collect verified reviews.</div>' +
         '<a href="/signup" style="display:inline-block;margin-top:1.5rem;background:#3ab54a;color:white;padding:0.75rem 1.75rem;border-radius:8px;font-weight:700;font-size:0.875rem;text-decoration:none;">List Your Profile Free →</a>' +
         '</div>';
@@ -1403,7 +1385,6 @@ const reviews = [
   function makeHeroCard(t, rank) {
     var trending  = t.is_trending;
     var revCount  = t.review_count || 0;
-    var starRaw   = t.star_rating  ? (+t.star_rating).toFixed(1) : null;
     var recent    = t.recent_review_count || 0;
     var complete  = !!(t.avatar_url && (t.city || t.location) && t.bio && t.specialty);
 
@@ -1425,12 +1406,14 @@ const reviews = [
     var meta = metaParts.join(' · ');
 
     var statsHtml = '';
-    if (trending && recent >= 4) {
-      statsHtml = '<span class="hc-stats-hot">🔥 ' + recent + ' verified reviews this month</span>';
-    } else if (starRaw && revCount > 0) {
-      statsHtml = '<span class="hc-stats">★ ' + starRaw + ' (' + revCount + (revCount === 1 ? ' review' : ' reviews') + ')</span>';
-    } else if (revCount === 0) {
+    if (revCount === 0) {
       statsHtml = '<span class="hc-stats">Be first to review</span>';
+    } else if (recent >= 1) {
+      var rWord2 = recent === 1 ? 'review' : 'reviews';
+      var statsClass = trending ? 'hc-stats-hot' : 'hc-stats';
+      statsHtml = '<span class="' + statsClass + '">🔥 ' + recent + ' verified ' + rWord2 + ' in the last 30 days</span>';
+    } else {
+      statsHtml = '<span class="hc-stats">' + revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews') + '</span>';
     }
 
     var bmpNum = revCount === 0

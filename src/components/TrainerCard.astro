@@ -1,242 +1,292 @@
 ---
-import { bmpDumbbell } from '../lib/bmpDumbbell';
-
-interface Gym { name: string; location: string; }
-
 interface Props {
   id: string;
   name: string;
-  username?: string;
   city?: string;
   spec?: string;
-  cert?: string;
   bmpScore: number;
   revCount: number;
-  starRating?: number;
+  recentReviewCount?: number;
   rank?: number;
-  rankColor?: string;
   profileComplete?: boolean;
   avatarUrl?: string;
   avatarInitials?: string;
   avatarBg?: string;
   avatarColor?: string;
-  bio?: string;
-  gyms?: Gym[];
   isTrending?: boolean;
 }
 
 const {
   id,
   name,
-  username = '',
   city = '',
   spec = '',
-  cert = '',
   bmpScore = 0,
   revCount = 0,
-  starRating,
+  recentReviewCount = 0,
   rank,
   profileComplete,
   avatarUrl,
   avatarInitials = '?',
-  avatarBg = '#eaf7ec',
-  avatarColor = '#2a9438',
-  bio = '',
-  gyms = [],
+  avatarBg = '#0d1a0e',
+  avatarColor = '#3ab54a',
   isTrending = false,
 } = Astro.props;
 
-const dbs = bmpDumbbell(bmpScore, 48);
-const bioClean = bio ? bio.replace(/<[^>]+>/g, '').trim() : '';
-const bioSnip = bioClean.slice(0, 120);
-const bioLong = bioClean.length > 120;
-const specTags = spec ? spec.split(/[,\/]/).map(s => s.trim()).filter(Boolean) : [];
-const onerrorHtml = `this.outerHTML='<div class="fpc-av fpc-av-init" style="background:${avatarBg};color:${avatarColor};width:72px;min-width:72px;height:72px;">${avatarInitials}</div>'`;
+const rankStr = rank != null ? String(rank).padStart(2, '0') : '';
+const meta: string[] = [];
+if (city)    meta.push('📍 ' + city);
+if (spec)    meta.push('🏋 ' + spec.split(/[,\/]/)[0].trim());
+const metaStr = meta.join(' · ');
+
+let reviewsStr = '';
+if (revCount === 0) {
+  reviewsStr = 'Be first to review';
+} else if (recentReviewCount >= 1) {
+  reviewsStr = '🔥 ' + recentReviewCount + ' verified ' + (recentReviewCount === 1 ? 'review' : 'reviews') + ' in the last 30 days';
+} else {
+  reviewsStr = revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews');
+}
+
+const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
 ---
 
-<div
-  class="fpc"
+<a
+  class:list={['trc', isTrending && 'trc--trending']}
+  href={`/trainers/${id}`}
   data-bmp={String(bmpScore)}
   data-reviews={String(revCount)}
   data-name={name.toLowerCase()}
-  data-username={username.toLowerCase()}
   data-city={city.toLowerCase()}
   data-spec={spec.toLowerCase()}
 >
-  <!-- rank + photo -->
-  <div class="fpc-left">
-    {rank != null && <div class="fpc-rank">{String(rank).padStart(2, '0')}</div>}
-    {avatarUrl ? (
-      <img
-        src={avatarUrl}
-        alt={name}
-        class="fpc-av"
-        width="72"
-        height="72"
-        onerror={onerrorHtml}
-      />
-    ) : (
-      <div class="fpc-av fpc-av-init" style={`background:${avatarBg};color:${avatarColor};width:72px;min-width:72px;height:72px;`}>
-        {avatarInitials}
-      </div>
-    )}
-  </div>
+  {rankStr && <span class="trc-rank">{rankStr}</span>}
 
-  <!-- text info -->
-  <div class="fpc-mid">
-    <div class="fpc-name-row">
-      <span class="fpc-name">{name}</span>
+  {avatarUrl ? (
+    <img
+      class="trc-av"
+      src={avatarUrl}
+      alt={name}
+      width="56"
+      height="56"
+    />
+  ) : (
+    <div class="trc-av trc-av-init" style={`background:${avatarBg};color:${avatarColor};`}>
+      {avatarInitials}
+    </div>
+  )}
+
+  <div class="trc-mid">
+    <div class="trc-name-row">
+      <span class="trc-name">{name}</span>
       {profileComplete && (
-        <span class="fpc-verified" title="Profile complete">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-label="Verified">
+        <span class="trc-tick" title="Profile complete">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
             <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
             <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
       )}
-      {cert && <span class="fpc-cert">{cert}</span>}
       {isTrending && (
         <div class="trend-info">
-          <span class="fpc-trending">🔥 TRENDING</span>
+          <span class="trc-trending-pill">🔥 TRENDING</span>
           <div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div>
         </div>
       )}
     </div>
-
-    {username && <div class="fpc-username">@{username}</div>}
-
-    <div class="fpc-meta">
-      {city && <span class="fpc-meta-loc">📍 {city}</span>}
-      {specTags.map(tag => (
-        <span class="fpc-spec-tag">{tag}</span>
-      ))}
+    {metaStr && <div class="trc-meta">{metaStr}</div>}
+    <div class:list={['trc-reviews', isTrending && recentReviewCount >= 1 && 'trc-reviews--hot']}>
+      {reviewsStr}
     </div>
-
-    {bioSnip && (
-      <div class="fpc-bio">"{bioSnip}{bioLong ? '…' : ''}"</div>
-    )}
-
-    {gyms.length > 0 && (
-      <div class="fpc-gyms">
-        {gyms.slice(0, 2).map((g: Gym) => (
-          <span class="fpc-gym">🏢 {g.name}{g.location ? ' · ' + g.location : ''}</span>
-        ))}
-      </div>
-    )}
   </div>
 
-  <!-- BMP + CTA -->
-  <div class="fpc-right">
-    <div class="fpc-bmp-wrap">
-      {revCount === 0 ? (
-        <div class="fpc-first-review">Be first<br/>to review</div>
-      ) : (
-        <div class="fpc-bmp-num">{bmpScore || '—'}</div>
-      )}
-      <div class="fpc-bmp-lbl">BMP Score</div>
-      <div class="fpc-dbs"><Fragment set:html={dbs} /></div>
-      <div class="fpc-rev">
-        {revCount === 0 ? '0 reviews' : `${revCount} ${revCount === 1 ? 'review' : 'reviews'}`}
-      </div>
-    </div>
-    <a href={`/trainers/${id}`} class="fpc-cta">View CoachCard →</a>
+  <div class="trc-bmp">
+    <span class="trc-bmp-lbl">BMP</span>
+    {bmpDisplay != null ? (
+      <span class="trc-bmp-num">{bmpDisplay}</span>
+    ) : (
+      <span class="trc-bmp-first">First<br/>review</span>
+    )}
   </div>
-</div>
+</a>
 
 <style is:global>
-  .fpc {
-    background: white;
-    border: 1px solid #e0e8e1;
-    border-left: 4px solid #3ab54a;
-    border-radius: 16px;
-    padding: 1.5rem;
+  .trc {
     display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    transition: box-shadow 0.2s, transform 0.15s;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    background: rgba(8,16,9,0.95);
+    border: 1px solid rgba(58,181,74,0.18);
+    border-left: 3px solid rgba(58,181,74,0.45);
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
   }
-  .fpc:hover { box-shadow: 0 6px 28px rgba(0,0,0,0.08); transform: translateY(-2px); }
-
-  .fpc-left { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; flex-shrink: 0; }
-  .fpc-rank { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; white-space: nowrap; color: #3ab54a; }
-  .fpc-av {
-    width: 72px; min-width: 72px; height: 72px;
-    border-radius: 50%; object-fit: cover;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 1.1rem; flex-shrink: 0;
-    border: 3px solid #e8f0e9; overflow: hidden;
+  .trc:hover {
+    transform: translateY(-2px);
+    border-color: rgba(58,181,74,0.4);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12);
   }
-  .fpc-av-init { }
+  .trc:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 
-  .fpc-mid { flex: 1; min-width: 0; }
-  .fpc-name-row { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.3rem; }
-  .fpc-name { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: #111311; }
-  .fpc-verified { display: inline-flex; align-items: center; flex-shrink: 0; }
-  .fpc-cert { font-size: 0.68rem; font-weight: 700; color: #2a9438; background: #eaf7ec; padding: 0.18rem 0.55rem; border-radius: 10px; border: 1px solid #c3e6c8; white-space: nowrap; }
-  .fpc-trending { font-size: 0.6rem; font-weight: 800; letter-spacing: 1px; color: #cc0000; background: rgba(180,0,0,0.1); border: 1px solid rgba(180,0,0,0.3); padding: 0.15rem 0.5rem; border-radius: 20px; white-space: nowrap; }
+  .trc--trending {
+    background: rgba(20,4,4,0.96) !important;
+    border: 1px solid rgba(200,0,0,0.5) !important;
+    border-left: 3px solid #cc0000 !important;
+    box-shadow: 0 0 8px rgba(150,0,0,0.4), 0 0 18px rgba(150,0,0,0.18), 0 2px 12px rgba(0,0,0,0.35);
+  }
+  .trc--trending:hover {
+    border-color: rgba(220,0,0,0.7) !important;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.45), 0 0 14px rgba(160,0,0,0.5), 0 0 28px rgba(150,0,0,0.22) !important;
+  }
+
+  .trc-rank {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.55rem;
+    font-weight: 900;
+    color: #3ab54a;
+    width: 2.4rem;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .trc-av {
+    width: 56px; min-width: 56px; height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.9rem;
+    overflow: hidden;
+  }
+
+  .trc-mid { flex: 1; min-width: 0; }
+
+  .trc-name-row {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.22rem;
+  }
+  .trc-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 240px;
+  }
+  .trc-tick { display: inline-flex; align-items: center; flex-shrink: 0; }
+
+  .trc-trending-pill {
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: white;
+    background: linear-gradient(135deg, #cc0000, #e81414);
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    white-space: nowrap;
+    box-shadow: 0 2px 6px rgba(180,0,0,0.45);
+  }
+
+  .trc-meta {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.42);
+    margin-bottom: 0.2rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .trc-reviews {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.32);
+  }
+  .trc-reviews--hot {
+    color: rgba(220,100,60,0.9);
+  }
+
+  .trc-bmp {
+    text-align: right;
+    flex-shrink: 0;
+    padding-left: 0.5rem;
+  }
+  .trc-bmp-lbl {
+    display: block;
+    font-size: 0.58rem;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .trc-bmp-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 900;
+    color: #3ab54a;
+    line-height: 1;
+  }
+  .trc-bmp-first {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #3ab54a;
+    line-height: 1.35;
+  }
+
+  /* Trend tooltip (shared with index.astro) */
   .trend-info { position: relative; cursor: default; display: inline-flex; }
   .trend-tooltip {
-    display: none; position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%);
-    width: 230px; background: #1a0505; color: rgba(255,255,255,0.85); font-size: 0.72rem;
-    padding: 0.65rem 0.85rem; border-radius: 8px; line-height: 1.6; text-align: left; z-index: 10;
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 230px;
+    background: #1a0505;
+    color: rgba(255,255,255,0.88);
+    font-size: 0.72rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    line-height: 1.6;
+    text-align: left;
+    z-index: 20;
     box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    pointer-events: none;
   }
   .trend-tooltip::after {
-    content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-    border: 6px solid transparent; border-top-color: #1a0505;
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: #1a0505;
   }
   .trend-info:hover .trend-tooltip { display: block; }
-  .fpc-username { font-size: 0.75rem; color: #7a8f7c; font-weight: 600; margin-bottom: 0.25rem; }
-  .fpc-meta { display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
-  .fpc-meta-loc { font-size: 0.82rem; color: #8a8f8a; }
-  .fpc-spec-tag {
-    font-size: 0.71rem; font-weight: 600;
-    background: #f0f7f1; color: #2a7a38;
-    border: 1px solid #c3e6c8;
-    padding: 0.15rem 0.55rem; border-radius: 20px;
-    white-space: nowrap;
-  }
-  .fpc-bio {
-    font-size: 0.83rem; color: #5a6b5c; font-style: italic; line-height: 1.55;
-    padding: 0.55rem 0.75rem;
-    background: #f4f9f5; border-left: 3px solid #c3e6c8;
-    border-radius: 0 6px 6px 0; margin-bottom: 0.5rem;
-  }
-  .fpc-gyms { display: flex; flex-wrap: wrap; gap: 0.35rem; }
-  .fpc-gym { font-size: 0.74rem; color: #5a6b5c; background: #f0f7f1; border: 1px solid #d4e8d6; padding: 0.2rem 0.6rem; border-radius: 20px; }
 
-  .fpc-right { display: flex; flex-direction: column; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-shrink: 0; text-align: right; min-width: 130px; }
-  .fpc-bmp-wrap { }
-  .fpc-bmp-num { font-family: 'Playfair Display', serif; font-size: 2.6rem; font-weight: 900; color: #111311; line-height: 1; }
-  .fpc-first-review { font-size: 0.72rem; font-weight: 700; color: #3ab54a; line-height: 1.3; margin-bottom: 0.25rem; }
-  .fpc-bmp-lbl { font-size: 0.58rem; color: #8a8f8a; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 700; margin-top: 0.1rem; }
-  .fpc-dbs { display: flex; gap: 2px; justify-content: flex-end; margin-top: 0.3rem; }
-.fpc-rev { font-size: 0.7rem; color: #8a8f8a; margin-top: 0.15rem; }
-  .fpc-cta {
-    background: #3ab54a; color: white; font-weight: 700; font-size: 0.85rem;
-    padding: 0.65rem 1.5rem; border-radius: 25px;
-    text-decoration: none; white-space: nowrap;
-    transition: background 0.2s;
-    font-family: 'Manrope', sans-serif;
-  }
-  .fpc-cta:hover { background: #2a9438; }
-  .fpc-cta:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
-
-  @media (max-width: 620px) {
-    .fpc { flex-direction: column; gap: 0.8rem; padding: 1.1rem; }
-    .fpc-left { flex-direction: row; align-items: center; gap: 0.75rem; }
-    .fpc-right {
-      flex-direction: row; align-items: center; justify-content: space-between;
-      text-align: left; min-width: 0; width: 100%;
-      padding-top: 0.75rem; border-top: 1px solid #e8f0e9; gap: 0.75rem;
+  @media (max-width: 640px) {
+    .trc {
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
     }
-    .fpc-bmp-num { font-size: 1.8rem; }
-    .fpc-dbs { justify-content: flex-start; }
-    .fpc-cta { padding: 0.6rem 1.2rem; font-size: 0.8rem; }
+    .trc-rank { font-size: 1.2rem; width: 2rem; }
+    .trc-av   { width: 44px; min-width: 44px; height: 44px; }
+    .trc-name { font-size: 0.92rem; max-width: 160px; }
+    .trc-bmp-num { font-size: 1.4rem; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .fpc { transition: none; }
-    .fpc-cta { transition: none; }
+    .trc { transition: none; }
   }
 </style>
