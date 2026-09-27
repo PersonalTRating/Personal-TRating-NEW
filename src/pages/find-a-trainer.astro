@@ -368,10 +368,27 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
     listInner.appendChild(emptyEl);
   }
 
-  /* ── Leaflet map ── */
+  /* ── Leaflet map (lazy-loaded on first switch to map view) ── */
   function initMap() {
     if (mapInited) return;
     mapInited = true;
+    var LEAFLET_CSS = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+    var LEAFLET_JS  = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    if (!document.getElementById('leaflet-css')) {
+      var link = document.createElement('link');
+      link.id = 'leaflet-css'; link.rel = 'stylesheet'; link.href = LEAFLET_CSS;
+      document.head.appendChild(link);
+    }
+    if (typeof L === 'undefined') {
+      var s = document.createElement('script');
+      s.src = LEAFLET_JS;
+      s.onload = function() { doInitMap(); };
+      document.head.appendChild(s);
+      return;
+    }
+    doInitMap();
+  }
+  function doInitMap() {
     var cityCoords = {
       'london':[51.5074,-0.1278],'manchester':[53.4808,-2.2426],'birmingham':[52.4862,-1.8904],
       'leeds':[53.8008,-1.5491],'glasgow':[55.8642,-4.2518],'edinburgh':[55.9533,-3.1883],

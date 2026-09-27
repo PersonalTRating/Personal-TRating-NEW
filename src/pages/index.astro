@@ -3,34 +3,38 @@ import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
 
-// Fetch ranked trainers — enough to filter by location client-side
-const { data: topTrainers } = await supabase
-  .from('trainers')
-  .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio')
-  .eq('is_active', true)
-  .gt('bmp_score', 0)
-  .gt('review_count', 0)
-  .order('bmp_score', { ascending: false })
-  .limit(200);
+// Fetch all build-time data in parallel
+const [
+  { data: topTrainers },
+  { count: totalTrainers },
+  { count: totalReviews },
+  { data: cityRows },
+] = await Promise.all([
+  supabase
+    .from('trainers')
+    .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio')
+    .eq('is_active', true)
+    .gt('bmp_score', 0)
+    .gt('review_count', 0)
+    .order('bmp_score', { ascending: false })
+    .limit(200),
+  supabase
+    .from('trainers')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_active', true),
+  supabase
+    .from('reviews')
+    .select('*', { count: 'exact', head: true })
+    .eq('is_verified', true),
+  supabase
+    .from('trainers')
+    .select('city, location')
+    .eq('is_active', true)
+    .limit(5000),
+]);
 
 const leaderboard = topTrainers || [];
 const heroRankings = leaderboard.slice(0, 4).map((t, i) => ({ ...t, rank: i + 1 }));
-
-// Real platform stats
-const { count: totalTrainers } = await supabase
-  .from('trainers')
-  .select('*', { count: 'exact', head: true })
-  .eq('is_active', true);
-
-const { count: totalReviews } = await supabase
-  .from('reviews')
-  .select('*', { count: 'exact', head: true })
-  .eq('is_verified', true);
-
-const { data: cityRows } = await supabase
-  .from('trainers')
-  .select('city, location')
-  .eq('is_active', true);
 
 const distinctCities = new Set(
   (cityRows || [])
@@ -161,6 +165,10 @@ const reviews = [
 ---
 
 <Layout title="CoachCards – Find the UK's Top Personal Trainers">
+
+<Fragment slot="head">
+  <link rel="preload" as="image" href="/images/hero-bg.webp" type="image/webp" />
+</Fragment>
 
 <script is:inline>
   if (typeof localStorage !== 'undefined' && localStorage.getItem('cc_trainer') === '1') {
@@ -440,7 +448,7 @@ const reviews = [
 
 <!-- ── HERO ── -->
 <section id="top" style="position:relative;min-height:88vh;display:flex;align-items:center;overflow:hidden;background:#111311;border-top:3px solid #3ab54a;">
-  <div style="position:absolute;inset:0;background-image:url('/images/hero-bg.png');background-size:cover;background-position:center 20%;"></div>
+  <div style="position:absolute;inset:0;background-image:url('/images/hero-bg.webp');background-size:cover;background-position:center 20%;"></div>
   <div style="position:absolute;inset:0;background:linear-gradient(108deg,rgba(8,18,10,0.75) 0%,rgba(8,18,10,0.52) 45%,rgba(8,18,10,0.20) 100%);"></div>
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.35) 100%);"></div>
 

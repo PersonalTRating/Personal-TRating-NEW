@@ -24,10 +24,11 @@ if (!trainer) return Astro.redirect('/');
 
 const { data: trainerReviews } = await supabase
   .from('reviews')
-  .select('*')
+  .select('id, rating, review_text, reviewer_name, reviewer_initials, reviewer_avatar_bg, reviewer_avatar_color, is_anonymous, created_at')
   .eq('trainer_id', id)
   .eq('is_verified', true)
-  .order('created_at', { ascending: false });
+  .order('created_at', { ascending: false })
+  .limit(100);
 
 const reviews    = trainerReviews || [];
 const hasReviews = reviews.length > 0;
@@ -751,11 +752,12 @@ const maskName = (name: string): string => {
 
     const postIds = posts.map((p: any) => p.id);
 
-    // Fetch all likes for these posts
+    // Fetch likes for these posts (capped per post — for like counts only)
     const { data: allLikes } = await supabase
       .from('post_likes')
       .select('post_id, user_id')
-      .in('post_id', postIds);
+      .in('post_id', postIds)
+      .limit(5000);
 
     // Build like count map and user-liked set
     const likeMap: Record<string, number> = {};
