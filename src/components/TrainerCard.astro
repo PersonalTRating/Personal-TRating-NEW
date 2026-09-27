@@ -107,6 +107,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     ) : (
       <span class="trc-bmp-first">First<br/>review</span>
     )}
+    <div class="bmp-tooltip">BMP — Body Muscle Percentage.<br/>CoachCards' verified ranking score:<br/><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br/>Calculated from real, verified client reviews only.</div>
   </div>
 </a>
 
@@ -224,7 +225,36 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     text-align: right;
     flex-shrink: 0;
     padding-left: 0.5rem;
+    position: relative;
+    cursor: default;
   }
+  .trc-bmp .bmp-tooltip {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    width: 230px;
+    background: #051a08;
+    color: rgba(255,255,255,0.88);
+    font-size: 0.72rem;
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    line-height: 1.6;
+    text-align: left;
+    z-index: 250;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    pointer-events: none;
+    border: 1px solid rgba(58,181,74,0.2);
+  }
+  .trc-bmp .bmp-tooltip::after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    right: 1rem;
+    border: 6px solid transparent;
+    border-bottom-color: #051a08;
+  }
+  .trc-bmp:hover .bmp-tooltip { display: block; }
   .trc-bmp-lbl {
     display: block;
     font-size: 0.58rem;
