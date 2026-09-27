@@ -380,12 +380,16 @@ const reviews = [
   .nav-link:hover { color:#111311; }
 
   /* Hero rankings card — dark glass overrides */
-  .hero-card .lb-card { background:rgba(255,255,255,0.07); border:2px solid #7defa0; border-left:2px solid #7defa0; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5); }
-  .hero-card .lb-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6); transform:translateY(-1px); }
+  .hero-card .lb-card { background:rgba(255,255,255,0.07) !important; border:2px solid #7defa0 !important; border-left:2px solid #7defa0 !important; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important; }
+  .hero-card .lb-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6) !important; transform:translateY(-1px); }
+  .hero-card .lb-card--trending { background:rgba(25,4,4,0.75) !important; border:2px solid rgba(200,0,0,0.6) !important; border-left:4px solid #cc0000 !important; box-shadow:0 0 10px rgba(180,0,0,0.5), 0 0 24px rgba(180,0,0,0.3), 0 0 48px rgba(180,0,0,0.18) !important; }
+  .hero-card .lb-card--trending:hover { box-shadow:0 0 16px rgba(200,0,0,0.65), 0 0 36px rgba(180,0,0,0.4), 0 0 64px rgba(180,0,0,0.24) !important; }
   .hero-card .lbc-name { color:#ffffff; }
+  .hero-card .lbc-rank--hot { color:rgba(255,255,255,0.9); }
   .hero-card .lbc-detail { color:rgba(255,255,255,0.52); }
   .hero-card .lbc-bmp-score { color:#ffffff; }
   .hero-card .lbc-bmp-label, .hero-card .lbc-bmp-rev { color:rgba(255,255,255,0.45); }
+  .hero-card .lbc-hot-banner { background:linear-gradient(90deg,rgba(180,0,0,0.18),rgba(180,0,0,0.08)) !important; border-color:rgba(180,0,0,0.35) !important; }
 
   /* Leaderboard section — white cards on dark green */
   #leaderboard .lb-card { border:2px solid #7defa0; border-left:2px solid #7defa0; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5); }
@@ -1335,31 +1339,13 @@ const reviews = [
     if (titleEl) titleEl.textContent = title;
     if (!listEl) return;
     if (trainers.length === 0) {
-      listEl.innerHTML = '<div style="padding:1rem 0;text-align:center;color:#8a8f8a;font-size:0.82rem;">No trainers found nearby.</div>';
+      listEl.innerHTML = '<div style="padding:1rem 0;text-align:center;color:rgba(255,255,255,0.4);font-size:0.82rem;">No trainers found nearby.</div>';
       return;
     }
     listEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:0.6rem;">' +
       trainers.slice(0, 4).map(function (t, i) {
-      var avatar = t.avatar_url
-        ? '<img src="' + t.avatar_url + '" alt="" width="36" height="36" style="width:36px;min-width:36px;height:36px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid #e0e8e1;">'
-        : '<div style="width:36px;min-width:36px;height:36px;border-radius:50%;background:' + (t.avatar_bg || '#eaf7ec') + ';color:' + (t.avatar_color || '#2a9438') + ';display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.72rem;flex-shrink:0;">' + (t.avatar_initials || '?') + '</div>';
-      var dbs = bmpDumbbell(t.bmp_score || 0, 36);
-      return '<a href="/trainers/' + t.id + '" style="display:flex;align-items:center;gap:0.7rem;padding:0.7rem 0.75rem;text-decoration:none;background:white;border:2px solid #7defa0;border-left:2px solid #7defa0;border-radius:10px;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);">' +
-        '<div style="font-family:\'Playfair Display\',serif;font-size:1.1rem;font-weight:900;color:#3ab54a;width:1.75rem;flex-shrink:0;line-height:1;">' + String(i + 1).padStart(2, '0') + '</div>' +
-        avatar +
-        '<div style="flex:1;min-width:0;">' +
-          '<div style="font-family:\'Playfair Display\',serif;font-weight:700;font-size:0.82rem;color:#111311;margin-bottom:0.05rem;display:flex;align-items:center;gap:3px;flex-wrap:wrap;">' + t.name + (!!(t.avatar_url && (t.city || t.location) && t.bio && t.specialty) ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '') + (t.is_trending ? '<span class="trend-info" style="display:inline-flex;"><span style="font-size:0.52rem;font-weight:800;letter-spacing:1px;color:#cc0000;background:rgba(180,0,0,0.1);border:1px solid rgba(180,0,0,0.3);padding:0.1rem 0.4rem;border-radius:20px;white-space:nowrap;">🔥 TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></span>' : '') + '</div>' +
-          (t.username ? '<div style="font-size:0.65rem;color:#7a8f7c;font-weight:600;margin-bottom:0.1rem;">@' + t.username + '</div>' : '') +
-          (t.city || t.location ? '<div style="font-size:0.68rem;color:#8a8f8a;">📍 ' + (t.city || t.location) + '</div>' : '') +
-          (t.specialty ? '<div style="font-size:0.68rem;color:#8a8f8a;">🏋 ' + t.specialty + '</div>' : '') +
-        '</div>' +
-        '<div style="text-align:right;flex-shrink:0;">' +
-          '<div style="font-family:\'Playfair Display\',serif;font-weight:900;font-size:1.1rem;color:#111311;line-height:1;">' + t.bmp_score + '</div>' +
-          '<div style="font-size:0.52rem;color:#aaa;letter-spacing:0.8px;text-transform:uppercase;font-weight:600;margin-bottom:0.15rem;">BMP</div>' +
-          '<div style="display:flex;gap:2px;justify-content:flex-end;">' + dbs + '</div>' +
-        '</div>' +
-      '</a>';
-    }).join('') + '</div>';
+        return renderCard(t, i + 1);
+      }).join('') + '</div>';
   }
 
   function showUkFallback(reason) {
