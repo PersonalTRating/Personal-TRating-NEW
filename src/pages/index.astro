@@ -243,9 +243,57 @@ const reviews = [
     background:white; border-radius:14px; padding:1.1rem 1.4rem;
     border:1px solid #e0e8e1; border-left:4px solid #3ab54a;
     text-decoration:none; color:inherit;
-    transition:box-shadow 0.2s, transform 0.2s;
+    transition:box-shadow 0.2s ease, transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease;
+    cursor:pointer;
   }
-  .lb-card:hover { box-shadow:0 6px 24px rgba(0,0,0,0.08); transform:translateY(-2px); }
+  .lb-card:hover { box-shadow:0 6px 24px rgba(0,0,0,0.08); transform:translateY(-3px); }
+  .lb-card:focus-visible { outline:3px solid #3ab54a; outline-offset:3px; }
+
+  /* Stage 1 — selected card lifts */
+  .lb-card.lb-selecting {
+    transform:translateY(-6px) scale(1.018) !important;
+    z-index:5; position:relative;
+    transition:transform 130ms ease, box-shadow 130ms ease !important;
+  }
+  #leaderboard .lb-card.lb-selecting {
+    box-shadow:0 0 18px #4cd46a, 0 0 44px rgba(58,181,74,1), 0 0 88px rgba(58,181,74,0.6), 0 20px 48px rgba(0,0,0,0.18) !important;
+  }
+  .lb-card--trending.lb-selecting {
+    box-shadow:0 0 18px rgba(180,0,0,0.95), 0 0 44px rgba(180,0,0,0.65), 0 0 88px rgba(180,0,0,0.38), 0 20px 48px rgba(0,0,0,0.18) !important;
+  }
+  /* Dim surrounding cards */
+  .lb-card.lb-dimmed {
+    opacity:0.42 !important;
+    filter:brightness(0.78) !important;
+    transform:scale(0.99) !important;
+    transition:opacity 150ms ease, filter 150ms ease, transform 150ms ease !important;
+  }
+  /* Stage 2 — activation glow */
+  .lb-card.lb-activating     { animation:lb-glow-green 230ms ease-out forwards !important; }
+  .lb-card.lb-activating-hot { animation:lb-glow-red   230ms ease-out forwards !important; }
+  @keyframes lb-glow-green {
+    0%   { transform:translateY(-6px) scale(1.018); box-shadow:0 0 18px #4cd46a, 0 0 44px rgba(58,181,74,1), 0 0 88px rgba(58,181,74,0.6), 0 20px 48px rgba(0,0,0,0.18); }
+    55%  { transform:translateY(-8px) scale(1.024); box-shadow:0 0 28px #6ef086, 0 0 64px rgba(58,181,74,1), 0 0 110px rgba(58,181,74,0.65), 0 26px 58px rgba(0,0,0,0.22); }
+    100% { transform:translateY(-7px) scale(1.021); box-shadow:0 0 22px #4cd46a, 0 0 52px rgba(58,181,74,1), 0 0 96px rgba(58,181,74,0.6), 0 22px 52px rgba(0,0,0,0.2); }
+  }
+  @keyframes lb-glow-red {
+    0%   { transform:translateY(-6px) scale(1.018); box-shadow:0 0 18px rgba(180,0,0,0.95), 0 0 44px rgba(180,0,0,0.65), 0 0 88px rgba(180,0,0,0.38), 0 20px 48px rgba(0,0,0,0.18); }
+    55%  { transform:translateY(-8px) scale(1.024); box-shadow:0 0 32px rgba(210,0,0,1), 0 0 64px rgba(180,0,0,0.8), 0 0 110px rgba(180,0,0,0.5), 0 26px 58px rgba(0,0,0,0.22); }
+    100% { transform:translateY(-7px) scale(1.021); box-shadow:0 0 24px rgba(200,0,0,0.95), 0 0 54px rgba(180,0,0,0.7), 0 0 96px rgba(180,0,0,0.42), 0 22px 52px rgba(0,0,0,0.2); }
+  }
+  /* Touch pressed feedback */
+  .lb-card.lb-touch {
+    transform:scale(0.984) !important;
+    transition:transform 80ms ease !important;
+  }
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .lb-card.lb-selecting   { animation:none !important; transform:none !important; }
+    .lb-card.lb-dimmed      { opacity:0.6 !important; filter:none !important; transform:none !important; }
+    .lb-card.lb-activating,
+    .lb-card.lb-activating-hot { animation:none !important; }
+    .lb-card.lb-touch       { transform:none !important; }
+  }
   .lbc-rank  { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:900; width:2.5rem; flex-shrink:0; line-height:1; color:#3ab54a; }
   .lbc-av    { width:42px; min-width:42px; height:42px; border-radius:50%; flex-shrink:0; object-fit:cover; overflow:hidden; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:0.8rem; border:2px solid rgba(0,0,0,0.06); }
   .lbc-mid   { flex:1; min-width:0; }
@@ -1470,5 +1518,64 @@ const reviews = [
   };
   document.getElementById('nav-signout')?.addEventListener('click', signOutHandler);
   document.getElementById('mob-signout')?.addEventListener('click', signOutHandler);
+</script>
+
+<script is:inline>
+/* ── CoachCard open interaction ── */
+(function () {
+  var navigating = false;
+
+  document.addEventListener('click', function (e) {
+    var card = e.target.closest('a.lb-card');
+    if (!card || navigating) return;
+    var href = card.getAttribute('href');
+    if (!href || href.indexOf('/trainers/') === -1) return;
+
+    e.preventDefault();
+    navigating = true;
+
+    var isTrending = card.classList.contains('lb-card--trending');
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* Set view-transition-names so avatar + name morph into profile */
+    var av = card.querySelector('.lbc-av');
+    var nm = card.querySelector('.lbc-name');
+    if (av) av.style.viewTransitionName = 'trainer-avatar';
+    if (nm) nm.style.viewTransitionName = 'trainer-name';
+
+    if (reduced) {
+      setTimeout(function () { window.location.href = href; }, 60);
+      return;
+    }
+
+    /* Stage 1: lift selected card, dim siblings */
+    card.classList.add('lb-selecting');
+    document.querySelectorAll('a.lb-card').forEach(function (c) {
+      if (c !== card) c.classList.add('lb-dimmed');
+    });
+
+    /* Stage 2: activation glow pulse */
+    setTimeout(function () {
+      card.classList.add(isTrending ? 'lb-activating-hot' : 'lb-activating');
+    }, 130);
+
+    /* Navigate — browser's cross-document View Transition morphs named elements */
+    setTimeout(function () { window.location.href = href; }, 295);
+  }, true);
+
+  /* Touch: scale-down pressed state before click fires */
+  document.addEventListener('touchstart', function (e) {
+    var card = e.target.closest('a.lb-card');
+    if (card && !navigating) card.classList.add('lb-touch');
+  }, { passive: true });
+  document.addEventListener('touchend', function (e) {
+    var card = e.target.closest('a.lb-card');
+    if (card) setTimeout(function () { card.classList.remove('lb-touch'); }, 90);
+  }, { passive: true });
+  document.addEventListener('touchcancel', function (e) {
+    var card = e.target.closest('a.lb-card');
+    if (card) card.classList.remove('lb-touch');
+  }, { passive: true });
+})();
 </script>
 
