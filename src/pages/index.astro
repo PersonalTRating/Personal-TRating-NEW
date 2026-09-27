@@ -380,16 +380,83 @@ const reviews = [
   .nav-link:hover { color:#111311; }
 
   /* Hero rankings card — dark glass overrides */
-  .hero-card .lb-card { background:rgba(255,255,255,0.07) !important; border:2px solid #7defa0 !important; border-left:2px solid #7defa0 !important; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5) !important; }
-  .hero-card .lb-card:hover { box-shadow:0 0 12px #4cd46a, 0 0 30px rgba(58,181,74,0.95), 0 0 60px rgba(58,181,74,0.6) !important; transform:translateY(-1px); }
-  .hero-card .lb-card--trending { background:rgba(25,4,4,0.75) !important; border:2px solid rgba(200,0,0,0.6) !important; border-left:4px solid #cc0000 !important; box-shadow:0 0 10px rgba(180,0,0,0.5), 0 0 24px rgba(180,0,0,0.3), 0 0 48px rgba(180,0,0,0.18) !important; }
-  .hero-card .lb-card--trending:hover { box-shadow:0 0 16px rgba(200,0,0,0.65), 0 0 36px rgba(180,0,0,0.4), 0 0 64px rgba(180,0,0,0.24) !important; }
-  .hero-card .lbc-name { color:#ffffff; }
-  .hero-card .lbc-rank--hot { color:rgba(255,255,255,0.9); }
-  .hero-card .lbc-detail { color:rgba(255,255,255,0.52); }
-  .hero-card .lbc-bmp-score { color:#ffffff; }
-  .hero-card .lbc-bmp-label, .hero-card .lbc-bmp-rev { color:rgba(255,255,255,0.45); }
-  .hero-card .lbc-hot-banner { background:linear-gradient(90deg,rgba(180,0,0,0.18),rgba(180,0,0,0.08)) !important; border-color:rgba(180,0,0,0.35) !important; }
+  /* ── Hero compact leaderboard cards ─────────────────────── */
+  .hc-card {
+    display:flex; align-items:center; gap:0.6rem;
+    padding:0.65rem 0.8rem;
+    background:rgba(8,16,9,0.88);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;
+    text-decoration:none; color:inherit;
+    cursor:pointer;
+    transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    min-height:88px;
+  }
+  .hc-card:hover {
+    transform:translateY(-2px);
+    border-color:rgba(58,181,74,0.4);
+    box-shadow:0 4px 18px rgba(0,0,0,0.4), 0 0 12px rgba(58,181,74,0.12);
+  }
+  .hc-card:focus-visible { outline:2px solid #3ab54a; outline-offset:3px; }
+  .hc-card--trending {
+    border-color:rgba(180,0,0,0.5);
+    box-shadow:0 0 8px rgba(150,0,0,0.45), 0 0 18px rgba(150,0,0,0.2);
+  }
+  .hc-card--trending:hover {
+    border-color:rgba(200,0,0,0.75);
+    box-shadow:0 4px 18px rgba(0,0,0,0.4), 0 0 14px rgba(160,0,0,0.55), 0 0 28px rgba(150,0,0,0.25);
+  }
+  .hc-rank {
+    font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900;
+    color:#3ab54a; width:2rem; flex-shrink:0; line-height:1; text-align:center;
+  }
+  .hc-av {
+    width:48px; min-width:48px; height:48px; border-radius:50%;
+    object-fit:cover; flex-shrink:0; overflow:hidden;
+    border:2px solid rgba(255,255,255,0.1);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:0.8rem;
+  }
+  .hc-mid { flex:1; min-width:0; }
+  .hc-name-row {
+    display:flex; align-items:center; gap:4px; flex-wrap:wrap;
+    margin-bottom:0.22rem;
+  }
+  .hc-name {
+    font-family:'Playfair Display',serif; font-size:0.87rem; font-weight:700;
+    color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    max-width:110px;
+  }
+  .hc-badge-trend {
+    display:inline-flex; align-items:center; gap:2px;
+    background:linear-gradient(135deg,#cc0000,#e81414); color:white;
+    font-size:0.5rem; font-weight:800; letter-spacing:1px;
+    padding:0.14rem 0.42rem; border-radius:20px; white-space:nowrap; flex-shrink:0;
+  }
+  .hc-meta {
+    font-size:0.68rem; color:rgba(255,255,255,0.42);
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    margin-bottom:0.18rem;
+  }
+  .hc-stats      { font-size:0.65rem; color:rgba(255,255,255,0.32); }
+  .hc-stats-hot  { font-size:0.65rem; color:rgba(200,60,60,0.85); }
+  .hc-bmp        { text-align:right; flex-shrink:0; padding-left:0.4rem; }
+  .hc-bmp-num    {
+    font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900;
+    color:#3ab54a; line-height:1; display:block;
+  }
+  .hc-bmp-lbl    {
+    font-size:0.5rem; color:rgba(255,255,255,0.3); letter-spacing:1px;
+    text-transform:uppercase; font-weight:700;
+  }
+
+  @media (max-width:900px) { .hc-name { max-width:90px; } }
+  @media (max-width:600px) {
+    .hc-card { min-height:76px; padding:0.55rem 0.65rem; gap:0.5rem; }
+    .hc-av   { width:40px; min-width:40px; height:40px; }
+    .hc-name { max-width:none; }
+    .hc-bmp-num { font-size:1.1rem; }
+  }
 
   /* Leaderboard section — white cards on dark green */
   #leaderboard .lb-card { border:2px solid #7defa0; border-left:2px solid #7defa0; box-shadow:0 0 8px #4cd46a, 0 0 22px rgba(58,181,74,0.9), 0 0 50px rgba(58,181,74,0.5); }
@@ -550,7 +617,7 @@ const reviews = [
   <div style="position:absolute;inset:0;background:linear-gradient(108deg,rgba(8,18,10,0.75) 0%,rgba(8,18,10,0.52) 45%,rgba(8,18,10,0.20) 100%);"></div>
   <div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.35) 100%);"></div>
 
-  <div class="hero-grid" style="position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:5rem 2.5rem;display:grid;grid-template-columns:1fr 390px;gap:4rem;align-items:center;width:100%;">
+  <div class="hero-grid" style="position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:5rem 2.5rem;display:grid;grid-template-columns:1fr 390px;gap:4rem;align-items:start;width:100%;">
 
     <!-- Left: copy -->
     <div>
@@ -588,7 +655,7 @@ const reviews = [
     </div>
 
     <!-- Right: Live rankings card -->
-    <div class="hero-card anim-5">
+    <div class="hero-card anim-5" style="padding-top:3.5rem;">
       <div style="background:rgba(13,26,14,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.11);border-radius:16px;padding:1.6rem;box-shadow:0 24px 64px rgba(0,0,0,0.35);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
           <div id="hero-card-title" style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#ffffff;">📍 Near You</div>
@@ -1333,6 +1400,55 @@ const reviews = [
       '</div>';
   }
 
+  function makeHeroCard(t, rank) {
+    var trending  = t.is_trending;
+    var revCount  = t.review_count || 0;
+    var starRaw   = t.star_rating  ? (+t.star_rating).toFixed(1) : null;
+    var recent    = t.recent_review_count || 0;
+    var complete  = !!(t.avatar_url && (t.city || t.location) && t.bio && t.specialty);
+
+    var av = t.avatar_url
+      ? '<img class="hc-av" src="' + t.avatar_url + '" alt="' + t.name + '" width="48" height="48">'
+      : '<div class="hc-av" style="background:' + (t.avatar_bg||'#0d1a0e') + ';color:' + (t.avatar_color||'#3ab54a') + ';">' + (t.avatar_initials||'?') + '</div>';
+
+    var tick = complete
+      ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+      : '';
+
+    var trendBadge = trending
+      ? '<span class="trend-info"><span class="hc-badge-trend">🔥 TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></span>'
+      : '';
+
+    var metaParts = [];
+    if (t.city || t.location) metaParts.push('📍 ' + (t.city || t.location));
+    if (t.specialty)          metaParts.push('🏋 ' + t.specialty);
+    var meta = metaParts.join(' · ');
+
+    var statsHtml = '';
+    if (trending && recent >= 4) {
+      statsHtml = '<span class="hc-stats-hot">🔥 ' + recent + ' verified reviews this month</span>';
+    } else if (starRaw && revCount > 0) {
+      statsHtml = '<span class="hc-stats">★ ' + starRaw + ' (' + revCount + (revCount === 1 ? ' review' : ' reviews') + ')</span>';
+    } else if (revCount === 0) {
+      statsHtml = '<span class="hc-stats">Be first to review</span>';
+    }
+
+    var bmpNum = revCount === 0
+      ? '<span class="hc-bmp-num" style="font-size:0.62rem;line-height:1.3;">First<br>review</span>'
+      : '<span class="hc-bmp-num">' + (t.bmp_score || '—') + '</span>';
+
+    return '<a class="hc-card' + (trending ? ' hc-card--trending' : '') + '" href="/trainers/' + t.id + '">' +
+      '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
+      av +
+      '<div class="hc-mid">' +
+        '<div class="hc-name-row"><span class="hc-name">' + t.name + '</span>' + tick + trendBadge + '</div>' +
+        (meta       ? '<div class="hc-meta">'  + meta      + '</div>' : '') +
+        (statsHtml  ? '<div>'                  + statsHtml + '</div>' : '') +
+      '</div>' +
+      '<div class="hc-bmp">' + bmpNum + '<span class="hc-bmp-lbl">BMP</span></div>' +
+    '</a>';
+  }
+
   function paintHero(trainers, title) {
     var titleEl = document.getElementById('hero-card-title');
     var listEl  = document.getElementById('hero-rankings-list');
@@ -1342,10 +1458,9 @@ const reviews = [
       listEl.innerHTML = '<div style="padding:1rem 0;text-align:center;color:rgba(255,255,255,0.4);font-size:0.82rem;">No trainers found nearby.</div>';
       return;
     }
-    listEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:0.6rem;">' +
-      trainers.slice(0, 4).map(function (t, i) {
-        return renderCard(t, i + 1);
-      }).join('') + '</div>';
+    listEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">' +
+      trainers.slice(0, 5).map(function (t, i) { return makeHeroCard(t, i + 1); }).join('') +
+    '</div>';
   }
 
   function showUkFallback(reason) {
