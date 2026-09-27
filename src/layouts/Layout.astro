@@ -58,6 +58,48 @@ const {
   </head>
   <body class="font-sans text-brand-text bg-white antialiased">
     <slot />
+    <script is:inline>
+    /* ── CoachCard universal open transition ── */
+    (function () {
+      var navigating = false;
+      document.addEventListener('click', function (e) {
+        var card = e.target.closest('a[data-cc="card"]');
+        if (!card || navigating) return;
+        var href = card.getAttribute('href');
+        if (!href || href.indexOf('/trainers/') === -1) return;
+        e.preventDefault();
+        navigating = true;
+        var isTrending = card.getAttribute('data-cc-trending') === '1';
+        var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var av = card.querySelector('.lbc-av, .hc-av, .trc-av');
+        var nm = card.querySelector('.lbc-name, .hc-name, .trc-name');
+        if (av) av.style.viewTransitionName = 'trainer-avatar';
+        if (nm) nm.style.viewTransitionName = 'trainer-name';
+        if (reduced) { setTimeout(function () { window.location.href = href; }, 60); return; }
+        card.classList.add('cc-selecting');
+        if (isTrending) card.classList.add('cc-trending');
+        document.querySelectorAll('a[data-cc="card"]').forEach(function (c) {
+          if (c !== card) c.classList.add('cc-dimmed');
+        });
+        setTimeout(function () {
+          card.classList.add(isTrending ? 'cc-activating-hot' : 'cc-activating');
+        }, 130);
+        setTimeout(function () { window.location.href = href; }, 295);
+      }, true);
+      document.addEventListener('touchstart', function (e) {
+        var card = e.target.closest('a[data-cc="card"]');
+        if (card && !navigating) card.classList.add('cc-touch');
+      }, { passive: true });
+      document.addEventListener('touchend', function (e) {
+        var card = e.target.closest('a[data-cc="card"]');
+        if (card) setTimeout(function () { card.classList.remove('cc-touch'); }, 90);
+      }, { passive: true });
+      document.addEventListener('touchcancel', function (e) {
+        var card = e.target.closest('a[data-cc="card"]');
+        if (card) card.classList.remove('cc-touch');
+      }, { passive: true });
+    })();
+    </script>
   </body>
 </html>
 
@@ -85,6 +127,43 @@ const {
     font-weight: 500;
     color: rgba(255,255,255,0.35);
   }
+  /* ── CoachCard universal open transition ── */
+  .cc-selecting {
+    transform:translateY(-6px) scale(1.018) !important;
+    z-index:5; position:relative;
+    transition:transform 130ms ease, box-shadow 130ms ease !important;
+    box-shadow:0 0 18px #4cd46a, 0 0 44px rgba(58,181,74,1), 0 0 88px rgba(58,181,74,0.6), 0 20px 48px rgba(0,0,0,0.18) !important;
+  }
+  .cc-selecting.cc-trending {
+    box-shadow:0 0 18px rgba(180,0,0,0.95), 0 0 44px rgba(180,0,0,0.65), 0 0 88px rgba(180,0,0,0.38), 0 20px 48px rgba(0,0,0,0.18) !important;
+  }
+  .cc-dimmed {
+    opacity:0.42 !important;
+    filter:brightness(0.78) !important;
+    transform:scale(0.99) !important;
+    transition:opacity 150ms ease, filter 150ms ease, transform 150ms ease !important;
+  }
+  .cc-activating     { animation:cc-glow-green 230ms ease-out forwards !important; }
+  .cc-activating-hot { animation:cc-glow-red   230ms ease-out forwards !important; }
+  @keyframes cc-glow-green {
+    0%   { transform:translateY(-6px) scale(1.018); box-shadow:0 0 18px #4cd46a, 0 0 44px rgba(58,181,74,1), 0 0 88px rgba(58,181,74,0.6), 0 20px 48px rgba(0,0,0,0.18); }
+    55%  { transform:translateY(-8px) scale(1.024); box-shadow:0 0 28px #6ef086, 0 0 64px rgba(58,181,74,1), 0 0 110px rgba(58,181,74,0.65), 0 26px 58px rgba(0,0,0,0.22); }
+    100% { transform:translateY(-7px) scale(1.021); box-shadow:0 0 22px #4cd46a, 0 0 52px rgba(58,181,74,1), 0 0 96px rgba(58,181,74,0.6), 0 22px 52px rgba(0,0,0,0.2); }
+  }
+  @keyframes cc-glow-red {
+    0%   { transform:translateY(-6px) scale(1.018); box-shadow:0 0 18px rgba(180,0,0,0.95), 0 0 44px rgba(180,0,0,0.65), 0 0 88px rgba(180,0,0,0.38), 0 20px 48px rgba(0,0,0,0.18); }
+    55%  { transform:translateY(-8px) scale(1.024); box-shadow:0 0 32px rgba(210,0,0,1), 0 0 64px rgba(180,0,0,0.8), 0 0 110px rgba(180,0,0,0.5), 0 26px 58px rgba(0,0,0,0.22); }
+    100% { transform:translateY(-7px) scale(1.021); box-shadow:0 0 24px rgba(200,0,0,0.95), 0 0 54px rgba(180,0,0,0.7), 0 0 96px rgba(180,0,0,0.42), 0 22px 52px rgba(0,0,0,0.2); }
+  }
+  .cc-touch { transform:scale(0.984) !important; transition:transform 80ms ease !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .cc-selecting          { animation:none !important; transform:none !important; }
+    .cc-dimmed             { opacity:0.6 !important; filter:none !important; transform:none !important; }
+    .cc-activating,
+    .cc-activating-hot     { animation:none !important; }
+    .cc-touch              { transform:none !important; }
+  }
+
   html, body { overflow-x: hidden; max-width: 100%; }
   body { position: relative; }
 

@@ -56,6 +56,8 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
 <a
   class:list={['trc', isTrending && 'trc--trending']}
   href={`/trainers/${id}`}
+  data-cc="card"
+  data-cc-trending={isTrending ? "1" : undefined}
   style={`view-transition-name:tc-${id};`}
   data-bmp={String(bmpScore)}
   data-reviews={String(revCount)}
