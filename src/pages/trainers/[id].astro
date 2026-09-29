@@ -47,7 +47,6 @@ const rankBadge =
   trainer.bmp_score >= 75 ? { label: 'Skilled',  color: '#1a4b6b', bg: '#e8f0f7' } :
                              { label: 'Rising',   color: '#6b1a6b', bg: '#f5e8f7' };
 
-const specialtyIconSvg = `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#7de88a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>`;
 
 const formatDate = (dateStr: string) =>
   new Date(dateStr).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
@@ -460,8 +459,8 @@ const maskName = (name: string): string => {
             </span>
           )}
           {trainer.specialty && (
-            <span style="background:rgba(58,181,74,0.2);color:#7de88a;font-size:0.68rem;font-weight:700;padding:0.25rem 0.75rem;border-radius:20px;letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(58,181,74,0.3);display:inline-flex;align-items:center;gap:0.3rem;">
-              <Fragment set:html={specialtyIconSvg} /> {trainer.specialty}
+            <span style="background:rgba(58,181,74,0.12);color:rgba(180,255,185,0.9);font-size:0.68rem;font-weight:700;padding:0.25rem 0.75rem;border-radius:20px;letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(58,181,74,0.28);display:inline-block;">
+              {trainer.specialty}
             </span>
           )}
           {trainer.cert && (

@@ -402,9 +402,21 @@ const reviews = [
   }
   .hc-meta {
     font-size:0.68rem; color:rgba(255,255,255,0.42);
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    margin-bottom:0.18rem;
+    display:flex; align-items:center; gap:0.2rem;
+    margin-bottom:0.1rem;
   }
+  .hc-meta-spec { margin-bottom:0.18rem; }
+  .spec-pill {
+    display:inline-block;
+    background:rgba(58,181,74,0.12);
+    border:1px solid rgba(58,181,74,0.25);
+    color:rgba(180,255,185,0.85);
+    font-size:0.68rem; font-weight:600;
+    padding:0.22rem 0.55rem;
+    border-radius:5px;
+    letter-spacing:0.2px; line-height:1.2;
+  }
+  .spec-pill--sm { font-size:0.6rem; padding:0.18rem 0.45rem; }
   .hc-stats      { font-size:0.65rem; color:rgba(255,255,255,0.32); }
   .hc-stats-hot  { font-size:0.65rem; color:rgba(200,60,60,0.85); }
   .hc-bmp        { text-align:right; flex-shrink:0; padding-left:0.4rem; position:relative; cursor:default; }
@@ -813,7 +825,7 @@ const reviews = [
               )}
             </div>
             {t.city && <div style="font-size:0.72rem;color:rgba(255,255,255,0.42);display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{t.city}</div>}
-            {t.specialty && <div style="font-size:0.72rem;color:rgba(255,255,255,0.42);display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>{t.specialty}</div>}
+            {t.specialty && <div><span class="spec-pill">{t.specialty}</span></div>}
             {t.recentReviewCount >= 1 && (
               <div style={'font-size:0.72rem;display:flex;align-items:center;gap:0.25rem;' + (t.isTrending ? 'color:rgba(220,100,60,0.9);' : 'color:rgba(220,100,60,0.8);')}>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>{t.recentReviewCount} verified {t.recentReviewCount === 1 ? 'review' : 'reviews'} in the last 30 days
@@ -1364,7 +1376,7 @@ const reviews = [
             cert +
           '</div>' +
           (city ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + city + '</div>' : '') +
-          (spec ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>' + spec + '</div>' : '') +
+          (spec ? '<div class="lbc-detail"><span class="spec-pill">' + spec + '</span></div>' : '') +
           hotReviews +
         '</div>' +
         '<div class="lbc-bmp">' +
@@ -1385,7 +1397,7 @@ const reviews = [
       '<div class="lbc-mid">' +
         '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + '</div>' +
         (city ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + city + '</div>' : '') +
-        (spec ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>' + spec + '</div>' : '') +
+        (spec ? '<div class="lbc-detail"><span class="spec-pill">' + spec + '</span></div>' : '') +
         reviewsLine +
       '</div>' +
       '<div class="lbc-bmp">' +
@@ -1439,10 +1451,10 @@ const reviews = [
       ? '<span class="trend-info"><span class="hc-badge-trend" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></span>'
       : '';
 
-    var metaParts = [];
-    if (t.city || t.location) metaParts.push('<span style="display:inline-flex;align-items:center;gap:0.2rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + (t.city || t.location) + '</span>');
-    if (t.specialty)          metaParts.push('<span style="display:inline-flex;align-items:center;gap:0.2rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>' + t.specialty + '</span>');
-    var meta = metaParts.join(' · ');
+    var cityMeta = (t.city || t.location)
+      ? '<span style="display:inline-flex;align-items:center;gap:0.2rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + (t.city || t.location) + '</span>'
+      : '';
+    var specMeta = t.specialty ? '<span class="spec-pill spec-pill--sm">' + t.specialty + '</span>' : '';
 
     var statsHtml = '';
     if (revCount === 0) {
@@ -1465,7 +1477,8 @@ const reviews = [
       av +
       '<div class="hc-mid">' +
         '<div class="hc-name-row"><span class="hc-name">' + t.name + '</span>' + tick + trendBadge + '</div>' +
-        (meta       ? '<div class="hc-meta">'  + meta      + '</div>' : '') +
+        (cityMeta  ? '<div class="hc-meta">'      + cityMeta + '</div>' : '') +
+        (specMeta  ? '<div class="hc-meta-spec">' + specMeta + '</div>' : '') +
         (statsHtml  ? '<div>'                  + statsHtml + '</div>' : '') +
       '</div>' +
       '<div class="hc-bmp"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div class="hc-bmp-db">' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
