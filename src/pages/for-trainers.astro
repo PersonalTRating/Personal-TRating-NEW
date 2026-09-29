@@ -93,6 +93,11 @@ const { count: totalReviews } = await supabase
     .ft-nav-links { display:none !important; }
     .ft-mob-ham  { display:flex !important; }
     .ft-mob-nav  { display:flex !important; }
+    /* CTA section */
+    .ft-cta-section { padding:3.5rem 0 !important; }
+    .ft-cta-h2      { font-size:1.75rem !important; }
+    /* Footer */
+    .ft-footer { padding:1.25rem 1.25rem !important; }
   }
   /* Hamburger button */
   .ft-mob-ham {
@@ -429,13 +434,13 @@ const { count: totalReviews } = await supabase
 </section>
 
 <!-- ── FINAL CTA ── -->
-<section style="padding:6rem 0;background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);text-align:center;border-top:3px solid #3ab54a;">
+<section class="ft-cta-section" style="padding:6rem 0;background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);text-align:center;border-top:3px solid #3ab54a;">
   <div style="max-width:560px;margin:0 auto;padding:0 2.5rem;">
     <div id="ft-bottom-cta-inner">
       <div style="display:inline-block;background:rgba(58,181,74,0.2);color:#7de88a;padding:0.4rem 1rem;border-radius:20px;font-size:0.72rem;font-weight:700;margin-bottom:1.5rem;letter-spacing:1.5px;text-transform:uppercase;border:1px solid rgba(58,181,74,0.3);">
         Free to Join
       </div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:white;margin-bottom:1rem;line-height:1.15;">
+      <h2 class="ft-cta-h2" style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:white;margin-bottom:1rem;line-height:1.15;">
         Ready to get ranked?
       </h2>
       <p style="color:rgba(255,255,255,0.55);font-size:0.95rem;margin-bottom:2.5rem;line-height:1.8;max-width:440px;margin-left:auto;margin-right:auto;">
@@ -468,7 +473,7 @@ const { count: totalReviews } = await supabase
 </section>
 
 <!-- ── FOOTER ── -->
-<footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
+<footer class="ft-footer" style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
   <div style="display:flex;align-items:center;gap:0.75rem;">
     <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
     <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>

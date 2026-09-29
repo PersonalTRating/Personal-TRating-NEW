@@ -1116,11 +1116,13 @@ const reviews = [
 </section>
 
 <!-- ── FOOTER ── -->
-<footer style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:white;border-top:3px solid #3ab54a;">
-  <div style="display:flex;align-items:center;gap:0.75rem;">
+<footer class="idx-footer" style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:white;border-top:3px solid #3ab54a;">
+  <div class="idx-footer-left" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
     <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
-    <p style="font-size:0.8rem;color:#8a8f8a;">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
-    <p style="font-size:0.72rem;color:#aab8ac;margin-top:0.2rem;">Unauthorised reproduction of this platform, its design, BMP scoring methodology or content is strictly prohibited.</p>
+    <div class="idx-footer-text">
+      <p style="font-size:0.8rem;color:#8a8f8a;margin:0;">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
+      <p style="font-size:0.72rem;color:#aab8ac;margin-top:0.2rem;">Unauthorised reproduction of this platform, its design, BMP scoring methodology or content is strictly prohibited.</p>
+    </div>
   </div>
   <div style="display:flex;gap:2rem;">
     <a href="/privacy" class="nav-link" style="font-size:0.8rem;">Privacy</a>
@@ -1577,6 +1579,12 @@ const reviews = [
   .stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.35s; }
   .stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.45s; }
   .stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay:0.55s; }
+
+  @media (max-width:600px) {
+    .idx-footer { padding:1.25rem 1.25rem !important; }
+    .idx-footer-left { align-items:flex-start !important; }
+    .idx-footer-text { max-width:calc(100vw - 6rem); }
+  }
 </style>
 
 <script is:inline>
