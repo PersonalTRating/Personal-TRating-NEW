@@ -1354,10 +1354,13 @@
                 <div id="ig-card-title" style="font-weight:800;font-size:0.95rem;color:var(--text);">Instagram Story</div>
               </div>
               <div id="ig-instruction" style="font-size:0.78rem;color:var(--muted);line-height:1.65;margin-bottom:1.1rem;">Download your Story Card, upload it to your Instagram Story, then add your review link using Instagram's Link Sticker.</div>
-              <button id="download-card-btn" onclick="downloadShareCard()" aria-label="Download Instagram Story Card"
-                style="width:100%;padding:0.9rem;background:var(--text);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:0.45rem;"
-                onmouseover="this.style.background='#1a3d1e'" onmouseout="this.style.background='var(--text)'">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Story Card
+              <button id="ig-share-btn" onclick="shareCard()" aria-label="Share Instagram Story Card"
+                style="display:none;width:100%;padding:0.9rem;background:var(--text);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:background 0.2s;align-items:center;justify-content:center;gap:0.45rem;margin-bottom:0.5rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Share Story Card
+              </button>
+              <button id="download-card-btn" onclick="downloadCard()" aria-label="Download Instagram Story Card"
+                style="width:100%;padding:0.9rem;background:var(--text);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:0.45rem;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download Story Card
               </button>
               <div id="ig-copy-link-wrap" style="margin-top:0.65rem;">
                 <button id="ig-copy-link-btn" onclick="igCopyLink(this)"
@@ -3924,76 +3927,81 @@
     }
   }
 
-  async function downloadShareCard() {
+  // Shared canvas rendering — used by both downloadCard() and shareCard()
+  async function generateCardBlob() {
     var card = document.getElementById('share-card');
-    var btn  = document.getElementById('download-card-btn');
-    if (!card) return;
-    var isFeed    = _igFormat === 'feed';
-    var cardLabel = isFeed ? 'Feed Post' : 'Story Card';
-    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + cardLabel + '…'; }
-
-    try {
-      if (!_cardBuilt) {
-        await new Promise(function(resolve) {
-          var t = setInterval(function() { if (_cardBuilt) { clearInterval(t); resolve(); } }, 50);
-          setTimeout(function() { clearInterval(t); resolve(); }, 8000);
-        });
-      }
-      await document.fonts.ready;
-      await new Promise(function(resolve) { setTimeout(resolve, 200); });
-
-      var canvas = await window['html2canvas'](card, {
-        scale: 3,
-        useCORS: true,
-        backgroundColor: null,
-        logging: false,
-        allowTaint: true,
-        imageTimeout: 10000,
+    if (!card) throw new Error('Card not found');
+    if (!_cardBuilt) {
+      await new Promise(function(resolve) {
+        var t = setInterval(function() { if (_cardBuilt) { clearInterval(t); resolve(); } }, 50);
+        setTimeout(function() { clearInterval(t); resolve(); }, 8000);
       });
-
-      var blob = await new Promise(function(resolve, reject) {
-        canvas.toBlob(function(b) { b ? resolve(b) : reject(new Error('Export failed')); }, 'image/png');
-      });
-
-      var rawName = (window.__ptTrainerName || 'trainer').toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      var filename = isFeed
-        ? 'coachcards-' + rawName + '-post.png'
-        : 'coachcards-' + rawName + '-review-story.png';
-      var shareTitle = isFeed ? 'My CoachCards Feed Post' : 'My CoachCards Review Story Card';
-      var file = new File([blob], filename, { type: 'image/png' });
-
-      var canFileShare = false;
-      try { canFileShare = !!(navigator.canShare && navigator.canShare({ files: [file] })); } catch(e) {}
-
-      if (canFileShare) {
-        await navigator.share({ files: [file], title: shareTitle });
-        showToast('✅ ' + cardLabel + ' shared!');
-      } else {
-        var objUrl = URL.createObjectURL(blob);
-        var a = document.createElement('a');
-        a.download = filename;
-        a.href = objUrl;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(objUrl);
-        showToast('✅ ' + cardLabel + ' downloaded!');
-      }
-    } catch(e) {
-      if (!e || e.name !== 'AbortError') {
-        showToast("We couldn't prepare your " + cardLabel + ". Please try again.");
-      }
     }
+    await document.fonts.ready;
+    await new Promise(function(resolve) { setTimeout(resolve, 200); });
+    var canvas = await window['html2canvas'](card, {
+      scale: 3, useCORS: true, backgroundColor: null, logging: false, allowTaint: true, imageTimeout: 10000,
+    });
+    return await new Promise(function(resolve, reject) {
+      canvas.toBlob(function(b) { b ? resolve(b) : reject(new Error('Export failed')); }, 'image/png');
+    });
+  }
 
-    if (btn) { btn.disabled = false; initInstagramSection(); }
+  function getCardFilename() {
+    var rawName = (window.__ptTrainerName || 'trainer').toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    return (_igFormat === 'feed')
+      ? 'coachcards-' + rawName + '-post.png'
+      : 'coachcards-' + rawName + '-review-story.png';
+  }
+
+  async function downloadCard() {
+    var btn   = document.getElementById('download-card-btn');
+    var label = (_igFormat === 'feed') ? 'Feed Post' : 'Story Card';
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + label + '…'; }
+    try {
+      var blob = await generateCardBlob();
+      var objUrl = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.download = getCardFilename();
+      a.href = objUrl;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(objUrl);
+      showToast('✅ ' + label + ' saved!');
+    } catch(e) {
+      if (!e || e.name !== 'AbortError') showToast("We couldn't prepare your " + label + ". Please try again.");
+    }
+    if (btn) btn.disabled = false;
+    initInstagramSection();
+  }
+
+  async function shareCard() {
+    var btn   = document.getElementById('ig-share-btn');
+    var label = (_igFormat === 'feed') ? 'Feed Post' : 'Story Card';
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + label + '…'; }
+    try {
+      var blob     = await generateCardBlob();
+      var filename = getCardFilename();
+      var title    = (_igFormat === 'feed') ? 'My CoachCards Feed Post' : 'My CoachCards Review Story Card';
+      var file     = new File([blob], filename, { type: 'image/png' });
+      await navigator.share({ files: [file], title: title });
+      showToast('✅ ' + label + ' shared!');
+    } catch(e) {
+      if (!e || e.name !== 'AbortError') showToast("We couldn't share your " + label + ". Please try again.");
+    }
+    if (btn) btn.disabled = false;
+    initInstagramSection();
   }
 
   function initInstagramSection() {
-    var btn   = document.getElementById('download-card-btn');
-    var instr = document.getElementById('ig-instruction');
-    var isFeed = _igFormat === 'feed';
+    var shareBtn = document.getElementById('ig-share-btn');
+    var dlBtn    = document.getElementById('download-card-btn');
+    var instr    = document.getElementById('ig-instruction');
+    var isFeed   = _igFormat === 'feed';
+    var label    = isFeed ? 'Feed Post' : 'Story Card';
 
     var canFileShare = false;
     try {
@@ -4004,21 +4012,49 @@
     var shareSVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
     var dlSVG    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
 
-    if (isFeed) {
+    // Share button — only visible when native file sharing is supported
+    if (shareBtn) {
       if (canFileShare) {
-        if (btn)  btn.innerHTML = shareSVG + ' Share Feed Post';
-        if (instr) instr.textContent = 'Share your Feed Post to Instagram or save it to your camera roll, then post it to your feed.';
+        shareBtn.style.display    = 'flex';
+        shareBtn.style.background = 'var(--text)';
+        shareBtn.style.color      = 'white';
+        shareBtn.style.border     = 'none';
+        shareBtn.innerHTML = shareSVG + ' Share ' + label;
       } else {
-        if (btn)  btn.innerHTML = dlSVG + ' Download Feed Post';
-        if (instr) instr.textContent = 'Download your Feed Post and share it to your Instagram feed. Copy the caption below to add it to your post.';
+        shareBtn.style.display = 'none';
       }
-    } else {
+    }
+
+    // Download button — ALWAYS visible
+    if (dlBtn) {
+      dlBtn.innerHTML = dlSVG + ' Download ' + label;
       if (canFileShare) {
-        if (btn)  btn.innerHTML = shareSVG + ' Share Story Card';
-        if (instr) instr.textContent = "Share your Story Card to Instagram or another app, then add your review link using Instagram's Link Sticker.";
+        // Secondary style: outlined, below the share button
+        dlBtn.style.background  = 'white';
+        dlBtn.style.color       = 'var(--text)';
+        dlBtn.style.border      = '1.5px solid var(--border)';
+        dlBtn.onmouseover = function() { this.style.borderColor = 'var(--green)'; this.style.color = 'var(--green-dark)'; };
+        dlBtn.onmouseout  = function() { this.style.borderColor = 'var(--border)'; this.style.color = 'var(--text)'; };
       } else {
-        if (btn)  btn.innerHTML = dlSVG + ' Download Story Card';
-        if (instr) instr.textContent = "Download your Story Card, upload it to your Instagram Story, then add your review link using Instagram's Link Sticker.";
+        // Primary style: dark fill — the only action
+        dlBtn.style.background  = 'var(--text)';
+        dlBtn.style.color       = 'white';
+        dlBtn.style.border      = 'none';
+        dlBtn.onmouseover = function() { this.style.background = '#1a3d1e'; };
+        dlBtn.onmouseout  = function() { this.style.background = 'var(--text)'; };
+      }
+    }
+
+    // Instruction text
+    if (instr) {
+      if (isFeed) {
+        instr.textContent = canFileShare
+          ? 'Share your Feed Post to Instagram, or download it to your camera roll to post later. Copy the caption to use it in your post.'
+          : 'Download your Feed Post and share it to your Instagram feed. Copy the caption to add it to your post.';
+      } else {
+        instr.textContent = canFileShare
+          ? "Share or download your Story Card, then add your review link using Instagram's Link Sticker."
+          : "Download your Story Card, upload it to your Instagram Story, then add your review link using Instagram's Link Sticker.";
       }
     }
   }
