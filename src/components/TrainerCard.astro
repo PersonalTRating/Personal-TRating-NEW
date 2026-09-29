@@ -36,19 +36,13 @@ const {
 } = Astro.props;
 
 const rankStr = rank != null ? String(rank).padStart(2, '0') : '';
-const meta: string[] = [];
-if (city)    meta.push('📍 ' + city);
-if (spec)    meta.push('🏋 ' + spec.split(/[,\/]/)[0].trim());
-const metaStr = meta.join(' · ');
+const metaCity = city || '';
+const metaSpec = spec ? spec.split(/[,\/]/)[0].trim() : '';
 
-let reviewsStr = '';
-if (revCount === 0) {
-  reviewsStr = 'Be first to review';
-} else if (recentReviewCount >= 1) {
-  reviewsStr = '🔥 ' + recentReviewCount + ' verified ' + (recentReviewCount === 1 ? 'review' : 'reviews') + ' in the last 30 days';
-} else {
-  reviewsStr = revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews');
-}
+const reviewsBase = revCount === 0
+  ? 'Be first to review'
+  : revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews');
+const reviewsHot = recentReviewCount >= 1 && revCount > 0;
 
 const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
 ---
@@ -94,14 +88,23 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
       )}
       {isTrending && (
         <div class="trend-info">
-          <span class="trc-trending-pill">🔥 TRENDING</span>
+          <span class="trc-trending-pill"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span>
           <div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div>
         </div>
       )}
     </div>
-    {metaStr && <div class="trc-meta">{metaStr}</div>}
-    <div class:list={['trc-reviews', isTrending && recentReviewCount >= 1 && 'trc-reviews--hot']}>
-      {reviewsStr}
+    {(metaCity || metaSpec) && (
+      <div class="trc-meta">
+        {metaCity && <span class="trc-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{metaCity}</span>}
+        {metaCity && metaSpec && <span class="trc-meta-sep">·</span>}
+        {metaSpec && <span class="trc-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>{metaSpec}</span>}
+      </div>
+    )}
+    <div class:list={['trc-reviews', reviewsHot && 'trc-reviews--hot']}>
+      {reviewsHot
+        ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>{recentReviewCount} verified {recentReviewCount === 1 ? 'review' : 'reviews'} in the last 30 days</>
+        : reviewsBase
+      }
     </div>
   </div>
 
@@ -210,20 +213,38 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     border-radius: 20px;
     white-space: nowrap;
     box-shadow: 0 2px 6px rgba(180,0,0,0.45);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
   }
 
   .trc-meta {
     font-size: 0.78rem;
     color: rgba(255,255,255,0.42);
     margin-bottom: 0.2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+  .trc-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
   }
+  .trc-meta-sep { color: rgba(255,255,255,0.25); flex-shrink: 0; }
 
   .trc-reviews {
     font-size: 0.75rem;
     color: rgba(255,255,255,0.32);
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
   .trc-reviews--hot {
     color: rgba(220,100,60,0.9);

@@ -49,14 +49,19 @@ const heroBackground = _ht.startsWith('#')
   : (_heroThemePresets[_ht] ?? _heroThemePresets.forest);
 const avatarBorderColor = (trainer as any).avatar_color ?? 'rgba(255,255,255,0.2)';
 
-const specialtyEmoji: Record<string, string> = {
-  'Strength & Conditioning': '💪', 'Weight Loss': '🔥',
-  'HIIT & Cardio': '⚡',          'Rehabilitation': '🧘',
-  'Nutrition Coaching': '🥗',      'Sports Performance': '🏃',
-  'Powerlifting': '🏋️',           'Functional Fitness': '🤸',
-  'Hyrox':        '🏁',
+const specialtyIconSvg: Record<string, string> = {
+  'Strength & Conditioning': '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>',
+  'Weight Loss':             '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+  'HIIT & Cardio':           '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+  'Rehabilitation':          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  'Nutrition Coaching':      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>',
+  'Sports Performance':      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  'Powerlifting':            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>',
+  'Functional Fitness':      '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  'Hyrox':                   '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
 };
-const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️') : '🏋️';
+const defaultSpecialtyIcon = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>';
+const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?? defaultSpecialtyIcon) : defaultSpecialtyIcon;
 ---
 
 <!DOCTYPE html>
@@ -113,6 +118,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.75);
     font-size:0.73rem; font-weight:600; padding:0.28rem 0.75rem;
     border-radius:20px; border:1px solid rgba(255,255,255,0.15);
+    display:inline-flex; align-items:center; gap:0.3rem;
   }
 
   /* ── Card ── */
@@ -206,7 +212,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
 
   /* ── Thank-you ── */
   .rv-thanks { display:none; padding:3rem 2rem; text-align:center; }
-  .rv-thanks-icon { font-size:4rem; display:block; margin-bottom:1rem; }
+  .rv-thanks-icon { display:flex; align-items:center; justify-content:center; margin-bottom:1rem; }
   .rv-thanks h2 {
     font-family:'Playfair Display',serif; font-size:1.65rem;
     font-weight:900; margin-bottom:0.6rem;
@@ -250,8 +256,8 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
   {(trainer as any).username && <div style="font-size:0.9rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:0.2rem;margin-bottom:0.25rem;">@{(trainer as any).username}</div>}
   {trainer.business_name && <div class="rv-biz">{trainer.business_name}</div>}
   <div class="rv-tags">
-    {trainer.specialty && <span class="rv-tag">{emoji} {trainer.specialty}</span>}
-    {trainer.location  && <span class="rv-tag">📍 {trainer.location}</span>}
+    {trainer.specialty && <span class="rv-tag"><Fragment set:html={specialtyIcon} /> {trainer.specialty}</span>}
+    {trainer.location  && <span class="rv-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> {trainer.location}</span>}
   </div>
 </div>
 </div>
@@ -320,13 +326,13 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
       <div class="rv-footer">
         <div class="rv-error" id="rv-error-foot" style="margin-bottom:0.85rem;"></div>
         <button class="rv-btn" id="rv-submit">Submit Review →</button>
-        <div class="rv-trust">🔒 Verified by CoachCards · Your honest review helps others find great PTs</div>
+        <div class="rv-trust"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Verified by CoachCards · Your honest review helps others find great PTs</div>
       </div>
     </div>
 
     <!-- Thank-you state -->
     <div class="rv-thanks" id="rv-thanks">
-      <span class="rv-thanks-icon" id="rv-thanks-icon">⏳</span>
+      <span class="rv-thanks-icon" id="rv-thanks-icon"><svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
       <h2 id="rv-thanks-name">Thank you!</h2>
       <div class="rv-thanks-stars" id="rv-thanks-stars"></div>
       <p id="rv-thanks-body">Your review has been submitted and is currently being verified by our team. It will appear on their profile within 24 hours.</p>
@@ -418,7 +424,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
       formState.style.display = 'block';
       formState.innerHTML = `
         <div style="padding:2.5rem 2rem;text-align:center;max-width:400px;margin:0 auto;">
-          <div style="font-size:2.5rem;margin-bottom:1rem;">⭐</div>
+          <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:0.75rem;">Sign up to review ${tName}</h3>
           <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.75rem;">Create your free account in seconds — then leave your verified review straight away.</p>
           <a href="${signupUrl}" style="display:block;background:#3ab54a;color:white;padding:0.9rem 1.5rem;border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-bottom:0.85rem;">Create free account →</a>
@@ -438,7 +444,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
       if (formState) {
         formState.innerHTML = `
           <div style="padding:3rem 2rem;text-align:center;">
-            <div style="font-size:2.5rem;margin-bottom:1rem;">🚫</div>
+            <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg></div>
             <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:0.75rem;">Trainers can't leave reviews</h3>
             <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.5rem;">Only verified clients can review personal trainers on CoachCards.</p>
             <a href="/dashboard" style="display:inline-flex;align-items:center;gap:0.5rem;background:#3ab54a;color:white;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:0.875rem;text-decoration:none;">← Back to Dashboard</a>
@@ -555,7 +561,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
       if (formState) {
         formState.innerHTML = `
           <div style="padding:2.5rem 2rem;text-align:center;max-width:400px;margin:0 auto;">
-            <div style="font-size:2.5rem;margin-bottom:1rem;">⭐</div>
+            <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
             <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:0.75rem;">Sign up to review ${tName}</h3>
             <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.75rem;">Create your free account in seconds — then leave your verified review straight away.</p>
             <a href="${signupUrl}" style="display:block;background:#3ab54a;color:white;padding:0.9rem 1.5rem;border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-bottom:0.85rem;">Create free account →</a>
@@ -627,7 +633,7 @@ const emoji = trainer.specialty ? (specialtyEmoji[trainer.specialty] ?? '🏋️
     formState.style.display   = 'none';
     thanksState.style.display = 'block';
     thanksName.textContent    = `Thank you, ${name.split(' ')[0]}!`;
-    thanksStars.textContent   = `⏳ Pending Approval`;
+    thanksStars.innerHTML   = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Pending Approval`;
     thanksBody.textContent    = `Your review for ${trainerName} has been received. It will appear on their profile once approved — usually within 24 hours.`;
 
     // Update the back link destination and label to match auth state

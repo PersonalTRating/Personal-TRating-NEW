@@ -1,6 +1,7 @@
 ﻿---
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
+import ForTrainersTrustBar from '../components/ForTrainersTrustBar.astro';
 
 const { count: totalTrainers } = await supabase
   .from('trainers')
@@ -45,7 +46,11 @@ const { count: totalReviews } = await supabase
     border:1.5px solid #3ab54a; padding:0.2rem 0.55rem;
     border-radius:20px; display:inline-block; margin-bottom:1.1rem;
   }
-  .ft-step-icon  { font-size:1.75rem; margin-bottom:0.75rem; }
+  .ft-trust-bar  { display:flex; gap:2.5rem; padding-top:2rem; border-top:1px solid rgba(255,255,255,0.1); }
+  .ft-trust-item { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; color:rgba(255,255,255,0.55); }
+  .ft-trust-item svg { flex-shrink:0; }
+  .ft-trust-label { color:#fff; font-size:0.9rem; }
+  .ft-step-icon  { margin-bottom:0.75rem; display:flex; align-items:center; }
   .ft-step-title { font-weight:800; font-size:1rem; color:#111311; margin-bottom:0.5rem; line-height:1.3; }
   .ft-step-desc  { font-size:0.85rem; color:#7a8f7c; line-height:1.75; }
 
@@ -53,7 +58,7 @@ const { count: totalReviews } = await supabase
     background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
     border-radius:14px; padding:1.75rem;
   }
-  .ft-feature-icon  { font-size:1.6rem; margin-bottom:0.85rem; }
+  .ft-feature-icon  { margin-bottom:0.85rem; display:flex; align-items:center; }
   .ft-feature-title { font-weight:700; font-size:0.95rem; color:white; margin-bottom:0.4rem; }
   .ft-feature-desc  { font-size:0.82rem; color:rgba(255,255,255,0.52); line-height:1.72; }
 
@@ -196,20 +201,7 @@ const { count: totalReviews } = await supabase
       </a>
     </div>
 
-    <div class="ft-trust-bar" style="display:flex;gap:2.5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.1);">
-      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
-        🆓 <strong style="color:#fff;font-size:0.9rem;">Always free</strong>
-      </div>
-      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
-        🚫 <strong style="color:#fff;font-size:0.9rem;">No paid rankings</strong>
-      </div>
-      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
-        ✅ <strong style="color:#fff;font-size:0.9rem;">Verified clients only</strong>
-      </div>
-      <div style="display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);">
-        📍 <strong style="color:#fff;font-size:0.9rem;">UK-wide visibility</strong>
-      </div>
-    </div>
+    <ForTrainersTrustBar />
   </div>
 </section>
 
@@ -223,15 +215,15 @@ const { count: totalReviews } = await supabase
     </div>
     <div class="ft-feature-grid">
       {[
-        { icon:'💼', title:'Your business', desc:'We don\'t take a cut of your transactions and actively encourage bookings to happen off the platform. We simply facilitate the successful meeting of trainer and client.' },
-        { icon:'🏆', title:'Rise on merit, not budget', desc:'The ranking algorithm cares about one thing: what your clients actually say. Solid coaches rise naturally. You cannot buy your way to the top.' },
-        { icon:'🔗', title:'Keep your existing tools', desc:'Link your Instagram, booking system, and website directly from your profile. CoachCards works alongside your current setup — not instead of it.' },
-        { icon:'✨', title:'Show off your highlights', desc:'Add your specialty, certifications, and bio. Let your verified reviews speak for themselves. Clients in your area will see you at your best.' },
-        { icon:'📈', title:'Get found by serious clients', desc:'People searching CoachCards are actively looking to hire a PT. A strong profile puts you in front of motivated, ready-to-commit clients.' },
-        { icon:'🌊', title:'Grow with the platform', desc:'As CoachCards expands across the UK, every PT benefits. The more clients discover the platform, the more opportunities flow to top-ranked trainers.' },
+        { icon:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`, title:'Your business', desc:'We don\'t take a cut of your transactions and actively encourage bookings to happen off the platform. We simply facilitate the successful meeting of trainer and client.' },
+        { icon:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`, title:'Rise on merit, not budget', desc:'The ranking algorithm cares about one thing: what your clients actually say. Solid coaches rise naturally. You cannot buy your way to the top.' },
+        { icon:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`, title:'Keep your existing tools', desc:'Link your Instagram, booking system, and website directly from your profile. CoachCards works alongside your current setup — not instead of it.' },
+        { icon:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`, title:'Show off your highlights', desc:'Add your specialty, certifications, and bio. Let your verified reviews speak for themselves. Clients in your area will see you at your best.' },
+        { icon:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`, title:'Get found by serious clients', desc:'People searching CoachCards are actively looking to hire a PT. A strong profile puts you in front of motivated, ready-to-commit clients.' },
+        { icon:`<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M18.66 5.34l1.41-1.41"/><circle cx="12" cy="12" r="4"/></svg>`, title:'Grow with the platform', desc:'As CoachCards expands across the UK, every PT benefits. The more clients discover the platform, the more opportunities flow to top-ranked trainers.' },
       ].map(f => (
         <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:14px;padding:1.75rem;">
-          <div style="font-size:1.75rem;margin-bottom:0.85rem;">{f.icon}</div>
+          <div style="margin-bottom:0.85rem;"><Fragment set:html={f.icon} /></div>
           <div style="font-weight:800;font-size:0.95rem;color:#111311;margin-bottom:0.5rem;line-height:1.3;">{f.title}</div>
           <div style="font-size:0.82rem;color:#7a8f7c;line-height:1.75;">{f.desc}</div>
         </div>
@@ -253,19 +245,19 @@ const { count: totalReviews } = await supabase
     <div class="ft-step-grid">
       <div class="ft-step">
         <div class="ft-step-num">01</div>
-        <div class="ft-step-icon">👤</div>
+        <div class="ft-step-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="ft-step-title">Create your free profile</div>
         <div class="ft-step-desc">Add your name, city, specialty and qualification. Your public profile goes live immediately — searchable by anyone looking for a PT in your area.</div>
       </div>
       <div class="ft-step">
         <div class="ft-step-num">02</div>
-        <div class="ft-step-icon">🔗</div>
+        <div class="ft-step-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
         <div class="ft-step-title">Share your unique review link</div>
         <div class="ft-step-desc">After every session, send your client a personalised review link via WhatsApp, text or email. Only your real clients can leave a review — no anonymous ratings, ever.</div>
       </div>
       <div class="ft-step">
         <div class="ft-step-num">03</div>
-        <div class="ft-step-icon">📈</div>
+        <div class="ft-step-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div>
         <div class="ft-step-title">Climb the UK rankings</div>
         <div class="ft-step-desc">Every verified review updates your BMP score and your position on the national leaderboard. The more consistent you are, the higher you rank.</div>
       </div>
@@ -311,12 +303,12 @@ const { count: totalReviews } = await supabase
       <div style="font-weight:800;font-size:1.1rem;color:white;margin-bottom:1.5rem;text-align:center;">What this means for you as a PT</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="ft-proof-grid">
         {[
-          { icon:'🎯', title:'A fair playing field', desc:'Every PT starts at zero. Your score grows purely through verified client feedback — no pay-to-win, no favouritism.' },
-          { icon:'📈', title:'Rewards staying active', desc:'The momentum component means trainers who keep collecting reviews rank higher. Going quiet costs you — staying active rewards you.' },
-          { icon:'🔍', title:'Full transparency', desc:'You can see your score breakdown at any time in your dashboard. No black box — the three components are clearly defined.' },
+          { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`, title:'A fair playing field', desc:'Every PT starts at zero. Your score grows purely through verified client feedback — no pay-to-win, no favouritism.' },
+          { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`, title:'Rewards staying active', desc:'The momentum component means trainers who keep collecting reviews rank higher. Going quiet costs you — staying active rewards you.' },
+          { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`, title:'Full transparency', desc:'You can see your score breakdown at any time in your dashboard. No black box — the three components are clearly defined.' },
         ].map(w => (
           <div style="text-align:center;">
-            <div style="font-size:1.75rem;margin-bottom:0.65rem;">{w.icon}</div>
+            <div style="display:flex;align-items:center;justify-content:center;margin-bottom:0.65rem;"><Fragment set:html={w.icon} /></div>
             <div style="font-weight:700;font-size:0.9rem;color:white;margin-bottom:0.4rem;">{w.title}</div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.5);line-height:1.7;">{w.desc}</div>
           </div>
@@ -352,15 +344,15 @@ const { count: totalReviews } = await supabase
 
     <div class="ft-feature-grid">
       {[
-        { icon:'🌐', title:'Public Profile',          desc:'A clean, professional profile page showing your BMP score, reviews, bio, specialty, certifications and where you train.' },
-        { icon:'🔗', title:'Review Link Generator',   desc:'Create a unique client review link from your dashboard in one click. Share it however you like — WhatsApp, email, Instagram DM.' },
-        { icon:'📊', title:'Live BMP Score',          desc:'Your Body Muscle % score updates automatically with every verified review. It\'s transparent, formula-based and impossible to game.' },
-        { icon:'🏆', title:'UK Leaderboard',          desc:'Rank nationally and locally by city. Clients browsing your area will see you ranked against other PTs — rising as your reviews grow.' },
-        { icon:'📋', title:'PT Dashboard',            desc:'See all your reviews, track your BMP score history, manage your profile, and generate review links — all in one place.' },
-        { icon:'🚫', title:'Zero Fake Reviews',       desc:'Reviews only arrive through a link you send to a real client. There\'s no way to leave an anonymous review on your profile.' },
+        { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`, title:'Public Profile', desc:'A clean, professional profile page showing your BMP score, reviews, bio, specialty, certifications and where you train.' },
+        { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`, title:'Review Link Generator', desc:'Create a unique client review link from your dashboard in one click. Share it however you like — WhatsApp, email, Instagram DM.' },
+        { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`, title:'Live BMP Score', desc:'Your Body Muscle % score updates automatically with every verified review. It\'s transparent, formula-based and impossible to game.' },
+        { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`, title:'UK Leaderboard', desc:'Rank nationally and locally by city. Clients browsing your area will see you ranked against other PTs — rising as your reviews grow.' },
+        { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`, title:'PT Dashboard', desc:'See all your reviews, track your BMP score history, manage your profile, and generate review links — all in one place.' },
+        { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`, title:'Zero Fake Reviews', desc:'Reviews only arrive through a link you send to a real client. There\'s no way to leave an anonymous review on your profile.' },
       ].map(f => (
         <div class="ft-feature">
-          <div class="ft-feature-icon">{f.icon}</div>
+          <div class="ft-feature-icon"><Fragment set:html={f.icon} /></div>
           <div class="ft-feature-title">{f.title}</div>
           <div class="ft-feature-desc">{f.desc}</div>
         </div>

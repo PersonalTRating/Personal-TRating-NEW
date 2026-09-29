@@ -78,7 +78,7 @@
     padding:0.35rem 0; color:var(--muted); transition:color 0.15s;
   }
   .acc-bottom-nav button.active { color:var(--green); }
-  .acc-bottom-nav .bn-icon { font-size:1.35rem; line-height:1; }
+  .acc-bottom-nav .bn-icon { display:flex; align-items:center; justify-content:center; line-height:1; }
   .acc-bottom-nav .bn-label { font-size:0.6rem; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; }
   /* ── Real-time toast ── */
   @keyframes slideInToast {
@@ -107,7 +107,7 @@
   .notif-bell-btn {
     position:relative; background:none; border:none; cursor:pointer;
     padding:0.35rem 0.45rem; border-radius:8px; transition:background 0.15s;
-    font-size:1.2rem; line-height:1; display:flex; align-items:center;
+    display:flex; align-items:center;
   }
   .notif-bell-btn:hover { background:var(--off); }
   .notif-bell-badge {
@@ -200,7 +200,7 @@
   .action-btn-icon {
     width:42px; height:42px; border-radius:10px; flex-shrink:0;
     background:var(--green-light); display:flex; align-items:center;
-    justify-content:center; font-size:1.2rem;
+    justify-content:center;
   }
   .action-btn-body { flex:1; }
   .action-btn-title { font-weight:700; font-size:0.9rem; margin-bottom:0.15rem; }
@@ -212,7 +212,7 @@
     text-align:center; padding:2.5rem 1rem;
     border:2px dashed var(--border); border-radius:10px;
   }
-  .empty-state-icon { font-size:2.5rem; margin-bottom:0.875rem; display:block; }
+  .empty-state-icon { margin-bottom:0.875rem; display:flex; align-items:center; justify-content:center; }
   .empty-state-title { font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; }
   .empty-state-text  { font-size:0.82rem; color:var(--muted); line-height:1.7; max-width:340px; margin:0 auto; }
 
@@ -386,7 +386,7 @@
   .acc-sb-item { display:flex; align-items:center; gap:0.75rem; width:100%; background:none; border:none; border-left:3px solid transparent; padding:0.75rem 1.25rem; color:rgba(255,255,255,0.65); font-size:0.85rem; font-weight:600; font-family:'Manrope',sans-serif; cursor:pointer; text-decoration:none; text-align:left; transition:background 0.15s,color 0.15s; }
   .acc-sb-item:hover { color:white; background:rgba(255,255,255,0.05); }
   .acc-sb-item.active { color:white; background:rgba(58,181,74,0.12); border-left-color:#3ab54a; }
-  .acc-sb-icon { font-size:1rem; width:20px; text-align:center; }
+  .acc-sb-icon { width:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .acc-sb-footer { padding:1rem 1.25rem; border-top:1px solid rgba(255,255,255,0.08); }
   #acc-mob-tab { display:none; position:fixed; left:0; top:50%; transform:translateY(-50%); z-index:198; background:#3ab54a; border:none; border-radius:0 10px 10px 0; width:22px; height:64px; cursor:pointer; padding:0; align-items:center; justify-content:center; box-shadow:2px 0 8px rgba(0,0,0,0.15); transition:left 0.3s; }
   #acc-mob-tab.open { left:var(--acc-sb-w); }
@@ -422,15 +422,15 @@
     <div class="acc-sb-sub">CoachCards</div>
   </div>
   <nav class="acc-sb-nav">
-    <button class="acc-sb-item active" id="asb-home" onclick="accSbNav('home')"><span class="acc-sb-icon">🏠</span> Home</button>
-    <button class="acc-sb-item" id="asb-messages" onclick="accSbNav('messages')"><span class="acc-sb-icon">💬</span> Messages</button>
-    <button class="acc-sb-item" id="asb-reviews" onclick="accSbNav('reviews')"><span class="acc-sb-icon">⭐</span> Reviews</button>
-    <button class="acc-sb-item" id="asb-notifications" onclick="accSbNav('notifications')"><span class="acc-sb-icon">🔔</span> Alerts</button>
-    <button class="acc-sb-item" id="asb-profile" onclick="accSbNav('profile')"><span class="acc-sb-icon">👤</span> Profile</button>
-    <a class="acc-sb-item" href="/find-a-trainer"><span class="acc-sb-icon">🔍</span> Find a PT</a>
+    <button class="acc-sb-item active" id="asb-home" onclick="accSbNav('home')"><span class="acc-sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Home</button>
+    <button class="acc-sb-item" id="asb-messages" onclick="accSbNav('messages')"><span class="acc-sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Messages</button>
+    <button class="acc-sb-item" id="asb-reviews" onclick="accSbNav('reviews')"><span class="acc-sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> Reviews</button>
+    <button class="acc-sb-item" id="asb-notifications" onclick="accSbNav('notifications')"><span class="acc-sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span> Alerts</button>
+    <button class="acc-sb-item" id="asb-profile" onclick="accSbNav('profile')"><span class="acc-sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> Profile</button>
+    <a class="acc-sb-item" href="/find-a-trainer"><span class="acc-sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Find a PT</a>
   </nav>
   <div class="acc-sb-footer">
-    <button class="acc-sb-item" id="acc-sb-signout" style="color:rgba(255,255,255,0.5);width:100%;"><span class="acc-sb-icon">🚪</span> Sign Out</button>
+    <button class="acc-sb-item" id="acc-sb-signout" style="color:rgba(255,255,255,0.5);width:100%;"><span class="acc-sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Sign Out</button>
   </div>
 </aside>
 
@@ -450,7 +450,7 @@
     <div class="topbar-right">
       <a href="/find-a-trainer" class="topbar-link">Find a PT</a>
       <button class="notif-bell-btn" id="notif-bell-btn" title="Notifications" onclick="accTab('notifications', this)">
-        🔔<span class="notif-bell-badge" id="notif-bell-badge"></span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="notif-bell-badge" id="notif-bell-badge"></span>
       </button>
       <button class="signout-btn" id="signout-btn">Sign Out</button>
     </div>
@@ -484,7 +484,7 @@
         <div class="card-label">Discover</div>
         <div class="card-title">Find a PT</div>
         <a href="/find-a-trainer" class="action-btn">
-          <div class="action-btn-icon">🔍</div>
+          <div class="action-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
           <div class="action-btn-body">
             <div class="action-btn-title">Browse Personal Trainers</div>
             <div class="action-btn-desc">Search by city, specialty and rating.</div>
@@ -492,7 +492,7 @@
           <div class="action-btn-arrow">→</div>
         </a>
         <a href="/#leaderboard" class="action-btn">
-          <div class="action-btn-icon">🏆</div>
+          <div class="action-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div>
           <div class="action-btn-body">
             <div class="action-btn-title">View the Rankings</div>
             <div class="action-btn-desc">See the UK's top-ranked PTs.</div>
@@ -504,7 +504,7 @@
         <div class="card-label">Reviews</div>
         <div class="card-title">Leave a Review</div>
         <a href="/find-a-trainer" class="action-btn">
-          <div class="action-btn-icon">⭐</div>
+          <div class="action-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="#8B5CF6" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           <div class="action-btn-body">
             <div class="action-btn-title">Find Your Trainer</div>
             <div class="action-btn-desc">Search for your PT and leave a verified review directly from their profile.</div>
@@ -512,7 +512,7 @@
           <div class="action-btn-arrow">→</div>
         </a>
         <a href="/#leaderboard" class="action-btn">
-          <div class="action-btn-icon">📊</div>
+          <div class="action-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
           <div class="action-btn-body">
             <div class="action-btn-title">See the Impact</div>
             <div class="action-btn-desc">Your review counts toward their BMP score and UK ranking.</div>
@@ -530,7 +530,7 @@
     <div id="cl-conv-loading" style="text-align:center;padding:2rem;color:var(--muted);font-size:0.875rem;">Loading conversations…</div>
     <div id="cl-conv-empty" style="display:none;">
       <div class="empty-state">
-        <span class="empty-state-icon">💬</span>
+        <span class="empty-state-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
         <div class="empty-state-title">No conversations yet</div>
         <div class="empty-state-text">When you message a personal trainer from their profile, your conversation will appear here.</div>
       </div>
@@ -544,7 +544,7 @@
     <div class="card-title" style="margin-bottom:1.25rem;">My Reviews</div>
     <div id="reviews-list" style="display:flex;flex-direction:column;gap:0.85rem;">
       <div class="empty-state">
-        <span class="empty-state-icon">📝</span>
+        <span class="empty-state-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
         <div class="empty-state-title">No reviews yet</div>
         <div class="empty-state-text">Reviews you submit will appear here. Find your trainer above and leave your first review.</div>
       </div>
@@ -641,11 +641,11 @@
 <!-- Mobile bottom nav -->
 <nav class="acc-bottom-nav">
   <ul>
-    <li><button onclick="accTab('home', this)" id="abn-home" class="active"><span class="bn-icon">🏠</span><span class="bn-label">Home</span></button></li>
-    <li><button onclick="accTab('messages', this)" id="abn-messages"><span class="bn-icon">💬</span><span class="bn-label">Messages</span></button></li>
-    <li><button onclick="accTab('reviews', this)" id="abn-reviews"><span class="bn-icon">⭐</span><span class="bn-label">Reviews</span></button></li>
-    <li><button onclick="accTab('notifications', this)" id="abn-notifications" style="position:relative;"><span class="bn-icon">🔔</span><span class="bn-label">Alerts</span><span id="abn-notif-dot" style="display:none;position:absolute;top:4px;right:18px;width:8px;height:8px;background:#e53935;border-radius:50%;border:1.5px solid white;"></span></button></li>
-    <li><button onclick="accTab('profile', this)" id="abn-profile"><span class="bn-icon">👤</span><span class="bn-label">Profile</span></button></li>
+    <li><button onclick="accTab('home', this)" id="abn-home" class="active"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span class="bn-label">Home</span></button></li>
+    <li><button onclick="accTab('messages', this)" id="abn-messages"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span class="bn-label">Messages</span></button></li>
+    <li><button onclick="accTab('reviews', this)" id="abn-reviews"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span><span class="bn-label">Reviews</span></button></li>
+    <li><button onclick="accTab('notifications', this)" id="abn-notifications" style="position:relative;"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span><span class="bn-label">Alerts</span><span id="abn-notif-dot" style="display:none;position:absolute;top:4px;right:18px;width:8px;height:8px;background:#e53935;border-radius:50%;border:1.5px solid white;"></span></button></li>
+    <li><button onclick="accTab('profile', this)" id="abn-profile"><span class="bn-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span><span class="bn-label">Profile</span></button></li>
   </ul>
 </nav>
 
@@ -657,14 +657,14 @@
       <div class="cl-chat-name" id="cl-chat-name">…</div>
       <div class="cl-chat-sub">Personal Trainer · CoachCards</div>
     </div>
-    <button class="cl-chat-close" onclick="clCloseConv()">✕</button>
+    <button class="cl-chat-close" onclick="clCloseConv()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div id="cl-chat-msgs" class="cl-chat-msgs"></div>
   <div class="cl-chat-input-row">
     <textarea id="cl-chat-input" class="cl-chat-input" rows="1"
       placeholder="Type a message…"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();clSendMsg();}"></textarea>
-    <button class="cl-chat-send" onclick="clSendMsg()">➤</button>
+    <button class="cl-chat-send" onclick="clSendMsg()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 

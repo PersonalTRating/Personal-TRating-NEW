@@ -83,7 +83,7 @@
   }
   .sb-item:hover { color:white; background:rgba(255,255,255,0.05); }
   .sb-item.active { color:white; background:rgba(58,181,74,0.12); border-left-color:var(--green); }
-  .sb-icon { font-size:1rem; width:20px; text-align:center; }
+  .sb-icon { width:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .sb-ext-item {
     display:flex; align-items:center; gap:0.65rem;
     padding:0.5rem 1.25rem 0.5rem 2rem;
@@ -93,7 +93,7 @@
     text-decoration:none; transition:color 0.15s, background 0.15s;
   }
   .sb-ext-item:hover { color:#3ab54a; background:rgba(255,255,255,0.04); }
-  .sb-ext-icon { font-size:0.85rem; width:18px; text-align:center; }
+  .sb-ext-icon { width:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .sb-badge {
     margin-left:auto; background:var(--green); color:white;
     font-size:0.62rem; font-weight:800; padding:0.15rem 0.45rem;
@@ -165,7 +165,8 @@
   .stat-change { font-size:0.75rem; font-weight:600; display:flex; align-items:center; gap:0.3rem; }
   .stat-change.up   { color:var(--green-dark); }
   .stat-change.down { color:var(--red); }
-  .stat-icon { font-size:1.5rem; margin-bottom:0.75rem; }
+  .stat-icon { margin-bottom:0.75rem; display:flex; align-items:center; }
+  .stat-icon-bg { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
 
   /* ── GRID LAYOUTS ── */
   .two-col   { display:grid; grid-template-columns:1fr 1fr;  gap:1.25rem; margin-bottom:1.25rem; }
@@ -283,6 +284,7 @@
     border:1px solid rgba(255,255,255,0.18); color:rgba(255,255,255,0.75);
     font-size:0.78rem; font-weight:600; font-family:'Manrope',sans-serif;
     background:rgba(255,255,255,0.06); transition:all 0.15s;
+    display:inline-flex; align-items:center; gap:0.35rem;
   }
   .rk-chip:hover, .rk-chip.rk-chip-active { border-color:#3ab54a; color:#3ab54a; background:rgba(58,181,74,0.1); }
 
@@ -308,6 +310,7 @@
     font-weight:600; border:1.5px solid var(--border); cursor:pointer;
     transition:all 0.15s; color:var(--muted); background:white;
     font-family:'Manrope',sans-serif;
+    display:inline-flex; align-items:center; gap:0.35rem;
   }
   .tag-pill.selected { background:var(--green-light); border-color:var(--green); color:var(--green-dark); }
   /* ── Avatar preview circle ────────────────────────────── */
@@ -582,7 +585,7 @@
     padding:0.4rem 0.25rem; color:#7a8f7c; transition:color 0.15s;
   }
   .mob-bottom-nav button.active { color:#3ab54a; }
-  .mob-bottom-nav .nav-icon { font-size:1.45rem; line-height:1; }
+  .mob-bottom-nav .nav-icon { line-height:1; display:flex; align-items:center; justify-content:center; }
   .mob-bottom-nav .nav-label { font-size:0.58rem; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; }
   .mob-bottom-nav .nav-badge {
     position:absolute; top:2px; right:calc(50% - 18px);
@@ -807,57 +810,57 @@
   <nav class="sb-nav">
     <div class="sb-section-label">Navigate</div>
     <button class="sb-item" onclick="window.location.href='/for-trainers'">
-      <span class="sb-icon">🏠</span> Home Page
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Home Page
     </button>
     <a class="sb-ext-item" href="/?cv=1" target="_blank" rel="noopener">
-      <span class="sb-ext-icon">🌐</span> Customer Overview ↗
+      <span class="sb-ext-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Customer Overview ↗
     </a>
     <a class="sb-ext-item" id="sb-profile-link" href="#" target="_blank" rel="noopener">
-      <span class="sb-ext-icon">👁</span> My Public Profile ↗
+      <span class="sb-ext-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span> My Public Profile ↗
     </a>
 
     <div class="sb-section-label">Main</div>
     <button class="sb-item active" onclick="showPage('overview')">
-      <span class="sb-icon">📊</span> Overview
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span> Overview
     </button>
     <button class="sb-item" onclick="showPage('profile')">
-      <span class="sb-icon">👤</span> My Profile
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span> My Profile
     </button>
     <button class="sb-item" onclick="showPage('reviews')">
-      <span class="sb-icon">⭐</span> Reviews
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span> Reviews
       <span class="sb-badge" id="sb-review-badge">0</span>
     </button>
     <button class="sb-item" onclick="showPage('links')">
-      <span class="sb-icon">🔗</span> Review Links
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span> Review Links
     </button>
     <button class="sb-item" onclick="showPage('rankings')">
-      <span class="sb-icon">🏆</span> Rankings
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></span> Rankings
     </button>
     <button class="sb-item" onclick="showPage('feed')">
-      <span class="sb-icon">📸</span> My Feed
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span> My Feed
     </button>
     <button class="sb-item" onclick="showPage('messages')">
-      <span class="sb-icon">💬</span> Messages
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span> Messages
       <span class="sb-badge" id="sb-msg-badge" style="display:none;">0</span>
     </button>
 
     <div class="sb-section-label">Account</div>
     <button class="sb-item" onclick="showPage('setup')">
-      <span class="sb-icon">✅</span> Getting Started
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span> Getting Started
       <span class="sb-badge" id="sb-setup-badge" style="display:none;"></span>
     </button>
     <button class="sb-item" onclick="showPage('notifications')">
-      <span class="sb-icon">🔔</span> Notifications
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span> Notifications
       <span class="sb-badge" id="notif-badge" style="display:none;">0</span>
     </button>
     <button class="sb-item">
-      <span class="sb-icon">⚙️</span> Settings
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg></span> Settings
     </button>
     <a class="sb-item" id="view-profile-link" href="/">
-      <span class="sb-icon">🌐</span> View Public Profile
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> View Public Profile
     </a>
     <button class="sb-item" id="sign-out-btn-sb" style="color:#f87171;border-top:1px solid rgba(255,255,255,0.06);margin-top:0.5rem;">
-      <span class="sb-icon">🚪</span> Sign Out
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span> Sign Out
     </button>
   </nav>
 
@@ -880,7 +883,7 @@
   <!-- TOP BAR -->
   <div class="topbar">
     <div style="display:flex;align-items:center;gap:0.75rem;">
-      <button class="mob-menu-btn" id="mob-menu-btn" onclick="toggleMobMenu()" style="display:none;" aria-label="Menu">☰</button>
+      <button class="mob-menu-btn" id="mob-menu-btn" onclick="toggleMobMenu()" style="display:none;" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div class="topbar-left">
         <h1 id="page-title">Overview</h1>
         <p  id="page-sub">Loading your dashboard…</p>
@@ -888,7 +891,7 @@
     </div>
     <div class="topbar-right">
       <div class="notif-btn" onclick="showPage('notifications')" style="cursor:pointer;">
-        🔔<div class="notif-dot"></div>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><div class="notif-dot"></div>
       </div>
       <button class="topbar-btn" onclick="showPage('links')">+ Generate Review Link</button>
       <button class="topbar-signout" id="sign-out-btn">Sign Out</button>
@@ -905,7 +908,7 @@
         <div class="onboard-top">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;">
             <div class="onboard-heading">Complete your profile</div>
-            <button class="onboard-dismiss" id="onboard-dismiss-btn" title="Dismiss">✕</button>
+            <button class="onboard-dismiss" id="onboard-dismiss-btn" title="Dismiss"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
           </div>
           <div class="onboard-prog-wrap" style="align-items:flex-start;margin-top:0.5rem;">
             <div class="onboard-prog-label"><span id="onboard-done-count">0</span> of <span id="onboard-total-count">5</span> complete</div>
@@ -919,26 +922,26 @@
       </div>
 
       <div class="stats-grid">
-        <div class="stat-card" style="--stat-color:rgba(58,181,74,0.1)">
-          <div class="stat-icon">⭐</div>
+        <div class="stat-card" style="--stat-color:rgba(58,181,74,0.08)">
+          <div class="stat-icon"><div class="stat-icon-bg" style="background:#eaf7ec;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg></div></div>
           <div class="stat-label">BMP Score</div>
           <div class="stat-value" id="stat-bmp" style="color:var(--green-dark)">—</div>
           <div class="stat-change up" id="stat-bmp-change"></div>
         </div>
-        <div class="stat-card" style="--stat-color:rgba(184,134,11,0.08)">
-          <div class="stat-icon">🏆</div>
+        <div class="stat-card" style="--stat-color:rgba(245,158,11,0.1)">
+          <div class="stat-icon"><div class="stat-icon-bg" style="background:#fef3c7;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div></div>
           <div class="stat-label">UK Ranking</div>
           <div class="stat-value" id="stat-rank" style="color:var(--gold)">—</div>
           <div class="stat-change up" id="stat-rank-change"></div>
         </div>
-        <div class="stat-card" style="--stat-color:rgba(58,181,74,0.06)">
-          <div class="stat-icon">📝</div>
+        <div class="stat-card" style="--stat-color:rgba(139,92,246,0.1)">
+          <div class="stat-icon"><div class="stat-icon-bg" style="background:#f3eeff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="#8B5CF6" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div></div>
           <div class="stat-label">Total Reviews</div>
           <div class="stat-value" id="stat-reviews">—</div>
           <div class="stat-change up" id="stat-reviews-change"></div>
         </div>
-        <div class="stat-card" style="--stat-color:rgba(58,181,74,0.06)">
-          <div class="stat-icon">👁️</div>
+        <div class="stat-card" style="--stat-color:rgba(14,165,233,0.1)">
+          <div class="stat-icon"><div class="stat-icon-bg" style="background:#e0f2fe;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
           <div class="stat-label">Profile Views</div>
           <div class="stat-value" id="stat-views">—</div>
           <div class="stat-change up" id="stat-views-change"></div>
@@ -1052,7 +1055,7 @@
                 <div class="avatar-preview-circle" id="profile-avatar-preview" onclick="document.getElementById('avatar-file-input').click()" style="cursor:pointer;border-color:rgba(255,255,255,0.25);">
                   <!-- filled by JS: photo or initials -->
                 </div>
-                <div style="position:absolute;bottom:0;right:0;background:var(--green);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.75rem;cursor:pointer;border:2px solid white;" onclick="document.getElementById('avatar-file-input').click()">📷</div>
+                <div style="position:absolute;bottom:0;right:0;background:var(--green);color:white;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid white;" onclick="document.getElementById('avatar-file-input').click()"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
                 <input id="avatar-file-input" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handleAvatarUpload(this)">
               </div>
               <div>
@@ -1155,16 +1158,16 @@
         </div>
         <div class="card-body">
           <div class="tag-wrap">
-            <button class="tag-pill selected" onclick="toggleTag(this)">💪 Strength & Conditioning</button>
-            <button class="tag-pill"          onclick="toggleTag(this)">🔥 Weight Loss</button>
-            <button class="tag-pill selected" onclick="toggleTag(this)">🏃 Sports Performance</button>
-            <button class="tag-pill"          onclick="toggleTag(this)">⚡ HIIT & Cardio</button>
-            <button class="tag-pill"          onclick="toggleTag(this)">🧘 Rehabilitation</button>
-            <button class="tag-pill selected" onclick="toggleTag(this)">🥗 Nutrition Coaching</button>
-            <button class="tag-pill"          onclick="toggleTag(this)">🏋️ Powerlifting</button>
-            <button class="tag-pill"          onclick="toggleTag(this)">🤸 Functional Fitness</button>
-            <button class="tag-pill"          onclick="toggleTag(this)">🏁 Hyrox</button>
-            <button class="tag-pill" id="specialty-other-pill" onclick="toggleSpecialtyOther(this)">✏️ Other</button>
+            <button class="tag-pill selected" onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>Strength &amp; Conditioning</button>
+            <button class="tag-pill"          onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Weight Loss</button>
+            <button class="tag-pill selected" onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Sports Performance</button>
+            <button class="tag-pill"          onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>HIIT &amp; Cardio</button>
+            <button class="tag-pill"          onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Rehabilitation</button>
+            <button class="tag-pill selected" onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>Nutrition Coaching</button>
+            <button class="tag-pill"          onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>Powerlifting</button>
+            <button class="tag-pill"          onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Functional Fitness</button>
+            <button class="tag-pill"          onclick="toggleTag(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Hyrox</button>
+            <button class="tag-pill" id="specialty-other-pill" onclick="toggleSpecialtyOther(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Other</button>
           </div>
           <div id="specialty-other-wrap" style="display:none;margin-top:0.75rem;">
             <input class="form-input" type="text" id="specialty-other-input" placeholder="e.g. Boxing, Yoga, Pre/Postnatal…" maxlength="50">
@@ -1294,9 +1297,9 @@
       <div class="section-heading">Your Reviews</div>
 
       <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
-        <div class="stat-card"><div class="stat-icon">⭐</div><div class="stat-label">Average Rating</div><div class="stat-value" id="rev-stat-avg" style="color:var(--gold)">—</div><div class="stat-change up" id="rev-stat-avg-sub"></div></div>
-        <div class="stat-card"><div class="stat-icon">📝</div><div class="stat-label">Total Reviews</div><div class="stat-value" id="rev-stat-total">—</div><div class="stat-change up" id="rev-stat-total-sub"></div></div>
-        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Verified Rate</div><div class="stat-value" id="rev-stat-verified">—</div><div class="stat-change up">All client-verified</div></div>
+        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-label">Average Rating</div><div class="stat-value" id="rev-stat-avg" style="color:var(--gold)">—</div><div class="stat-change up" id="rev-stat-avg-sub"></div></div>
+        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><div class="stat-label">Total Reviews</div><div class="stat-value" id="rev-stat-total">—</div><div class="stat-change up" id="rev-stat-total-sub"></div></div>
+        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="stat-label">Verified Rate</div><div class="stat-value" id="rev-stat-verified">—</div><div class="stat-change up">All client-verified</div></div>
       </div>
 
       <div class="card">
@@ -1340,7 +1343,7 @@
               <button id="download-card-btn" onclick="downloadShareCard()" aria-label="Download Instagram Story Card"
                 style="width:100%;padding:0.9rem;background:var(--text);color:white;border:none;border-radius:10px;font-weight:700;font-size:0.9rem;cursor:pointer;font-family:'Manrope',sans-serif;transition:background 0.2s;display:flex;align-items:center;justify-content:center;gap:0.45rem;"
                 onmouseover="this.style.background='#1a3d1e'" onmouseout="this.style.background='var(--text)'">
-                ⬇️ Download Story Card
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Story Card
               </button>
               <div style="margin-top:0.65rem;">
                 <button id="ig-copy-link-btn" onclick="igCopyLink(this)"
@@ -1552,12 +1555,12 @@
         <!-- Specialty chips -->
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1.5rem;">
           <button class="rk-chip rk-chip-active" onclick="rkSetSpec(this,'')">All</button>
-          <button class="rk-chip" onclick="rkSetSpec(this,'strength')">💪 Strength</button>
-          <button class="rk-chip" onclick="rkSetSpec(this,'weight loss')">🏋 Weight Loss</button>
-          <button class="rk-chip" onclick="rkSetSpec(this,'hiit')">🏃 HIIT &amp; Cardio</button>
-          <button class="rk-chip" onclick="rkSetSpec(this,'rehabilitation')">🩺 Rehabilitation</button>
-          <button class="rk-chip" onclick="rkSetSpec(this,'nutrition')">🥗 Nutrition</button>
-          <button class="rk-chip" onclick="rkSetSpec(this,'sports')">⚽ Sports</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'strength')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>Strength</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'weight loss')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Weight Loss</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'hiit')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>HIIT &amp; Cardio</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'rehabilitation')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Rehabilitation</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'nutrition')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>Nutrition</button>
+          <button class="rk-chip" onclick="rkSetSpec(this,'sports')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>Sports</button>
         </div>
 
         <!-- Count -->
@@ -1616,13 +1619,13 @@
             ondragleave="this.style.borderColor='var(--border)';this.style.background=''"
             ondrop="handlePostDrop(event)">
             <div id="post-img-placeholder">
-              <div style="font-size:2rem;margin-bottom:0.4rem;">📷</div>
+              <div style="margin-bottom:0.4rem;display:flex;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
               <div style="font-weight:600;font-size:0.875rem;color:var(--text);margin-bottom:0.2rem;">Add a photo <span style="font-weight:400;color:var(--muted);">(optional)</span></div>
               <div style="font-size:0.75rem;color:var(--muted);">Click or drag & drop · JPG, PNG, WebP · max 10 MB</div>
             </div>
             <div id="post-img-preview" style="display:none;position:relative;">
               <img id="post-img-preview-src" style="max-width:100%;max-height:260px;border-radius:8px;object-fit:cover;" />
-              <button onclick="event.stopPropagation();clearPostImg()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;">✕</button>
+              <button onclick="event.stopPropagation();clearPostImg()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.6);color:white;border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
             </div>
             <input id="post-img-input" type="file" accept="image/jpeg,image/png,image/webp" style="display:none;" onchange="handlePostImgSelect(this)">
           </div>
@@ -1669,7 +1672,7 @@
 
       <div id="msg-empty" class="card" style="display:none;">
         <div style="padding:3rem;text-align:center;">
-          <div style="font-size:2.5rem;margin-bottom:1rem;">💬</div>
+          <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
           <div style="font-weight:700;margin-bottom:0.4rem;">No messages yet</div>
           <div style="color:var(--muted);font-size:0.85rem;max-width:300px;margin:0 auto;">When a client reaches out from your public profile, the conversation will appear here.</div>
         </div>
@@ -1728,14 +1731,14 @@
       <div class="tr-chat-name" id="tr-chat-name">…</div>
       <div class="tr-chat-sub">Client · CoachCards</div>
     </div>
-    <button class="tr-chat-close" onclick="closeMsgThread()">✕</button>
+    <button class="tr-chat-close" onclick="closeMsgThread()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div id="tr-chat-msgs" class="tr-chat-msgs"></div>
   <div class="tr-chat-input-row">
     <textarea id="msg-reply-input" class="tr-chat-input" rows="1"
       placeholder="Type your reply…"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTrainerReply();}"></textarea>
-    <button class="tr-chat-send" onclick="sendTrainerReply()">➤</button>
+    <button class="tr-chat-send" onclick="sendTrainerReply()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 
@@ -1856,10 +1859,10 @@
     el.innerHTML = trainerGyms.map((g, i) => `
       <div style="display:flex;align-items:center;justify-content:space-between;background:#f4f6f4;border:1px solid var(--border);border-radius:8px;padding:0.65rem 0.9rem;">
         <div>
-          <div style="font-weight:700;font-size:0.875rem;">🏋️ ${g.name}</div>
-          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.15rem;">📍 ${g.location}</div>
+          <div style="font-weight:700;font-size:0.875rem;display:flex;align-items:center;gap:0.4rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>${g.name}</div>
+          <div style="font-size:0.75rem;color:var(--muted);margin-top:0.15rem;display:flex;align-items:center;gap:0.3rem;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${g.location}</div>
         </div>
-        <button onclick="removeGym(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:0.2rem 0.5rem;border-radius:4px;" title="Remove">✕</button>
+        <button onclick="removeGym(${i})" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:0.2rem 0.5rem;border-radius:4px;display:flex;align-items:center;" title="Remove"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     `).join('');
   }
@@ -2059,8 +2062,8 @@
     const bmpChangeEl  = document.getElementById('stat-bmp-change');
     const revChangeEl  = document.getElementById('stat-reviews-change');
     const viewChangeEl = document.getElementById('stat-views-change');
-    if (bmpChangeEl)  bmpChangeEl.textContent  = hasBmp
-      ? ((trainer as any).is_trending ? '🔥 Trending · based on verified reviews' : 'Based on verified reviews')
+    if (bmpChangeEl)  bmpChangeEl.innerHTML  = hasBmp
+      ? ((trainer as any).is_trending ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Trending &middot; based on verified reviews' : 'Based on verified reviews')
       : 'Earn your first review to unlock';
     if (revChangeEl)  revChangeEl.textContent  = (trainer.review_count ?? 0) > 0 ? `${trainer.review_count} verified reviews` : 'No reviews yet — send your first link';
 
@@ -2093,12 +2096,12 @@
         const banner   = document.createElement('div');
         banner.className = 'review-alert';
         banner.innerHTML = `
-          <div class="review-alert-icon">🎉</div>
+          <div class="review-alert-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
           <div>
             <div class="review-alert-title">You got ${label}</div>
             <div class="review-alert-sub">${subtext}</div>
           </div>
-          <button class="review-alert-close" onclick="this.closest('.review-alert').remove()">✕</button>`;
+          <button class="review-alert-close" onclick="this.closest('.review-alert').remove()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>`;
         overviewPage.insertBefore(banner, overviewPage.firstChild);
       }
     }
@@ -2126,7 +2129,7 @@
       const deg = Math.round(((trainer.bmp_score ?? 0) / 100) * 360);
       gaugeCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
     }
-    if (gaugeRank) gaugeRank.textContent = hasBmp ? `🏆 Ranked #${rank} in the UK`   : '🔒 Rank unlocks with first review';
+    if (gaugeRank) gaugeRank.innerHTML = hasBmp ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>Ranked #${rank} in the UK` : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
     if (gaugeSub)  gaugeSub.textContent  = hasBmp ? `Competing with PTs across the UK`      : 'Start collecting verified reviews';
 
     // ── Fetch this PT's real reviews ─────────────────────────────────────
@@ -2154,7 +2157,7 @@
       if (reviews.length === 0) {
         recentList.innerHTML = `
           <div style="padding:2.5rem 0;text-align:center;">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">⭐</div>
+            <div style="margin-bottom:0.5rem;display:flex;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
             <div style="font-weight:700;font-size:0.9rem;color:white;margin-bottom:0.3rem;font-family:'Manrope',sans-serif;">No reviews yet</div>
             <div style="font-size:0.8rem;color:rgba(255,255,255,0.4);line-height:1.6;max-width:280px;margin:0 auto 1rem;font-family:'Manrope',sans-serif;">Generate a review link and send it to your first client after a session.</div>
             <button onclick="showPage('links')" style="padding:0.55rem 1.25rem;background:#3ab54a;color:white;border:none;border-radius:8px;font-weight:700;font-size:0.82rem;cursor:pointer;font-family:'Manrope',sans-serif;">+ Generate Review Link</button>
@@ -2204,7 +2207,7 @@
       if (reviews.length === 0) {
         allList.innerHTML = `
           <div style="padding:3rem 1.5rem;text-align:center;">
-            <div style="font-size:2.5rem;margin-bottom:0.75rem;">⭐</div>
+            <div style="margin-bottom:0.75rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
             <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:1.15rem;color:#0d1a0e;margin-bottom:0.4rem;">No reviews yet</div>
             <div style="font-size:0.84rem;color:#7a8f7c;line-height:1.65;max-width:340px;margin:0 auto;">Send your first review link to a client after your next session and their verified review will appear here.</div>
           </div>`;
@@ -2502,7 +2505,7 @@
       reviews.slice(0, 8).forEach((r: any, i: number) => {
         const quote = r.review_text ? `"${r.review_text.slice(0, 140)}${r.review_text.length > 140 ? '…' : ''}"` : '';
         notifs.push({
-          iconBg: '#e8f4fd', iconColor: '#3b82f6', iconChar: '💬', badge: '',
+          iconBg: '#e8f4fd', iconColor: '#3b82f6', iconChar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`, badge: '',
           title: 'New review received',
           body:  `${r.reviewer_name} gave you ${r.rating} dumbbell${r.rating !== 1 ? 's' : ''}.<br><span style="font-style:italic;color:#7a8f7c;">${quote}</span>`,
           time:   timeAgo(r.created_at),
@@ -2549,7 +2552,7 @@
             <div style="font-size:0.8rem;color:#7a8f7c;margin-top:0.15rem;">Showing most recent first</div>
           </div>
           <div style="padding:3rem 1.5rem;text-align:center;">
-            <div style="font-size:2rem;margin-bottom:0.5rem;">🔔</div>
+            <div style="margin-bottom:0.5rem;display:flex;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
             <div style="font-weight:700;font-size:0.9rem;color:#0d1a0e;margin-bottom:0.25rem;">No notifications yet</div>
             <div style="font-size:0.8rem;color:#7a8f7c;">Notifications appear when clients leave you reviews.</div>
           </div>`;
@@ -2722,8 +2725,8 @@
     if (dlBtn) {
       const testFile = new File([''], 'test.png', { type: 'image/png' });
       dlBtn.innerHTML = (navigator.canShare && navigator.canShare({ files: [testFile] }))
-        ? '📤 Share Card'
-        : '⬇️ Save Card';
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>Share Card'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Save Card';
     }
 
     (window as any).__ptReviewUrl  = reviewUrl;
@@ -2784,7 +2787,7 @@
         : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
       const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
       const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
-      const meta = [pt.city||pt.location ? '📍 '+(pt.city||pt.location) : '', pt.specialty ? '🏋 '+pt.specialty : ''].filter(Boolean).join('  ·  ');
+      const meta = [pt.city||pt.location ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+(pt.city||pt.location) : '', pt.specialty ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'+pt.specialty : ''].filter(Boolean).join('  ·  ');
       const glow = isYou
         ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
         : 'border:2px solid #7defa0;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);background:#111311;';
@@ -2871,7 +2874,7 @@
     const miniSub    = document.getElementById('mini-gauge-sub')    as HTMLElement;
     const miniCircle = document.getElementById('mini-gauge-circle') as HTMLElement;
     if (miniScore) miniScore.textContent = hasBmp ? String(trainer.bmp_score) : '—';
-    if (miniRank)  miniRank.textContent  = hasBmp ? `🏆 #${rank} in the UK`          : '🔒 Rank unlocks with first review';
+    if (miniRank)  miniRank.innerHTML  = hasBmp ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>#${rank} in the UK` : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
     if (miniSub)   miniSub.textContent   = hasBmp ? `Competing with PTs across the UK`       : 'Collect verified reviews to rank';
     if (miniCircle && hasBmp) {
       const deg = Math.round(((trainer.bmp_score ?? 0) / 100) * 360);
@@ -3807,7 +3810,7 @@
         ' Share Story Card';
       if (instr) instr.textContent = "Share your Story Card to Instagram or another app, then add your review link using Instagram's Link Sticker.";
     } else {
-      if (btn) btn.innerHTML = '⬇️ Download Story Card';
+      if (btn) btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Story Card';
       if (instr) instr.textContent = "Download your Story Card, upload it to your Instagram Story, then add your review link using Instagram's Link Sticker.";
     }
   }
@@ -4115,7 +4118,7 @@
     var posts = res.data || [];
     if (subEl) subEl.textContent = posts.length + ' post' + (posts.length !== 1 ? 's' : '') + ' published';
     if (posts.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center;padding:2.5rem 0;"><div style="font-size:2rem;margin-bottom:0.5rem;">📸</div><div style="font-weight:700;font-size:0.9rem;color:var(--text);margin-bottom:0.3rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Use the form above to publish your first update.</div></div>';
+      listEl.innerHTML = '<div style="text-align:center;padding:2.5rem 0;"><div style="margin-bottom:0.5rem;display:flex;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div style="font-weight:700;font-size:0.9rem;color:var(--text);margin-bottom:0.3rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Use the form above to publish your first update.</div></div>';
       return;
     }
     listEl.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:1.25rem;padding:0.25rem 0;">'
@@ -4145,7 +4148,7 @@
     var posts = res.data || [];
     if (subEl) subEl.textContent = posts.length + ' recent post' + (posts.length !== 1 ? 's' : '');
     if (posts.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center;padding:2rem 0;"><div style="font-size:1.75rem;margin-bottom:0.5rem;">📸</div><div style="font-weight:700;font-size:0.88rem;color:var(--text);margin-bottom:0.25rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Click "+ New Post →" to share your first update.</div></div>';
+      listEl.innerHTML = '<div style="text-align:center;padding:2rem 0;"><div style="margin-bottom:0.5rem;display:flex;justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div style="font-weight:700;font-size:0.88rem;color:var(--text);margin-bottom:0.25rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Click "+ New Post →" to share your first update.</div></div>';
       return;
     }
     // Fetch like counts for these posts
@@ -4165,7 +4168,7 @@
           + (p.content ? '<div style="font-size:0.82rem;line-height:1.6;color:var(--text);margin-bottom:0.4rem;">' + p.content + '</div>' : '')
           + '<div style="display:flex;align-items:center;gap:0.6rem;">'
           + '<span style="font-size:0.68rem;color:var(--muted);">' + date + '</span>'
-          + (likes > 0 ? '<span style="font-size:0.68rem;color:#e53935;font-weight:600;">❤️ ' + likes + '</span>' : '')
+          + (likes > 0 ? '<span style="font-size:0.68rem;color:#e53935;font-weight:600;display:inline-flex;align-items:center;gap:2px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="#e53935" stroke="#e53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' + likes + '</span>' : '')
           + '</div></div></div>';
       }).join('')
       + '</div>';
@@ -4227,34 +4230,34 @@
   <ul>
     <li>
       <button onclick="mobNavTo('overview')" id="bn-overview" class="active">
-        <span class="nav-icon">🏠</span>
+        <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
         <span class="nav-label">Home</span>
       </button>
     </li>
     <li>
       <button onclick="mobNavTo('messages')" id="bn-messages">
-        <span class="nav-icon">💬</span>
+        <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
         <span class="nav-badge" id="bn-msg-badge">0</span>
         <span class="nav-label">Messages</span>
       </button>
     </li>
     <li>
       <button onclick="mobNavTo('reviews')" id="bn-reviews">
-        <span class="nav-icon">⭐</span>
+        <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>
         <span class="nav-badge" id="bn-reviews-badge">0</span>
         <span class="nav-label">Reviews</span>
       </button>
     </li>
     <li>
       <button onclick="mobNavTo('notifications')" id="bn-notifications">
-        <span class="nav-icon">🔔</span>
+        <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></span>
         <span class="nav-badge" id="bn-notif-badge">0</span>
         <span class="nav-label">Alerts</span>
       </button>
     </li>
     <li>
       <button onclick="mobNavTo('profile')" id="bn-profile">
-        <span class="nav-icon">👤</span>
+        <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
         <span class="nav-label">Profile</span>
       </button>
     </li>

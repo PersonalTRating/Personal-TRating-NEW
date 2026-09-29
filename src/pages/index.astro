@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
+import TrustBar from '../components/TrustBar.astro';
 
 // Fetch all build-time data in parallel
 const [
@@ -511,6 +512,12 @@ const reviews = [
     border:6px solid transparent; border-bottom-color:#1a0505;
   }
   .trend-info:hover .trend-tooltip { display:block; }
+  /* Trust bar */
+  .trust-bar { display:flex; gap:2.5rem; padding-top:2rem; border-top:1px solid rgba(255,255,255,0.12); }
+  .trust-item { display:flex; align-items:center; gap:0.5rem; font-size:0.82rem; color:rgba(255,255,255,0.55); }
+  .trust-item svg { flex-shrink:0; }
+  .trust-label { color:#fff; font-size:0.9rem; }
+
   /* Find-a-trainer preview section */
   #find-preview a[href^="/trainers/"] { border-color:rgba(58,181,74,0.3) !important; box-shadow:0 2px 12px rgba(0,0,0,0.35) !important; }
   #leaderboard p { color:rgba(255,255,255,0.5); }
@@ -655,24 +662,14 @@ const reviews = [
           Browse Top Trainers →
         </a>
       </div>
-      <div class="trust-bar" style="display:flex;gap:2.5rem;padding-top:2rem;border-top:1px solid rgba(255,255,255,0.12);">
-        <div style=”display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);”>
-          🚫 <strong style=”color:#fff;font-size:0.9rem;”>No paid rankings</strong>
-        </div>
-        <div style=”display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);”>
-          ✅ <strong style=”color:#fff;font-size:0.9rem;”>Verified clients only</strong>
-        </div>
-        <div style=”display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:rgba(255,255,255,0.55);”>
-          🆓 <strong style=”color:#fff;font-size:0.9rem;”>Free for every PT</strong>
-        </div>
-      </div>
+      <TrustBar />
     </div>
 
     <!-- Right: Live rankings card -->
     <div class="hero-card anim-5" style="padding-top:3.5rem;">
       <div style="background:rgba(13,26,14,0.6);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.11);border-radius:16px;padding:1.6rem;box-shadow:0 24px 64px rgba(0,0,0,0.35);">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
-          <div id="hero-card-title" style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#ffffff;">📍 Near You</div>
+          <div id="hero-card-title" style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:#ffffff;display:flex;align-items:center;gap:0.4rem;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> Near You</div>
           <div style="background:#3ab54a;color:#fff;font-size:0.68rem;font-weight:700;padding:0.3rem 0.75rem;border-radius:20px;letter-spacing:0.5px;">LIVE</div>
         </div>
 
@@ -701,7 +698,7 @@ const reviews = [
         <div style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:white;line-height:1.1;">Top Trainers in Your Area</div>
         <div id="lb-sub" style="color:rgba(255,255,255,0.55);font-size:0.85rem;margin-top:0.3rem;">Finding the best PTs within 50 miles of you</div>
         <div class="bmp-chip" style="margin-top:0.85rem;display:inline-flex;align-items:center;gap:0.45rem;background:rgba(58,181,74,0.15);border:1px solid rgba(58,181,74,0.3);border-radius:20px;padding:0.3rem 0.85rem;font-size:0.72rem;font-weight:600;color:#7de88a;position:relative;cursor:default;">
-          📊 Ranked by BMP Score (0–100) <span style="opacity:0.65;font-size:0.65rem;">ⓘ</span>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7de88a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Ranked by BMP Score (0–100) <span style="opacity:0.65;font-size:0.65rem;">ⓘ</span>
           <div class="bmp-chip-tip">
             <strong style="color:white;">What is BMP?</strong><br/>
             Body Muscle % is our 0–100 trust score for every PT. It combines Review Quality (up to 70 pts), Review Confidence from volume (up to 20 pts), and Recent Momentum for consistent activity (up to 10 pts). The higher the score, the more trusted and active the trainer.
@@ -712,7 +709,7 @@ const reviews = [
     </div>
 
     <div id="lb-list" style="text-align:center;padding:3rem;color:#8a8f8a;font-size:0.9rem;">
-      <div style="font-size:2rem;margin-bottom:0.75rem;">📍</div>
+      <div style="margin-bottom:0.75rem;display:flex;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8a8f8a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg></div>
       Detecting your location…
     </div>
 
@@ -812,14 +809,14 @@ const reviews = [
                 </span>
               )}
               {t.isTrending && (
-                <span style="font-size:0.58rem;font-weight:800;letter-spacing:1px;color:white;background:linear-gradient(135deg,#cc0000,#e81414);padding:0.15rem 0.45rem;border-radius:20px;white-space:nowrap;">🔥 TRENDING</span>
+                <span style="font-size:0.58rem;font-weight:800;letter-spacing:1px;color:white;background:linear-gradient(135deg,#cc0000,#e81414);padding:0.15rem 0.45rem;border-radius:20px;white-space:nowrap;display:inline-flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span>
               )}
             </div>
-            {t.city && <div style="font-size:0.72rem;color:rgba(255,255,255,0.42);">📍 {t.city}</div>}
-            {t.specialty && <div style="font-size:0.72rem;color:rgba(255,255,255,0.42);">🏋 {t.specialty}</div>}
+            {t.city && <div style="font-size:0.72rem;color:rgba(255,255,255,0.42);display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{t.city}</div>}
+            {t.specialty && <div style="font-size:0.72rem;color:rgba(255,255,255,0.42);display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>{t.specialty}</div>}
             {t.recentReviewCount >= 1 && (
-              <div style={'font-size:0.72rem;' + (t.isTrending ? 'color:rgba(220,100,60,0.9);' : 'color:rgba(220,100,60,0.8);')}>
-                🔥 {t.recentReviewCount} verified {t.recentReviewCount === 1 ? 'review' : 'reviews'} in the last 30 days
+              <div style={'font-size:0.72rem;display:flex;align-items:center;gap:0.25rem;' + (t.isTrending ? 'color:rgba(220,100,60,0.9);' : 'color:rgba(220,100,60,0.8);')}>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>{t.recentReviewCount} verified {t.recentReviewCount === 1 ? 'review' : 'reviews'} in the last 30 days
               </div>
             )}
           </div>
@@ -1342,16 +1339,16 @@ const reviews = [
       reviewsLine = '<div class="lbc-detail" style="color:#3ab54a;">Be first to review</div>';
     } else if (recentCount >= 1) {
       var rWord = recentCount === 1 ? 'review' : 'reviews';
-      reviewsLine = '<div class="lbc-detail" style="color:rgba(220,100,60,0.9);">🔥 ' + recentCount + ' verified ' + rWord + ' in the last 30 days</div>';
+      reviewsLine = '<div class="lbc-detail" style="color:rgba(220,100,60,0.9);display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>' + recentCount + ' verified ' + rWord + ' in the last 30 days</div>';
     } else {
       reviewsLine = '<div class="lbc-bmp-rev">' + revText + '</div>';
     }
 
     // ── TRENDING card ────────────────────────────────────────────────────────
     if (pt.is_trending) {
-      var trendingBadge = '<div class="trend-info"><span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;">🔥 TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></div>';
+      var trendingBadge = '<div class="trend-info"><span style="display:inline-flex;align-items:center;gap:4px;background:linear-gradient(135deg,#cc0000,#e81414);color:white;font-size:0.65rem;font-weight:800;letter-spacing:1.5px;padding:0.28rem 0.7rem;border-radius:20px;box-shadow:0 2px 8px rgba(180,0,0,0.5);white-space:nowrap;flex-shrink:0;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></div>';
       var hotReviews = recentCount >= 1
-        ? '<div class="lbc-detail" style="color:rgba(220,80,40,0.95);">🔥 ' + recentCount + ' verified ' + (recentCount === 1 ? 'review' : 'reviews') + ' in the last 30 days</div>'
+        ? '<div class="lbc-detail" style="color:rgba(220,80,40,0.95);display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>' + recentCount + ' verified ' + (recentCount === 1 ? 'review' : 'reviews') + ' in the last 30 days</div>'
         : '';
 
       return '<a href="/trainers/' + pt.id + '" class="lb-card lb-card--trending" data-cc="card" data-cc-trending="1" style="view-transition-name:tc-' + pt.id + ';">' +
@@ -1366,8 +1363,8 @@ const reviews = [
             trendingBadge +
             cert +
           '</div>' +
-          (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
-          (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
+          (city ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + city + '</div>' : '') +
+          (spec ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>' + spec + '</div>' : '') +
           hotReviews +
         '</div>' +
         '<div class="lbc-bmp">' +
@@ -1387,8 +1384,8 @@ const reviews = [
       '</div>' +
       '<div class="lbc-mid">' +
         '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + '</div>' +
-        (city ? '<div class="lbc-detail">📍 ' + city + '</div>' : '') +
-        (spec ? '<div class="lbc-detail">🏋 ' + spec + '</div>' : '') +
+        (city ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + city + '</div>' : '') +
+        (spec ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>' + spec + '</div>' : '') +
         reviewsLine +
       '</div>' +
       '<div class="lbc-bmp">' +
@@ -1412,7 +1409,7 @@ const reviews = [
     if (!el) return;
     if (trainers.length === 0) {
       el.innerHTML = '<div style="text-align:center;padding:4rem 2rem;background:rgba(8,16,9,0.8);border-radius:16px;border:1px dashed rgba(58,181,74,0.25);">' +
-        '<div style="font-size:2rem;margin-bottom:0.75rem;">🏋</div>' +
+        '<div style="margin-bottom:0.75rem;display:flex;justify-content:center;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#8a8f8a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg></div>' +
         '<div style="font-family:\'Playfair Display\',serif;font-size:1.25rem;font-weight:700;color:white;margin-bottom:0.5rem;">No trainers nearby yet</div>' +
         '<div style="color:#8a8f8a;font-size:0.9rem;">Be the first PT in your area to collect verified reviews.</div>' +
         '<a href="/signup" style="display:inline-block;margin-top:1.5rem;background:#3ab54a;color:white;padding:0.75rem 1.75rem;border-radius:8px;font-weight:700;font-size:0.875rem;text-decoration:none;">List Your Profile Free →</a>' +
@@ -1439,12 +1436,12 @@ const reviews = [
       : '';
 
     var trendBadge = trending
-      ? '<span class="trend-info"><span class="hc-badge-trend">🔥 TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></span>'
+      ? '<span class="trend-info"><span class="hc-badge-trend" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span><div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div></span>'
       : '';
 
     var metaParts = [];
-    if (t.city || t.location) metaParts.push('📍 ' + (t.city || t.location));
-    if (t.specialty)          metaParts.push('🏋 ' + t.specialty);
+    if (t.city || t.location) metaParts.push('<span style="display:inline-flex;align-items:center;gap:0.2rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + (t.city || t.location) + '</span>');
+    if (t.specialty)          metaParts.push('<span style="display:inline-flex;align-items:center;gap:0.2rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg>' + t.specialty + '</span>');
     var meta = metaParts.join(' · ');
 
     var statsHtml = '';
@@ -1453,7 +1450,7 @@ const reviews = [
     } else if (recent >= 1) {
       var rWord2 = recent === 1 ? 'review' : 'reviews';
       var statsClass = trending ? 'hc-stats-hot' : 'hc-stats';
-      statsHtml = '<span class="' + statsClass + '">🔥 ' + recent + ' verified ' + rWord2 + ' in the last 30 days</span>';
+      statsHtml = '<span class="' + statsClass + '" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>' + recent + ' verified ' + rWord2 + ' in the last 30 days</span>';
     } else {
       statsHtml = '<span class="hc-stats">' + revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews') + '</span>';
     }
@@ -1478,7 +1475,7 @@ const reviews = [
   function paintHero(trainers, title) {
     var titleEl = document.getElementById('hero-card-title');
     var listEl  = document.getElementById('hero-rankings-list');
-    if (titleEl) titleEl.textContent = title;
+    if (titleEl) titleEl.innerHTML = title;
     if (!listEl) return;
     if (trainers.length === 0) {
       listEl.innerHTML = '<div style="padding:1rem 0;text-align:center;color:rgba(255,255,255,0.4);font-size:0.82rem;">No trainers found nearby.</div>';
@@ -1492,7 +1489,7 @@ const reviews = [
   function showUkFallback(reason) {
     var all = (window['__ptAllTrainers'] || []).slice(0, 10);
     paintList(all, 'National Rankings', reason || 'Ranked by Body Muscle Percentage (BMP) score', '');
-    paintHero(all, '🏆 Top Trainers — UK');
+    paintHero(all, '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg> Top Trainers — UK');
   }
 
   // Wait for define:vars data to be ready
@@ -1529,8 +1526,8 @@ const reviews = [
         }
 
         var countTxt = nearby.length + ' trainer' + (nearby.length !== 1 ? 's' : '') + ' within 50 miles';
-        var heroTitle = cityLabel ? '📍 Near ' + cityLabel : '📍 Near You';
-        paintList(nearby, 'Local Rankings', countTxt, cityLabel ? '📍 ' + cityLabel + ' area' : '');
+        var heroTitle = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="display:inline-block;vertical-align:-2px;flex-shrink:0;"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg> ' + (cityLabel ? 'Near ' + cityLabel : 'Near You');
+        paintList(nearby, 'Local Rankings', countTxt, cityLabel ? cityLabel + ' area' : '');
         paintHero(nearby, heroTitle);
       },
       function () {
