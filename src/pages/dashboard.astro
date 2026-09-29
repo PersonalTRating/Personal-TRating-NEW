@@ -1318,12 +1318,26 @@
       <div class="section-eyebrow">Collect Feedback</div>
       <div class="section-heading">Review Link Generator</div>
 
+      <!-- Instagram Format Selector -->
+      <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:1rem;max-width:380px;">
+        <button id="ig-fmt-story" onclick="switchIgFormat('story')" aria-pressed="true"
+          style="flex:1;padding:0.55rem 0.75rem;border-radius:10px;font-family:'Manrope',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;border:2px solid var(--green);background:var(--green);color:white;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+          <svg width="11" height="15" viewBox="0 0 11 18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="1" width="9" height="16" rx="1.5"/></svg>
+          Story <span style="font-size:0.7rem;font-weight:500;opacity:0.8;">9:16</span>
+        </button>
+        <button id="ig-fmt-feed" onclick="switchIgFormat('feed')" aria-pressed="false"
+          style="flex:1;padding:0.55rem 0.75rem;border-radius:10px;font-family:'Manrope',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;border:2px solid var(--border);background:white;color:var(--text);transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="1" width="12" height="12" rx="1.5"/></svg>
+          Feed Post <span style="font-size:0.7rem;font-weight:500;opacity:0.8;">4:5</span>
+        </button>
+      </div>
+
       <!-- Two-column layout: card preview | controls -->
       <div id="link-builder-grid" style="display:grid;grid-template-columns:380px 1fr;gap:1.75rem;align-items:start;margin-bottom:1.5rem;">
 
         <!-- LEFT: Story Card Preview -->
         <div>
-          <div style="font-size:0.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;text-align:center;">Instagram Story Preview</div>
+          <div id="ig-preview-label" style="font-size:0.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;text-align:center;">Instagram Story Preview</div>
           <div id="share-card" style="width:360px;height:640px;border-radius:24px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 45%,#2a5a30 100%);">
             <div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:0.85rem;font-family:'Manrope',sans-serif;">Loading card…</div>
           </div>
@@ -1337,7 +1351,7 @@
             <div style="background:linear-gradient(135deg,var(--green-light) 0%,white 80%);padding:1.5rem;">
               <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--text)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-                <div style="font-weight:800;font-size:0.95rem;color:var(--text);">Instagram Story</div>
+                <div id="ig-card-title" style="font-weight:800;font-size:0.95rem;color:var(--text);">Instagram Story</div>
               </div>
               <div id="ig-instruction" style="font-size:0.78rem;color:var(--muted);line-height:1.65;margin-bottom:1.1rem;">Download your Story Card, upload it to your Instagram Story, then add your review link using Instagram's Link Sticker.</div>
               <button id="download-card-btn" onclick="downloadShareCard()" aria-label="Download Instagram Story Card"
@@ -1345,7 +1359,7 @@
                 onmouseover="this.style.background='#1a3d1e'" onmouseout="this.style.background='var(--text)'">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Story Card
               </button>
-              <div style="margin-top:0.65rem;">
+              <div id="ig-copy-link-wrap" style="margin-top:0.65rem;">
                 <button id="ig-copy-link-btn" onclick="igCopyLink(this)"
                   aria-label="Copy review link for Instagram Link Sticker"
                   style="width:100%;padding:0.62rem;background:white;border:1.5px solid var(--border);border-radius:10px;font-family:'Manrope',sans-serif;font-size:0.82rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.45rem;transition:border-color 0.15s,color 0.15s;"
@@ -1355,7 +1369,17 @@
                   Copy Review Link
                 </button>
               </div>
-              <div style="margin-top:0.55rem;font-size:0.71rem;color:var(--muted);text-align:center;line-height:1.5;">Add your link to the Story using Instagram's <strong>Link Sticker</strong>.</div>
+              <div id="ig-link-sticker-note" style="margin-top:0.55rem;font-size:0.71rem;color:var(--muted);text-align:center;line-height:1.5;">Add your link to the Story using Instagram's <strong>Link Sticker</strong>.</div>
+              <div id="ig-copy-caption-wrap" style="margin-top:0.65rem;display:none;">
+                <button id="ig-copy-caption-btn" onclick="igCopyCaption(this)"
+                  aria-label="Copy Instagram caption"
+                  style="width:100%;padding:0.62rem;background:white;border:1.5px solid var(--border);border-radius:10px;font-family:'Manrope',sans-serif;font-size:0.82rem;font-weight:600;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.45rem;transition:border-color 0.15s,color 0.15s;"
+                  onmouseover="this.style.borderColor='var(--green)';this.style.color='var(--green-dark)'"
+                  onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text)'">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  Copy Caption
+                </button>
+              </div>
             </div>
           </div>
 
@@ -1439,7 +1463,7 @@
             <div class="card-body" style="padding:1.1rem 1.5rem;">
               <textarea id="sc-custom-msg" rows="2" maxlength="80"
                 placeholder="I'd love your feedback 🙏"
-                oninput="buildShareCard(); document.getElementById('sc-msg-count').textContent = this.value.length + ' / 80'; updateSharePreview();"
+                oninput="rebuildCard(); document.getElementById('sc-msg-count').textContent = this.value.length + ' / 80'; updateSharePreview();"
                 style="width:100%;padding:0.65rem 0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.84rem;color:var(--text);resize:none;line-height:1.5;outline:none;box-sizing:border-box;"></textarea>
               <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.3rem;">
                 <button id="preview-msg-btn"
@@ -3544,8 +3568,7 @@
 
     // Build share card when navigating to the links page
     if (id === 'links') {
-      setTimeout(buildShareCard, 80);
-      setTimeout(initInstagramSection, 80);
+      setTimeout(function() { switchIgFormat(_igFormat); }, 80);
       // Mark "Generate review link" step as done
       var tid = window['__ptTrainerId'];
       if (tid) localStorage.setItem('cc_links_visited_' + tid, '1');
@@ -3620,6 +3643,177 @@
 
   // ── Share Card Builder ────────────────────────────────────────────────────
   var _cardBuilt = false;
+  var _igFormat = (function() {
+    try { return localStorage.getItem('cc_ig_format') || 'story'; } catch(e) { return 'story'; }
+  })();
+
+  function rebuildCard() {
+    _igFormat === 'feed' ? buildFeedCard() : buildShareCard();
+  }
+
+  function switchIgFormat(format) {
+    _igFormat = format;
+    try { localStorage.setItem('cc_ig_format', format); } catch(e) {}
+    var isFeed = format === 'feed';
+
+    var storyBtn = document.getElementById('ig-fmt-story');
+    var feedBtn  = document.getElementById('ig-fmt-feed');
+    if (storyBtn) {
+      storyBtn.style.background  = isFeed ? 'white' : 'var(--green)';
+      storyBtn.style.borderColor = isFeed ? 'var(--border)' : 'var(--green)';
+      storyBtn.style.color       = isFeed ? 'var(--text)' : 'white';
+      storyBtn.setAttribute('aria-pressed', String(!isFeed));
+    }
+    if (feedBtn) {
+      feedBtn.style.background  = isFeed ? 'var(--green)' : 'white';
+      feedBtn.style.borderColor = isFeed ? 'var(--green)' : 'var(--border)';
+      feedBtn.style.color       = isFeed ? 'white' : 'var(--text)';
+      feedBtn.setAttribute('aria-pressed', String(isFeed));
+    }
+
+    var label = document.getElementById('ig-preview-label');
+    if (label) label.textContent = isFeed ? 'Instagram Feed Preview' : 'Instagram Story Preview';
+    var cardTitle = document.getElementById('ig-card-title');
+    if (cardTitle) cardTitle.textContent = isFeed ? 'Instagram Feed Post' : 'Instagram Story';
+
+    var copyLinkWrap    = document.getElementById('ig-copy-link-wrap');
+    var copyCaptionWrap = document.getElementById('ig-copy-caption-wrap');
+    var linkNote        = document.getElementById('ig-link-sticker-note');
+    if (copyLinkWrap)    copyLinkWrap.style.display    = isFeed ? 'none'  : 'block';
+    if (copyCaptionWrap) copyCaptionWrap.style.display = isFeed ? 'block' : 'none';
+    if (linkNote)        linkNote.style.display        = isFeed ? 'none'  : 'block';
+
+    var card = document.getElementById('share-card');
+    var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (card) {
+      if (reducedMotion) {
+        card.style.height = isFeed ? '450px' : '640px';
+        isFeed ? buildFeedCard() : buildShareCard();
+      } else {
+        card.style.transition = 'opacity 0.15s ease, transform 0.15s ease';
+        card.style.opacity    = '0';
+        card.style.transform  = 'scale(0.97)';
+        var newH = isFeed ? '450px' : '640px';
+        setTimeout(function() {
+          card.style.height = newH;
+          isFeed ? buildFeedCard() : buildShareCard();
+          card.style.opacity   = '1';
+          card.style.transform = 'scale(1)';
+        }, 160);
+      }
+    }
+
+    initInstagramSection();
+  }
+
+  function buildFeedCard() {
+    var trainer = window['__ptTrainer'];
+    if (!trainer) return;
+
+    var themes = {
+      forest:   { bg:'linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 45%,#2a5a30 100%)', accent:'#3ab54a', glow:'rgba(58,181,74,0.45)'  },
+      midnight: { bg:'linear-gradient(160deg,#050a18 0%,#0d1a40 45%,#1a2a70 100%)', accent:'#5b8cff', glow:'rgba(91,140,255,0.45)' },
+      charcoal: { bg:'linear-gradient(160deg,#080808 0%,#181818 45%,#282828 100%)', accent:'#c8c8c8', glow:'rgba(200,200,200,0.25)' },
+      royal:    { bg:'linear-gradient(160deg,#150822 0%,#2e1258 45%,#4a1e8a 100%)', accent:'#c17aff', glow:'rgba(193,122,255,0.45)' },
+      slate:    { bg:'linear-gradient(160deg,#080f1a 0%,#122035 45%,#1e3350 100%)', accent:'#5bcfff', glow:'rgba(91,207,255,0.4)'  },
+    };
+
+    var _ht = trainer.hero_theme || 'forest';
+    var _htIsHex = _ht.startsWith('#');
+    var theme;
+    if (_htIsHex) {
+      var _d1 = typeof cpDarken==='function' ? cpDarken(_ht,0.62) : '#0d1a0e';
+      var _d2 = typeof cpDarken==='function' ? cpDarken(_ht,0.38) : '#1a3d1e';
+      var _d3 = typeof cpDarken==='function' ? cpDarken(_ht,0.12) : '#2a5a30';
+      var _light = typeof cpLighten==='function' ? cpLighten(_ht,0.55) : '#3ab54a';
+      theme = { bg:'linear-gradient(160deg,'+_d1+' 0%,'+_d2+' 45%,'+_d3+' 100%)', accent:_light, glow:'rgba(0,0,0,0.35)' };
+    } else {
+      theme = themes[_ht] || themes.forest;
+    }
+
+    var name      = trainer.name || 'Personal Trainer';
+    var username  = trainer.username ? '@' + trainer.username : null;
+    var city      = trainer.city || (trainer.location || '').split(',')[0].trim() || 'United Kingdom';
+    var specialty = trainer.specialty || null;
+    var bmp       = (trainer.bmp_score > 0) ? trainer.bmp_score : null;
+    var url       = window['__ptReviewUrl'] || (window.location.origin + '/review/' + trainer.id);
+    var customMsgEl = document.getElementById('sc-custom-msg');
+    var ctaMsg    = (customMsgEl && customMsgEl.value.trim()) ? customMsgEl.value.trim() : "I'd love your feedback 🙏";
+
+    var card = document.getElementById('share-card');
+    if (!card) return;
+    card.style.background = theme.bg;
+    card.style.height     = '450px';
+
+    var avatarHtml = trainer.avatar_url
+      ? '<div style="width:80px;height:80px;min-width:80px;min-height:80px;border-radius:50%;background:url(' + trainer.avatar_url + ') center/cover no-repeat;border:3px solid ' + theme.accent + ';box-sizing:border-box;flex-shrink:0;"></div>'
+      : '<div style="width:80px;height:80px;min-width:80px;min-height:80px;border-radius:50%;background:' + (trainer.avatar_bg||'#1a3d1e') + ';color:' + (trainer.avatar_color||theme.accent) + ';display:flex;align-items:center;justify-content:center;font-size:1.9rem;font-weight:900;border:3px solid ' + theme.accent + ';font-family:\'Manrope\',sans-serif;flex-shrink:0;">' + (trainer.avatar_initials||'?') + '</div>';
+
+    card.innerHTML = ''
+      + '<div style="position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:300px;height:260px;background:radial-gradient(circle,' + theme.glow + ' 0%,transparent 60%);pointer-events:none;z-index:0;"></div>'
+      + '<div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:16px 20px 14px;">'
+        + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'
+          + '<div style="background:white;border-radius:8px;padding:3px 6px;display:inline-flex;align-items:center;border:2px solid #3ab54a;">'
+            + '<img src="/images/logo.png" style="height:34px;width:auto;object-fit:contain;display:block;" alt="CoachCards" />'
+          + '</div>'
+          + '<div style="font-size:7.5px;color:rgba(255,255,255,0.3);font-weight:700;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;">VERIFIED REVIEWS</div>'
+        + '</div>'
+        + '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">'
+          + '<div style="position:relative;flex-shrink:0;">'
+            + '<div style="position:absolute;inset:-6px;border-radius:50%;background:' + theme.glow + ';filter:blur(8px);z-index:0;opacity:0.55;"></div>'
+            + '<div style="position:relative;z-index:1;">' + avatarHtml + '</div>'
+          + '</div>'
+          + '<div style="flex:1;min-width:0;">'
+            + '<div style="font-family:\'Playfair Display\',serif;font-size:1.2rem;font-weight:900;color:white;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + name + '</div>'
+            + (username ? '<div style="color:rgba(255,255,255,0.38);font-size:0.67rem;font-weight:600;font-family:\'Manrope\',sans-serif;margin-top:2px;">' + username + '</div>' : '')
+            + '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">'
+              + '<div style="color:rgba(255,255,255,0.35);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">📍 ' + city + '</div>'
+              + (specialty ? '<div style="color:rgba(255,255,255,0.28);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">· ' + specialty + '</div>' : '')
+            + '</div>'
+            + (bmp ? '<div style="margin-top:6px;display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:3px 8px;">'
+              + '<span style="color:rgba(255,255,255,0.5);font-size:0.6rem;font-weight:700;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">BMP</span>'
+              + '<span style="color:' + theme.accent + ';font-size:0.8rem;font-weight:800;font-family:\'Manrope\',sans-serif;">' + bmp + '</span>'
+              + '</div>' : '')
+          + '</div>'
+        + '</div>'
+        + '<div style="width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.11),transparent);margin-bottom:10px;"></div>'
+        + '<div style="color:rgba(255,255,255,0.72);font-size:0.76rem;font-weight:600;text-align:center;line-height:1.55;margin-bottom:10px;font-family:\'Manrope\',sans-serif;">' + ctaMsg + '</div>'
+        + '<div style="display:flex;justify-content:center;margin-bottom:8px;">'
+          + '<div id="sc-qr-inner" style="background:white;padding:8px;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,0.4);line-height:0;"></div>'
+        + '</div>'
+        + '<div style="text-align:center;color:rgba(255,255,255,0.3);font-size:0.6rem;font-weight:500;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;margin-bottom:8px;">Scan to leave a verified review</div>'
+        + '<div style="flex:1;"></div>'
+        + '<div style="text-align:center;color:rgba(255,255,255,0.18);font-size:0.54rem;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;text-transform:lowercase;">coachcards.co.uk</div>'
+      + '</div>';
+
+    _cardBuilt = false;
+    var qrContainer = document.getElementById('sc-qr-inner');
+    if (qrContainer) {
+      var img = document.createElement('img');
+      img.style.cssText = 'width:140px;height:140px;display:block;border-radius:4px;';
+      img.onload  = function() { _cardBuilt = true; };
+      img.onerror = function() { _cardBuilt = true; };
+      img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=420x420&margin=8&data=' + encodeURIComponent(url);
+      qrContainer.appendChild(img);
+    } else {
+      _cardBuilt = true;
+    }
+  }
+
+  function igCopyCaption(btn) {
+    var d = getShareData();
+    if (!d.link || d.link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    var caption = d.custom + '\n\n'
+      + 'Leave me a verified review on CoachCards 👇\n'
+      + d.link + '\n\n'
+      + '#PersonalTrainer #FitnessCoach #CoachCards #PT';
+    navigator.clipboard.writeText(caption).then(function() {
+      var orig = btn.innerHTML;
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
+      btn.disabled = true;
+      setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2400);
+    }).catch(function() { showToast('⚠️ Could not copy — try again'); });
+  }
 
   function buildShareCard() {
     var trainer = window['__ptTrainer'];
@@ -3734,7 +3928,9 @@
     var card = document.getElementById('share-card');
     var btn  = document.getElementById('download-card-btn');
     if (!card) return;
-    if (btn) { btn.disabled = true; btn.textContent = 'Preparing Story Card…'; }
+    var isFeed    = _igFormat === 'feed';
+    var cardLabel = isFeed ? 'Feed Post' : 'Story Card';
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + cardLabel + '…'; }
 
     try {
       if (!_cardBuilt) {
@@ -3746,7 +3942,6 @@
       await document.fonts.ready;
       await new Promise(function(resolve) { setTimeout(resolve, 200); });
 
-      // Render at 3× → 360×640 becomes 1080×1920 (Instagram Story)
       var canvas = await window['html2canvas'](card, {
         scale: 3,
         useCORS: true,
@@ -3762,16 +3957,18 @@
 
       var rawName = (window.__ptTrainerName || 'trainer').toLowerCase()
         .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-      var filename = 'coachcards-' + rawName + '-review-story.png';
+      var filename = isFeed
+        ? 'coachcards-' + rawName + '-post.png'
+        : 'coachcards-' + rawName + '-review-story.png';
+      var shareTitle = isFeed ? 'My CoachCards Feed Post' : 'My CoachCards Review Story Card';
       var file = new File([blob], filename, { type: 'image/png' });
 
-      // Capability detection — prefer native file share over download
       var canFileShare = false;
       try { canFileShare = !!(navigator.canShare && navigator.canShare({ files: [file] })); } catch(e) {}
 
       if (canFileShare) {
-        await navigator.share({ files: [file], title: 'My CoachCards Review Story Card' });
-        showToast('✅ Story Card shared!');
+        await navigator.share({ files: [file], title: shareTitle });
+        showToast('✅ ' + cardLabel + ' shared!');
       } else {
         var objUrl = URL.createObjectURL(blob);
         var a = document.createElement('a');
@@ -3782,13 +3979,12 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(objUrl);
-        showToast('✅ Story Card downloaded!');
+        showToast('✅ ' + cardLabel + ' downloaded!');
       }
     } catch(e) {
       if (!e || e.name !== 'AbortError') {
-        showToast("We couldn't prepare your Story Card. Please try again.");
+        showToast("We couldn't prepare your " + cardLabel + ". Please try again.");
       }
-      // AbortError = user cancelled share — not an error, say nothing
     }
 
     if (btn) { btn.disabled = false; initInstagramSection(); }
@@ -3797,6 +3993,7 @@
   function initInstagramSection() {
     var btn   = document.getElementById('download-card-btn');
     var instr = document.getElementById('ig-instruction');
+    var isFeed = _igFormat === 'feed';
 
     var canFileShare = false;
     try {
@@ -3804,14 +4001,25 @@
       canFileShare = !!(navigator.canShare && navigator.canShare({ files: [probe] }));
     } catch(e) {}
 
-    if (canFileShare) {
-      if (btn) btn.innerHTML =
-        '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
-        ' Share Story Card';
-      if (instr) instr.textContent = "Share your Story Card to Instagram or another app, then add your review link using Instagram's Link Sticker.";
+    var shareSVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+    var dlSVG    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+    if (isFeed) {
+      if (canFileShare) {
+        if (btn)  btn.innerHTML = shareSVG + ' Share Feed Post';
+        if (instr) instr.textContent = 'Share your Feed Post to Instagram or save it to your camera roll, then post it to your feed.';
+      } else {
+        if (btn)  btn.innerHTML = dlSVG + ' Download Feed Post';
+        if (instr) instr.textContent = 'Download your Feed Post and share it to your Instagram feed. Copy the caption below to add it to your post.';
+      }
     } else {
-      if (btn) btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Download Story Card';
-      if (instr) instr.textContent = "Download your Story Card, upload it to your Instagram Story, then add your review link using Instagram's Link Sticker.";
+      if (canFileShare) {
+        if (btn)  btn.innerHTML = shareSVG + ' Share Story Card';
+        if (instr) instr.textContent = "Share your Story Card to Instagram or another app, then add your review link using Instagram's Link Sticker.";
+      } else {
+        if (btn)  btn.innerHTML = dlSVG + ' Download Story Card';
+        if (instr) instr.textContent = "Download your Story Card, upload it to your Instagram Story, then add your review link using Instagram's Link Sticker.";
+      }
     }
   }
 
