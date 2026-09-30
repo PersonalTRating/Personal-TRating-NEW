@@ -127,9 +127,9 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     align-items: center;
     gap: 1rem;
     padding: 1rem 1.25rem;
-    background: rgba(8,16,9,0.95);
-    border: 1px solid rgba(58,181,74,0.18);
-    border-left: 3px solid rgba(58,181,74,0.45);
+    background: rgba(4,10,5,0.97);
+    border: 1px solid rgba(58,181,74,0.32);
+    border-left: 3px solid rgba(58,181,74,0.7);
     border-radius: 14px;
     text-decoration: none;
     color: inherit;
@@ -137,11 +137,12 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     position: relative;
     z-index: 1;
     transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+    box-shadow: 0 0 8px rgba(58,181,74,0.18), 0 0 20px rgba(58,181,74,0.07), 0 2px 12px rgba(0,0,0,0.35);
   }
   .trc:hover {
     transform: translateY(-2px);
-    border-color: rgba(58,181,74,0.4);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12);
+    border-color: rgba(58,181,74,0.55);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.45), 0 0 14px rgba(58,181,74,0.3), 0 0 28px rgba(58,181,74,0.12);
     z-index: 10;
   }
   .trc:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
