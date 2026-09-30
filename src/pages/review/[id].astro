@@ -327,6 +327,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
         <div class="rv-error" id="rv-error-foot" style="margin-bottom:0.85rem;"></div>
         <button class="rv-btn" id="rv-submit">Submit Review →</button>
         <div class="rv-trust"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Verified by CoachCards · Your honest review helps others find great PTs</div>
+        <div style="margin-top:0.6rem;font-size:0.74rem;color:var(--muted);text-align:center;line-height:1.5;">Clients can review the same trainer once every 30 days.</div>
       </div>
     </div>
 
@@ -413,6 +414,18 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
   // ── Check auth via getUser() — safe: does NOT clear the session if refresh ──
   // fails (unlike getSession(), which wipes localStorage on a bad refresh token)
   let clientId: string | null = null;
+
+  function formatEligibleDate(isoString: string): string {
+    const d   = new Date(isoString);
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const eligStart  = new Date(d.getFullYear(),   d.getMonth(),   d.getDate());
+    if (eligStart.getTime() === todayStart.getTime()) {
+      return 'today at ' + d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+    }
+    return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+  }
+
   const { data: { user } } = await supabase.auth.getUser();
 
   // ── Not logged in — show sign-up gate ─────────────────────────────────────
@@ -462,7 +475,38 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
         nameInput.style.background = '#f7f9f7';
         nameInput.style.color      = '#7a8f7c';
         nameInput.title = 'Logged in as ' + client.name;
-        if (formState) formState.style.display = 'block';
+        // Pre-check eligibility so we can show a friendly message before form load.
+        // Server-side enforcement runs again on submit — this is UX only.
+        const { data: elig } = await supabase.rpc('check_review_eligibility', {
+          p_client_id:  client.id,
+          p_trainer_id: trainerId,
+        });
+
+        if (elig?.status === 'blocked') {
+          const nextDate = formatEligibleDate(elig.next_eligible_at);
+          if (formState) {
+            formState.innerHTML = `
+              <div style="padding:2.5rem 2rem;text-align:center;">
+                <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:0.75rem;">You've recently reviewed ${trainerName}</h3>
+                <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:0.5rem;">You can leave another review for <strong style="color:var(--text);">${trainerName}</strong> on <strong style="color:var(--text);">${nextDate}</strong>.</p>
+                <p style="color:var(--muted);font-size:0.82rem;line-height:1.6;">Clients can review the same trainer once every 30 days to keep CoachCards rankings fair.</p>
+              </div>`;
+            formState.style.display = 'block';
+          }
+        } else if (elig?.status === 'pending_review') {
+          if (formState) {
+            formState.innerHTML = `
+              <div style="padding:2.5rem 2rem;text-align:center;">
+                <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:0.75rem;">Your review is awaiting approval</h3>
+                <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;">Your recent review of <strong style="color:var(--text);">${trainerName}</strong> is waiting to be approved. You can submit another once this one is resolved.</p>
+              </div>`;
+            formState.style.display = 'block';
+          }
+        } else {
+          if (formState) formState.style.display = 'block';
+        }
       } else {
         // Logged in but no client record — show form anyway (they can still review)
         if (formState) formState.style.display = 'block';
@@ -589,30 +633,45 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     ];
     const pal = palettes[Math.floor(Math.random() * palettes.length)];
 
-    const payload: Record<string, any> = {
-      trainer_id:            trainerId,
-      reviewer_name:         name,
-      reviewer_initials:     initials,
-      reviewer_avatar_bg:    pal.bg,
-      reviewer_avatar_color: pal.color,
-      reviewer_location:     location || null,
-      rating:                selectedRating / 20,
-      review_text:           text,
-      is_verified:           false,
-      is_anonymous:          anonCheck.checked,
-      approval_token:        crypto.randomUUID(),
-    };
-    if (clientId) payload.client_id = clientId;
+    const approval_token = crypto.randomUUID() as string;
 
-    const { error } = await supabase
-      .from('reviews').insert(payload);
+    const { data: rpcResult, error: rpcError } = await supabase.rpc('submit_review_for_client', {
+      p_trainer_id:            trainerId,
+      p_client_id:             clientId || null,
+      p_reviewer_name:         name,
+      p_reviewer_initials:     initials,
+      p_reviewer_avatar_bg:    pal.bg,
+      p_reviewer_avatar_color: pal.color,
+      p_reviewer_location:     location || null,
+      p_rating:                selectedRating / 20,
+      p_review_text:           text,
+      p_is_anonymous:          anonCheck.checked,
+      p_approval_token:        approval_token,
+    });
 
-    if (error) {
+    if (rpcError) {
       showError('Something went wrong — please try again.');
       submitBtn.textContent = 'Submit Review →';
       submitBtn.disabled    = false;
       return;
     }
+
+    if (rpcResult?.status === 'blocked') {
+      const nextDate = formatEligibleDate(rpcResult.next_eligible_at);
+      showError(`You can review ${trainerName} again on ${nextDate}.`);
+      submitBtn.textContent = 'Submit Review →';
+      submitBtn.disabled    = false;
+      return;
+    }
+
+    if (rpcResult?.status === 'pending_review') {
+      showError('Your recent review is still being processed. Please wait for it to be approved before submitting another.');
+      submitBtn.textContent = 'Submit Review →';
+      submitBtn.disabled    = false;
+      return;
+    }
+
+    const payload = { approval_token }; // referenced by email fetch below
 
     // Fire approval email (non-blocking — don't fail submission if email errors)
     // Use the token we already generated client-side — no need to read it back from Supabase
