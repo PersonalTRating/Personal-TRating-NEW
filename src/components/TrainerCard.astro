@@ -59,46 +59,50 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   data-city={city.toLowerCase()}
   data-spec={spec.toLowerCase()}
 >
-  {rankStr && <span class="trc-rank">{rankStr}</span>}
+  <div class="trc-left">
+    {rankStr && <span class="trc-rank">{rankStr}</span>}
 
-  {avatarUrl ? (
-    <img
-      class="trc-av"
-      src={avatarUrl}
-      alt={name}
-      width="56"
-      height="56"
-    />
-  ) : (
-    <div class="trc-av trc-av-init" style={`background:${avatarBg};color:${avatarColor};`}>
-      {avatarInitials}
-    </div>
-  )}
+    {avatarUrl ? (
+      <img
+        class="trc-av"
+        src={avatarUrl}
+        alt={name}
+        width="56"
+        height="56"
+      />
+    ) : (
+      <div class="trc-av trc-av-init" style={`background:${avatarBg};color:${avatarColor};`}>
+        {avatarInitials}
+      </div>
+    )}
+  </div>
 
   <div class="trc-mid">
-    <div class="trc-name-row">
-      <span class="trc-name">{name}</span>
-      {profileComplete && (
-        <span class="trc-tick" title="Profile complete">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
-            <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
-            <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </span>
-      )}
-      {isTrending && (
-        <div class="trend-info">
-          <span class="trc-trending-pill"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span>
-          <div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div>
+    <div class="trc-mid-top">
+      <div class="trc-name-row">
+        <span class="trc-name">{name}</span>
+        {profileComplete && (
+          <span class="trc-tick" title="Profile complete">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
+              <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        )}
+        {isTrending && (
+          <div class="trend-info">
+            <span class="trc-trending-pill"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span>
+            <div class="trend-tooltip">Trending trainers have earned 4+ verified reviews in the last 30 days, spread across at least 2 separate calendar weeks, and hold a quality score of 42 or above.</div>
+          </div>
+        )}
+      </div>
+      {(metaCity || metaSpec) && (
+        <div class="trc-meta">
+          {metaCity && <span class="trc-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{metaCity}</span>}
+          {metaSpec && <span class="spec-pill">{metaSpec}</span>}
         </div>
       )}
     </div>
-    {(metaCity || metaSpec) && (
-      <div class="trc-meta">
-        {metaCity && <span class="trc-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{metaCity}</span>}
-        {metaSpec && <span class="spec-pill">{metaSpec}</span>}
-      </div>
-    )}
     <div class:list={['trc-reviews', reviewsHot && 'trc-reviews--hot']}>
       {reviewsHot
         ? <><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>{recentReviewCount} verified {recentReviewCount === 1 ? 'review' : 'reviews'} in the last 30 days</>
@@ -183,6 +187,14 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   }
 
   .trc-mid { flex: 1; min-width: 0; }
+
+  .trc-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    flex-shrink: 0;
+  }
 
   .trc-name-row {
     display: flex;
@@ -347,13 +359,37 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
 
   @media (max-width: 640px) {
     .trc {
-      gap: 0.65rem;
-      padding: 0.9rem 0.9rem;
+      display: grid !important;
+      grid-template-columns: auto 1fr auto;
+      grid-template-areas:
+        "left mid bmp"
+        "rev  rev rev";
+      column-gap: 0.75rem;
+      row-gap: 0;
+      align-items: start;
+      padding: 0.875rem 0.9rem 0 !important;
     }
-    .trc-rank { font-size: 1.2rem; width: 2rem; }
-    .trc-av   { width: 42px; min-width: 42px; height: 42px; }
-    .trc-name { font-size: 0.92rem; }
-    .trc-bmp-num { font-size: 1.4rem; }
+    .trc-left {
+      grid-area: left;
+      flex-direction: column !important;
+      align-items: center !important;
+      gap: 0.35rem;
+      align-self: start;
+    }
+    .trc-rank { font-size: 1.05rem !important; width: auto !important; line-height: 1.1; }
+    .trc-av   { width: 44px !important; min-width: 44px !important; height: 44px !important; }
+    .trc-mid  { grid-area: mid; display: contents !important; }
+    .trc-mid-top { grid-area: mid; min-width: 0; align-self: start; }
+    .trc-bmp  { grid-area: bmp; padding-left: 0 !important; align-self: start; }
+    .trc-reviews {
+      grid-area: rev;
+      padding: 0.55rem 0 0.875rem;
+      border-top: 1px solid rgba(58,181,74,0.12);
+      font-size: 0.73rem;
+    }
+    .trc--trending .trc-reviews { border-top-color: rgba(120,0,0,0.2); }
+    .trc-name    { font-size: 0.9rem !important; max-width: none !important; }
+    .trc-bmp-num { font-size: 1.35rem !important; }
   }
 
   @media (prefers-reduced-motion: reduce) {
