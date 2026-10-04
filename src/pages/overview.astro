@@ -6,8 +6,8 @@ import TrainerCard from '../components/TrainerCard.astro';
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CoachCards — Build Your Reputation. Get Discovered.</title>
-  <meta name="description" content="CoachCards is where personal trainers build their reputation through verified client reviews, grow their Body Muscle Percentage (BMP), and compete in local rankings." />
+  <title>CoachCards — Get Discovered. Get Booked.</title>
+  <meta name="description" content="CoachCards helps personal trainers turn their existing client reputation into visibility and a stronger reason for potential new clients to choose them. Build your CoachCard free." />
   <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" href="/favicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -580,6 +580,17 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 .ov-tl-step.ov-tl-active .ov-tl-desc { color: rgba(255,255,255,0.62); }
 .ov-tl-trending { color: rgba(215, 70, 35, 0.92); }
 
+/* Journey outcome line */
+.ov-tl-outcome {
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.28);
+}
+
 /* ── Section 6: Final CTA ────────────────────────────────────────────────── */
 #ov-cta {
   position: relative;
@@ -803,13 +814,11 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   <div class="ov-wrap ov-hero-content">
     <span class="ov-pill ov-h-1">FOR PERSONAL TRAINERS</span>
     <h1 id="ov-hero-h1" class="ov-hero-h1">
-      <span class="ov-h-2">BUILD YOUR REPUTATION.</span><br>
-      <em class="ov-accent ov-h-3">GET DISCOVERED.</em>
+      <span class="ov-h-2">GET DISCOVERED.</span><br>
+      <em class="ov-accent ov-h-3">GET BOOKED.</em>
     </h1>
     <p class="ov-hero-sub ov-h-4">
-      CoachCards is where personal trainers build their reputation through
-      verified client reviews, grow their Body Muscle Percentage&nbsp;(BMP),
-      and compete in local rankings.
+      Turn your client reputation into a powerful reason for new clients to choose you. Build your CoachCard with verified reviews, grow your BMP and stand out when people are looking for a personal trainer.
     </p>
     <div class="ov-hero-btns ov-h-5">
       <a href="/signup" class="ov-btn">CREATE YOUR COACHCARD →</a>
@@ -830,8 +839,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
         Searches for personal trainers rise by 53% in January.
       </h2>
       <p class="ov-stat-body ov-reveal" data-reveal>
-        Get ahead of the January rush. Build your CoachCard, grow your BMP
-        and climb the rankings while new clients are searching.
+        More people searching means more potential clients. Get your CoachCard ready for the January rush and give people searching for a PT another reason to choose you.
       </p>
       <p class="ov-stat-source ov-reveal" data-reveal>
         Stat based on London search-volume data, January 2026.
@@ -883,22 +891,22 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
         <div class="ov-benefit ov-reveal" data-reveal data-hl="reviews">
           <div class="ov-benefit-num">01</div>
           <div>
-            <div class="ov-benefit-title">BUILD YOUR REPUTATION</div>
-            <p class="ov-benefit-body">Collect verified feedback from real clients.</p>
+            <div class="ov-benefit-title">TURN REVIEWS INTO TRUST</div>
+            <p class="ov-benefit-body">Show potential clients verified feedback from people you've actually trained.</p>
           </div>
         </div>
         <div class="ov-benefit ov-reveal" data-reveal data-hl="bmp">
           <div class="ov-benefit-num">02</div>
           <div>
-            <div class="ov-benefit-title">CLIMB THE RANKINGS</div>
-            <p class="ov-benefit-body">Grow your BMP and compete with trainers in your area.</p>
+            <div class="ov-benefit-title">STAND OUT FROM OTHER TRAINERS</div>
+            <p class="ov-benefit-body">Build your BMP and strengthen your presence when potential clients compare trainers.</p>
           </div>
         </div>
         <div class="ov-benefit ov-reveal" data-reveal data-hl="card">
           <div class="ov-benefit-num">03</div>
           <div>
-            <div class="ov-benefit-title">GET DISCOVERED</div>
-            <p class="ov-benefit-body">Give potential clients another way to find and compare you.</p>
+            <div class="ov-benefit-title">TURN DISCOVERY INTO BOOKINGS</div>
+            <p class="ov-benefit-body">Give people looking for a personal trainer another reason to choose you.</p>
           </div>
         </div>
         <a href="/signup" class="ov-btn ov-why-cta ov-reveal" data-reveal style="margin-top:2rem;">
@@ -935,7 +943,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   <div class="ov-wrap">
     <div class="ov-eyebrow ov-reveal" data-reveal>THE JOURNEY</div>
     <h2 id="ov-how-h2" class="ov-h2 ov-h2--center ov-reveal" data-reveal>
-      FROM SIGN-UP TO RANKED
+      FROM SIGN-UP TO STANDING OUT
     </h2>
     <div class="ov-tl" id="ov-tl">
       <div class="ov-tl-track" aria-hidden="true">
@@ -949,31 +957,32 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
           <div class="ov-tl-num">01</div>
           <div>
             <div class="ov-tl-title">CREATE YOUR COACHCARD</div>
-            <p class="ov-tl-desc">Add your details, location, specialties and credentials.</p>
+            <p class="ov-tl-desc">Build your presence on CoachCards with your details, location, specialties and credentials.</p>
           </div>
         </div>
         <div class="ov-tl-step">
           <div class="ov-tl-num">02</div>
           <div>
-            <div class="ov-tl-title">SHARE YOUR REVIEW LINK</div>
-            <p class="ov-tl-desc">Send your personal CoachCards review link to your existing clients.</p>
+            <div class="ov-tl-title">COLLECT CLIENT REVIEWS</div>
+            <p class="ov-tl-desc">Turn your existing clients' experiences into verified social proof.</p>
           </div>
         </div>
         <div class="ov-tl-step">
           <div class="ov-tl-num">03</div>
           <div>
-            <div class="ov-tl-title">BUILD YOUR BMP</div>
-            <p class="ov-tl-desc">Verified client feedback contributes to your Body Muscle Percentage.</p>
+            <div class="ov-tl-title">BUILD YOUR REPUTATION</div>
+            <p class="ov-tl-desc">Grow your BMP and strengthen your reputation on CoachCards.</p>
           </div>
         </div>
         <div class="ov-tl-step">
           <div class="ov-tl-num">04</div>
           <div>
-            <div class="ov-tl-title">CLIMB THE RANKINGS</div>
-            <p class="ov-tl-desc">Build your reputation, compete locally and potentially earn <span class="ov-tl-trending">🔥 Trending status</span>.</p>
+            <div class="ov-tl-title">GET DISCOVERED</div>
+            <p class="ov-tl-desc">Stand out when potential clients are comparing personal trainers and give them another reason to choose you.</p>
           </div>
         </div>
       </div>
+      <p class="ov-tl-outcome ov-reveal" data-reveal>GET DISCOVERED <span class="ov-accent">→</span> GET BOOKED</p>
     </div>
   </div>
 </section>
@@ -986,11 +995,10 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   </div>
   <div class="ov-wrap ov-cta-inner">
     <h2 id="ov-cta-h2" class="ov-cta-h2 ov-reveal" data-reveal>
-      READY TO BUILD<br>YOUR COACHCARD?
+      READY TO TURN YOUR REPUTATION<br>INTO MORE BUSINESS?
     </h2>
     <p class="ov-cta-sub ov-reveal" data-reveal>
-      Create your CoachCard in around two minutes and start collecting
-      verified client reviews today.
+      Create your CoachCard, start collecting verified reviews and give your next potential client another reason to choose you.
     </p>
     <a href="/signup" class="ov-btn ov-btn--xl ov-reveal" data-reveal>
       CREATE MY COACHCARD →
