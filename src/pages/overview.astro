@@ -1,0 +1,1118 @@
+---
+import TrainerCard from '../components/TrainerCard.astro';
+---
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CoachCards — Build Your Reputation. Get Discovered.</title>
+  <meta name="description" content="CoachCards is where personal trainers build their reputation through verified client reviews, grow their Body Muscle Percentage (BMP), and compete in local rankings." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Manrope:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'"
+  />
+  <link rel="preload" as="image" href="/images/hero-bg.webp" />
+</head>
+
+<style is:global>
+/* ── Base ────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  background: #0d1a0e;
+  color: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; height: auto; display: block; }
+a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
+
+/* ── Container ───────────────────────────────────────────────────────────── */
+.ov-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+}
+
+/* ── Navigation ──────────────────────────────────────────────────────────── */
+#ov-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: #fff;
+  border-bottom: 1px solid #e0e8e1;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+}
+.ov-nav-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 72px;
+}
+.ov-logo-img {
+  height: 54px;
+  border: 2px solid #3ab54a;
+  border-radius: 8px;
+  background: #fff;
+  padding: 3px;
+}
+.ov-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+}
+.ov-nl {
+  color: #8a8f8a;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.ov-nl:hover { color: #111311; }
+.ov-nav-cta {
+  background: #3ab54a;
+  color: #fff;
+  padding: 0.55rem 1.3rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background 0.15s, transform 0.15s;
+  white-space: nowrap;
+}
+.ov-nav-cta:hover { background: #2a9438; transform: translateY(-1px); }
+.ov-ham {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #111311;
+}
+.ov-mob-nav {
+  background: #fff;
+  border-top: 1px solid #e0e8e1;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  display: none;
+  flex-direction: column;
+}
+.ov-mob-nav.ov-mob-open { max-height: 340px; }
+.ov-mob-link {
+  display: block;
+  padding: 0.9rem 1.5rem;
+  color: #111311;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid #f0f0f0;
+}
+.ov-mob-btns {
+  display: flex;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.25rem;
+}
+.ov-mob-signin {
+  flex: 1; text-align: center; padding: 0.65rem;
+  border: 2px solid #3ab54a; color: #3ab54a;
+  font-weight: 700; font-size: 0.875rem; border-radius: 6px; text-decoration: none;
+}
+.ov-mob-cta {
+  flex: 1; text-align: center; padding: 0.65rem;
+  background: #3ab54a; color: #fff;
+  font-weight: 700; font-size: 0.875rem; border-radius: 6px; text-decoration: none;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.ov-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  background: #3ab54a;
+  color: #fff;
+  padding: 0.875rem 2rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-decoration: none;
+  letter-spacing: 0.2px;
+  transition: background 0.15s, transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 16px rgba(58,181,74,0.22);
+  white-space: nowrap;
+}
+.ov-btn:hover { background: #2a9438; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(58,181,74,0.35); }
+.ov-btn:active { transform: translateY(0); }
+.ov-btn--xl { padding: 1.1rem 2.75rem; font-size: 1.1rem; }
+.ov-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: rgba(255,255,255,0.68);
+  border: 1px solid rgba(255,255,255,0.22);
+  padding: 0.875rem 1.75rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.ov-btn-ghost:hover { color: #fff; border-color: rgba(255,255,255,0.48); background: rgba(255,255,255,0.05); }
+
+/* ── Shared type ─────────────────────────────────────────────────────────── */
+.ov-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #3ab54a;
+  margin-bottom: 0.9rem;
+}
+.ov-h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.5rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 3rem;
+}
+.ov-h2--center { text-align: center; }
+.ov-accent { font-style: normal; color: #3ab54a; }
+
+/* ── Section 1: Hero ─────────────────────────────────────────────────────── */
+#ov-hero {
+  position: relative;
+  min-height: 91vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.ov-hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.ov-hero-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 35%;
+  filter: brightness(0.38) saturate(0.65);
+  will-change: transform;
+}
+.ov-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(130deg,
+    rgba(5,14,6,0.9) 0%,
+    rgba(6,16,7,0.75) 55%,
+    rgba(6,16,7,0.48) 100%
+  );
+}
+.ov-hero-content {
+  position: relative;
+  z-index: 1;
+  padding-top: 5rem;
+  padding-bottom: 5.5rem;
+  max-width: 720px;
+  width: 100%;
+}
+.ov-pill {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #3ab54a;
+  border: 1px solid rgba(58,181,74,0.5);
+  padding: 0.28rem 0.8rem;
+  border-radius: 100px;
+  margin-bottom: 1.5rem;
+}
+.ov-hero-h1 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 4.1rem;
+  font-weight: 900;
+  line-height: 1.07;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+.ov-hero-sub {
+  font-size: 1.05rem;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.68);
+  max-width: 540px;
+  margin-bottom: 2.25rem;
+}
+.ov-hero-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  align-items: center;
+}
+
+/* Hero entrance — runs once on load */
+.ov-h-1 { animation: ovUp 0.6s 0.10s ease both; }
+.ov-h-2 { animation: ovUp 0.65s 0.26s ease both; }
+.ov-h-3 { animation: ovUp 0.65s 0.40s ease both; }
+.ov-h-4 { animation: ovUp 0.6s 0.54s ease both; }
+.ov-h-5 { animation: ovUp 0.6s 0.66s ease both; }
+@keyframes ovUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ── Section 2: 53% ──────────────────────────────────────────────────────── */
+#ov-stat {
+  background: #060e07;
+  padding: 6rem 0;
+  border-top: 1px solid rgba(58,181,74,0.1);
+  overflow: hidden;
+}
+.ov-stat-bar {
+  height: 2px;
+  width: 0;
+  max-width: 520px;
+  background: linear-gradient(90deg, #3ab54a 0%, rgba(58,181,74,0.15) 100%);
+  margin: 0 auto 3.5rem;
+  transition: width 1s 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ov-stat-bar.ov-vis { width: 100%; }
+.ov-stat-inner {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3.5rem;
+  align-items: center;
+}
+.ov-stat-big {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 8.5rem;
+  font-weight: 900;
+  color: #3ab54a;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 0 80px rgba(58,181,74,0.2);
+  transition: opacity 0.4s;
+}
+.ov-stat-text-h {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.75rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.25;
+  margin-bottom: 0.9rem;
+}
+.ov-stat-body {
+  font-size: 0.97rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.72;
+  margin-bottom: 0.85rem;
+}
+.ov-stat-source {
+  font-size: 0.73rem;
+  color: rgba(255,255,255,0.28);
+}
+
+/* ── Section 3: Ready in Minutes ─────────────────────────────────────────── */
+#ov-easy {
+  background: #0a120b;
+  padding: 6rem 0;
+  border-top: 1px solid rgba(58,181,74,0.1);
+}
+.ov-easy-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+.ov-easy-card {
+  background: rgba(58,181,74,0.03);
+  border: 1px solid rgba(58,181,74,0.18);
+  border-radius: 16px;
+  padding: 2rem 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+.ov-easy-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: #3ab54a;
+  border-radius: 16px 16px 0 0;
+}
+.ov-easy-val {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2.75rem;
+  font-weight: 900;
+  color: #3ab54a;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+.ov-easy-lbl {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 0.7rem;
+}
+.ov-easy-desc {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.65;
+}
+.ov-easy-foot {
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.35);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.65;
+}
+
+/* ── Section 4: Why CoachCard ────────────────────────────────────────────── */
+#ov-why {
+  background: #0d1a0e;
+  padding: 6rem 0;
+  border-top: 1px solid rgba(58,181,74,0.08);
+}
+.ov-why-grid {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 5rem;
+  align-items: start;
+}
+.ov-benefit {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+  padding: 1.75rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.ov-benefit:last-of-type { border-bottom: none; }
+.ov-benefit-num {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: rgba(58,181,74,0.28);
+  flex-shrink: 0;
+  width: 2.4rem;
+  line-height: 1;
+  padding-top: 0.1rem;
+}
+.ov-benefit-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 0.4rem;
+}
+.ov-benefit-body {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.48);
+  line-height: 1.65;
+}
+.ov-why-cta { margin-top: 2rem; }
+
+/* CoachCard demo */
+.ov-card-wrap {
+  position: sticky;
+  top: 92px;
+}
+.ov-card-lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(58,181,74,0.55);
+  text-align: center;
+  margin-bottom: 0.75rem;
+}
+.ov-card-demo .trc { pointer-events: none; transition: box-shadow 0.4s ease !important; }
+.ov-card-caption {
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.22);
+  text-align: center;
+  margin-top: 0.75rem;
+  font-style: italic;
+}
+
+/* Card highlight states toggled by scroll JS */
+.ov-card-demo.hl-reviews .trc-reviews {
+  color: rgba(220,100,60,0.95) !important;
+  text-shadow: 0 0 10px rgba(220,100,60,0.35);
+}
+.ov-card-demo.hl-bmp .trc-bmp-num {
+  text-shadow: 0 0 18px rgba(58,181,74,0.8) !important;
+}
+.ov-card-demo.hl-bmp .trc-rank {
+  text-shadow: 0 0 14px rgba(58,181,74,0.65) !important;
+}
+.ov-card-demo.hl-card .trc {
+  box-shadow:
+    0 0 0 2px rgba(58,181,74,0.55),
+    0 0 28px rgba(58,181,74,0.22),
+    0 2px 12px rgba(0,0,0,0.35) !important;
+}
+
+/* ── Section 5: How It Works ─────────────────────────────────────────────── */
+#ov-how {
+  background: #060e07;
+  padding: 6rem 0;
+  border-top: 1px solid rgba(58,181,74,0.1);
+}
+.ov-tl { position: relative; }
+.ov-tl-track {
+  position: absolute;
+  left: 0; right: 0;
+  top: 56px;          /* sits flush below 56px-tall circle badges */
+  height: 2px;
+  background: rgba(255,255,255,0.05);
+  pointer-events: none;
+}
+.ov-tl-fill {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #3ab54a 0%, rgba(58,181,74,0.35) 100%);
+  transition: width 1.5s 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ov-tl-fill.ov-tl-go { width: 100%; }
+.ov-tl-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+.ov-tl-step { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.ov-tl-num {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid rgba(58,181,74,0.3);
+  background: #0d1a0e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  color: #3ab54a;
+  flex-shrink: 0;
+  margin-bottom: 1.25rem;
+  transition: border-color 0.35s, background 0.35s, box-shadow 0.35s;
+}
+.ov-tl-step.ov-vis .ov-tl-num {
+  border-color: #3ab54a;
+  background: rgba(58,181,74,0.08);
+  box-shadow: 0 0 0 4px rgba(58,181,74,0.1);
+}
+.ov-tl-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 0.6rem;
+  line-height: 1.35;
+}
+.ov-tl-desc {
+  font-size: 0.83rem;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.65;
+}
+
+/* ── Section 6: Final CTA ────────────────────────────────────────────────── */
+#ov-cta {
+  position: relative;
+  overflow: hidden;
+  padding: 7.5rem 0;
+}
+.ov-cta-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.ov-cta-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 55%;
+  filter: brightness(0.25) saturate(0.5);
+}
+.ov-cta-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(5,14,6,0.94) 0%, rgba(5,14,6,0.82) 100%);
+}
+.ov-cta-inner {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.ov-cta-h2 {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 3.25rem;
+  font-weight: 900;
+  line-height: 1.1;
+  color: #fff;
+  margin-bottom: 1.25rem;
+}
+.ov-cta-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.62);
+  line-height: 1.72;
+  margin-bottom: 2.25rem;
+  max-width: 440px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.ov-cta-reassure {
+  margin-top: 1.25rem;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.2px;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+#ov-footer {
+  background: #0a130b;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+.ov-footer-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.75rem 2.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.ov-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.ov-footer-logo {
+  height: 44px;
+  border: 2px solid #3ab54a;
+  border-radius: 8px;
+  background: #fff;
+  padding: 3px;
+}
+.ov-footer-copy { font-size: 0.76rem; color: rgba(255,255,255,0.28); line-height: 1.6; }
+.ov-footer-legal { font-size: 0.68rem; color: rgba(255,255,255,0.16); margin-top: 0.1rem; }
+.ov-footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
+.ov-footer-link {
+  color: rgba(255,255,255,0.28);
+  font-size: 0.78rem;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+.ov-footer-link:hover { color: rgba(255,255,255,0.65); }
+
+/* ── Scroll reveal ───────────────────────────────────────────────────────── */
+.ov-reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.ov-reveal[data-d="1"] { transition-delay: 0.1s; }
+.ov-reveal[data-d="2"] { transition-delay: 0.2s; }
+.ov-reveal[data-d="3"] { transition-delay: 0.3s; }
+.ov-reveal.ov-vis { opacity: 1; transform: none; }
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .ov-h-1,.ov-h-2,.ov-h-3,.ov-h-4,.ov-h-5 { animation: none; opacity: 1; transform: none; }
+  .ov-reveal { opacity: 1; transform: none; transition: none; }
+  .ov-stat-bar, .ov-tl-fill { transition: none; }
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .ov-why-grid { grid-template-columns: 1fr; gap: 3rem; }
+  .ov-card-wrap { position: static; }
+}
+@media (max-width: 768px) {
+  .ov-wrap { padding: 0 1.5rem; }
+  .ov-nav-links { display: none; }
+  .ov-ham { display: flex; }
+  .ov-mob-nav { display: flex; }
+  .ov-nav-inner { padding: 0 1.25rem; }
+  .ov-hero-h1 { font-size: 2.85rem; }
+  .ov-stat-inner { grid-template-columns: 1fr; text-align: center; gap: 1.5rem; }
+  .ov-stat-big { font-size: 6.5rem; }
+  .ov-stat-body { max-width: 480px; margin: 0 auto 0.85rem; }
+  .ov-easy-grid { grid-template-columns: 1fr; gap: 1rem; }
+  /* Vertical timeline */
+  .ov-tl-steps { grid-template-columns: 1fr; gap: 0; }
+  .ov-tl-track { display: none; }
+  .ov-tl-step {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+    gap: 1.25rem;
+    padding: 1.25rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .ov-tl-step:last-child { border-bottom: none; }
+  .ov-tl-num { flex-shrink: 0; margin-bottom: 0; }
+  .ov-h2 { font-size: 2rem; }
+  .ov-cta-h2 { font-size: 2.25rem; }
+  .ov-footer-inner { padding: 1.5rem 1.25rem; flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 640px) {
+  .ov-wrap { padding: 0 1.25rem; }
+  #ov-hero { min-height: 82vh; }
+  .ov-hero-h1 { font-size: 2.25rem; }
+  .ov-hero-sub { font-size: 0.95rem; }
+  .ov-hero-btns { flex-direction: column; align-items: stretch; }
+  .ov-btn, .ov-btn-ghost { width: 100%; }
+  .ov-btn--xl { width: 100%; font-size: 1rem; padding: 1rem 1.5rem; }
+  .ov-stat-big { font-size: 5.5rem; }
+  #ov-stat, #ov-easy, #ov-why, #ov-how { padding: 4.5rem 0; }
+  #ov-cta { padding: 5.5rem 0; }
+  .ov-cta-h2 { font-size: 1.9rem; }
+  .ov-easy-val { font-size: 2.35rem; }
+}
+@media (max-width: 390px) {
+  .ov-hero-h1 { font-size: 1.95rem; }
+  .ov-stat-big { font-size: 4.75rem; }
+  .ov-h2 { font-size: 1.75rem; }
+}
+</style>
+
+<body>
+
+<!-- ── Nav ──────────────────────────────────────────────────────────────── -->
+<header id="ov-nav">
+  <div class="ov-nav-inner">
+    <a href="/" aria-label="CoachCards home">
+      <img src="/images/logo.png" alt="CoachCards" class="ov-logo-img" />
+    </a>
+    <nav class="ov-nav-links" aria-label="Primary">
+      <a href="/find-a-trainer" class="ov-nl">Find a PT</a>
+      <a href="/for-trainers" class="ov-nl">For Trainers</a>
+      <a href="/login" class="ov-nl">Sign In</a>
+      <a href="/signup" class="ov-nav-cta">Create Profile →</a>
+    </nav>
+    <button class="ov-ham" id="ov-ham" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="1" y1="1"  x2="21" y2="1"  id="ov-hl1"/>
+        <line x1="1" y1="9"  x2="21" y2="9"  id="ov-hl2"/>
+        <line x1="1" y1="17" x2="21" y2="17" id="ov-hl3"/>
+      </svg>
+    </button>
+  </div>
+  <nav class="ov-mob-nav" id="ov-mob-nav" aria-label="Mobile" aria-hidden="true">
+    <a href="/find-a-trainer" class="ov-mob-link">Find a PT</a>
+    <a href="/for-trainers"   class="ov-mob-link">For Trainers</a>
+    <div class="ov-mob-btns">
+      <a href="/login"  class="ov-mob-signin">Sign In</a>
+      <a href="/signup" class="ov-mob-cta">Create Profile →</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+
+<!-- ── 1 · Hero ──────────────────────────────────────────────────────────── -->
+<section id="ov-hero" aria-labelledby="ov-hero-h1">
+  <div class="ov-hero-bg" aria-hidden="true">
+    <img src="/images/hero-bg.webp" alt="" class="ov-hero-bg-img" id="ov-parallax-img" />
+    <div class="ov-hero-overlay"></div>
+  </div>
+  <div class="ov-wrap ov-hero-content">
+    <span class="ov-pill ov-h-1">FOR PERSONAL TRAINERS</span>
+    <h1 id="ov-hero-h1" class="ov-hero-h1">
+      <span class="ov-h-2">BUILD YOUR REPUTATION.</span><br>
+      <em class="ov-accent ov-h-3">GET DISCOVERED.</em>
+    </h1>
+    <p class="ov-hero-sub ov-h-4">
+      CoachCards is where personal trainers build their reputation through
+      verified client reviews, grow their Body Muscle Percentage&nbsp;(BMP),
+      and compete in local rankings.
+    </p>
+    <div class="ov-hero-btns ov-h-5">
+      <a href="/signup" class="ov-btn">CREATE YOUR COACHCARD →</a>
+      <a href="#ov-easy" class="ov-btn-ghost">SEE HOW IT WORKS ↓</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── 2 · 53% ────────────────────────────────────────────────────────────── -->
+<section id="ov-stat" aria-labelledby="ov-stat-h2">
+  <div class="ov-stat-bar" id="ov-stat-bar" aria-hidden="true"></div>
+  <div class="ov-wrap ov-stat-inner">
+    <div class="ov-stat-big ov-reveal" data-reveal>
+      <span id="ov-count" aria-label="53 percent">0</span>%
+    </div>
+    <div>
+      <h2 id="ov-stat-h2" class="ov-stat-text-h ov-reveal" data-reveal>
+        Searches for personal trainers rise by 53% in January.
+      </h2>
+      <p class="ov-stat-body ov-reveal" data-reveal>
+        Get ahead of the January rush. Build your CoachCard, grow your BMP
+        and climb the rankings while new clients are searching.
+      </p>
+      <p class="ov-stat-source ov-reveal" data-reveal>
+        Stat based on London search-volume data, January 2026.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 3 · Ready in Minutes ──────────────────────────────────────────────── -->
+<section id="ov-easy" aria-labelledby="ov-easy-h2">
+  <div class="ov-wrap">
+    <div class="ov-eyebrow ov-reveal" data-reveal>REMOVE THE BARRIER</div>
+    <h2 id="ov-easy-h2" class="ov-h2 ov-reveal" data-reveal>
+      YOUR COACHCARD.<br><em class="ov-accent">READY IN MINUTES.</em>
+    </h2>
+    <div class="ov-easy-grid">
+      <div class="ov-easy-card ov-reveal" data-reveal data-d="0">
+        <div class="ov-easy-val">£0</div>
+        <div class="ov-easy-lbl">COMPLETELY FREE</div>
+        <p class="ov-easy-desc">Create and maintain your CoachCard at no cost.</p>
+      </div>
+      <div class="ov-easy-card ov-reveal" data-reveal data-d="1">
+        <div class="ov-easy-val">2&nbsp;MIN</div>
+        <div class="ov-easy-lbl">QUICK TO SET UP</div>
+        <p class="ov-easy-desc">Create your profile in around two minutes and you're ready to go.</p>
+      </div>
+      <div class="ov-easy-card ov-reveal" data-reveal data-d="2">
+        <div class="ov-easy-val">INSTANT</div>
+        <div class="ov-easy-lbl">START GETTING REVIEWED</div>
+        <p class="ov-easy-desc">Get your personal review link and start collecting client feedback straight away.</p>
+      </div>
+    </div>
+    <p class="ov-easy-foot ov-reveal" data-reveal>
+      No complicated setup. No upfront cost. Just create your CoachCard and start building your reputation.
+    </p>
+  </div>
+</section>
+
+<!-- ── 4 · Why CoachCard ──────────────────────────────────────────────────── -->
+<section id="ov-why" aria-labelledby="ov-why-h2">
+  <div class="ov-wrap">
+    <div class="ov-eyebrow ov-reveal" data-reveal>FEATURES</div>
+    <h2 id="ov-why-h2" class="ov-h2 ov-h2--center ov-reveal" data-reveal>
+      WHY BUILD YOUR COACHCARD?
+    </h2>
+    <div class="ov-why-grid">
+      <!-- Benefits -->
+      <div>
+        <div class="ov-benefit ov-reveal" data-reveal data-hl="reviews">
+          <div class="ov-benefit-num">01</div>
+          <div>
+            <div class="ov-benefit-title">BUILD YOUR REPUTATION</div>
+            <p class="ov-benefit-body">Collect verified feedback from real clients.</p>
+          </div>
+        </div>
+        <div class="ov-benefit ov-reveal" data-reveal data-hl="bmp">
+          <div class="ov-benefit-num">02</div>
+          <div>
+            <div class="ov-benefit-title">CLIMB THE RANKINGS</div>
+            <p class="ov-benefit-body">Grow your Body Muscle Percentage (BMP) and compete with trainers in your area.</p>
+          </div>
+        </div>
+        <div class="ov-benefit ov-reveal" data-reveal data-hl="card">
+          <div class="ov-benefit-num">03</div>
+          <div>
+            <div class="ov-benefit-title">GET DISCOVERED</div>
+            <p class="ov-benefit-body">Give potential clients another way to find and compare you.</p>
+          </div>
+        </div>
+        <a href="/signup" class="ov-btn ov-why-cta ov-reveal" data-reveal style="margin-top:2rem;">
+          CREATE YOUR COACHCARD →
+        </a>
+      </div>
+
+      <!-- CoachCard demo -->
+      <div class="ov-card-wrap">
+        <div class="ov-card-lbl">Your CoachCard</div>
+        <figure class="ov-card-demo" id="ov-card-demo" aria-label="Sample CoachCard showing example trainer profile">
+          <TrainerCard
+            id="demo"
+            name="Alex Morgan"
+            city="London"
+            spec="Strength & Conditioning"
+            bmpScore={74.2}
+            revCount={23}
+            recentReviewCount={6}
+            rank={7}
+            isTrending={true}
+            avatarInitials="AM"
+            avatarBg="#0d1a0e"
+            avatarColor="#3ab54a"
+            profileComplete={true}
+          />
+          <figcaption class="ov-card-caption">Sample CoachCard — not a real profile on CoachCards</figcaption>
+        </figure>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 5 · How It Works ───────────────────────────────────────────────────── -->
+<section id="ov-how" aria-labelledby="ov-how-h2">
+  <div class="ov-wrap">
+    <div class="ov-eyebrow ov-reveal" data-reveal>THE JOURNEY</div>
+    <h2 id="ov-how-h2" class="ov-h2 ov-h2--center ov-reveal" data-reveal>
+      FROM SIGN-UP TO RANKED
+    </h2>
+    <div class="ov-tl" id="ov-tl">
+      <div class="ov-tl-track" aria-hidden="true">
+        <div class="ov-tl-fill" id="ov-tl-fill"></div>
+      </div>
+      <div class="ov-tl-steps">
+        <div class="ov-tl-step ov-reveal" data-reveal data-d="0">
+          <div class="ov-tl-num">01</div>
+          <div>
+            <div class="ov-tl-title">CREATE YOUR COACHCARD</div>
+            <p class="ov-tl-desc">Add your details, location, specialties and credentials.</p>
+          </div>
+        </div>
+        <div class="ov-tl-step ov-reveal" data-reveal data-d="1">
+          <div class="ov-tl-num">02</div>
+          <div>
+            <div class="ov-tl-title">SHARE YOUR REVIEW LINK</div>
+            <p class="ov-tl-desc">Send your personal CoachCards review link to your existing clients.</p>
+          </div>
+        </div>
+        <div class="ov-tl-step ov-reveal" data-reveal data-d="2">
+          <div class="ov-tl-num">03</div>
+          <div>
+            <div class="ov-tl-title">BUILD YOUR BMP</div>
+            <p class="ov-tl-desc">Verified client feedback contributes to your Body Muscle Percentage.</p>
+          </div>
+        </div>
+        <div class="ov-tl-step ov-reveal" data-reveal data-d="3">
+          <div class="ov-tl-num">04</div>
+          <div>
+            <div class="ov-tl-title">CLIMB THE RANKINGS</div>
+            <p class="ov-tl-desc">Build your reputation, compete locally and potentially earn 🔥 Trending status.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 6 · Final CTA ──────────────────────────────────────────────────────── -->
+<section id="ov-cta" aria-labelledby="ov-cta-h2">
+  <div class="ov-cta-bg" aria-hidden="true">
+    <img src="/images/hero-bg.webp" alt="" class="ov-cta-bg-img" loading="lazy" />
+    <div class="ov-cta-overlay"></div>
+  </div>
+  <div class="ov-wrap ov-cta-inner">
+    <h2 id="ov-cta-h2" class="ov-cta-h2 ov-reveal" data-reveal>
+      READY TO BUILD<br>YOUR REPUTATION?
+    </h2>
+    <p class="ov-cta-sub ov-reveal" data-reveal>
+      Create your CoachCard in around two minutes and start collecting
+      verified client reviews today.
+    </p>
+    <a href="/signup" class="ov-btn ov-btn--xl ov-reveal" data-reveal>
+      CREATE MY COACHCARD →
+    </a>
+    <p class="ov-cta-reassure ov-reveal" data-reveal>
+      Free to join · Takes around 2 minutes · Start getting reviewed straight away
+    </p>
+  </div>
+</section>
+
+</main>
+
+<!-- ── Footer ────────────────────────────────────────────────────────────── -->
+<footer id="ov-footer">
+  <div class="ov-footer-inner">
+    <div class="ov-footer-left">
+      <a href="/" aria-label="CoachCards home">
+        <img src="/images/logo.png" alt="CoachCards" class="ov-footer-logo" />
+      </a>
+      <div class="ov-footer-copy">
+        <div>© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</div>
+        <div class="ov-footer-legal">Rankings are based on verified client reviews only</div>
+      </div>
+    </div>
+    <nav class="ov-footer-links" aria-label="Footer">
+      <a href="/" class="ov-footer-link">Home</a>
+      <a href="/find-a-trainer" class="ov-footer-link">Find a PT</a>
+      <a href="/for-trainers"   class="ov-footer-link">For Trainers</a>
+      <a href="/privacy"        class="ov-footer-link">Privacy</a>
+      <a href="/terms"          class="ov-footer-link">Terms</a>
+      <a href="/contact"        class="ov-footer-link">Contact</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
+
+<script>
+// ── Disable demo card link/focus ──────────────────────────────────────────
+const demoLink = document.querySelector<HTMLAnchorElement>('#ov-card-demo .trc');
+if (demoLink) {
+  demoLink.setAttribute('tabindex', '-1');
+  demoLink.removeAttribute('href');
+}
+
+// ── Reduced motion flag ───────────────────────────────────────────────────
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ── Scroll reveal ─────────────────────────────────────────────────────────
+const revEls = document.querySelectorAll<HTMLElement>('[data-reveal]');
+
+if (reducedMotion) {
+  revEls.forEach(el => el.classList.add('ov-vis'));
+} else {
+  const revObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('ov-vis');
+        revObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -30px 0px' });
+  revEls.forEach(el => revObs.observe(el));
+}
+
+// ── Stat section: bar + count ─────────────────────────────────────────────
+const statBar   = document.getElementById('ov-stat-bar');
+const countEl   = document.getElementById('ov-count');
+const statSect  = document.getElementById('ov-stat');
+let statDone    = false;
+
+if (statSect && countEl && statBar) {
+  const statObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !statDone) {
+      statDone = true;
+      statObs.disconnect();
+      statBar.classList.add('ov-vis');
+
+      if (reducedMotion) {
+        countEl.textContent = '53';
+        return;
+      }
+
+      const startTime = performance.now();
+      const duration  = 1700;
+      const target    = 53;
+
+      function tick(now: number) {
+        const elapsed  = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased    = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+        countEl!.textContent = String(Math.round(eased * target));
+        if (progress < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+  }, { threshold: 0.25 });
+  statObs.observe(statSect);
+}
+
+// ── Timeline line fill ────────────────────────────────────────────────────
+const tlFill = document.getElementById('ov-tl-fill');
+const tlSect = document.getElementById('ov-tl');
+if (tlFill && tlSect && !reducedMotion) {
+  const tlObs = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      tlFill.classList.add('ov-tl-go');
+      tlObs.disconnect();
+    }
+  }, { threshold: 0.2 });
+  tlObs.observe(tlSect);
+} else if (tlFill && reducedMotion) {
+  tlFill.classList.add('ov-tl-go');
+}
+
+// ── CoachCard benefit highlight ────────────────────────────────────────────
+const cardDemo   = document.getElementById('ov-card-demo');
+const benefits   = document.querySelectorAll<HTMLElement>('[data-hl]');
+const hlClasses  = { reviews: 'hl-reviews', bmp: 'hl-bmp', card: 'hl-card' } as const;
+
+if (cardDemo && benefits.length && !reducedMotion) {
+  const hlObs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const key = (entry.target as HTMLElement).dataset.hl as keyof typeof hlClasses;
+        const cls = hlClasses[key];
+        if (!cls) return;
+        Object.values(hlClasses).forEach(c => cardDemo!.classList.remove(c));
+        cardDemo!.classList.add(cls);
+      }
+    });
+  }, { threshold: 0.65, rootMargin: '-80px 0px -80px 0px' });
+  benefits.forEach(b => hlObs.observe(b));
+}
+
+// ── Subtle hero parallax (desktop only, performance-safe) ─────────────────
+const heroImg = document.getElementById('ov-parallax-img') as HTMLElement | null;
+if (heroImg && !reducedMotion && window.innerWidth > 768) {
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY;
+        const hero = document.getElementById('ov-hero');
+        if (hero) {
+          const heroH = hero.offsetHeight;
+          if (scrollY <= heroH) {
+            heroImg.style.transform = `translateY(${scrollY * 0.18}px)`;
+          }
+        }
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+}
+
+// ── Mobile hamburger ──────────────────────────────────────────────────────
+const ham    = document.getElementById('ov-ham');
+const mobNav = document.getElementById('ov-mob-nav');
+if (ham && mobNav) {
+  ham.addEventListener('click', () => {
+    const isOpen = mobNav.classList.contains('ov-mob-open');
+    mobNav.classList.toggle('ov-mob-open');
+    ham.setAttribute('aria-expanded', String(!isOpen));
+    mobNav.setAttribute('aria-hidden', String(isOpen));
+  });
+
+  // Close on nav link click
+  mobNav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      mobNav.classList.remove('ov-mob-open');
+      ham.setAttribute('aria-expanded', 'false');
+      mobNav.setAttribute('aria-hidden', 'true');
+    });
+  });
+}
+
+// ── Smooth scroll for anchor link (hero → section 3) ──────────────────────
+document.querySelector('a[href="#ov-easy"]')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  document.getElementById('ov-easy')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+</script>
