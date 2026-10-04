@@ -12,6 +12,7 @@ interface Props {
   rank?: number;
   profileComplete?: boolean;
   avatarUrl?: string;
+  avatarStyle?: string;
   avatarInitials?: string;
   avatarBg?: string;
   avatarColor?: string;
@@ -29,6 +30,7 @@ const {
   rank,
   profileComplete,
   avatarUrl,
+  avatarStyle,
   avatarInitials = '?',
   avatarBg = '#0d1a0e',
   avatarColor = '#3ab54a',
@@ -69,6 +71,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
         alt={name}
         width="56"
         height="56"
+        style={avatarStyle || undefined}
       />
     ) : (
       <div class="trc-av trc-av-init" style={`background:${avatarBg};color:${avatarColor};`}>
