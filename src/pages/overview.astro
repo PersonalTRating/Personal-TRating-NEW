@@ -472,14 +472,15 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 /* ── Section 5: How It Works ─────────────────────────────────────────────── */
 #ov-how {
   background: #060e07;
-  padding: 6rem 0;
+  padding: 4.5rem 0;
   border-top: 1px solid rgba(58,181,74,0.1);
 }
+#ov-how .ov-h2 { margin-bottom: 2rem; }
 .ov-tl { position: relative; }
 .ov-tl-track {
   position: absolute;
   left: 0; right: 0;
-  top: 56px;          /* sits flush below 56px-tall circle badges */
+  top: 27px;
   height: 2px;
   background: rgba(255,255,255,0.05);
   pointer-events: none;
@@ -491,6 +492,25 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   transition: width 1.5s 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .ov-tl-fill.ov-tl-go { width: 100%; }
+/* Vertical track — mobile only */
+.ov-tl-vtrack {
+  display: none;
+  position: absolute;
+  left: 27px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: rgba(255,255,255,0.05);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+.ov-tl-vfill {
+  width: 100%;
+  height: 0;
+  background: linear-gradient(180deg, #3ab54a 0%, rgba(58,181,74,0.35) 100%);
+  transition: height 1.8s 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.ov-tl-vfill.ov-tl-go { height: 100%; }
 .ov-tl-steps {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -499,11 +519,16 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   z-index: 1;
 }
 .ov-tl-step { display: flex; flex-direction: column; align-items: center; text-align: center; }
+@keyframes ov-tl-pulse {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
 .ov-tl-num {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  border: 2px solid rgba(58,181,74,0.3);
+  border: 2px solid rgba(58,181,74,0.2);
   background: #0d1a0e;
   display: flex;
   align-items: center;
@@ -511,30 +536,37 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   font-size: 0.8rem;
   font-weight: 800;
   letter-spacing: 1px;
-  color: #3ab54a;
+  color: rgba(58,181,74,0.5);
   flex-shrink: 0;
   margin-bottom: 1.25rem;
-  transition: border-color 0.35s, background 0.35s, box-shadow 0.35s;
+  transition: border-color 0.35s, background 0.35s, box-shadow 0.35s, color 0.35s;
 }
-.ov-tl-step.ov-vis .ov-tl-num {
+.ov-tl-step.ov-tl-active .ov-tl-num {
   border-color: #3ab54a;
-  background: rgba(58,181,74,0.08);
-  box-shadow: 0 0 0 4px rgba(58,181,74,0.1);
+  background: rgba(58,181,74,0.1);
+  box-shadow: 0 0 0 5px rgba(58,181,74,0.1), 0 0 14px rgba(58,181,74,0.18);
+  color: #3ab54a;
+  animation: ov-tl-pulse 0.45s ease-out forwards;
 }
 .ov-tl-title {
   font-size: 0.72rem;
   font-weight: 800;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #fff;
+  color: rgba(255,255,255,0.55);
   margin-bottom: 0.6rem;
   line-height: 1.35;
+  transition: color 0.35s;
 }
+.ov-tl-step.ov-tl-active .ov-tl-title { color: #fff; }
 .ov-tl-desc {
   font-size: 0.83rem;
-  color: rgba(255,255,255,0.42);
+  color: rgba(255,255,255,0.38);
   line-height: 1.65;
+  transition: color 0.35s;
 }
+.ov-tl-step.ov-tl-active .ov-tl-desc { color: rgba(255,255,255,0.62); }
+.ov-tl-trending { color: rgba(215, 70, 35, 0.92); }
 
 /* ── Section 6: Final CTA ────────────────────────────────────────────────── */
 #ov-cta {
@@ -644,7 +676,10 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   .ov-h-1,.ov-h-2,.ov-h-3,.ov-h-4,.ov-h-5 { animation: none; opacity: 1; transform: none; }
   .ov-reveal { opacity: 1; transform: none; transition: none; }
-  .ov-stat-bar, .ov-tl-fill { transition: none; }
+  .ov-stat-bar, .ov-tl-fill, .ov-tl-vfill { transition: none; }
+  .ov-tl-num { animation: none !important; border-color: #3ab54a !important; background: rgba(58,181,74,0.08) !important; color: #3ab54a !important; }
+  .ov-tl-title { color: #fff !important; }
+  .ov-tl-desc  { color: rgba(255,255,255,0.62) !important; }
 }
 
 /* ── Responsive ──────────────────────────────────────────────────────────── */
@@ -666,6 +701,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   /* Vertical timeline */
   .ov-tl-steps { grid-template-columns: 1fr; gap: 0; }
   .ov-tl-track { display: none; }
+  .ov-tl-vtrack { display: block; }
   .ov-tl-step {
     flex-direction: row;
     align-items: flex-start;
@@ -689,7 +725,8 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   .ov-btn, .ov-btn-ghost { width: 100%; }
   .ov-btn--xl { width: 100%; font-size: 1rem; padding: 1rem 1.5rem; }
   .ov-stat-big { font-size: 5.5rem; }
-  #ov-stat, #ov-easy, #ov-why, #ov-how { padding: 4.5rem 0; }
+  #ov-stat, #ov-easy, #ov-why { padding: 4.5rem 0; }
+  #ov-how { padding: 3.5rem 0; }
   #ov-cta { padding: 5.5rem 0; }
   .ov-cta-h2 { font-size: 1.9rem; }
   .ov-easy-val { font-size: 2.35rem; }
@@ -884,33 +921,36 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
       <div class="ov-tl-track" aria-hidden="true">
         <div class="ov-tl-fill" id="ov-tl-fill"></div>
       </div>
+      <div class="ov-tl-vtrack" aria-hidden="true">
+        <div class="ov-tl-vfill" id="ov-tl-vfill"></div>
+      </div>
       <div class="ov-tl-steps">
-        <div class="ov-tl-step ov-reveal" data-reveal data-d="0">
+        <div class="ov-tl-step">
           <div class="ov-tl-num">01</div>
           <div>
             <div class="ov-tl-title">CREATE YOUR COACHCARD</div>
             <p class="ov-tl-desc">Add your details, location, specialties and credentials.</p>
           </div>
         </div>
-        <div class="ov-tl-step ov-reveal" data-reveal data-d="1">
+        <div class="ov-tl-step">
           <div class="ov-tl-num">02</div>
           <div>
             <div class="ov-tl-title">SHARE YOUR REVIEW LINK</div>
             <p class="ov-tl-desc">Send your personal CoachCards review link to your existing clients.</p>
           </div>
         </div>
-        <div class="ov-tl-step ov-reveal" data-reveal data-d="2">
+        <div class="ov-tl-step">
           <div class="ov-tl-num">03</div>
           <div>
             <div class="ov-tl-title">BUILD YOUR BMP</div>
             <p class="ov-tl-desc">Verified client feedback contributes to your Body Muscle Percentage.</p>
           </div>
         </div>
-        <div class="ov-tl-step ov-reveal" data-reveal data-d="3">
+        <div class="ov-tl-step">
           <div class="ov-tl-num">04</div>
           <div>
             <div class="ov-tl-title">CLIMB THE RANKINGS</div>
-            <p class="ov-tl-desc">Build your reputation, compete locally and potentially earn 🔥 Trending status.</p>
+            <p class="ov-tl-desc">Build your reputation, compete locally and potentially earn <span class="ov-tl-trending">🔥 Trending status</span>.</p>
           </div>
         </div>
       </div>
@@ -1032,19 +1072,45 @@ if (statSect && countEl && statBar) {
   statObs.observe(statSect);
 }
 
-// ── Timeline line fill ────────────────────────────────────────────────────
-const tlFill = document.getElementById('ov-tl-fill');
-const tlSect = document.getElementById('ov-tl');
-if (tlFill && tlSect && !reducedMotion) {
+// ── Timeline: sequential stage activation ────────────────────────────────
+const tlFill  = document.getElementById('ov-tl-fill');
+const tlVFill = document.getElementById('ov-tl-vfill');
+const tlSect  = document.getElementById('ov-tl');
+const tlSteps = document.querySelectorAll<HTMLElement>('.ov-tl-step');
+
+if (reducedMotion) {
+  if (tlFill)  tlFill.classList.add('ov-tl-go');
+  if (tlVFill) tlVFill.classList.add('ov-tl-go');
+  tlSteps.forEach(s => s.classList.add('ov-tl-active'));
+} else if (tlSect) {
+  // Desktop line: 1.5s duration, 0.4s delay. Steps at 12.5/37.5/62.5/87.5% width.
+  // Mobile vline: 1.8s duration, 0.3s delay. Steps at 12.5/37.5/62.5/87.5% height.
+  // Activation ms from observer fire (desktop timings):
+  //   step 1: 400 + (0.125 * 1500) = 588ms
+  //   step 2: 400 + (0.375 * 1500) = 963ms
+  //   step 3: 400 + (0.625 * 1500) = 1338ms
+  //   step 4: 400 + (0.875 * 1500) = 1713ms
+  const isMobile = () => window.innerWidth <= 768;
+  const desktopDelays = [588, 963, 1338, 1713];
+  // Mobile vline: 1.8s duration, 0.3s delay:
+  //   step 1: 300 + (0.125 * 1800) = 525ms
+  //   step 2: 300 + (0.375 * 1800) = 975ms
+  //   step 3: 300 + (0.625 * 1800) = 1425ms
+  //   step 4: 300 + (0.875 * 1800) = 1875ms
+  const mobileDelays  = [525, 975, 1425, 1875];
+
   const tlObs = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
-      tlFill.classList.add('ov-tl-go');
+      if (tlFill)  tlFill.classList.add('ov-tl-go');
+      if (tlVFill) tlVFill.classList.add('ov-tl-go');
+      const delays = isMobile() ? mobileDelays : desktopDelays;
+      tlSteps.forEach((step, i) => {
+        setTimeout(() => step.classList.add('ov-tl-active'), delays[i]);
+      });
       tlObs.disconnect();
     }
   }, { threshold: 0.2 });
   tlObs.observe(tlSect);
-} else if (tlFill && reducedMotion) {
-  tlFill.classList.add('ov-tl-go');
 }
 
 // ── CoachCard benefit highlight ────────────────────────────────────────────
