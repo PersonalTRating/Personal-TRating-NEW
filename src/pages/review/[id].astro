@@ -13,7 +13,7 @@ export async function getStaticPaths() {
 const { id } = Astro.params;
 const { data: trainer } = await supabase
   .from('trainers')
-  .select('id, name, username, business_name, location, specialty, avatar_initials, avatar_bg, avatar_color, avatar_url, hero_theme, star_rating, review_count')
+  .select('id, name, username, business_name, location, specialty, avatar_initials, avatar_bg, avatar_color, avatar_url, hero_theme, star_rating, review_count, bmp_score')
   .eq('id', id)
   .maybeSingle();
 
@@ -232,6 +232,134 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     .star       { font-size:2.4rem; }
     .rv-name    { font-size:1.5rem; }
   }
+
+  /* ── Intro Section ──────────────────────────────────────────────── */
+  .rv-intro {
+    background:var(--off); padding:2.5rem 1.25rem 0; overflow-x:hidden;
+    animation:rv-fade-in 0.4s ease both;
+  }
+  @keyframes rv-fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  @media (prefers-reduced-motion:reduce) {
+    .rv-intro, .rv-mini-card, .rv-reason { animation:none !important; transition:none !important; }
+  }
+  .rv-intro-inner { max-width:500px; margin:0 auto; padding-bottom:2.5rem; }
+
+  .rv-intro-eyebrow {
+    display:inline-flex; align-items:center; gap:0.45rem;
+    background:rgba(58,181,74,0.1); border:1px solid rgba(58,181,74,0.22);
+    color:#2a9438; font-size:0.63rem; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; padding:0.28rem 0.75rem; border-radius:20px;
+    margin-bottom:1rem;
+  }
+  .rv-intro-headline {
+    font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900;
+    color:var(--text); line-height:1.15; margin-bottom:0.7rem; text-wrap:balance;
+  }
+  .rv-intro-name { color:var(--green-dark); }
+  .rv-intro-sub {
+    font-size:0.88rem; color:var(--muted); line-height:1.7; margin-bottom:1.75rem;
+  }
+
+  /* ── Mini CoachCard ── */
+  .rv-mini-card {
+    display:flex; align-items:center; gap:0.85rem;
+    padding:0.95rem 1.1rem;
+    background:rgba(4,10,5,0.97);
+    border:1px solid rgba(58,181,74,0.3); border-left:3px solid rgba(58,181,74,0.65);
+    border-radius:14px;
+    box-shadow:0 0 8px rgba(58,181,74,0.15), 0 2px 12px rgba(0,0,0,0.32);
+    margin-bottom:1.5rem;
+    animation:rv-card-in 0.45s 0.08s ease both;
+  }
+  @keyframes rv-card-in { from { opacity:0; transform:scale(0.97); } to { opacity:1; transform:none; } }
+  .rv-mini-av {
+    width:46px; min-width:46px; height:46px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:0.82rem;
+    border:2px solid rgba(255,255,255,0.12); overflow:hidden; flex-shrink:0;
+  }
+  .rv-mini-info { flex:1; min-width:0; }
+  .rv-mini-name {
+    font-family:'Playfair Display',serif; font-size:0.92rem; font-weight:700;
+    color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    margin-bottom:0.2rem;
+  }
+  .rv-mini-meta { display:flex; align-items:center; gap:0.35rem; flex-wrap:wrap; }
+  .rv-mini-loc {
+    font-size:0.7rem; color:rgba(255,255,255,0.36);
+    display:inline-flex; align-items:center; gap:0.2rem;
+  }
+  .rv-mini-spec {
+    font-size:0.63rem; font-weight:600; padding:0.16rem 0.45rem;
+    background:rgba(58,181,74,0.1); border:1px solid rgba(58,181,74,0.2);
+    color:rgba(180,255,185,0.78); border-radius:4px;
+  }
+  .rv-mini-bmp { text-align:right; flex-shrink:0; }
+  .rv-mini-bmp-lbl {
+    display:block; font-size:0.52rem; font-weight:700; letter-spacing:1.5px;
+    text-transform:uppercase; color:rgba(255,255,255,0.32);
+  }
+  .rv-mini-bmp-num {
+    font-family:'Manrope',sans-serif; font-size:1.5rem; font-weight:800;
+    color:#3ab54a; line-height:1;
+  }
+  .rv-mini-rev-count { font-size:0.62rem; color:rgba(255,255,255,0.28); margin-top:0.12rem; }
+
+  /* ── 3 Reasons ── */
+  .rv-intro-reasons { display:flex; flex-direction:column; gap:0.6rem; margin-bottom:2rem; }
+  .rv-reason {
+    display:flex; align-items:flex-start; gap:0.7rem;
+    padding:0.8rem 0.9rem;
+    background:white; border:1px solid var(--border); border-radius:10px;
+    animation:rv-fade-in 0.35s ease both;
+  }
+  .rv-reason:nth-child(2) { animation-delay:0.06s; }
+  .rv-reason:nth-child(3) { animation-delay:0.12s; }
+  .rv-reason-icon {
+    width:30px; min-width:30px; height:30px;
+    background:var(--green-light); border-radius:7px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .rv-reason-title { font-size:0.8rem; font-weight:700; color:var(--text); margin-bottom:0.18rem; }
+  .rv-reason-text  { font-size:0.76rem; color:var(--muted); line-height:1.5; }
+
+  /* ── Intro CTA ── */
+  .rv-intro-cta-wrap { text-align:center; }
+  .rv-intro-btn {
+    display:block; width:100%;
+    background:var(--green); color:white;
+    padding:0.95rem 1.5rem; border-radius:10px; border:none;
+    font-family:'Manrope',sans-serif; font-size:0.875rem; font-weight:700;
+    letter-spacing:0.4px; text-decoration:none; text-align:center;
+    cursor:pointer; transition:background 0.2s, transform 0.15s;
+    box-shadow:0 4px 16px rgba(58,181,74,0.28); margin-bottom:0.85rem;
+  }
+  .rv-intro-btn:hover  { background:var(--green-dark); transform:translateY(-1px); }
+  .rv-intro-btn:active { transform:translateY(0); }
+  .rv-intro-signin {
+    display:none; justify-content:center; align-items:center; gap:0.35rem;
+    font-size:0.8rem; color:var(--muted);
+  }
+  .rv-intro-signin a { color:var(--green-dark); font-weight:600; text-decoration:none; }
+  .rv-intro-signin a:hover { text-decoration:underline; }
+
+  /* ── Section divider ── */
+  .rv-section-divider { height:1px; background:var(--border); margin:0 1.25rem; }
+
+  /* ── Mobile sticky CTA ── */
+  .rv-sticky-cta {
+    display:none; position:fixed; bottom:0; left:0; right:0; z-index:200;
+    padding:0.8rem 1.25rem calc(0.8rem + env(safe-area-inset-bottom));
+    background:white; border-top:1px solid var(--border);
+    box-shadow:0 -4px 20px rgba(0,0,0,0.1);
+  }
+  .rv-sticky-cta .rv-intro-btn { margin-bottom:0; }
+
+  @media (max-width:640px) {
+    .rv-intro-headline    { font-size:1.6rem; }
+    .rv-sticky-cta        { display:block; }
+    .rv-intro-cta-wrap    { padding-bottom:5rem; }
+  }
 </style>
 </head>
 <body>
@@ -269,8 +397,110 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
   style="display:none;">
 </div>
 
+<!-- ── Personalised intro section ──────────────────────────────────────── -->
+<section id="rv-intro" class="rv-intro">
+  <div class="rv-intro-inner">
+
+    <div class="rv-intro-eyebrow">
+      <svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Your review matters
+    </div>
+
+    <h1 class="rv-intro-headline">
+      Share your experience with <span class="rv-intro-name">{trainer.name}</span>
+    </h1>
+
+    <p class="rv-intro-sub">
+      Your honest feedback helps future clients choose the right trainer — and helps {trainer.name} build their reputation on merit.
+    </p>
+
+    <!-- Trainer CoachCard preview -->
+    <div class="rv-mini-card" id="rv-mini-card">
+      <div class="rv-mini-av" id="rv-mini-av" style={`background:${trainer.avatar_bg ?? '#eaf7ec'};border-color:${avatarBorderColor};`}>
+        {(trainer as any).avatar_url
+          ? <img src={(trainer as any).avatar_url} alt={trainer.name} style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+          : <span style={`color:${trainer.avatar_color ?? '#2a9438'};`}>{trainer.avatar_initials}</span>
+        }
+      </div>
+      <div class="rv-mini-info">
+        <div class="rv-mini-name">{trainer.name}</div>
+        <div class="rv-mini-meta">
+          {trainer.location && (
+            <span class="rv-mini-loc">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+              {trainer.location}
+            </span>
+          )}
+          {trainer.specialty && (
+            <span class="rv-mini-spec">{trainer.specialty.split(/[,\/]/)[0].trim()}</span>
+          )}
+        </div>
+      </div>
+      <div class="rv-mini-bmp">
+        <span class="rv-mini-bmp-lbl">BMP</span>
+        {trainer.review_count > 0
+          ? <span class="rv-mini-bmp-num">{Math.round((trainer as any).bmp_score ?? (trainer.star_rating ?? 0) * 20)}</span>
+          : <span style="font-size:0.7rem;font-weight:700;color:#3ab54a;line-height:1.3;">First<br/>review</span>
+        }
+        {trainer.review_count > 0 && (
+          <div class="rv-mini-rev-count">{trainer.review_count} {trainer.review_count === 1 ? 'review' : 'reviews'}</div>
+        )}
+      </div>
+    </div>
+
+    <!-- 3 reasons to leave a review -->
+    <div class="rv-intro-reasons">
+      <div class="rv-reason">
+        <div class="rv-reason-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <div class="rv-reason-title">Real reviews, real impact</div>
+          <div class="rv-reason-text">Your experience helps future clients find quality training.</div>
+        </div>
+      </div>
+      <div class="rv-reason">
+        <div class="rv-reason-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div>
+          <div class="rv-reason-title">Verified by CoachCards</div>
+          <div class="rv-reason-text">Every review is checked before it goes live. No fake reviews.</div>
+        </div>
+      </div>
+      <div class="rv-reason">
+        <div class="rv-reason-icon">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <div>
+          <div class="rv-reason-title">Under 2 minutes</div>
+          <div class="rv-reason-text">Quick, honest, and anonymous if you prefer.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="rv-intro-cta-wrap">
+      <a
+        id="rv-intro-cta"
+        class="rv-intro-btn"
+        href={`/signup?review=${encodeURIComponent(trainer.id)}&tname=${encodeURIComponent(trainer.name)}`}
+      >
+        REVIEW {trainer.name.toUpperCase()} →
+      </a>
+      <div id="rv-intro-signin" class="rv-intro-signin">
+        Already have an account?
+        <a href={`/login?redirect=${encodeURIComponent('/review/' + trainer.id)}`}>Sign in →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="rv-section-divider"></div>
+
 <!-- Form card -->
-<div class="rv-wrap">
+<div class="rv-wrap" id="rv-form-section">
   <div class="rv-card">
 
     <!-- Form state — hidden until auth check completes -->
@@ -344,6 +574,17 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
   </div>
 </div>
 
+<!-- Mobile sticky CTA (hidden on desktop via CSS) -->
+<div id="rv-sticky-cta" class="rv-sticky-cta">
+  <a
+    id="rv-sticky-btn"
+    class="rv-intro-btn"
+    href={`/signup?review=${encodeURIComponent(trainer.id)}&tname=${encodeURIComponent(trainer.name)}`}
+  >
+    REVIEW {trainer.name.toUpperCase()} →
+  </a>
+</div>
+
 </body>
 </html>
 
@@ -393,13 +634,16 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
       }
     }
 
-    // Patch avatar photo + ring
+    // Patch avatar photo + ring (hero + mini card)
     if (t.avatar_url) {
-      const av = document.querySelector('.rv-avatar') as HTMLElement | null;
-      if (av) {
-        av.innerHTML = `<img src="${t.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
-        av.style.background = 'transparent';
-        if (t.avatar_color) av.style.borderColor = t.avatar_color;
+      const imgHtml = `<img src="${t.avatar_url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
+      for (const sel of ['.rv-avatar', '#rv-mini-av']) {
+        const av = document.querySelector(sel) as HTMLElement | null;
+        if (av) {
+          av.innerHTML = imgHtml;
+          av.style.background = 'transparent';
+          if (t.avatar_color) av.style.borderColor = t.avatar_color;
+        }
       }
     }
   })();
@@ -428,24 +672,51 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // ── Not logged in — show sign-up gate ─────────────────────────────────────
+  // ── Intro section — update CTA based on auth state ────────────────────────
+  const introCta  = document.getElementById('rv-intro-cta')  as HTMLAnchorElement | null;
+  const stickyBtn = document.getElementById('rv-sticky-btn') as HTMLAnchorElement | null;
+
   const formState = document.getElementById('rv-form-state') as HTMLElement;
   if (!user) {
-    const tName = dataEl.dataset.trainerName || 'this trainer';
+    // Unauthenticated: update intro CTA to "ACTIVATE & REVIEW [NAME] →"
+    const tName     = dataEl.dataset.trainerName || 'your trainer';
     const signupUrl = `/signup?review=${encodeURIComponent(trainerId)}&tname=${encodeURIComponent(tName)}`;
-    if (formState) {
-      formState.style.display = 'block';
-      formState.innerHTML = `
-        <div style="padding:2.5rem 2rem;text-align:center;max-width:400px;margin:0 auto;">
-          <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
-          <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--text);margin-bottom:0.75rem;">Sign up to review ${tName}</h3>
-          <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.75rem;">Create your free account in seconds — then leave your verified review straight away.</p>
-          <a href="${signupUrl}" style="display:block;background:#3ab54a;color:white;padding:0.9rem 1.5rem;border-radius:10px;font-weight:700;font-size:0.95rem;text-decoration:none;margin-bottom:0.85rem;">Create free account →</a>
-          <a href="/login?redirect=${encodeURIComponent(window.location.pathname)}" style="display:block;color:var(--muted);font-size:0.85rem;text-decoration:none;padding:0.5rem;">Already have an account? Sign in</a>
-        </div>`;
-    }
-    // Stop here — don't attach submit listener for unauthenticated users
+    const ctaLabel  = `ACTIVATE & REVIEW ${tName.toUpperCase()} →`;
+    if (introCta)  { introCta.textContent  = ctaLabel; introCta.href  = signupUrl; }
+    if (stickyBtn) { stickyBtn.textContent = ctaLabel; stickyBtn.href = signupUrl; }
+    const introSignin = document.getElementById('rv-intro-signin') as HTMLElement | null;
+    if (introSignin) introSignin.style.display = 'flex';
+    // Don't show the form — intro section handles the unauthenticated gate
     throw new Error('unauthenticated');
+  }
+
+  // Authenticated: CTA scrolls to form section; hide sticky when form is visible
+  if (introCta) {
+    introCta.textContent = `REVIEW ${trainerName.toUpperCase()} →`;
+    introCta.removeAttribute('href');
+    introCta.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('rv-form-section')?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+  if (stickyBtn) {
+    stickyBtn.textContent = `REVIEW ${trainerName.toUpperCase()} →`;
+    stickyBtn.removeAttribute('href');
+    stickyBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      document.getElementById('rv-form-section')?.scrollIntoView({ behavior: 'smooth' });
+      const stickyEl = document.getElementById('rv-sticky-cta');
+      if (stickyEl) stickyEl.style.display = 'none';
+    });
+  }
+  if (window.IntersectionObserver) {
+    const formSec = document.getElementById('rv-form-section');
+    if (formSec) {
+      new IntersectionObserver(([entry]) => {
+        const stickyEl = document.getElementById('rv-sticky-cta');
+        if (stickyEl) stickyEl.style.display = entry.isIntersecting ? 'none' : '';
+      }, { threshold: 0.05 }).observe(formSec);
+    }
   }
 
   if (user) {
