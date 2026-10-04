@@ -92,25 +92,25 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
   /* ── Hero ── */
   .rv-hero {
-    padding:2.5rem 1.5rem 4rem; text-align:center; position:relative;
+    padding:1.75rem 1.5rem 2.5rem; text-align:center; position:relative;
   }
   .rv-hero::after {
-    content:''; position:absolute; bottom:-60px; left:50%; transform:translateX(-50%);
-    width:200px; height:120px;
+    content:''; position:absolute; bottom:-40px; left:50%; transform:translateX(-50%);
+    width:200px; height:80px;
     background:radial-gradient(ellipse,rgba(58,181,74,0.15) 0%,transparent 70%);
     pointer-events:none;
   }
   .rv-avatar {
-    width:88px; height:88px; border-radius:50%;
+    width:72px; height:72px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    font-weight:800; font-size:1.75rem;
-    margin:0 auto 1.1rem;
+    font-weight:800; font-size:1.45rem;
+    margin:0 auto 0.85rem;
     border:3px solid rgba(255,255,255,0.2);
-    box-shadow:0 8px 28px rgba(0,0,0,0.35);
+    box-shadow:0 6px 22px rgba(0,0,0,0.35);
   }
   .rv-name {
-    font-family:'Playfair Display',serif; font-size:1.85rem;
-    font-weight:900; color:white; line-height:1.1; margin-bottom:0.3rem;
+    font-family:'Playfair Display',serif; font-size:1.6rem;
+    font-weight:900; color:white; line-height:1.1; margin-bottom:0.25rem;
   }
   .rv-biz { font-size:0.88rem; color:rgba(255,255,255,0.6); margin-bottom:0.75rem; font-weight:500; }
   .rv-tags { display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; }
@@ -122,7 +122,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
   }
 
   /* ── Card ── */
-  .rv-wrap { max-width:500px; margin:-2.25rem auto 0; padding:0 1.25rem 3rem; position:relative; z-index:2; }
+  .rv-wrap { max-width:500px; margin:-1.5rem auto 0; padding:0 1.25rem 3rem; position:relative; z-index:2; }
   .rv-card {
     background:white; border-radius:18px;
     border:1px solid var(--border);
@@ -336,6 +336,10 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
   }
   .rv-intro-btn:hover  { background:var(--green-dark); transform:translateY(-1px); }
   .rv-intro-btn:active { transform:translateY(0); }
+  .rv-intro-cta-sub {
+    font-size:0.78rem; color:var(--muted); text-align:center;
+    line-height:1.55; margin-top:0.6rem;
+  }
   .rv-intro-signin {
     display:none; justify-content:center; align-items:center; gap:0.35rem;
     font-size:0.8rem; color:var(--muted);
@@ -411,7 +415,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     </h1>
 
     <p class="rv-intro-sub">
-      Your honest feedback helps future clients choose the right trainer — and helps {trainer.name} build their reputation on merit.
+      Your honest feedback helps future clients make a more informed choice when finding a personal trainer.
     </p>
 
     <!-- Trainer CoachCard preview -->
@@ -455,8 +459,8 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <div>
-          <div class="rv-reason-title">Real reviews, real impact</div>
-          <div class="rv-reason-text">Your experience helps future clients find quality training.</div>
+          <div class="rv-reason-title">REAL REVIEWS, REAL IMPACT</div>
+          <div class="rv-reason-text">Your experience helps future clients make a more informed choice.</div>
         </div>
       </div>
       <div class="rv-reason">
@@ -464,8 +468,8 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
         </div>
         <div>
-          <div class="rv-reason-title">Verified by CoachCards</div>
-          <div class="rv-reason-text">Every review is checked before it goes live. No fake reviews.</div>
+          <div class="rv-reason-title">VERIFIED BY COACHCARDS</div>
+          <div class="rv-reason-text">Reviews come from activated CoachCards profiles to help keep feedback genuine.</div>
         </div>
       </div>
       <div class="rv-reason">
@@ -473,8 +477,8 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div>
-          <div class="rv-reason-title">Under 2 minutes</div>
-          <div class="rv-reason-text">Quick, honest, and anonymous if you prefer.</div>
+          <div class="rv-reason-title">QUICK TO GET STARTED</div>
+          <div class="rv-reason-text">Create and activate your CoachCards profile, then you're ready to leave your review.</div>
         </div>
       </div>
     </div>
@@ -486,12 +490,13 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
         class="rv-intro-btn"
         href={`/signup?review=${encodeURIComponent(trainer.id)}&tname=${encodeURIComponent(trainer.name)}`}
       >
-        REVIEW {trainer.name.toUpperCase()} →
+        REVIEW {trainer.name.split(' ')[0].toUpperCase()} →
       </a>
       <div id="rv-intro-signin" class="rv-intro-signin">
         Already have an account?
         <a href={`/login?redirect=${encodeURIComponent('/review/' + trainer.id)}`}>Sign in →</a>
       </div>
+      <p id="rv-intro-cta-sub" class="rv-intro-cta-sub">Create and activate your CoachCards profile, then you're ready to share your experience.</p>
     </div>
 
   </div>
@@ -581,7 +586,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     class="rv-intro-btn"
     href={`/signup?review=${encodeURIComponent(trainer.id)}&tname=${encodeURIComponent(trainer.name)}`}
   >
-    REVIEW {trainer.name.toUpperCase()} →
+    REVIEW {trainer.name.split(' ')[0].toUpperCase()} →
   </a>
 </div>
 
@@ -672,43 +677,62 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  // ── Intro section — update CTA based on auth state ────────────────────────
-  const introCta  = document.getElementById('rv-intro-cta')  as HTMLAnchorElement | null;
-  const stickyBtn = document.getElementById('rv-sticky-btn') as HTMLAnchorElement | null;
+  // ── Intro section — three-state CTA (single shared helper) ───────────────
+  const introCta    = document.getElementById('rv-intro-cta')  as HTMLAnchorElement | null;
+  const stickyBtn   = document.getElementById('rv-sticky-btn') as HTMLAnchorElement | null;
+  const trainerFirst = trainerName.split(' ')[0];
+  const signupUrl    = `/signup?review=${encodeURIComponent(trainerId)}&tname=${encodeURIComponent(trainerName)}`;
+
+  function applyIntroState(state: 'new' | 'unactivated' | 'activated') {
+    let btnLabel: string;
+    let btnDest: string | null = null;
+    let subText: string;
+    if (state === 'new') {
+      btnLabel = `CREATE PROFILE & REVIEW ${trainerFirst.toUpperCase()} →`;
+      btnDest  = signupUrl;
+      subText  = "Create and activate your CoachCards profile, then you're ready to share your experience.";
+    } else if (state === 'unactivated') {
+      btnLabel = `ACTIVATE & REVIEW ${trainerFirst.toUpperCase()} →`;
+      btnDest  = signupUrl;
+      subText  = "Activate your CoachCards profile, then you're ready to share your experience.";
+    } else {
+      btnLabel = `REVIEW ${trainerFirst.toUpperCase()} →`;
+      subText  = `Share your experience with ${trainerFirst}. It only takes a couple of minutes.`;
+    }
+    for (const btn of [introCta, stickyBtn] as (HTMLAnchorElement | null)[]) {
+      if (!btn) continue;
+      btn.textContent = btnLabel;
+      if (btnDest) {
+        btn.href = btnDest;
+      } else if (!(btn as any)._scrollBound) {
+        (btn as any)._scrollBound = true;
+        btn.removeAttribute('href');
+        const isSticky = btn.id === 'rv-sticky-btn';
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          document.getElementById('rv-form-section')?.scrollIntoView({ behavior: 'smooth' });
+          if (isSticky) {
+            const stickyEl = document.getElementById('rv-sticky-cta');
+            if (stickyEl) stickyEl.style.display = 'none';
+          }
+        });
+      }
+    }
+    const subEl = document.getElementById('rv-intro-cta-sub') as HTMLElement | null;
+    if (subEl) subEl.textContent = subText;
+  }
 
   const formState = document.getElementById('rv-form-state') as HTMLElement;
   if (!user) {
-    // Unauthenticated: update intro CTA to "ACTIVATE & REVIEW [NAME] →"
-    const tName     = dataEl.dataset.trainerName || 'your trainer';
-    const signupUrl = `/signup?review=${encodeURIComponent(trainerId)}&tname=${encodeURIComponent(tName)}`;
-    const ctaLabel  = `ACTIVATE & REVIEW ${tName.toUpperCase()} →`;
-    if (introCta)  { introCta.textContent  = ctaLabel; introCta.href  = signupUrl; }
-    if (stickyBtn) { stickyBtn.textContent = ctaLabel; stickyBtn.href = signupUrl; }
+    applyIntroState('new');
     const introSignin = document.getElementById('rv-intro-signin') as HTMLElement | null;
     if (introSignin) introSignin.style.display = 'flex';
-    // Don't show the form — intro section handles the unauthenticated gate
     throw new Error('unauthenticated');
   }
 
-  // Authenticated: CTA scrolls to form section; hide sticky when form is visible
-  if (introCta) {
-    introCta.textContent = `REVIEW ${trainerName.toUpperCase()} →`;
-    introCta.removeAttribute('href');
-    introCta.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('rv-form-section')?.scrollIntoView({ behavior: 'smooth' });
-    });
-  }
-  if (stickyBtn) {
-    stickyBtn.textContent = `REVIEW ${trainerName.toUpperCase()} →`;
-    stickyBtn.removeAttribute('href');
-    stickyBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      document.getElementById('rv-form-section')?.scrollIntoView({ behavior: 'smooth' });
-      const stickyEl = document.getElementById('rv-sticky-cta');
-      if (stickyEl) stickyEl.style.display = 'none';
-    });
-  }
+  // Authenticated: clear signup href immediately; CTA state finalised after client check
+  if (introCta)  introCta.removeAttribute('href');
+  if (stickyBtn) stickyBtn.removeAttribute('href');
   if (window.IntersectionObserver) {
     const formSec = document.getElementById('rv-form-section');
     if (formSec) {
@@ -724,6 +748,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
       .from('trainers').select('id').eq('user_id', user.id).maybeSingle();
     if (trainer) {
       logoLink.href = '/dashboard';
+      applyIntroState('activated');
       // Block the review form entirely for trainers
       if (formState) {
         formState.innerHTML = `
@@ -740,6 +765,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
       if (client) {
         clientId = client.id;
         logoLink.href = '/account';
+        applyIntroState('activated');
         const nameInput = document.getElementById('rv-name') as HTMLInputElement;
         nameInput.value    = client.name;
         nameInput.readOnly = true;
@@ -779,7 +805,8 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
           if (formState) formState.style.display = 'block';
         }
       } else {
-        // Logged in but no client record — show form anyway (they can still review)
+        // Logged in but no client record — needs activation before reviewing
+        applyIntroState('unactivated');
         if (formState) formState.style.display = 'block';
       }
     }
