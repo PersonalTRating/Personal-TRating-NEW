@@ -92,27 +92,27 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
   /* ── Hero ── */
   .rv-hero {
-    padding:1.75rem 1.5rem 2.5rem; text-align:center; position:relative;
+    padding:1.1rem 1.5rem 1.6rem; text-align:center; position:relative;
   }
   .rv-hero::after {
-    content:''; position:absolute; bottom:-40px; left:50%; transform:translateX(-50%);
-    width:200px; height:80px;
+    content:''; position:absolute; bottom:-25px; left:50%; transform:translateX(-50%);
+    width:200px; height:55px;
     background:radial-gradient(ellipse,rgba(58,181,74,0.15) 0%,transparent 70%);
     pointer-events:none;
   }
   .rv-avatar {
-    width:72px; height:72px; border-radius:50%;
+    width:56px; height:56px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    font-weight:800; font-size:1.45rem;
-    margin:0 auto 0.85rem;
+    font-weight:800; font-size:1.15rem;
+    margin:0 auto 0.55rem;
     border:3px solid rgba(255,255,255,0.2);
-    box-shadow:0 6px 22px rgba(0,0,0,0.35);
+    box-shadow:0 5px 18px rgba(0,0,0,0.35);
   }
   .rv-name {
     font-family:'Playfair Display',serif; font-size:1.6rem;
-    font-weight:900; color:white; line-height:1.1; margin-bottom:0.25rem;
+    font-weight:900; color:white; line-height:1.1; margin-bottom:0;
   }
-  .rv-biz { font-size:0.88rem; color:rgba(255,255,255,0.6); margin-bottom:0.75rem; font-weight:500; }
+  .rv-biz { font-size:0.85rem; color:rgba(255,255,255,0.6); margin-bottom:0.25rem; font-weight:500; }
   .rv-tags { display:flex; justify-content:center; gap:0.6rem; flex-wrap:wrap; }
   .rv-tag {
     background:rgba(255,255,255,0.12); color:rgba(255,255,255,0.75);
@@ -122,7 +122,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
   }
 
   /* ── Card ── */
-  .rv-wrap { max-width:500px; margin:-1.5rem auto 0; padding:0 1.25rem 3rem; position:relative; z-index:2; }
+  .rv-wrap { max-width:500px; margin:-1rem auto 0; padding:0 1.25rem 3rem; position:relative; z-index:2; }
   .rv-card {
     background:white; border-radius:18px;
     border:1px solid var(--border);
@@ -235,40 +235,40 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
   /* ── Intro Section ──────────────────────────────────────────────── */
   .rv-intro {
-    background:var(--off); padding:2.5rem 1.25rem 0; overflow-x:hidden;
+    background:var(--off); padding:0.75rem 1.25rem 0; overflow-x:hidden;
     animation:rv-fade-in 0.4s ease both;
   }
   @keyframes rv-fade-in { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
   @media (prefers-reduced-motion:reduce) {
     .rv-intro, .rv-mini-card, .rv-reason { animation:none !important; transition:none !important; }
   }
-  .rv-intro-inner { max-width:500px; margin:0 auto; padding-bottom:2.5rem; }
+  .rv-intro-inner { max-width:500px; margin:0 auto; padding-bottom:1.5rem; }
 
   .rv-intro-eyebrow {
     display:inline-flex; align-items:center; gap:0.45rem;
     background:rgba(58,181,74,0.1); border:1px solid rgba(58,181,74,0.22);
     color:#2a9438; font-size:0.63rem; font-weight:700; letter-spacing:1.5px;
     text-transform:uppercase; padding:0.28rem 0.75rem; border-radius:20px;
-    margin-bottom:1rem;
+    margin-bottom:0.25rem;
   }
   .rv-intro-headline {
     font-family:'Playfair Display',serif; font-size:1.9rem; font-weight:900;
-    color:var(--text); line-height:1.15; margin-bottom:0.7rem; text-wrap:balance;
+    color:var(--text); line-height:1.15; margin-bottom:0.3rem; text-wrap:balance;
   }
   .rv-intro-name { color:var(--green-dark); }
   .rv-intro-sub {
-    font-size:0.88rem; color:var(--muted); line-height:1.7; margin-bottom:1.75rem;
+    font-size:0.88rem; color:var(--muted); line-height:1.7; margin-bottom:0.65rem;
   }
 
   /* ── Mini CoachCard ── */
   .rv-mini-card {
     display:flex; align-items:center; gap:0.85rem;
-    padding:0.95rem 1.1rem;
+    padding:0.7rem 1.1rem;
     background:rgba(4,10,5,0.97);
     border:1px solid rgba(58,181,74,0.3); border-left:3px solid rgba(58,181,74,0.65);
     border-radius:14px;
     box-shadow:0 0 8px rgba(58,181,74,0.15), 0 2px 12px rgba(0,0,0,0.32);
-    margin-bottom:1.5rem;
+    margin-bottom:0.65rem;
     animation:rv-card-in 0.45s 0.08s ease both;
   }
   @keyframes rv-card-in { from { opacity:0; transform:scale(0.97); } to { opacity:1; transform:none; } }
@@ -306,17 +306,17 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
   .rv-mini-rev-count { font-size:0.62rem; color:rgba(255,255,255,0.28); margin-top:0.12rem; }
 
   /* ── 3 Reasons ── */
-  .rv-intro-reasons { display:flex; flex-direction:column; gap:0.6rem; margin-bottom:2rem; }
+  .rv-intro-reasons { display:flex; flex-direction:column; gap:0.3rem; margin-bottom:0.7rem; }
   .rv-reason {
     display:flex; align-items:flex-start; gap:0.7rem;
-    padding:0.8rem 0.9rem;
+    padding:0.45rem 0.9rem;
     background:white; border:1px solid var(--border); border-radius:10px;
     animation:rv-fade-in 0.35s ease both;
   }
   .rv-reason:nth-child(2) { animation-delay:0.06s; }
   .rv-reason:nth-child(3) { animation-delay:0.12s; }
   .rv-reason-icon {
-    width:30px; min-width:30px; height:30px;
+    width:26px; min-width:26px; height:26px;
     background:var(--green-light); border-radius:7px;
     display:flex; align-items:center; justify-content:center; flex-shrink:0;
   }
@@ -332,7 +332,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     font-family:'Manrope',sans-serif; font-size:0.875rem; font-weight:700;
     letter-spacing:0.4px; text-decoration:none; text-align:center;
     cursor:pointer; transition:background 0.2s, transform 0.15s;
-    box-shadow:0 4px 16px rgba(58,181,74,0.28); margin-bottom:0.85rem;
+    box-shadow:0 4px 16px rgba(58,181,74,0.28); margin-bottom:0.35rem;
   }
   .rv-intro-btn:hover  { background:var(--green-dark); transform:translateY(-1px); }
   .rv-intro-btn:active { transform:translateY(0); }
@@ -363,6 +363,14 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     .rv-intro-headline    { font-size:1.6rem; }
     .rv-sticky-cta        { display:block; }
     .rv-intro-cta-wrap    { padding-bottom:5rem; }
+    /* Restore comfortable mobile spacing — sticky CTA handles conversion, no need to compress */
+    .rv-intro             { padding-top:1.5rem; }
+    .rv-intro-eyebrow     { margin-bottom:0.5rem; }
+    .rv-intro-sub         { margin-bottom:1.25rem; }
+    .rv-mini-card         { padding:0.85rem 1.1rem; margin-bottom:1.1rem; }
+    .rv-intro-reasons     { gap:0.5rem; margin-bottom:1.4rem; }
+    .rv-reason            { padding:0.65rem 0.9rem; }
+    .rv-hero              { padding:1.4rem 1.5rem 1.75rem; }
   }
 </style>
 </head>
@@ -385,7 +393,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     }
   </div>
   <div class="rv-name">{trainer.name}</div>
-  {(trainer as any).username && <div style="font-size:0.9rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:0.2rem;margin-bottom:0.25rem;">@{(trainer as any).username}</div>}
+  {(trainer as any).username && <div style="font-size:0.82rem;color:rgba(255,255,255,0.5);font-weight:600;margin-top:0;margin-bottom:0.08rem;">@{(trainer as any).username}</div>}
   {trainer.business_name && <div class="rv-biz">{trainer.business_name}</div>}
   <div class="rv-tags">
     {trainer.specialty && <span class="rv-tag"><Fragment set:html={specialtyIcon} /> {trainer.specialty}</span>}
@@ -477,7 +485,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
         <div>
-          <div class="rv-reason-title">QUICK TO GET STARTED</div>
+          <div class="rv-reason-title">PROFILE REQUIRED</div>
           <div class="rv-reason-text">Create and activate your CoachCards profile, then you're ready to leave your review.</div>
         </div>
       </div>
