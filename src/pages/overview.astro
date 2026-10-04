@@ -472,15 +472,15 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 /* ── Section 5: How It Works ─────────────────────────────────────────────── */
 #ov-how {
   background: #060e07;
-  padding: 4.5rem 0;
+  padding: 3rem 0;
   border-top: 1px solid rgba(58,181,74,0.1);
 }
-#ov-how .ov-h2 { margin-bottom: 2rem; }
+#ov-how .ov-h2 { margin-bottom: 1.25rem; }
 .ov-tl { position: relative; }
 .ov-tl-track {
   position: absolute;
   left: 0; right: 0;
-  top: 27px;
+  top: 64px; /* below 56px circles + 8px connector gap */
   height: 2px;
   background: rgba(255,255,255,0.05);
   pointer-events: none;
@@ -496,7 +496,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 .ov-tl-vtrack {
   display: none;
   position: absolute;
-  left: 27px;
+  left: 64px; /* right of 56px circles + 8px connector gap */
   top: 0; bottom: 0;
   width: 2px;
   background: rgba(255,255,255,0.05);
@@ -538,8 +538,20 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   letter-spacing: 1px;
   color: rgba(58,181,74,0.5);
   flex-shrink: 0;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
+  position: relative;
   transition: border-color 0.35s, background 0.35s, box-shadow 0.35s, color 0.35s;
+}
+.ov-tl-num::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 8px;
+  background: rgba(58,181,74,0.18);
+  transition: background 0.35s;
 }
 .ov-tl-step.ov-tl-active .ov-tl-num {
   border-color: #3ab54a;
@@ -548,6 +560,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   color: #3ab54a;
   animation: ov-tl-pulse 0.45s ease-out forwards;
 }
+.ov-tl-step.ov-tl-active .ov-tl-num::after { background: rgba(58,181,74,0.5); }
 .ov-tl-title {
   font-size: 0.72rem;
   font-weight: 800;
@@ -572,7 +585,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 #ov-cta {
   position: relative;
   overflow: hidden;
-  padding: 7.5rem 0;
+  padding: 5.5rem 0;
 }
 .ov-cta-bg {
   position: absolute;
@@ -678,6 +691,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   .ov-reveal { opacity: 1; transform: none; transition: none; }
   .ov-stat-bar, .ov-tl-fill, .ov-tl-vfill { transition: none; }
   .ov-tl-num { animation: none !important; border-color: #3ab54a !important; background: rgba(58,181,74,0.08) !important; color: #3ab54a !important; }
+  .ov-tl-num::after { background: rgba(58,181,74,0.5) !important; }
   .ov-tl-title { color: #fff !important; }
   .ov-tl-desc  { color: rgba(255,255,255,0.62) !important; }
 }
@@ -712,6 +726,15 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   }
   .ov-tl-step:last-child { border-bottom: none; }
   .ov-tl-num { flex-shrink: 0; margin-bottom: 0; }
+  .ov-tl-num::after {
+    /* horizontal stub from circle right to vertical track */
+    bottom: auto;
+    left: calc(100% + 2px);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 1px;
+  }
   .ov-h2 { font-size: 2rem; }
   .ov-cta-h2 { font-size: 2.25rem; }
   .ov-footer-inner { padding: 1.5rem 1.25rem; flex-direction: column; align-items: flex-start; }
@@ -726,8 +749,8 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   .ov-btn--xl { width: 100%; font-size: 1rem; padding: 1rem 1.5rem; }
   .ov-stat-big { font-size: 5.5rem; }
   #ov-stat, #ov-easy, #ov-why { padding: 4.5rem 0; }
-  #ov-how { padding: 3.5rem 0; }
-  #ov-cta { padding: 5.5rem 0; }
+  #ov-how { padding: 2.5rem 0; }
+  #ov-cta { padding: 4rem 0; }
   .ov-cta-h2 { font-size: 1.9rem; }
   .ov-easy-val { font-size: 2.35rem; }
 }
