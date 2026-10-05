@@ -591,7 +591,92 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   color: rgba(255,255,255,0.28);
 }
 
-/* ── Section 6: Final CTA ────────────────────────────────────────────────── */
+/* ── Section 6: Audience Growth ─────────────────────────────────────────── */
+#ov-grow {
+  background: #0a120b;
+  padding: 6rem 0;
+  border-top: 1px solid rgba(58,181,74,0.1);
+}
+.ov-grow-copy {
+  max-width: 580px;
+  margin-bottom: 2.5rem;
+}
+.ov-grow-copy p {
+  font-size: 0.97rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.72;
+  margin-bottom: 0.85rem;
+}
+.ov-grow-copy p:last-child { margin-bottom: 0; }
+.ov-grow-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  align-items: start;
+  gap: 0 0.75rem;
+  margin-bottom: 2rem;
+}
+.ov-grow-sep {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 2.1rem;
+  color: rgba(58,181,74,0.3);
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  user-select: none;
+}
+.ov-grow-card {
+  background: rgba(58,181,74,0.03);
+  border: 1px solid rgba(58,181,74,0.18);
+  border-radius: 16px;
+  padding: 1.75rem 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.ov-grow-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 2px;
+  background: #3ab54a;
+  border-radius: 16px 16px 0 0;
+}
+.ov-grow-lbl {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #fff;
+  margin-bottom: 0.7rem;
+}
+.ov-grow-desc {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.45);
+  line-height: 1.65;
+}
+.ov-grow-early {
+  font-size: 0.875rem;
+  color: rgba(255,255,255,0.32);
+  line-height: 1.72;
+  margin-bottom: 2.5rem;
+  font-style: italic;
+}
+.ov-grow-outcome {
+  text-align: center;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(58,181,74,0.1);
+}
+.ov-grow-outcome-text {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+
+/* ── Section 7: Final CTA ────────────────────────────────────────────────── */
 #ov-cta {
   position: relative;
   overflow: hidden;
@@ -722,6 +807,8 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   .ov-stat-big { font-size: 6.5rem; }
   .ov-stat-body { max-width: 480px; margin: 0 auto 0.85rem; }
   .ov-easy-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .ov-grow-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .ov-grow-sep { display: none; }
   /* Vertical timeline */
   .ov-tl-steps { grid-template-columns: 1fr; gap: 0; }
   .ov-tl-track { display: none; }
@@ -758,8 +845,9 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   .ov-btn, .ov-btn-ghost { width: 100%; }
   .ov-btn--xl { width: 100%; font-size: 1rem; padding: 1rem 1.5rem; }
   .ov-stat-big { font-size: 5.5rem; }
-  #ov-stat, #ov-easy, #ov-why { padding: 4.5rem 0; }
+  #ov-stat, #ov-easy, #ov-why, #ov-grow { padding: 4.5rem 0; }
   #ov-how { padding: 2.5rem 0; }
+  .ov-grow-outcome-text { font-size: 1.35rem; }
   #ov-cta { padding: 4rem 0; }
   .ov-cta-h2 { font-size: 1.9rem; }
   .ov-easy-val { font-size: 2.35rem; }
@@ -768,6 +856,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   .ov-hero-h1 { font-size: 1.95rem; }
   .ov-stat-big { font-size: 4.75rem; }
   .ov-h2 { font-size: 1.75rem; }
+  .ov-grow-outcome-text { font-size: 1.15rem; }
 }
 </style>
 
@@ -987,7 +1076,45 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   </div>
 </section>
 
-<!-- ── 6 · Final CTA ──────────────────────────────────────────────────────── -->
+<!-- ── 6 · Audience Growth ───────────────────────────────────────────────── -->
+<section id="ov-grow" aria-labelledby="ov-grow-h2">
+  <div class="ov-wrap">
+    <div class="ov-eyebrow ov-reveal" data-reveal>THE OPPORTUNITY</div>
+    <h2 id="ov-grow-h2" class="ov-h2 ov-reveal" data-reveal>
+      YOU BUILD YOUR PROFILE.<br><em class="ov-accent">WE BUILD THE AUDIENCE.</em>
+    </h2>
+    <div class="ov-grow-copy ov-reveal" data-reveal>
+      <p>CoachCards isn't just a place to collect reviews. We're building and marketing a platform designed to help people looking for personal trainers discover and compare coaches.</p>
+      <p>Build your CoachCard now, strengthen it with verified client reviews, and put yourself in position to be discovered as the CoachCards audience grows.</p>
+    </div>
+    <div class="ov-grow-grid">
+      <div class="ov-grow-card ov-reveal" data-reveal>
+        <div class="ov-grow-lbl">FREE TO JOIN</div>
+        <p class="ov-grow-desc">No subscription or upfront cost. Create and maintain your CoachCard for free.</p>
+      </div>
+      <div class="ov-grow-sep" aria-hidden="true">→</div>
+      <div class="ov-grow-card ov-reveal" data-reveal data-d="1">
+        <div class="ov-grow-lbl">WE GROW THE PLATFORM</div>
+        <p class="ov-grow-desc">Our job is to grow CoachCards and put the platform in front of more people looking for personal trainers.</p>
+      </div>
+      <div class="ov-grow-sep" aria-hidden="true">→</div>
+      <div class="ov-grow-card ov-reveal" data-reveal data-d="2">
+        <div class="ov-grow-lbl">YOU GET DISCOVERED</div>
+        <p class="ov-grow-desc">Your CoachCard gives potential clients another way to discover, compare and choose you.</p>
+      </div>
+    </div>
+    <p class="ov-grow-early ov-reveal" data-reveal>
+      Get established early. Build your reputation now. Be ready as the audience grows.
+    </p>
+    <div class="ov-grow-outcome ov-reveal" data-reveal>
+      <p class="ov-grow-outcome-text">
+        <em class="ov-accent">MORE EYES</em> → MORE OPPORTUNITIES → <em class="ov-accent">POTENTIAL BOOKINGS</em>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 7 · Final CTA ──────────────────────────────────────────────────────── -->
 <section id="ov-cta" aria-labelledby="ov-cta-h2">
   <div class="ov-cta-bg" aria-hidden="true">
     <img src="/images/hero-bg.webp" alt="" class="ov-cta-bg-img" loading="lazy" />
@@ -995,10 +1122,10 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   </div>
   <div class="ov-wrap ov-cta-inner">
     <h2 id="ov-cta-h2" class="ov-cta-h2 ov-reveal" data-reveal>
-      READY TO TURN YOUR REPUTATION<br>INTO MORE BUSINESS?
+      GET YOUR COACHCARD READY.
     </h2>
     <p class="ov-cta-sub ov-reveal" data-reveal>
-      Create your CoachCard, start collecting verified reviews and give your next potential client another reason to choose you.
+      Join free, start building your reputation and put your profile in position to be discovered as the CoachCards audience grows.
     </p>
     <a href="/signup" class="ov-btn ov-btn--xl ov-reveal" data-reveal>
       CREATE MY COACHCARD →
