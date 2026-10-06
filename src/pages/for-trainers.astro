@@ -136,8 +136,9 @@ const { count: totalReviews } = await supabase
 <!-- ── NAV ── -->
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
-    <a href="/" style="text-decoration:none;display:flex;align-items:center;">
-      <img src="/images/logo.png" alt="CoachCards" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:0.6rem;">
+      <img src="/images/cc-logo.png" alt="" aria-hidden="true" style="height:42px;width:42px;flex-shrink:0;" />
+      <span style="font-family:'Manrope',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:-0.2px;line-height:1;"><span style="color:#3ab54a;">Coach</span><span style="color:#111311;">Cards</span></span>
     </a>
     <div class="ft-nav-links" style="display:flex;gap:2rem;align-items:center;">
       <a href="/find-a-trainer" class="ft-nav-link">Find a Trainer</a>
@@ -475,7 +476,7 @@ const { count: totalReviews } = await supabase
 <!-- ── FOOTER ── -->
 <footer class="ft-footer" style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
   <div style="display:flex;align-items:center;gap:0.75rem;">
-    <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
+    <img src="/images/cc-logo.png" alt="CoachCards" style="height:38px;width:38px;" />
     <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
   </div>
   <div style="display:flex;gap:2rem;">

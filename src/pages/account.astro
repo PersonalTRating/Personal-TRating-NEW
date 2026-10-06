@@ -1,12 +1,12 @@
----
-// Client Account — CoachCards
+﻿---
+// Client Account â€” CoachCards
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Account — CoachCards</title>
+<title>My Account â€” CoachCards</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style is:global>
   :root {
@@ -17,7 +17,7 @@
   html { overflow-x:hidden; }
   body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; overflow-x:hidden; }
 
-  /* ── Top bar ── */
+  /* â”€â”€ Top bar â”€â”€ */
   .topbar {
     background:white; border-bottom:1px solid var(--border);
     box-shadow:0 1px 8px rgba(0,0,0,0.05);
@@ -27,7 +27,7 @@
     max-width:1100px; margin:0 auto; padding:0 2.5rem;
     display:flex; align-items:center; justify-content:space-between; height:73px;
   }
-  .topbar-logo img { height:57px; width:auto; object-fit:contain; }
+  .topbar-logo img { height:42px; width:42px; object-fit:contain; }
   .topbar-right { display:flex; align-items:center; gap:1rem; }
   .topbar-link {
     font-size:0.85rem; font-weight:600; color:var(--muted);
@@ -41,10 +41,10 @@
   }
   .signout-btn:hover { border-color:var(--text); color:var(--text); }
 
-  /* ── Page layout ── */
+  /* â”€â”€ Page layout â”€â”€ */
   .page { max-width:1100px; margin:0 auto; padding:2.5rem 2.5rem 4rem; }
 
-  /* ── Tab nav (desktop) ── */
+  /* â”€â”€ Tab nav (desktop) â”€â”€ */
   .acc-tabs {
     display:flex; gap:0; background:white; border:none; border-radius:0;
     padding:0; margin-bottom:2rem;
@@ -63,7 +63,7 @@
   .acc-section { display:none; }
   .acc-section.active { display:block; }
 
-  /* ── Mobile bottom nav ── */
+  /* â”€â”€ Mobile bottom nav â”€â”€ */
   .acc-bottom-nav {
     display:none; position:fixed; bottom:0; left:0; right:0; z-index:300;
     background:white; border-top:1px solid var(--border);
@@ -80,7 +80,7 @@
   .acc-bottom-nav button.active { color:var(--green); }
   .acc-bottom-nav .bn-icon { display:flex; align-items:center; justify-content:center; line-height:1; }
   .acc-bottom-nav .bn-label { font-size:0.6rem; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; }
-  /* ── Real-time toast ── */
+  /* â”€â”€ Real-time toast â”€â”€ */
   @keyframes slideInToast {
     from { opacity:0; transform:translateY(16px); }
     to   { opacity:1; transform:translateY(0); }
@@ -103,7 +103,7 @@
     .rt-toast { bottom:calc(68px + env(safe-area-inset-bottom)); right:0.75rem; left:0.75rem; max-width:none; }
   }
 
-  /* ── Notification bell ── */
+  /* â”€â”€ Notification bell â”€â”€ */
   .notif-bell-btn {
     position:relative; background:none; border:none; cursor:pointer;
     padding:0.35rem 0.45rem; border-radius:8px; transition:background 0.15s;
@@ -117,7 +117,7 @@
     display:none; align-items:center; justify-content:center;
     border:1.5px solid white; font-family:'Manrope',sans-serif;
   }
-  /* ── Notification item cards ── */
+  /* â”€â”€ Notification item cards â”€â”€ */
   .notif-item-card {
     display:flex; align-items:flex-start; gap:0.85rem;
     background:white; border:1px solid var(--border); border-radius:12px;
@@ -139,7 +139,7 @@
     .welcome-avatar { width:52px; height:52px; font-size:1.2rem; right:1.25rem; }
   }
 
-  /* ── Welcome banner ── */
+  /* â”€â”€ Welcome banner â”€â”€ */
   .welcome-banner {
     background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);
     border-radius:16px; padding:2.5rem; margin-bottom:2rem;
@@ -168,11 +168,11 @@
     font-size:1.6rem; font-weight:800; color:white;
   }
 
-  /* ── Grid ── */
+  /* â”€â”€ Grid â”€â”€ */
   .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.25rem; align-items:stretch; }
   .grid-2 > * { display:flex; flex-direction:column; }
 
-  /* ── Cards ── */
+  /* â”€â”€ Cards â”€â”€ */
   .card {
     background:white; border-radius:14px; border:1px solid var(--border);
     padding:1.75rem; margin-bottom:1.25rem;
@@ -187,7 +187,7 @@
     color:var(--text); margin-bottom:1.25rem;
   }
 
-  /* ── Quick action buttons ── */
+  /* â”€â”€ Quick action buttons â”€â”€ */
   .action-btn {
     display:flex; align-items:center; gap:1rem;
     background:var(--off); border:1.5px solid var(--border); border-radius:10px;
@@ -207,7 +207,7 @@
   .action-btn-desc  { font-size:0.77rem; color:var(--muted); line-height:1.5; }
   .action-btn-arrow { font-size:1rem; color:var(--green); font-weight:700; }
 
-  /* ── Reviews empty state ── */
+  /* â”€â”€ Reviews empty state â”€â”€ */
   .empty-state {
     text-align:center; padding:2.5rem 1rem;
     border:2px dashed var(--border); border-radius:10px;
@@ -216,7 +216,7 @@
   .empty-state-title { font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; }
   .empty-state-text  { font-size:0.82rem; color:var(--muted); line-height:1.7; max-width:340px; margin:0 auto; }
 
-  /* ── Avatar colour swatches ── */
+  /* â”€â”€ Avatar colour swatches â”€â”€ */
   .cl-colour-swatch {
     width:40px; height:40px; border-radius:50%; border:2px solid rgba(0,0,0,0.08);
     cursor:pointer; display:flex; align-items:center; justify-content:center;
@@ -232,7 +232,7 @@
   .cl-profile-input:focus { border-color:var(--green); }
   .cl-profile-label { font-size:0.78rem; font-weight:700; color:var(--muted); display:block; margin-bottom:0.4rem; }
 
-  /* ── Account info ── */
+  /* â”€â”€ Account info â”€â”€ */
   .info-row {
     display:flex; align-items:center; justify-content:space-between;
     padding:0.85rem 0; border-bottom:1px solid var(--border);
@@ -241,7 +241,7 @@
   .info-label { font-size:0.78rem; font-weight:700; color:var(--muted); }
   .info-value { font-size:0.875rem; font-weight:600; color:var(--text); }
 
-  /* ── Message conversation cards ── */
+  /* â”€â”€ Message conversation cards â”€â”€ */
   .msg-card {
     background:white; border:1px solid var(--border); border-radius:14px;
     overflow:hidden; display:flex;
@@ -257,7 +257,7 @@
   .msg-card.active { border-color:var(--green); box-shadow:0 0 0 2px rgba(58,181,74,0.15); }
   .msg-card.active .msg-view-btn { background:var(--green); color:white; border-color:var(--green); cursor:default; }
 
-  /* ── Client reply panel (bottom-right) ── */
+  /* â”€â”€ Client reply panel (bottom-right) â”€â”€ */
   .cl-chat-panel {
     position:fixed; bottom:24px; right:24px; z-index:9999;
     width:360px; max-height:520px;
@@ -325,7 +325,7 @@
     .cl-chat-send { width:46px; height:46px; font-size:1.2rem; }
   }
 
-  /* ── Review cards ── */
+  /* â”€â”€ Review cards â”€â”€ */
   #reviews-list { display:flex; flex-direction:column; gap:0.85rem; }
   .review-item {
     background:white; border-radius:14px;
@@ -361,10 +361,10 @@
     .welcome-banner h1 { font-size:1.55rem; }
     .grid-2         { grid-template-columns:1fr; }
     .topbar-inner   { padding:0 1.25rem; height:60px; }
-    .topbar-logo img { height:44px; }
+    .topbar-logo img { height:38px; width:38px; }
   }
 
-  /* ── Account sidebar ── */
+  /* â”€â”€ Account sidebar â”€â”€ */
   :root { --acc-sb-w: 260px; }
   .acc-sidebar {
     position:fixed; top:0; left:0; bottom:0; width:var(--acc-sb-w);
@@ -377,7 +377,7 @@
   .acc-mob-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; }
   .acc-mob-overlay.active { display:block; }
   .acc-sb-logo { padding:1.25rem 1.25rem 0.75rem; border-bottom:1px solid rgba(255,255,255,0.08); }
-  .acc-sb-logo img { height:54px; width:auto; object-fit:contain; border:2px solid #3ab54a; border-radius:10px; background:white; padding:3px; display:block; }
+  .acc-sb-logo img { height:48px; width:48px; object-fit:contain; display:block; }
   .acc-sb-header { padding:1.25rem 1.25rem 0.75rem; border-bottom:1px solid rgba(255,255,255,0.08); }
   .acc-sb-avatar { width:44px; height:44px; border-radius:50%; background:#3ab54a; color:white; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1rem; margin-bottom:0.5rem; }
   .acc-sb-name { font-weight:700; font-size:0.88rem; color:white; }
@@ -393,7 +393,7 @@
   #acc-mob-tab.open svg { transform:rotate(180deg); }
   @media (max-width:768px) { #acc-mob-tab { display:flex !important; } }
 
-  /* ── Desktop: permanent sidebar ── */
+  /* â”€â”€ Desktop: permanent sidebar â”€â”€ */
   @media (min-width:769px) {
     .acc-sidebar { transform:none; transition:none; box-shadow:2px 0 20px rgba(0,0,0,0.18); }
     .acc-mob-overlay { display:none !important; }
@@ -414,7 +414,7 @@
 <!-- Sidebar -->
 <aside class="acc-sidebar" id="acc-sidebar">
   <div class="acc-sb-logo">
-    <a href="/"><img src="/images/logo.png" alt="CoachCards" /></a>
+    <a href="/"><img src="/images/cc-logo.png" alt="CoachCards" /></a>
   </div>
   <div class="acc-sb-header">
     <div class="acc-sb-avatar" id="acc-sb-avatar">?</div>
@@ -445,7 +445,7 @@
 <div class="topbar">
   <div class="topbar-inner">
     <a href="/" class="topbar-logo">
-      <img src="/images/logo.png" alt="CoachCards" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+      <img src="/images/cc-logo.png" alt="CoachCards" />
     </a>
     <div class="topbar-right">
       <a href="/find-a-trainer" class="topbar-link">Find a PT</a>
@@ -489,7 +489,7 @@
             <div class="action-btn-title">Browse Personal Trainers</div>
             <div class="action-btn-desc">Search by city, specialty and rating.</div>
           </div>
-          <div class="action-btn-arrow">→</div>
+          <div class="action-btn-arrow">â†’</div>
         </a>
         <a href="/#leaderboard" class="action-btn">
           <div class="action-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div>
@@ -497,7 +497,7 @@
             <div class="action-btn-title">View the Rankings</div>
             <div class="action-btn-desc">See the UK's top-ranked PTs.</div>
           </div>
-          <div class="action-btn-arrow">→</div>
+          <div class="action-btn-arrow">â†’</div>
         </a>
       </div>
       <div class="card" style="margin-bottom:0">
@@ -509,7 +509,7 @@
             <div class="action-btn-title">Find Your Trainer</div>
             <div class="action-btn-desc">Search for your PT and leave a verified review directly from their profile.</div>
           </div>
-          <div class="action-btn-arrow">→</div>
+          <div class="action-btn-arrow">â†’</div>
         </a>
         <a href="/#leaderboard" class="action-btn">
           <div class="action-btn-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
@@ -517,7 +517,7 @@
             <div class="action-btn-title">See the Impact</div>
             <div class="action-btn-desc">Your review counts toward their BMP score and UK ranking.</div>
           </div>
-          <div class="action-btn-arrow">→</div>
+          <div class="action-btn-arrow">â†’</div>
         </a>
       </div>
     </div>
@@ -527,7 +527,7 @@
   <div class="acc-section" id="acc-messages">
     <div class="card-label" style="margin-bottom:0.25rem;">Messages</div>
     <div class="card-title" style="margin-bottom:1.25rem;">My Conversations</div>
-    <div id="cl-conv-loading" style="text-align:center;padding:2rem;color:var(--muted);font-size:0.875rem;">Loading conversations…</div>
+    <div id="cl-conv-loading" style="text-align:center;padding:2rem;color:var(--muted);font-size:0.875rem;">Loading conversationsâ€¦</div>
     <div id="cl-conv-empty" style="display:none;">
       <div class="empty-state">
         <span class="empty-state-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
@@ -556,7 +556,7 @@
     <div class="card-label" style="margin-bottom:0.25rem;">Updates</div>
     <div class="card-title" style="margin-bottom:1.25rem;">Your Notifications</div>
     <div id="notif-list">
-      <div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:0.85rem;">Loading…</div>
+      <div style="text-align:center;padding:2.5rem 1rem;color:var(--muted);font-size:0.85rem;">Loadingâ€¦</div>
     </div>
   </div>
 
@@ -617,7 +617,7 @@
         </div>
       </div>
       <div style="margin-bottom:1.25rem;">
-        <label class="cl-profile-label" for="cl-username">Username <span style="font-weight:400;color:var(--muted);">— shown on your reviews</span></label>
+        <label class="cl-profile-label" for="cl-username">Username <span style="font-weight:400;color:var(--muted);">â€” shown on your reviews</span></label>
         <div style="position:relative;">
           <span style="position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:0.875rem;">@</span>
           <input id="cl-username" type="text" class="cl-profile-input" style="padding-left:1.9rem;" maxlength="30" placeholder="yourname" autocomplete="off" />
@@ -626,7 +626,7 @@
       </div>
       <div class="info-row">
         <div class="info-label">Email</div>
-        <div class="info-value" id="account-email">—</div>
+        <div class="info-value" id="account-email">â€”</div>
       </div>
       <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;">
         <button id="cl-save-profile-btn" onclick="clSaveProfile()" style="background:var(--green);color:white;border:none;border-radius:8px;padding:0.7rem 1.75rem;font-family:'Manrope',sans-serif;font-weight:700;font-size:0.875rem;cursor:pointer;transition:background 0.15s;">Save Changes</button>
@@ -654,15 +654,15 @@
   <div class="cl-chat-hdr">
     <div class="cl-chat-av" id="cl-chat-av">?</div>
     <div>
-      <div class="cl-chat-name" id="cl-chat-name">…</div>
-      <div class="cl-chat-sub">Personal Trainer · CoachCards</div>
+      <div class="cl-chat-name" id="cl-chat-name">â€¦</div>
+      <div class="cl-chat-sub">Personal Trainer Â· CoachCards</div>
     </div>
     <button class="cl-chat-close" onclick="clCloseConv()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div id="cl-chat-msgs" class="cl-chat-msgs"></div>
   <div class="cl-chat-input-row">
     <textarea id="cl-chat-input" class="cl-chat-input" rows="1"
-      placeholder="Type a message…"
+      placeholder="Type a messageâ€¦"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();clSendMsg();}"></textarea>
     <button class="cl-chat-send" onclick="clSendMsg()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
@@ -675,27 +675,27 @@
   import { supabase } from '../lib/supabase';
   import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
 
-  // ── Auth guard ─────────────────────────────────────────────────────────────
+  // â”€â”€ Auth guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
-  // ── Check if trainer (redirect to dashboard) ───────────────────────────────
+  // â”€â”€ Check if trainer (redirect to dashboard) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { data: trainer } = await supabase
     .from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
   if (trainer) { window.location.href = '/dashboard'; throw new Error('is-trainer'); }
 
-  // ── Load client record ─────────────────────────────────────────────────────
+  // â”€â”€ Load client record â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { data: client } = await supabase
     .from('clients').select('*').eq('user_id', session.user.id).maybeSingle();
 
   if (!client) {
-    // Might be a trainer — send them to their dashboard instead of signing out
+    // Might be a trainer â€” send them to their dashboard instead of signing out
     const { data: trainerRow } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
     window.location.href = trainerRow ? '/dashboard' : '/';
     throw new Error('no-profile');
   }
 
-  // ── Populate UI ────────────────────────────────────────────────────────────
+  // â”€â”€ Populate UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const firstName = client.name.split(' ')[0];
   const initials  = client.name.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
   const avatarBgInit    = client.avatar_bg    ?? '#eaf7ec';
@@ -711,9 +711,9 @@
     welcomeAv.style.background = avatarBgInit;
     welcomeAv.style.color      = avatarColorInit;
   }
-  (document.getElementById('account-email') as HTMLElement).textContent = session.user.email ?? '—';
+  (document.getElementById('account-email') as HTMLElement).textContent = session.user.email ?? 'â€”';
 
-  // ── Profile form pre-populate ──────────────────────────────────────────────
+  // â”€â”€ Profile form pre-populate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const nameParts = client.name.split(' ');
   (document.getElementById('cl-first-name') as HTMLInputElement).value = nameParts[0] || '';
   (document.getElementById('cl-last-name')  as HTMLInputElement).value = nameParts.slice(1).join(' ') || '';
@@ -721,7 +721,7 @@
   // Avatar preview
   const clAvPrev = document.getElementById('cl-avatar-preview') as HTMLElement;
   clAvPrev.textContent       = initials;
-  // Avatar preview — photo takes priority; colour becomes border ring when photo is set
+  // Avatar preview â€” photo takes priority; colour becomes border ring when photo is set
   if (client.avatar_url) {
     clAvPrev.innerHTML = `<img src="${client.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />`;
     clAvPrev.style.background = 'transparent';
@@ -757,7 +757,7 @@
   const sbName = document.getElementById('acc-sb-name') as HTMLElement;
   if (sbName) sbName.textContent = client.name;
 
-  // ── Load past reviews ──────────────────────────────────────────────────────
+  // â”€â”€ Load past reviews â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { data: reviews } = await supabase
     .from('reviews')
     .select('id, rating, review_text, created_at, trainer_id, trainers(name, avatar_initials, avatar_bg, avatar_color, bmp_score, review_count)')
@@ -794,7 +794,7 @@
     }).join('');
   }
 
-  // ── Notifications ──────────────────────────────────────────────────────────
+  // â”€â”€ Notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function timeAgoNotif(iso: string): string {
     const d = Date.now() - new Date(iso).getTime();
     const m = Math.floor(d / 60000);
@@ -832,7 +832,7 @@
   let _unreadNotifCount = unreadCount;
   updateNotifBadge(_unreadNotifCount);
 
-  // ── Toast helper (appears regardless of which tab is active) ───────────────
+  // â”€â”€ Toast helper (appears regardless of which tab is active) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function showToast(icon: string, title: string, body: string, link?: string) {
     const el = document.createElement(link ? 'a' : 'div') as HTMLAnchorElement;
     if (link) el.href = link;
@@ -844,7 +844,7 @@
         ${body ? `<div style="font-size:0.78rem;color:var(--muted);line-height:1.5;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">${body}</div>` : ''}
       </div>
       <button style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;padding:0;flex-shrink:0;margin-left:0.25rem;line-height:1;"
-        onclick="event.preventDefault();event.stopPropagation();this.closest('.rt-toast').remove()">✕</button>`;
+        onclick="event.preventDefault();event.stopPropagation();this.closest('.rt-toast').remove()">âœ•</button>`;
     document.body.appendChild(el);
     setTimeout(() => {
       el.style.animation = 'fadeOutToast 0.35s ease forwards';
@@ -857,14 +857,14 @@
   if (notifListEl) {
     if (!userNotifs || userNotifs.length === 0) {
       notifListEl.innerHTML = `<div class="empty-state">
-        <span class="empty-state-icon">🔔</span>
+        <span class="empty-state-icon">ðŸ””</span>
         <div class="empty-state-title">No notifications yet</div>
         <div class="empty-state-text">You'll be notified here when your reviews are approved and go live.</div>
       </div>`;
     } else {
       notifListEl.innerHTML = (userNotifs as any[]).map(n => `
         <a href="${n.link || '#'}" class="notif-item-card${n.is_read ? '' : ' unread'}">
-          <div class="notif-icon">🎉</div>
+          <div class="notif-icon">ðŸŽ‰</div>
           <div style="flex:1;">
             <div class="notif-title">${n.title}</div>
             <div class="notif-body-text">${n.body ?? ''}</div>
@@ -874,7 +874,7 @@
     }
   }
 
-  // ── Real-time: new notification ────────────────────────────────────────────
+  // â”€â”€ Real-time: new notification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   supabase.channel('rt-notifs-' + session.user.id)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications',
       filter: `user_id=eq.${session.user.id}` }, (p: any) => {
@@ -890,15 +890,15 @@
           const card = document.createElement('a');
           card.href = n.link || '#';
           card.className = 'notif-item-card unread';
-          card.innerHTML = `<div class="notif-icon">🎉</div><div style="flex:1;"><div class="notif-title">${n.title}</div><div class="notif-body-text">${n.body ?? ''}</div><div class="notif-time">just now</div></div>`;
+          card.innerHTML = `<div class="notif-icon">ðŸŽ‰</div><div style="flex:1;"><div class="notif-title">${n.title}</div><div class="notif-body-text">${n.body ?? ''}</div><div class="notif-time">just now</div></div>`;
           listEl.prepend(card);
         }
 
-        showToast('🔔', n.title, n.body ?? '', n.link ?? undefined);
+        showToast('ðŸ””', n.title, n.body ?? '', n.link ?? undefined);
       })
     .subscribe();
 
-  // ── Messages ───────────────────────────────────────────────────────────────
+  // â”€â”€ Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let _clConvId: string | null = null;
   let _clMsgChannel: any = null;
   let _clConvChannel: any = null;
@@ -955,7 +955,7 @@
 
       const dot     = unread ? `<span style="position:absolute;bottom:1px;right:1px;width:12px;height:12px;border-radius:50%;background:var(--green);border:2px solid white;"></span>` : '';
       const newLine = unread && c.last_message_at
-        ? `<div style="font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.2rem;">New Message · ${new Date(c.last_message_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} at ${new Date(c.last_message_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>`
+        ? `<div style="font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.2rem;">New Message Â· ${new Date(c.last_message_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} at ${new Date(c.last_message_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>`
         : '';
       return `<div class="msg-card">
         <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;flex:1;min-width:0;">
@@ -975,7 +975,7 @@
     _clHighlightActive();
   }
 
-  // Single delegated listener — safe for any trainer name including apostrophes
+  // Single delegated listener â€” safe for any trainer name including apostrophes
   document.getElementById('cl-conv-list')!.addEventListener('click', (e) => {
     const btn = (e.target as Element).closest('[data-cid]') as HTMLElement | null;
     if (!btn) return;
@@ -1005,7 +1005,7 @@
     avEl.style.color      = avColor;
     document.getElementById('cl-chat-name')!.textContent = trainerName;
 
-    // Show panel — skip slide animation when already open (just switching conversations)
+    // Show panel â€” skip slide animation when already open (just switching conversations)
     const panel = document.getElementById('cl-chat-panel')!;
     if (panel.classList.contains('cl-chat-hidden') || !panel.classList.contains('open')) {
       panel.classList.remove('cl-chat-hidden');
@@ -1015,7 +1015,7 @@
     // Show a loading spinner in the message area only when switching between conversations
     const container = document.getElementById('cl-chat-msgs')!;
     if (switching) {
-      container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#aab8ac;font-size:0.82rem;">Loading…</div>`;
+      container.innerHTML = `<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#aab8ac;font-size:0.82rem;">Loadingâ€¦</div>`;
     }
 
     _clHighlightActive();
@@ -1031,7 +1031,7 @@
     if (_clConvId !== convId) return;
 
     const _msgList = msgs || [];
-    const _INTRO = "Hi! Thanks for reaching out. I'd love to hear about your fitness goals — feel free to ask me anything or let me know what you're looking for in a PT.";
+    const _INTRO = "Hi! Thanks for reaching out. I'd love to hear about your fitness goals â€” feel free to ask me anything or let me know what you're looking for in a PT.";
     container.innerHTML = (_msgList.length === 0 ? _clRenderMsg({ sender_type: 'trainer', content: _INTRO, created_at: new Date().toISOString() }) : '') + _msgList.map(_clRenderMsg).join('');
     container.scrollTop = container.scrollHeight;
 
@@ -1082,25 +1082,25 @@
           const td = _clConvData.get(p.new.id);
           const name = td?.name || 'Your trainer';
           const preview = p.new.last_message_preview || 'sent you a message';
-          showToast('💬', `New message from ${name}`, preview);
+          showToast('ðŸ’¬', `New message from ${name}`, preview);
         }
       })
     .subscribe();
 
   _clLoadConvs();
 
-  // ── Profile: photo upload ──────────────────────────────────────────────────
+  // â”€â”€ Profile: photo upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   (window as any).clHandleAvatarUpload = async function(input: HTMLInputElement) {
     const file = input.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
       const s = document.getElementById('cl-save-status') as HTMLElement;
-      s.textContent = '❌ Image too large — max 5 MB'; s.style.color = '#e53935'; s.style.display = 'inline';
+      s.textContent = 'âŒ Image too large â€” max 5 MB'; s.style.color = '#e53935'; s.style.display = 'inline';
       setTimeout(() => { s.style.display = 'none'; }, 4000);
       return;
     }
     const preview = document.getElementById('cl-avatar-preview') as HTMLElement;
-    preview.innerHTML = '<div style="font-size:1.4rem;animation:spin 1s linear infinite;">⏳</div>';
+    preview.innerHTML = '<div style="font-size:1.4rem;animation:spin 1s linear infinite;">â³</div>';
 
     const ext  = file.name.split('.').pop() || 'jpg';
     const path = `${session.user.id}/avatar.${ext}`;
@@ -1111,7 +1111,7 @@
     if (upErr) {
       preview.textContent = initials; preview.style.background = avatarBgInit; preview.style.color = avatarColorInit;
       const s = document.getElementById('cl-save-status') as HTMLElement;
-      s.textContent = '❌ Upload failed'; s.style.color = '#e53935'; s.style.display = 'inline';
+      s.textContent = 'âŒ Upload failed'; s.style.color = '#e53935'; s.style.display = 'inline';
       setTimeout(() => { s.style.display = 'none'; }, 4000);
       return;
     }
@@ -1136,7 +1136,7 @@
     if (sbAvEl) sbAvEl.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
   };
 
-  // ── Profile: colour picker ─────────────────────────────────────────────────
+  // â”€â”€ Profile: colour picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   (window as any).clSelectColour = function(btn: HTMLElement) {
     document.querySelectorAll('.cl-colour-swatch').forEach(s => s.classList.remove('selected'));
     btn.classList.add('selected');
@@ -1150,7 +1150,7 @@
     }
   };
 
-  // ── Profile: save ──────────────────────────────────────────────────────────
+  // â”€â”€ Profile: save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   (window as any).clSaveProfile = async function() {
     const saveBtn  = document.getElementById('cl-save-profile-btn') as HTMLButtonElement;
     const statusEl = document.getElementById('cl-save-status') as HTMLElement;
@@ -1168,7 +1168,7 @@
     const newInitials = newName.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
 
     saveBtn.disabled    = true;
-    saveBtn.textContent = 'Saving…';
+    saveBtn.textContent = 'Savingâ€¦';
 
     const { error } = await supabase.from('clients')
       .update({ name: newName, username, avatar_bg: bg, avatar_color: color })
@@ -1178,14 +1178,14 @@
     saveBtn.textContent = 'Save Changes';
 
     if (error) {
-      statusEl.textContent    = error.message.includes('unique') ? '❌ Username taken' : '❌ Save failed';
+      statusEl.textContent    = error.message.includes('unique') ? 'âŒ Username taken' : 'âŒ Save failed';
       statusEl.style.color    = '#e53935';
       statusEl.style.display  = 'inline';
       setTimeout(() => { statusEl.style.display = 'none'; }, 4000);
       return;
     }
 
-    statusEl.textContent   = '✓ Saved!';
+    statusEl.textContent   = 'âœ“ Saved!';
     statusEl.style.color   = 'var(--green)';
     statusEl.style.display = 'inline';
     setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
@@ -1200,13 +1200,13 @@
     if (sbNameEl) sbNameEl.textContent = newName;
   };
 
-  // ── Sign out ───────────────────────────────────────────────────────────────
+  // â”€â”€ Sign out â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   document.getElementById('signout-btn')!.addEventListener('click', async () => {
     await supabase.auth.signOut();
     window.location.href = '/';
   });
 
-  // ── Tab navigation ─────────────────────────────────────────────────────────
+  // â”€â”€ Tab navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   (window as any).accTab = function(name: string, _btn: HTMLElement) {
     document.querySelectorAll('.acc-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.acc-tab').forEach(el => el.classList.remove('active'));

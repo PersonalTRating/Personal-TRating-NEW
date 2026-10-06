@@ -1,5 +1,5 @@
----
-// PT Dashboard — CoachCards
+﻿---
+// PT Dashboard â€” CoachCards
 // Route: /dashboard
 ---
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PT Dashboard — CoachCards</title>
+<title>PT Dashboard â€” CoachCards</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -32,7 +32,7 @@
   /* Prevent iOS auto-zoom on input focus */
   input, select, textarea { font-size:max(16px, 1em); }
 
-  /* ── SIDEBAR ── */
+  /* â”€â”€ SIDEBAR â”€â”€ */
   .sidebar {
     width:var(--sidebar-w); flex-shrink:0;
     background:var(--text);
@@ -51,7 +51,7 @@
     border-bottom:1px solid rgba(255,255,255,0.08);
     display:flex; align-items:center; justify-content:center;
   }
-  .sb-logo img { height:62px; width:auto; object-fit:contain; }
+  .sb-logo img { height:48px; width:48px; object-fit:contain; }
   .sb-pt-info {
     padding:1.1rem 1.25rem;
     display:flex; align-items:center; gap:0.75rem;
@@ -110,10 +110,10 @@
   }
   .sb-footer-link:hover { color:white; }
 
-  /* ── MAIN ── */
+  /* â”€â”€ MAIN â”€â”€ */
   .main { margin-left:var(--sidebar-w); flex:1; min-width:0; display:flex; flex-direction:column; min-height:100vh; }
 
-  /* ── TOP BAR ── */
+  /* â”€â”€ TOP BAR â”€â”€ */
   .topbar {
     background:white; border-bottom:1px solid var(--border);
     padding:0.9rem 2.5rem; display:flex; align-items:center;
@@ -145,12 +145,12 @@
     background:var(--green); border-radius:50%; border:2px solid white;
   }
 
-  /* ── CONTENT ── */
+  /* â”€â”€ CONTENT â”€â”€ */
   .content { padding:2rem 2.5rem; }
   .page { display:none; }
   .page.active { display:block; }
 
-  /* ── STAT CARDS ── */
+  /* â”€â”€ STAT CARDS â”€â”€ */
   .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; margin-bottom:2rem; }
   .stat-card {
     background:var(--card); border-radius:14px; padding:1.5rem;
@@ -168,11 +168,11 @@
   .stat-icon { margin-bottom:0.75rem; display:flex; align-items:center; }
   .stat-icon-bg { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
 
-  /* ── GRID LAYOUTS ── */
+  /* â”€â”€ GRID LAYOUTS â”€â”€ */
   .two-col   { display:grid; grid-template-columns:1fr 1fr;  gap:1.25rem; margin-bottom:1.25rem; }
   .three-col { display:grid; grid-template-columns:2fr 1fr;  gap:1.25rem; margin-bottom:1.25rem; }
 
-  /* ── CARD ── */
+  /* â”€â”€ CARD â”€â”€ */
   .card { background:var(--card); border-radius:14px; border:1px solid var(--border); overflow:hidden; margin-bottom:1.25rem; }
   .card:last-child { margin-bottom:0; }
   .card-head {
@@ -184,14 +184,14 @@
   .card-body  { padding:1.5rem; }
   .card-link  { font-size:0.78rem; color:var(--green); font-weight:700; text-decoration:none; cursor:pointer; background:none; border:none; font-family:'Manrope',sans-serif; }
 
-  /* ── CHART BARS ── */
+  /* â”€â”€ CHART BARS â”€â”€ */
   .chart-wrap { display:flex; align-items:flex-end; gap:8px; height:120px; padding:0.5rem 0; }
   .chart-bar-group { display:flex; flex-direction:column; align-items:center; flex:1; gap:4px; }
   .chart-bar { width:100%; border-radius:4px 4px 0 0; background:var(--green-mid); transition:background 0.2s; cursor:pointer; }
   .chart-bar:hover, .chart-bar.highlight { background:var(--green); }
   .chart-label { font-size:0.65rem; color:var(--muted); font-weight:600; }
 
-  /* ── REVIEWS LIST ── */
+  /* â”€â”€ REVIEWS LIST â”€â”€ */
   .rev-card { display:flex; gap:1rem; align-items:flex-start; padding:1.25rem 1.5rem; border:1px solid #e8ede9; border-radius:12px; margin-bottom:0.75rem; background:white; }
   .rev-card:last-child { margin-bottom:0; }
   .rev-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.82rem; flex-shrink:0; }
@@ -211,7 +211,7 @@
   .appeal-btn.upheld  { border-color:#b45309; color:#b45309; cursor:default; background:transparent; }
   .appeal-btn.upheld:hover  { background:transparent; color:#b45309; }
 
-  /* ── APPEAL MODAL ── */
+  /* â”€â”€ APPEAL MODAL â”€â”€ */
   .appeal-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
   .appeal-modal-bg.open { display:flex; }
   .appeal-modal { background:white; border-radius:16px; padding:2rem; max-width:480px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
@@ -227,7 +227,7 @@
   .appeal-cancel-btn { padding:0.7rem 1.25rem; background:#f4f6f4; color:#3a4a3b; border:none; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit; }
   .appeal-cancel-btn:hover { background:#e8ece8; }
 
-  /* ── BMP GAUGE ── */
+  /* â”€â”€ BMP GAUGE â”€â”€ */
   .bmp-wrap { display:flex; flex-direction:column; align-items:center; padding:1rem 0; }
   .bmp-circle {
     width:130px; height:130px; border-radius:50%;
@@ -245,7 +245,7 @@
   .bmp-rank-val    { font-size:1.1rem; font-weight:800; color:var(--green-dark); }
   .bmp-rank-label  { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
 
-  /* ── RANKING TABLE (overview) ── */
+  /* â”€â”€ RANKING TABLE (overview) â”€â”€ */
   .rank-table { width:100%; border-collapse:collapse; }
   .rank-table th { text-align:left; padding:0.6rem 1rem; font-size:0.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-weight:700; border-bottom:1px solid var(--border); background:var(--off); }
   .rank-table td { padding:0.9rem 1rem; font-size:0.85rem; border-bottom:1px solid var(--border); vertical-align:middle; }
@@ -259,7 +259,7 @@
   .rank-you-tag { background:var(--green); color:white; font-size:0.6rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:20px; margin-left:0.5rem; letter-spacing:0.5px; }
   .rank-avatar  { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.72rem; }
 
-  /* ── RANKINGS PAGE — glowing cards ── */
+  /* â”€â”€ RANKINGS PAGE â€” glowing cards â”€â”€ */
   .rk-card {
     display:flex; align-items:center; gap:1rem;
     background:#111311; border:2px solid #7defa0; border-left:2px solid #7defa0;
@@ -288,7 +288,7 @@
   }
   .rk-chip:hover, .rk-chip.rk-chip-active { border-color:#3ab54a; color:#3ab54a; background:rgba(58,181,74,0.1); }
 
-  /* ── PROFILE FORM ── */
+  /* â”€â”€ PROFILE FORM â”€â”€ */
   .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
   .form-group { display:flex; flex-direction:column; gap:0.4rem; }
   .form-group.full { grid-column:1 / -1; }
@@ -313,7 +313,7 @@
     display:inline-flex; align-items:center; gap:0.35rem;
   }
   .tag-pill.selected { background:var(--green-light); border-color:var(--green); color:var(--green-dark); }
-  /* ── Avatar preview circle ────────────────────────────── */
+  /* â”€â”€ Avatar preview circle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .avatar-preview-circle {
     width:90px; height:90px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -322,7 +322,7 @@
   }
   .avatar-preview-circle:hover { border-color:var(--green); }
 
-  /* ── Crop modal ────────────────────────────────────────── */
+  /* â”€â”€ Crop modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   #crop-modal {
     display:none; position:fixed; inset:0; z-index:9000;
     background:rgba(0,0,0,0.72); align-items:center; justify-content:center;
@@ -354,7 +354,7 @@
   .crop-save   { flex:2; padding:0.75rem; background:#3ab54a; border:none; border-radius:8px; font-family:'Manrope',sans-serif; font-weight:700; font-size:0.875rem; cursor:pointer; color:white; }
   .crop-save:hover { background:#2a9438; }
 
-  /* ── Color picker widget ─────────────────────────────────── */
+  /* â”€â”€ Color picker widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .cp-row { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; }
   .cp-preview { width:40px; height:40px; border-radius:8px; border:2px solid var(--border); flex-shrink:0; }
   .cp-select-btn {
@@ -414,7 +414,7 @@
   .save-msg { font-size:0.78rem; color:var(--green-dark); font-weight:600; opacity:0; transition:opacity 0.3s; margin-right:auto; }
   .save-msg.show { opacity:1; }
 
-  /* ── REVIEW LINK GENERATOR ── */
+  /* â”€â”€ REVIEW LINK GENERATOR â”€â”€ */
   .link-card {
     background:linear-gradient(135deg,var(--green-light) 0%,white 60%);
     border:1.5px solid var(--green-mid); border-radius:14px; padding:2rem;
@@ -437,7 +437,7 @@
   }
   .link-action-btn:hover { border-color:var(--green); color:var(--green-dark); }
 
-  /* ── Share Hub ── */
+  /* â”€â”€ Share Hub â”€â”€ */
   .share-section-lbl {
     font-size:0.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
     color:var(--muted); margin-bottom:0.55rem;
@@ -471,7 +471,7 @@
   .lh-status.pending  { background:var(--gold-light);  color:var(--gold); }
   .lh-status.expired  { background:#f5f5f5; color:#aaa; }
 
-  /* ── RANKINGS ── */
+  /* â”€â”€ RANKINGS â”€â”€ */
   .rank-filters { display:flex; gap:0.6rem; margin-bottom:1.5rem; flex-wrap:wrap; }
   .rank-filter {
     padding:0.4rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:600;
@@ -485,7 +485,7 @@
   .progress-bar-fill { height:100%; background:var(--green); border-radius:4px; }
   .progress-val { font-size:0.78rem; font-weight:700; color:var(--green-dark); width:40px; text-align:right; }
 
-  /* ── NOTIFICATIONS ── */
+  /* â”€â”€ NOTIFICATIONS â”€â”€ */
   .notif-item {
     display:flex; gap:1rem; padding:1.1rem 1.5rem;
     border-bottom:1px solid var(--border); align-items:flex-start;
@@ -501,11 +501,11 @@
   .notif-text { font-size:0.855rem; line-height:1.55; word-break:break-word; color:var(--text); }
   .notif-time { font-size:0.7rem; color:var(--muted); margin-top:0.15rem; }
 
-  /* ── SECTION HEADING ── */
+  /* â”€â”€ SECTION HEADING â”€â”€ */
   .section-eyebrow { font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:0.3rem; }
   .section-heading { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; margin-bottom:1.5rem; }
 
-  /* ── TOAST ── */
+  /* â”€â”€ TOAST â”€â”€ */
   .copy-toast {
     position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
     background:var(--text); color:white; padding:0.6rem 1.5rem;
@@ -514,14 +514,14 @@
   }
   .copy-toast.show { opacity:1; }
 
-  /* ── ANIMATIONS ── */
+  /* â”€â”€ ANIMATIONS â”€â”€ */
   @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
   .page.active .stat-card { animation:fadeUp 0.4s ease both; }
   .page.active .stat-card:nth-child(2) { animation-delay:0.05s; }
   .page.active .stat-card:nth-child(3) { animation-delay:0.10s; }
   .page.active .stat-card:nth-child(4) { animation-delay:0.15s; }
 
-  /* ── RESPONSIVE ── */
+  /* â”€â”€ RESPONSIVE â”€â”€ */
   @media (max-width: 1100px) {
     .stats-grid { grid-template-columns:repeat(2,1fr); }
     .three-col  { grid-template-columns:1fr; }
@@ -566,7 +566,7 @@
     .content { padding-bottom:80px; }
   }
 
-  /* ── Mobile bottom nav ── */
+  /* â”€â”€ Mobile bottom nav â”€â”€ */
   .mob-bottom-nav {
     display:none;
     position:fixed; bottom:0; left:0; right:0; z-index:300;
@@ -607,7 +607,7 @@
     #share-card { width:100% !important; max-width:360px; margin:0 auto; }
   }
 
-  /* ── Messages ── */
+  /* â”€â”€ Messages â”€â”€ */
   #msg-conv-list { background:none !important; border:none !important; box-shadow:none !important; padding:0 !important; }
   .msg-card {
     display:flex; align-items:stretch;
@@ -648,7 +648,7 @@
   .msg-bubble-c { background:white; color:var(--text); border:1px solid var(--border); padding:0.6rem 0.85rem; border-radius:14px 14px 14px 4px; font-size:0.875rem; line-height:1.5; word-break:break-word; }
   .msg-time { font-size:0.62rem; color:#aab8ac; margin-top:0.2rem; }
 
-  /* ── Trainer reply panel (bottom-right) ── */
+  /* â”€â”€ Trainer reply panel (bottom-right) â”€â”€ */
   .tr-chat-panel {
     position:fixed; bottom:24px; right:24px; z-index:9999;
     width:360px; max-height:520px;
@@ -710,7 +710,7 @@
 <script is:inline src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style is:global>
-  /* ── Onboarding checklist ──────────────────────────────── */
+  /* â”€â”€ Onboarding checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   #onboard-wrap {
     background: linear-gradient(135deg, #0d1a0e 0%, #1a3d1e 100%);
     border-radius: 20px; padding: 2.5rem;
@@ -761,7 +761,7 @@
   }
   #onboard-wrap .onboard-dismiss:hover { color: rgba(255,255,255,0.7); }
 
-  /* ── New-review celebration banner ─────────────────────── */
+  /* â”€â”€ New-review celebration banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
   .review-alert {
     display: flex;
     align-items: center;
@@ -790,18 +790,18 @@
 </head>
 <body>
 
-<!-- ══ SIDEBAR ══ -->
+<!-- â•â• SIDEBAR â•â• -->
 <aside class="sidebar">
   <div class="sb-logo">
     <a href="/for-trainers" title="Trainer Home">
-      <img src="/images/logo.png" alt="CoachCards" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+      <img src="/images/cc-logo.png" alt="CoachCards" />
     </a>
   </div>
 
   <div class="sb-pt-info">
     <div class="sb-avatar"></div>
     <div>
-      <div class="sb-pt-name">Loading…</div>
+      <div class="sb-pt-name">Loadingâ€¦</div>
       <div class="sb-pt-business" style="display:none;"></div>
       <div class="sb-pt-status"></div>
     </div>
@@ -813,10 +813,10 @@
       <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span> Home Page
     </button>
     <a class="sb-ext-item" href="/?cv=1" target="_blank" rel="noopener">
-      <span class="sb-ext-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Customer Overview ↗
+      <span class="sb-ext-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Customer Overview â†—
     </a>
     <a class="sb-ext-item" id="sb-profile-link" href="#" target="_blank" rel="noopener">
-      <span class="sb-ext-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span> My Public Profile ↗
+      <span class="sb-ext-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span> My Public Profile â†—
     </a>
 
     <div class="sb-section-label">Main</div>
@@ -877,7 +877,7 @@
   </svg>
 </button>
 
-<!-- ══ MAIN ══ -->
+<!-- â•â• MAIN â•â• -->
 <main class="main">
 
   <!-- TOP BAR -->
@@ -886,7 +886,7 @@
       <button class="mob-menu-btn" id="mob-menu-btn" onclick="toggleMobMenu()" style="display:none;" aria-label="Menu"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
       <div class="topbar-left">
         <h1 id="page-title">Overview</h1>
-        <p  id="page-sub">Loading your dashboard…</p>
+        <p  id="page-sub">Loading your dashboardâ€¦</p>
       </div>
     </div>
     <div class="topbar-right">
@@ -900,10 +900,10 @@
 
   <div class="content">
 
-    <!-- ══════════ OVERVIEW ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• OVERVIEW â•â•â•â•â•â•â•â•â•â• -->
     <div class="page active" id="page-overview">
 
-      <!-- Onboarding checklist — hidden once all steps done or dismissed -->
+      <!-- Onboarding checklist â€” hidden once all steps done or dismissed -->
       <div class="onboard-wrap" id="onboard-wrap" style="display:none;">
         <div class="onboard-top">
           <div style="display:flex;align-items:flex-start;justify-content:space-between;">
@@ -925,25 +925,25 @@
         <div class="stat-card" style="--stat-color:rgba(58,181,74,0.08)">
           <div class="stat-icon"><div class="stat-icon-bg" style="background:#eaf7ec;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="12" x2="18" y2="12"/><line x1="6" y1="8" x2="6" y2="16"/><line x1="18" y1="8" x2="18" y2="16"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg></div></div>
           <div class="stat-label">BMP Score</div>
-          <div class="stat-value" id="stat-bmp" style="color:var(--green-dark)">—</div>
+          <div class="stat-value" id="stat-bmp" style="color:var(--green-dark)">â€”</div>
           <div class="stat-change up" id="stat-bmp-change"></div>
         </div>
         <div class="stat-card" style="--stat-color:rgba(245,158,11,0.1)">
           <div class="stat-icon"><div class="stat-icon-bg" style="background:#fef3c7;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></div></div>
           <div class="stat-label">UK Ranking</div>
-          <div class="stat-value" id="stat-rank" style="color:var(--gold)">—</div>
+          <div class="stat-value" id="stat-rank" style="color:var(--gold)">â€”</div>
           <div class="stat-change up" id="stat-rank-change"></div>
         </div>
         <div class="stat-card" style="--stat-color:rgba(139,92,246,0.1)">
           <div class="stat-icon"><div class="stat-icon-bg" style="background:#f3eeff;"><svg width="22" height="22" viewBox="0 0 24 24" fill="#8B5CF6" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div></div>
           <div class="stat-label">Total Reviews</div>
-          <div class="stat-value" id="stat-reviews">—</div>
+          <div class="stat-value" id="stat-reviews">â€”</div>
           <div class="stat-change up" id="stat-reviews-change"></div>
         </div>
         <div class="stat-card" style="--stat-color:rgba(14,165,233,0.1)">
           <div class="stat-icon"><div class="stat-icon-bg" style="background:#e0f2fe;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div></div>
           <div class="stat-label">Profile Views</div>
-          <div class="stat-value" id="stat-views">—</div>
+          <div class="stat-value" id="stat-views">â€”</div>
           <div class="stat-change up" id="stat-views-change"></div>
         </div>
       </div>
@@ -954,14 +954,14 @@
           <div class="card-head">
             <div>
               <div class="card-title">Reviews Over Time</div>
-              <div class="card-sub">Monthly review volume — last 8 months</div>
+              <div class="card-sub">Monthly review volume â€” last 8 months</div>
             </div>
-            <button class="card-link" onclick="showPage('reviews')">View all →</button>
+            <button class="card-link" onclick="showPage('reviews')">View all â†’</button>
           </div>
           <div class="card-body">
             <div class="chart-wrap" id="reviews-chart-wrap">
               <!-- filled by JS with real monthly data -->
-              <div class="chart-bar-group"><div class="chart-bar" style="height:8%"></div><div class="chart-label">—</div></div>
+              <div class="chart-bar-group"><div class="chart-bar" style="height:8%"></div><div class="chart-label">â€”</div></div>
             </div>
           </div>
         </div>
@@ -978,7 +978,7 @@
             <div class="bmp-wrap">
               <div class="bmp-circle" id="gauge-circle" style="background:var(--green-mid);">
                 <div class="bmp-inner">
-                  <div class="bmp-score" id="gauge-score">—</div>
+                  <div class="bmp-score" id="gauge-score">â€”</div>
                   <div class="bmp-label-small">BMP</div>
                 </div>
               </div>
@@ -996,13 +996,13 @@
         <div class="card-head" style="background:#0d1a0e;border-bottom:1px solid rgba(58,181,74,0.15);">
           <div>
             <div class="card-title" style="color:white;">UK Leaderboard</div>
-            <div class="card-sub" style="color:rgba(255,255,255,0.45);">Top trainers by BMP score — your position highlighted</div>
+            <div class="card-sub" style="color:rgba(255,255,255,0.45);">Top trainers by BMP score â€” your position highlighted</div>
           </div>
-          <button class="card-link" onclick="showPage('rankings')" style="color:#3ab54a;">Full leaderboard →</button>
+          <button class="card-link" onclick="showPage('rankings')" style="color:#3ab54a;">Full leaderboard â†’</button>
         </div>
         <div class="card-body" style="padding:0.75rem;background:#0d1a0e;border-radius:0 0 16px 16px;display:flex;flex-direction:column;gap:0.6rem;">
           <div id="ov-rk-list" style="display:flex;flex-direction:column;gap:0.6rem;">
-            <div style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Loading rankings…</div>
+            <div style="text-align:center;padding:2rem;color:#7a8f7c;font-size:0.85rem;">Loading rankingsâ€¦</div>
           </div>
         </div>
       </div>
@@ -1014,7 +1014,7 @@
             <div class="card-title">My Feed</div>
             <div class="card-sub" id="ov-feed-sub">Your recent posts</div>
           </div>
-          <button class="card-link" onclick="showPage('feed')">+ New Post →</button>
+          <button class="card-link" onclick="showPage('feed')">+ New Post â†’</button>
         </div>
         <div id="ov-feed-list" style="padding:1.5rem;min-height:60px;"></div>
       </div>
@@ -1026,14 +1026,14 @@
             <div class="card-title" style="color:white;">Recent Reviews</div>
             <div class="card-sub" style="color:rgba(255,255,255,0.45);">Your latest verified client feedback</div>
           </div>
-          <button class="card-link" onclick="showPage('reviews')" style="color:#3ab54a;">View all →</button>
+          <button class="card-link" onclick="showPage('reviews')" style="color:#3ab54a;">View all â†’</button>
         </div>
         <div id="recent-reviews-list" class="card-body" style="padding:0.75rem;background:#0d1a0e;border-radius:0 0 16px 16px;display:flex;flex-direction:column;gap:0.6rem;"></div>
       </div>
 
     </div>
 
-    <!-- ══════════ MY PROFILE ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• MY PROFILE â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-profile">
       <div class="section-eyebrow">Your Public Profile</div>
       <div class="section-heading">Profile Builder</div>
@@ -1047,9 +1047,9 @@
         </div>
         <div class="card-body">
 
-          <!-- ── Hero preview + Photo upload ── -->
+          <!-- â”€â”€ Hero preview + Photo upload â”€â”€ -->
           <div id="profile-hero-preview" style="background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);border-radius:12px;padding:1.75rem;margin-bottom:1.75rem;transition:background 0.5s ease;">
-            <div style="font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.1rem;">Live Preview — Your Profile Header</div>
+            <div style="font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.1rem;">Live Preview â€” Your Profile Header</div>
             <div style="display:flex;align-items:center;gap:1.75rem;">
               <div style="position:relative;flex-shrink:0;">
                 <div class="avatar-preview-circle" id="profile-avatar-preview" onclick="document.getElementById('avatar-file-input').click()" style="cursor:pointer;border-color:rgba(255,255,255,0.25);">
@@ -1068,7 +1068,7 @@
             </div>
           </div>
 
-          <!-- ── Avatar colour picker ── -->
+          <!-- â”€â”€ Avatar colour picker â”€â”€ -->
           <div style="margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
             <label class="form-label" style="display:block;margin-bottom:0.65rem;">Avatar Colour <span style="font-weight:400;color:var(--muted);">(photo border ring, or initials colour)</span></label>
             <div class="cp-row">
@@ -1088,9 +1088,9 @@
             </div>
           </div>
 
-          <!-- ── Hero background colour picker ── -->
+          <!-- â”€â”€ Hero background colour picker â”€â”€ -->
           <div style="margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
-            <label class="form-label" style="display:block;margin-bottom:0.65rem;">Profile Page Background <span style="font-weight:400;color:var(--muted);">(pick a base colour — a dark gradient is generated automatically)</span></label>
+            <label class="form-label" style="display:block;margin-bottom:0.65rem;">Profile Page Background <span style="font-weight:400;color:var(--muted);">(pick a base colour â€” a dark gradient is generated automatically)</span></label>
             <div class="cp-row">
               <div class="cp-preview" id="cp-hero-preview" style="border-radius:8px;"></div>
               <button class="cp-select-btn" onclick="cpToggle('hero')">Select Color</button>
@@ -1118,7 +1118,7 @@
               <input id="profile-lastname" class="form-input" type="text" placeholder="Last name">
             </div>
             <div class="form-group full">
-              <label class="form-label">Username <span style="font-weight:400;color:var(--muted);">— shown as @username on your profile</span></label>
+              <label class="form-label">Username <span style="font-weight:400;color:var(--muted);">â€” shown as @username on your profile</span></label>
               <div style="position:relative;">
                 <span style="position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);font-weight:700;color:var(--muted);font-size:0.95rem;">@</span>
                 <input id="profile-username" class="form-input" type="text" placeholder="yourname" style="padding-left:1.9rem;" maxlength="30">
@@ -1127,7 +1127,7 @@
             </div>
             <div class="form-group full">
               <label class="form-label">Business / Trading Name <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
-              <input id="profile-business" class="form-input" type="text" placeholder="e.g. Mitchell Fitness — leave blank to use your own name">
+              <input id="profile-business" class="form-input" type="text" placeholder="e.g. Mitchell Fitness â€” leave blank to use your own name">
             </div>
             <div class="form-group">
               <label class="form-label">City</label>
@@ -1143,7 +1143,7 @@
             </div>
             <div class="form-group full">
               <label class="form-label">Intro Message <span style="font-weight:400;color:var(--muted);">(sent automatically when a client starts a chat)</span></label>
-              <textarea id="profile-intro-msg" class="form-textarea" placeholder="e.g. Hi! Thanks for reaching out — I'd love to help you hit your goals. What are you training for?"></textarea>
+              <textarea id="profile-intro-msg" class="form-textarea" placeholder="e.g. Hi! Thanks for reaching out â€” I'd love to help you hit your goals. What are you training for?"></textarea>
             </div>
           </div>
         </div>
@@ -1170,7 +1170,7 @@
             <button class="tag-pill" id="specialty-other-pill" onclick="toggleSpecialtyOther(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>Other</button>
           </div>
           <div id="specialty-other-wrap" style="display:none;margin-top:0.75rem;">
-            <input class="form-input" type="text" id="specialty-other-input" placeholder="e.g. Boxing, Yoga, Pre/Postnatal…" maxlength="50">
+            <input class="form-input" type="text" id="specialty-other-input" placeholder="e.g. Boxing, Yoga, Pre/Postnatalâ€¦" maxlength="50">
           </div>
         </div>
       </div>
@@ -1187,7 +1187,7 @@
             <div class="form-group">
               <label class="form-label">Primary Qualification</label>
               <select class="form-select" id="profile-cert">
-                <option value="">Select qualification…</option>
+                <option value="">Select qualificationâ€¦</option>
                 <option value="REPs Level 3">REPs Level 3 Personal Trainer</option>
                 <option value="REPs Level 4">REPs Level 4</option>
                 <option value="REPs Level 2">REPs Level 2</option>
@@ -1196,12 +1196,12 @@
                 <option value="ACE CPT">ACE CPT</option>
                 <option value="Nutrition Diploma">Nutrition Diploma</option>
                 <option value="Physiotherapy Cert.">Physiotherapy Certificate</option>
-                <option value="other">Other…</option>
+                <option value="other">Otherâ€¦</option>
               </select>
             </div>
             <div class="form-group" id="profile-cert-other-wrap" style="display:none;">
               <label class="form-label">Please specify your qualification</label>
-              <input class="form-input" type="text" id="profile-cert-other" placeholder="e.g. YMCA Level 3, Premier Training…">
+              <input class="form-input" type="text" id="profile-cert-other" placeholder="e.g. YMCA Level 3, Premier Trainingâ€¦">
             </div>
             <div class="form-group">
               <label class="form-label">Additional Cert (optional)</label>
@@ -1215,7 +1215,7 @@
         <div class="card-head">
           <div>
             <div class="card-title">Training Locations</div>
-            <div class="card-sub">Add the gyms you train clients at — shown on your public profile</div>
+            <div class="card-sub">Add the gyms you train clients at â€” shown on your public profile</div>
           </div>
         </div>
         <div class="card-body">
@@ -1285,21 +1285,21 @@
       </div>
 
       <div class="save-bar">
-        <span class="save-msg" id="save-msg">✅ Profile saved successfully!</span>
+        <span class="save-msg" id="save-msg">âœ… Profile saved successfully!</span>
         <button class="btn btn-outline" onclick="discardProfile()">Discard Changes</button>
         <button class="btn btn-green"   onclick="saveProfile()">Save Profile</button>
       </div>
     </div>
 
-    <!-- ══════════ REVIEWS ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• REVIEWS â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-reviews">
       <div class="section-eyebrow">Client Feedback</div>
       <div class="section-heading">Your Reviews</div>
 
       <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
-        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-label">Average Rating</div><div class="stat-value" id="rev-stat-avg" style="color:var(--gold)">—</div><div class="stat-change up" id="rev-stat-avg-sub"></div></div>
-        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><div class="stat-label">Total Reviews</div><div class="stat-value" id="rev-stat-total">—</div><div class="stat-change up" id="rev-stat-total-sub"></div></div>
-        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="stat-label">Verified Rate</div><div class="stat-value" id="rev-stat-verified">—</div><div class="stat-change up">All client-verified</div></div>
+        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-label">Average Rating</div><div class="stat-value" id="rev-stat-avg" style="color:var(--gold)">â€”</div><div class="stat-change up" id="rev-stat-avg-sub"></div></div>
+        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><div class="stat-label">Total Reviews</div><div class="stat-value" id="rev-stat-total">â€”</div><div class="stat-change up" id="rev-stat-total-sub"></div></div>
+        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="stat-label">Verified Rate</div><div class="stat-value" id="rev-stat-verified">â€”</div><div class="stat-change up">All client-verified</div></div>
       </div>
 
       <div class="card">
@@ -1313,7 +1313,7 @@
       </div>
     </div>
 
-    <!-- ══════════ REVIEW LINKS ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• REVIEW LINKS â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-links">
       <div class="section-eyebrow">Collect Feedback</div>
       <div class="section-heading">Review Link Generator</div>
@@ -1339,7 +1339,7 @@
         <div>
           <div id="ig-preview-label" style="font-size:0.68rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;text-align:center;">Instagram Story Preview</div>
           <div id="share-card" style="width:360px;height:640px;border-radius:24px;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 45%,#2a5a30 100%);">
-            <div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:0.85rem;font-family:'Manrope',sans-serif;">Loading card…</div>
+            <div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.3);font-size:0.85rem;font-family:'Manrope',sans-serif;">Loading cardâ€¦</div>
           </div>
         </div>
 
@@ -1458,7 +1458,7 @@
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px;" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                 <div>
                   <div style="font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;">Repeat reviews</div>
-                  <div style="font-size:0.76rem;color:var(--muted);line-height:1.55;">Clients can leave you a new verified review every 30 days. Only their latest review contributes to your current BMP — older reviews remain visible on your profile.</div>
+                  <div style="font-size:0.76rem;color:var(--muted);line-height:1.55;">Clients can leave you a new verified review every 30 days. Only their latest review contributes to your current BMP â€” older reviews remain visible on your profile.</div>
                 </div>
               </div>
             </div>
@@ -1474,7 +1474,7 @@
             </div>
             <div class="card-body" style="padding:1.1rem 1.5rem;">
               <textarea id="sc-custom-msg" rows="2" maxlength="80"
-                placeholder="I'd love your feedback 🙏"
+                placeholder="I'd love your feedback ðŸ™"
                 oninput="rebuildCard(); document.getElementById('sc-msg-count').textContent = this.value.length + ' / 80'; updateSharePreview();"
                 style="width:100%;padding:0.65rem 0.75rem;border:1px solid var(--border);border-radius:8px;font-family:'Manrope',sans-serif;font-size:0.84rem;color:var(--text);resize:none;line-height:1.5;outline:none;box-sizing:border-box;"></textarea>
               <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.3rem;">
@@ -1514,7 +1514,7 @@
                 <div class="card-title">Card Theme</div>
                 <div class="card-sub">Matches your profile background</div>
               </div>
-              <button class="card-link" onclick="showPage('profile')">Change →</button>
+              <button class="card-link" onclick="showPage('profile')">Change â†’</button>
             </div>
             <div class="card-body" style="padding:1.1rem 1.5rem;">
               <div style="display:flex;align-items:center;gap:0.85rem;">
@@ -1539,12 +1539,12 @@
           </div>
         </div>
         <div id="link-history-list">
-          <div style="padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:0.84rem;">Loading…</div>
+          <div style="padding:2rem 1.5rem;text-align:center;color:var(--muted);font-size:0.84rem;">Loadingâ€¦</div>
         </div>
       </div>
     </div>
 
-    <!-- ══════════ RANKINGS ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• RANKINGS â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-rankings" style="margin:-2rem -2.5rem;">
       <div style="background:#111311;min-height:calc(100vh - 60px);padding:2rem 2.5rem;">
 
@@ -1560,15 +1560,15 @@
           </div>
           <div style="display:flex;gap:2rem;flex-wrap:wrap;">
             <div style="text-align:center;">
-              <div id="rk-you-rank" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#3ab54a;line-height:1;">—</div>
+              <div id="rk-you-rank" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#3ab54a;line-height:1;">â€”</div>
               <div style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.2rem;">UK Rank</div>
             </div>
             <div style="text-align:center;">
-              <div id="rk-you-bmp" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
+              <div id="rk-you-bmp" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">â€”</div>
               <div style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.2rem;">BMP Score</div>
             </div>
             <div style="text-align:center;">
-              <div id="rk-you-reviews" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">—</div>
+              <div id="rk-you-reviews" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:white;line-height:1;">â€”</div>
               <div style="font-size:0.65rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.2rem;">Reviews</div>
             </div>
           </div>
@@ -1583,9 +1583,9 @@
 
         <!-- Search bar -->
         <div style="display:flex;gap:0.6rem;margin-bottom:1.25rem;">
-          <input id="rk-search" type="text" placeholder="city or trainer name…" oninput="rkFilter()"
+          <input id="rk-search" type="text" placeholder="city or trainer nameâ€¦" oninput="rkFilter()"
             style="flex:1;padding:0.85rem 1.1rem;border:1.5px solid rgba(255,255,255,0.12);border-radius:10px;background:rgba(255,255,255,0.07);color:white;font-family:'Manrope',sans-serif;font-size:0.875rem;outline:none;" />
-          <button onclick="rkFilter()" style="padding:0.85rem 1.4rem;background:#3ab54a;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.875rem;cursor:pointer;font-family:'Manrope',sans-serif;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">Search →</button>
+          <button onclick="rkFilter()" style="padding:0.85rem 1.4rem;background:#3ab54a;color:white;border:none;border-radius:10px;font-weight:700;font-size:0.875rem;cursor:pointer;font-family:'Manrope',sans-serif;white-space:nowrap;transition:background 0.2s;" onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">Search â†’</button>
         </div>
 
         <!-- Specialty chips -->
@@ -1604,12 +1604,12 @@
 
         <!-- Trainer cards -->
         <div id="rk-list" style="display:flex;flex-direction:column;gap:0.75rem;">
-          <div style="text-align:center;padding:3rem;color:#5a6b5c;font-size:0.9rem;">Loading leaderboard…</div>
+          <div style="text-align:center;padding:3rem;color:#5a6b5c;font-size:0.9rem;">Loading leaderboardâ€¦</div>
         </div>
 
         <!-- Browse Full Directory -->
         <div style="text-align:center;margin-top:2rem;padding-bottom:1.5rem;">
-          <a href="/find-a-trainer" target="_blank" style="display:inline-flex;align-items:center;gap:0.6rem;background:#3ab54a;color:white;font-weight:700;font-size:0.9rem;padding:0.85rem 2.25rem;border-radius:30px;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">Browse Full Directory →</a>
+          <a href="/find-a-trainer" target="_blank" style="display:inline-flex;align-items:center;gap:0.6rem;background:#3ab54a;color:white;font-weight:700;font-size:0.9rem;padding:0.85rem 2.25rem;border-radius:30px;text-decoration:none;transition:background 0.2s;" onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">Browse Full Directory â†’</a>
           <p style="font-size:0.75rem;color:#4a5e4a;margin-top:0.6rem;">Filter by city, specialty &amp; BMP score across all UK trainers</p>
         </div>
 
@@ -1618,7 +1618,7 @@
           <div style="font-weight:800;font-size:0.92rem;color:white;margin-bottom:0.2rem;">Your Score Breakdown</div>
           <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-bottom:1rem;">What's driving your BMP</div>
           <div id="score-breakdown-body">
-            <div style="text-align:center;color:#5a6b5c;font-size:0.82rem;padding:0.5rem 0;">Loading…</div>
+            <div style="text-align:center;color:#5a6b5c;font-size:0.82rem;padding:0.5rem 0;">Loadingâ€¦</div>
           </div>
         </div>
 
@@ -1634,7 +1634,7 @@
       </div>
     </div>
 
-    <!-- ══════════ MY FEED ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• MY FEED â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-feed">
       <div class="section-eyebrow">Content</div>
       <div class="section-heading">My Feed</div>
@@ -1644,7 +1644,7 @@
         <div class="card-head">
           <div>
             <div class="card-title">New Post</div>
-            <div class="card-sub">Share a class, update or client progress — visible on your public profile</div>
+            <div class="card-sub">Share a class, update or client progress â€” visible on your public profile</div>
           </div>
         </div>
         <div class="card-body">
@@ -1657,7 +1657,7 @@
             <div id="post-img-placeholder">
               <div style="margin-bottom:0.4rem;display:flex;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
               <div style="font-weight:600;font-size:0.875rem;color:var(--text);margin-bottom:0.2rem;">Add a photo <span style="font-weight:400;color:var(--muted);">(optional)</span></div>
-              <div style="font-size:0.75rem;color:var(--muted);">Click or drag & drop · JPG, PNG, WebP · max 10 MB</div>
+              <div style="font-size:0.75rem;color:var(--muted);">Click or drag & drop Â· JPG, PNG, WebP Â· max 10 MB</div>
             </div>
             <div id="post-img-preview" style="display:none;position:relative;">
               <img id="post-img-preview-src" style="max-width:100%;max-height:260px;border-radius:8px;object-fit:cover;" />
@@ -1667,7 +1667,7 @@
           </div>
 
           <!-- Caption -->
-          <textarea id="post-caption" class="form-textarea" placeholder="Write a caption, announce a class, share a training tip… (optional)" style="min-height:90px;margin-bottom:1rem;"></textarea>
+          <textarea id="post-caption" class="form-textarea" placeholder="Write a caption, announce a class, share a training tipâ€¦ (optional)" style="min-height:90px;margin-bottom:1rem;"></textarea>
 
           <div style="display:flex;align-items:center;justify-content:space-between;gap:0.75rem;flex-wrap:wrap;">
             <div id="post-err" style="font-size:0.78rem;color:var(--red);display:none;">Add a photo or write a caption before posting.</div>
@@ -1681,29 +1681,29 @@
         <div class="card-head">
           <div>
             <div class="card-title">Your Posts</div>
-            <div class="card-sub" id="feed-sub">Loading…</div>
+            <div class="card-sub" id="feed-sub">Loadingâ€¦</div>
           </div>
         </div>
         <div id="feed-list" style="padding:1.5rem;min-height:80px;"></div>
       </div>
     </div>
 
-    <!-- ══════════ NOTIFICATIONS ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• NOTIFICATIONS â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-notifications">
       <div class="section-eyebrow">Activity</div>
       <div class="section-heading">Notifications</div>
       <div class="card" id="notif-card" style="margin-bottom:0;overflow:visible;">
-        <div style="padding:2rem;text-align:center;color:var(--muted);font-size:0.84rem;">Loading notifications…</div>
+        <div style="padding:2rem;text-align:center;color:var(--muted);font-size:0.84rem;">Loading notificationsâ€¦</div>
       </div>
     </div>
 
-    <!-- ══════════ MESSAGES ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• MESSAGES â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-messages">
       <div class="section-eyebrow">Inbox</div>
       <div class="section-heading">Messages</div>
 
       <div id="msg-loading" class="card">
-        <div style="padding:2.5rem;text-align:center;color:var(--muted);font-size:0.85rem;">Loading conversations…</div>
+        <div style="padding:2.5rem;text-align:center;color:var(--muted);font-size:0.85rem;">Loading conversationsâ€¦</div>
       </div>
 
       <div id="msg-empty" class="card" style="display:none;">
@@ -1720,7 +1720,7 @@
 
     </div>
 
-    <!-- ══════════ GETTING STARTED ══════════ -->
+    <!-- â•â•â•â•â•â•â•â•â•â• GETTING STARTED â•â•â•â•â•â•â•â•â•â• -->
     <div class="page" id="page-setup">
       <div class="section-eyebrow">Onboarding</div>
       <div class="section-heading">Getting Started</div>
@@ -1745,13 +1745,13 @@
   </div>
 </main>
 
-<!-- ── Appeal modal ── -->
+<!-- â”€â”€ Appeal modal â”€â”€ -->
 <div class="appeal-modal-bg" id="appeal-modal-bg">
   <div class="appeal-modal">
     <div class="appeal-modal-title">Appeal This Review</div>
     <div class="appeal-modal-sub">Explain why you believe this review should be removed. Our team will review your appeal and respond within 48 hours.</div>
     <div class="appeal-modal-review" id="appeal-modal-quote"></div>
-    <textarea id="appeal-reason" placeholder="Describe your reason for the appeal (optional)…"></textarea>
+    <textarea id="appeal-reason" placeholder="Describe your reason for the appeal (optional)â€¦"></textarea>
     <div class="appeal-modal-actions">
       <button class="appeal-cancel-btn" id="appeal-cancel-btn">Cancel</button>
       <button class="appeal-submit-btn" id="appeal-submit-btn">Submit Appeal</button>
@@ -1759,37 +1759,37 @@
   </div>
 </div>
 
-<!-- ── Trainer reply panel (bottom-right) ── -->
+<!-- â”€â”€ Trainer reply panel (bottom-right) â”€â”€ -->
 <div id="tr-chat-panel" class="tr-chat-panel tr-chat-hidden">
   <div class="tr-chat-hdr">
     <div class="tr-chat-av" id="tr-chat-av">?</div>
     <div>
-      <div class="tr-chat-name" id="tr-chat-name">…</div>
-      <div class="tr-chat-sub">Client · CoachCards</div>
+      <div class="tr-chat-name" id="tr-chat-name">â€¦</div>
+      <div class="tr-chat-sub">Client Â· CoachCards</div>
     </div>
     <button class="tr-chat-close" onclick="closeMsgThread()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div id="tr-chat-msgs" class="tr-chat-msgs"></div>
   <div class="tr-chat-input-row">
     <textarea id="msg-reply-input" class="tr-chat-input" rows="1"
-      placeholder="Type your reply…"
+      placeholder="Type your replyâ€¦"
       onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendTrainerReply();}"></textarea>
     <button class="tr-chat-send" onclick="sendTrainerReply()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
   </div>
 </div>
 
-<div class="copy-toast" id="copy-toast">✅ Link copied to clipboard!</div>
+<div class="copy-toast" id="copy-toast">âœ… Link copied to clipboard!</div>
 
-<!-- ── Avatar crop modal ── -->
+<!-- â”€â”€ Avatar crop modal â”€â”€ -->
 <div id="crop-modal">
   <div class="crop-box">
     <h3>Adjust your profile photo</h3>
-    <p>Drag to reposition · use the slider to zoom</p>
+    <p>Drag to reposition Â· use the slider to zoom</p>
     <div id="crop-stage">
       <img id="crop-img" src="" alt="" draggable="false" />
     </div>
     <div class="crop-zoom-row">
-      <label>🔍 Zoom</label>
+      <label>ðŸ” Zoom</label>
       <input id="crop-zoom" type="range" min="100" max="300" value="100" step="1" oninput="cropZoom(this.value)" />
     </div>
     <div class="crop-actions">
@@ -1803,7 +1803,7 @@
   import { supabase } from '../lib/supabase';
   import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
 
-  // ── Auth guard ──────────────────────────────────────────────────────────
+  // â”€â”€ Auth guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   // Fast path: read from localStorage (persisted across visits).
   let _session: any = (await supabase.auth.getSession()).data.session;
 
@@ -1824,7 +1824,7 @@
   if (!_session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
   // If access token is expired (or about to), refresh before running RLS queries.
-  // Expired JWTs cause Supabase to silently return empty rows — no error, just null.
+  // Expired JWTs cause Supabase to silently return empty rows â€” no error, just null.
   const _jwtExp = (() => {
     try { return JSON.parse(atob(_session.access_token.split('.')[1])).exp; } catch { return 0; }
   })();
@@ -1836,14 +1836,14 @@
 
   const session = _session;
 
-  // ── Load trainer record ─────────────────────────────────────────────────
+  // â”€â”€ Load trainer record â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { data: _trainerData, error: _trainerErr } = await supabase
     .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
 
   let trainer: any = _trainerData;
 
   // Retry once on transient network error (non-null error means network/server issue,
-  // not a missing row — missing row returns null data with null error).
+  // not a missing row â€” missing row returns null data with null error).
   if (!trainer && _trainerErr) {
     await new Promise(r => setTimeout(r, 600));
     const { data: _retry } = await supabase
@@ -1852,13 +1852,13 @@
   }
 
   if (!trainer) {
-    // Check if they're a client user — clients belong on /account, not /dashboard.
+    // Check if they're a client user â€” clients belong on /account, not /dashboard.
     const { data: _clientRow } = await supabase
       .from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
     if (_clientRow) {
       window.location.href = '/account';
     } else {
-      // No trainer, no client — sign out so they can use the correct account.
+      // No trainer, no client â€” sign out so they can use the correct account.
       await supabase.auth.signOut();
       window.location.href = '/login';
     }
@@ -1882,7 +1882,7 @@
   (window as any).__ptSupabase  = supabase;
   (window as any).__ptTrainer   = trainer;
 
-  // ── Gyms ────────────────────────────────────────────────────────────────────
+  // â”€â”€ Gyms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let trainerGyms: { name: string; location: string }[] = [];
 
   function renderGyms() {
@@ -1923,7 +1923,7 @@
   if (trainer) {
     const firstName = trainer.name.split(' ')[0];
 
-    // ── Sidebar ─────────────────────────────────────────────────────────
+    // â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const sbAvatarEl = document.querySelector('.sb-avatar') as HTMLElement;
     if (sbAvatarEl) {
       if (trainer.avatar_url) {
@@ -1935,7 +1935,7 @@
     const sbPtName = document.querySelector('.sb-pt-name') as HTMLElement;
     const isComplete = !!(trainer.avatar_url && trainer.city?.trim() && trainer.bio?.trim() && trainer.specialty?.trim());
     sbPtName.innerHTML = trainer.name + (isComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
-    (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${trainer.location}`;
+    (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `â— Active Â· ${trainer.location}`;
     const sbBusiness = document.querySelector('.sb-pt-business') as HTMLElement;
     if (sbBusiness) {
       if (trainer.business_name) {
@@ -1946,13 +1946,13 @@
       }
     }
 
-    // ── Onboarding checklist ─────────────────────────────────────────────
+    // â”€â”€ Onboarding checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     (function initOnboarding() {
       const steps = [
         {
           id: 'photo',
           label: 'Add a profile photo',
-          hint: 'Clients trust a face — profiles with photos get 3× more reviews',
+          hint: 'Clients trust a face â€” profiles with photos get 3Ã— more reviews',
           done: !!(trainer.avatar_url),
           action: () => showPage('profile'),
         },
@@ -1973,7 +1973,7 @@
         {
           id: 'specialty',
           label: 'Choose your specialisms',
-          hint: 'Weight loss, muscle gain, rehabilitation — what do you excel at?',
+          hint: 'Weight loss, muscle gain, rehabilitation â€” what do you excel at?',
           done: !!(trainer.specialty && trainer.specialty.trim()),
           action: () => showPage('profile'),
         },
@@ -1997,7 +1997,7 @@
       const dismissBtn = document.getElementById('onboard-dismiss-btn');
       const incomplete = steps.length - doneCount;
 
-      // ── Sidebar badge ────────────────────────────────────────────────────
+      // â”€â”€ Sidebar badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const setupBadge = document.getElementById('sb-setup-badge');
       if (setupBadge) {
         if (incomplete > 0) {
@@ -2008,7 +2008,7 @@
         }
       }
 
-      // ── Setup page (always rendered) ─────────────────────────────────────
+      // â”€â”€ Setup page (always rendered) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const pageBar   = document.getElementById('setup-page-bar') as HTMLElement;
       const pageCount = document.getElementById('setup-page-count');
       const pageSub   = document.getElementById('setup-page-sub');
@@ -2016,21 +2016,21 @@
       if (pageBar)   pageBar.style.width = pct + '%';
       if (pageCount) pageCount.textContent = `${doneCount} of ${steps.length} complete`;
       if (pageSub)   pageSub.textContent = doneCount === steps.length
-        ? 'Your profile is complete — great work!'
+        ? 'Your profile is complete â€” great work!'
         : 'Complete each step to maximise your ranking';
       if (pageSteps) {
         pageSteps.innerHTML = steps.map(s => `
           <div style="display:flex;align-items:center;gap:1rem;padding:1rem 1.5rem;border-bottom:1px solid var(--border);${s.done ? '' : 'cursor:pointer;'}" data-step-page="${s.id}" class="setup-page-row">
             <div style="width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.9rem;${s.done ? 'background:var(--green);color:white;border:2px solid var(--green);' : 'background:white;color:var(--muted);border:2px solid var(--border);'}">
-              ${s.done ? '✓' : ''}
+              ${s.done ? 'âœ“' : ''}
             </div>
             <div style="flex:1;">
               <div style="font-weight:700;font-size:0.88rem;color:${s.done ? 'var(--muted)' : 'var(--text)'};${s.done ? 'text-decoration:line-through;' : ''}">${s.label}</div>
               <div style="font-size:0.75rem;color:var(--muted);margin-top:0.15rem;">${s.hint}</div>
             </div>
             ${s.done
-              ? '<div style="font-size:0.78rem;font-weight:700;color:var(--green);">Done ✓</div>'
-              : '<button style="padding:0.45rem 1rem;background:var(--green);color:white;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:\'Manrope\',sans-serif;white-space:nowrap;">Complete →</button>'
+              ? '<div style="font-size:0.78rem;font-weight:700;color:var(--green);">Done âœ“</div>'
+              : '<button style="padding:0.45rem 1rem;background:var(--green);color:white;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:\'Manrope\',sans-serif;white-space:nowrap;">Complete â†’</button>'
             }
           </div>`).join('') + '<div style="height:0.5rem;"></div>';
 
@@ -2039,7 +2039,7 @@
         });
       }
 
-      // ── Overview widget (only when incomplete and not dismissed) ──────────
+      // â”€â”€ Overview widget (only when incomplete and not dismissed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
       const dismissKey = `pt_onboard_dismissed_${trainer.id}`;
       if (!localStorage.getItem(dismissKey) && doneCount < steps.length) {
         function renderChecklist() {
@@ -2050,12 +2050,12 @@
           if (totalCountEl) totalCountEl.textContent = String(steps.length);
           stepsEl!.innerHTML = steps.map(s => `
             <button class="onboard-step${s.done ? ' done' : ''}" data-step="${s.id}">
-              <div class="onboard-check">${s.done ? '✓' : ''}</div>
+              <div class="onboard-check">${s.done ? 'âœ“' : ''}</div>
               <div class="onboard-step-label">
                 <div>${s.label}</div>
                 <div class="onboard-step-hint">${s.hint}</div>
               </div>
-              <div class="onboard-arrow">→</div>
+              <div class="onboard-arrow">â†’</div>
             </button>`).join('');
           stepsEl!.querySelectorAll('.onboard-step').forEach((btn, i) => {
             if (!steps[i].done) btn.addEventListener('click', steps[i].action);
@@ -2072,20 +2072,20 @@
       }
     })();
 
-    // ── View Public Profile link ─────────────────────────────────────────
+    // â”€â”€ View Public Profile link â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const profileLink = document.getElementById('view-profile-link') as HTMLAnchorElement;
     if (profileLink) profileLink.href = `/trainers/${trainer.id}`;
 
-    // ── Topbar subtitle ──────────────────────────────────────────────────
+    // â”€â”€ Topbar subtitle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const pageSub = document.getElementById('page-sub');
     if (pageSub) pageSub.textContent = `Welcome back, ${firstName}. Here's how you're performing.`;
 
-    // ── Stat cards ───────────────────────────────────────────────────────
+    // â”€â”€ Stat cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const hasBmp  = (trainer.bmp_score ?? 0) > 0;
     const bmpEl   = document.getElementById('stat-bmp');
     const revEl   = document.getElementById('stat-reviews');
     const viewsEl = document.getElementById('stat-views');
-    if (bmpEl)   bmpEl.textContent   = hasBmp ? String(trainer.bmp_score) : '—';
+    if (bmpEl)   bmpEl.textContent   = hasBmp ? String(trainer.bmp_score) : 'â€”';
     if (revEl)   revEl.textContent   = String(trainer.review_count ?? 0);
     const revBadge = document.getElementById('sb-review-badge');
     if (revBadge) revBadge.textContent = String(trainer.review_count ?? 0);
@@ -2101,9 +2101,9 @@
     if (bmpChangeEl)  bmpChangeEl.innerHTML  = hasBmp
       ? ((trainer as any).is_trending ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>Trending &middot; based on verified reviews' : 'Based on verified reviews')
       : 'Earn your first review to unlock';
-    if (revChangeEl)  revChangeEl.textContent  = (trainer.review_count ?? 0) > 0 ? `${trainer.review_count} verified reviews` : 'No reviews yet — send your first link';
+    if (revChangeEl)  revChangeEl.textContent  = (trainer.review_count ?? 0) > 0 ? `${trainer.review_count} verified reviews` : 'No reviews yet â€” send your first link';
 
-    // ── Profile views ─────────────────────────────────────────────────────
+    // â”€â”€ Profile views â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
     const [{ count: totalViews }, { count: monthViews }] = await Promise.all([
       supabase.from('profile_views').select('*', { count: 'exact', head: true }).eq('trainer_id', trainer.id),
@@ -2112,14 +2112,14 @@
     if (viewsEl)    viewsEl.textContent    = String(totalViews ?? 0);
     if (viewChangeEl) viewChangeEl.textContent = (monthViews ?? 0) > 0 ? `${monthViews} this month` : 'Increases as clients find you';
 
-    // ── New-review celebration ────────────────────────────────────────────
+    // â”€â”€ New-review celebration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const currentCount = trainer.review_count ?? 0;
     const storageKey   = `pt_last_review_count_${trainer.id}`;
     const lastCount    = parseInt(localStorage.getItem(storageKey) || '0', 10);
     const newReviews   = currentCount - lastCount;
 
     if (currentCount > 0 && newReviews > 0) {
-      // Fire fireworks 🎆
+      // Fire fireworks ðŸŽ†
       (window as any).__ptFireCelebration(newReviews);
 
       // Show inline banner on Overview
@@ -2127,8 +2127,8 @@
       if (overviewPage && !overviewPage.querySelector('.review-alert')) {
         const label    = newReviews === 1 ? '1 new review!' : `${newReviews} new reviews!`;
         const subtext  = newReviews === 1
-          ? `A client just rated you — your BMP score has been updated.`
-          : `${newReviews} clients rated you since your last login — your BMP score has been updated.`;
+          ? `A client just rated you â€” your BMP score has been updated.`
+          : `${newReviews} clients rated you since your last login â€” your BMP score has been updated.`;
         const banner   = document.createElement('div');
         banner.className = 'review-alert';
         banner.innerHTML = `
@@ -2142,7 +2142,7 @@
       }
     }
     localStorage.setItem(storageKey, String(currentCount));
-    // ─────────────────────────────────────────────────────────────────────
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
     // Compute UK rank
     const { count } = await supabase
@@ -2152,15 +2152,15 @@
     const rank   = (count ?? 0) + 1;
     const rankEl = document.getElementById('stat-rank');
     const rankChangeEl = document.getElementById('stat-rank-change');
-    if (rankEl)       rankEl.textContent       = hasBmp ? `#${rank}` : '—';
+    if (rankEl)       rankEl.textContent       = hasBmp ? `#${rank}` : 'â€”';
     if (rankChangeEl) rankChangeEl.textContent = hasBmp ? `Competing with PTs across the UK` : 'Rank unlocks with first review';
 
-    // ── BMP Gauge ────────────────────────────────────────────────────────
+    // â”€â”€ BMP Gauge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const gaugeCircle = document.getElementById('gauge-circle') as HTMLElement;
     const gaugeScore  = document.getElementById('gauge-score')  as HTMLElement;
     const gaugeRank   = document.getElementById('gauge-rank')   as HTMLElement;
     const gaugeSub    = document.getElementById('gauge-sub')    as HTMLElement;
-    if (gaugeScore) gaugeScore.textContent = hasBmp ? String(trainer.bmp_score) : '—';
+    if (gaugeScore) gaugeScore.textContent = hasBmp ? String(trainer.bmp_score) : 'â€”';
     if (gaugeCircle && hasBmp) {
       const deg = Math.round(((trainer.bmp_score ?? 0) / 100) * 360);
       gaugeCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
@@ -2168,7 +2168,7 @@
     if (gaugeRank) gaugeRank.innerHTML = hasBmp ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>Ranked #${rank} in the UK` : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
     if (gaugeSub)  gaugeSub.textContent  = hasBmp ? `Competing with PTs across the UK`      : 'Start collecting verified reviews';
 
-    // ── Fetch this PT's real reviews ─────────────────────────────────────
+    // â”€â”€ Fetch this PT's real reviews â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const { data: ptReviews } = await supabase
       .from('reviews')
       .select('id, reviewer_name, reviewer_initials, reviewer_avatar_bg, reviewer_avatar_color, rating, review_text, created_at, appeal_status')
@@ -2177,7 +2177,7 @@
       .order('created_at', { ascending: false });
     const reviews = ptReviews ?? [];
 
-    // ── Fetch appeal outcome notifications ───────────────────────────────
+    // â”€â”€ Fetch appeal outcome notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const { data: ptAppealNotifs } = await supabase
       .from('notifications')
       .select('id, type, title, body, created_at, is_read')
@@ -2187,7 +2187,7 @@
       .limit(20);
     const appealNotifs: any[] = ptAppealNotifs ?? [];
 
-    // ── Recent reviews (overview) ────────────────────────────────────────
+    // â”€â”€ Recent reviews (overview) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const recentList = document.getElementById('recent-reviews-list');
     if (recentList) {
       if (reviews.length === 0) {
@@ -2207,7 +2207,7 @@
               <div style="width:52px;height:52px;border-radius:50%;background:${r.reviewer_avatar_bg||'#1a3d1e'};color:${r.reviewer_avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;font-family:'Manrope',sans-serif;">${r.reviewer_initials||'?'}</div>
               <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:0.25rem;">
-                  <div style="font-weight:800;font-size:0.92rem;color:white;font-family:'Manrope',sans-serif;">${r.reviewer_name} <span style="font-weight:400;color:rgba(255,255,255,0.4);font-size:0.78rem;">· Verified Client</span></div>
+                  <div style="font-weight:800;font-size:0.92rem;color:white;font-family:'Manrope',sans-serif;">${r.reviewer_name} <span style="font-weight:400;color:rgba(255,255,255,0.4);font-size:0.78rem;">Â· Verified Client</span></div>
                   <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);font-family:'Manrope',sans-serif;flex-shrink:0;">${date}</div>
                 </div>
                 <div style="display:flex;gap:3px;margin-top:0.3rem;">${_bmpDumbbell(r.rating * 20, 48)}</div>
@@ -2220,7 +2220,7 @@
       }
     }
 
-    // ── Reviews page stats ────────────────────────────────────────────────
+    // â”€â”€ Reviews page stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const avgEl   = document.getElementById('rev-stat-avg');
     const totEl   = document.getElementById('rev-stat-total');
     const verEl   = document.getElementById('rev-stat-verified');
@@ -2232,12 +2232,12 @@
       if (verEl)  verEl.textContent  = '100%';
       if (totSubEl) totSubEl.textContent = reviews.length === 1 ? '1 review received' : `${reviews.length} reviews received`;
     } else {
-      if (avgEl)  avgEl.textContent  = '—';
+      if (avgEl)  avgEl.textContent  = 'â€”';
       if (totEl)  totEl.textContent  = '0';
-      if (verEl)  verEl.textContent  = '—';
+      if (verEl)  verEl.textContent  = 'â€”';
     }
 
-    // ── All reviews list ──────────────────────────────────────────────────
+    // â”€â”€ All reviews list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const allList = document.getElementById('all-reviews-list');
     if (allList) {
       if (reviews.length === 0) {
@@ -2254,7 +2254,7 @@
           if (!appealStatus) {
             const safeText = (r.review_text || '').replace(/"/g, '&quot;');
             const safeName = (r.reviewer_name || '').replace(/"/g, '&quot;');
-            appealHtml = `<button class="appeal-btn" data-appeal-id="${r.id}" data-appeal-text="${safeText}" data-appeal-name="${safeName}">⚠ Appeal</button>`;
+            appealHtml = `<button class="appeal-btn" data-appeal-id="${r.id}" data-appeal-text="${safeText}" data-appeal-name="${safeName}">âš  Appeal</button>`;
           } else if (appealStatus === 'pending') {
             appealHtml = `<button class="appeal-btn pending" disabled>Appeal Pending</button>`;
           } else if (appealStatus === 'upheld') {
@@ -2266,9 +2266,9 @@
             <div style="flex:1;min-width:0;">
               <div style="display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;margin-bottom:0.3rem;">
                 <span style="font-weight:700;font-size:0.88rem;color:#0d1a0e;">${r.reviewer_name}</span>
-                <span style="color:#c8d4c8;font-size:0.75rem;">·</span>
-                <span style="font-size:0.78rem;font-weight:600;color:#1a7c2a;">● Verified Client</span>
-                <span style="color:#c8d4c8;font-size:0.75rem;">·</span>
+                <span style="color:#c8d4c8;font-size:0.75rem;">Â·</span>
+                <span style="font-size:0.78rem;font-weight:600;color:#1a7c2a;">â— Verified Client</span>
+                <span style="color:#c8d4c8;font-size:0.75rem;">Â·</span>
                 <span style="font-size:0.78rem;color:#7a8f7c;">${new Date(r.created_at).toLocaleDateString('en-GB')}</span>
               </div>
               <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
@@ -2283,7 +2283,7 @@
       }
     }
 
-    // ── Appeal modal logic (lives here so supabase is in scope) ──────────
+    // â”€â”€ Appeal modal logic (lives here so supabase is in scope) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     let _appealReviewId: string | null = null;
 
     const appealModalBg   = document.getElementById('appeal-modal-bg')!;
@@ -2293,7 +2293,7 @@
 
     function openAppealModal(reviewId: string, reviewText: string, reviewerName: string) {
       _appealReviewId = reviewId;
-      appealQuoteEl.textContent = `"${reviewText}" — ${reviewerName}`;
+      appealQuoteEl.textContent = `"${reviewText}" â€” ${reviewerName}`;
       appealReasonEl.value = '';
       appealSubmitBtn.disabled = false;
       appealSubmitBtn.textContent = 'Submit Appeal';
@@ -2311,7 +2311,7 @@
       if (e.target === appealModalBg) closeAppealModal();
     });
 
-    // Event delegation — catches clicks on any appeal button in the list
+    // Event delegation â€” catches clicks on any appeal button in the list
     allList?.addEventListener('click', (e: Event) => {
       const btn = (e.target as HTMLElement).closest('[data-appeal-id]') as HTMLElement | null;
       if (!btn || (btn as HTMLButtonElement).disabled) return;
@@ -2326,7 +2326,7 @@
       if (!_appealReviewId) return;
       const reason = appealReasonEl.value.trim();
       appealSubmitBtn.disabled = true;
-      appealSubmitBtn.textContent = 'Submitting…';
+      appealSubmitBtn.textContent = 'Submittingâ€¦';
 
       try {
         const { data, error } = await supabase.rpc('submit_review_appeal', {
@@ -2388,7 +2388,7 @@
       }
     });
 
-    // ── Time-ago helper ───────────────────────────────────────────────────
+    // â”€â”€ Time-ago helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const timeAgo = (iso: string): string => {
       const diff = Date.now() - new Date(iso).getTime();
       const mins  = Math.floor(diff / 60000);
@@ -2402,7 +2402,7 @@
       return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
     };
 
-    // ── Reviews chart (real monthly data) ────────────────────────────────
+    // â”€â”€ Reviews chart (real monthly data) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const chartWrap = document.getElementById('reviews-chart-wrap') as HTMLElement;
     if (chartWrap) {
       const now = new Date();
@@ -2426,7 +2426,7 @@
       }).join('');
     }
 
-    // ── Review History (link history page) ───────────────────────────────
+    // â”€â”€ Review History (link history page) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const linkHistoryEl = document.getElementById('link-history-list') as HTMLElement;
     if (linkHistoryEl) {
       if (reviews.length === 0) {
@@ -2448,20 +2448,20 @@
               <div style="font-size:0.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.1rem;">BMP</div>
               <div style="font-size:1.65rem;font-weight:900;color:var(--text);line-height:1;">${bmp}<span style="font-size:0.72rem;font-weight:600;color:var(--muted);">%</span></div>
               <div style="margin:0.3rem 0;">${_bmpDumbbell(r.rating * 20, 44)}</div>
-              <div style="font-size:0.65rem;font-weight:700;color:var(--green-dark);">✓ Verified Client</div>
+              <div style="font-size:0.65rem;font-weight:700;color:var(--green-dark);">âœ“ Verified Client</div>
             </div>
           </div>`;
         }).join('');
       }
     }
 
-    // ── Score Breakdown (real values) ────────────────────────────────────
+    // â”€â”€ Score Breakdown (real values) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const breakdownEl = document.getElementById('score-breakdown-body') as HTMLElement;
     if (breakdownEl) {
       if (!hasBmp) {
         breakdownEl.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.75rem 0;">Collect reviews to unlock your score breakdown.</div>`;
       } else {
-        // BMP v2 — client-side approximation matching the server formula
+        // BMP v2 â€” client-side approximation matching the server formula
         const n          = trainer.review_count ?? 0;
         const sumRatings = (trainer.star_rating ?? 0) * n;
         const smoothedAvg = (sumRatings + 5 * 3.5) / (n + 5);
@@ -2488,7 +2488,7 @@
         const trendHtml = (trainer as any).is_trending
           ? `<div style="margin-top:1rem;padding:0.65rem 0.9rem;background:rgba(255,160,0,0.12);border:1px solid rgba(255,160,0,0.3);border-radius:8px;display:flex;align-items:center;gap:0.5rem;">
                <span style="font-size:0.75rem;font-weight:800;color:#ff9800;letter-spacing:1px;">TRENDING</span>
-               <span style="font-size:0.72rem;color:rgba(255,255,255,0.55);">You're gaining momentum — keep collecting reviews.</span>
+               <span style="font-size:0.72rem;color:rgba(255,255,255,0.55);">You're gaining momentum â€” keep collecting reviews.</span>
              </div>`
           : '';
 
@@ -2509,7 +2509,7 @@
       }
     }
 
-    // ── Notifications badge + read state ─────────────────────────────────
+    // â”€â”€ Notifications badge + read state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const notifKey      = `pt_last_notif_seen_${trainer.id}`;
     const lastNotifSeen = parseInt(localStorage.getItem(notifKey) || '0', 10);
     const reviewUnread  = Math.max(0, reviews.length - lastNotifSeen);
@@ -2532,14 +2532,14 @@
     const notifDot = document.querySelector('.notif-dot') as HTMLElement;
     if (notifDot) notifDot.style.display = unreadCount > 0 ? '' : 'none';
 
-    // ── Notifications list ────────────────────────────────────────────────
+    // â”€â”€ Notifications list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const notifCard = document.getElementById('notif-card') as HTMLElement;
     if (notifCard) {
       type NotifItem = { iconBg: string; iconColor: string; iconChar: string; badge: string; title: string; body: string; time: string; isRead: boolean; sortTs: number };
       const notifs: NotifItem[] = [];
 
       reviews.slice(0, 8).forEach((r: any, i: number) => {
-        const quote = r.review_text ? `"${r.review_text.slice(0, 140)}${r.review_text.length > 140 ? '…' : ''}"` : '';
+        const quote = r.review_text ? `"${r.review_text.slice(0, 140)}${r.review_text.length > 140 ? 'â€¦' : ''}"` : '';
         notifs.push({
           iconBg: '#e8f4fd', iconColor: '#3b82f6', iconChar: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`, badge: '',
           title: 'New review received',
@@ -2552,7 +2552,7 @@
 
       if (hasBmp && reviews.length > 0) {
         notifs.push({
-          iconBg: '#eaf7ec', iconColor: '#3ab54a', iconChar: '↗', badge: '',
+          iconBg: '#eaf7ec', iconColor: '#3ab54a', iconChar: 'â†—', badge: '',
           title: 'BMP Score updated',
           body:  `Your score is now <strong style="color:#0d1a0e;">${trainer.bmp_score}</strong>, placing you <strong style="color:#3ab54a;">#${rank}</strong> in the UK.`,
           time:   timeAgo(reviews[0].created_at),
@@ -2566,7 +2566,7 @@
         notifs.push({
           iconBg:    isApproved ? '#eaf7ec' : '#fff8e1',
           iconColor: isApproved ? '#3ab54a' : '#b45309',
-          iconChar:  isApproved ? '✓' : '⚖',
+          iconChar:  isApproved ? 'âœ“' : 'âš–',
           badge: '<span style="display:inline-block;font-size:0.68rem;font-weight:700;color:#3ab54a;background:#eaf7ec;padding:0.1rem 0.55rem;border-radius:20px;margin-left:0.4rem;">Appeal</span>',
           title: n.title || '',
           body:  n.body  || '',
@@ -2616,7 +2616,7 @@
       }
     }
 
-    // ── Profile form pre-fill ────────────────────────────────────────────
+    // â”€â”€ Profile form pre-fill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const nameParts = (trainer.name || '').split(' ');
     const fillText = (id: string, val: string) => {
       const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
@@ -2642,7 +2642,7 @@
     }
     fillText('booking-url', (trainer as any).booking_url ?? '');
 
-    // ── Avatar preview ───────────────────────────────────────────────────
+    // â”€â”€ Avatar preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const avatarPreview = document.getElementById('profile-avatar-preview') as HTMLElement;
     if (avatarPreview) {
       if (trainer.avatar_url) {
@@ -2658,7 +2658,7 @@
       }
     }
 
-    // ── Color picker pre-load ─────────────────────────────────────────────
+    // â”€â”€ Color picker pre-load â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (typeof (window as any).cpInitFromTrainer === 'function') {
       (window as any).cpInitFromTrainer(trainer);
     }
@@ -2682,7 +2682,7 @@
         : (_grads[_currentTheme] ?? _grads.forest);
     }
 
-    // ── Profile completeness banner ───────────────────────────────────────
+    // â”€â”€ Profile completeness banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const isNewProfile = !trainer.bio && !trainer.city && (trainer.review_count ?? 0) === 0;
     const profilePage  = document.getElementById('page-profile');
     if (isNewProfile && profilePage && !profilePage.querySelector('.profile-welcome-banner')) {
@@ -2695,7 +2695,7 @@
         display:flex; align-items:center; gap:1rem;
       `;
       banner.innerHTML = `
-        <div style="font-size:1.75rem;flex-shrink:0;">👋</div>
+        <div style="font-size:1.75rem;flex-shrink:0;">ðŸ‘‹</div>
         <div>
           <div style="font-weight:800;font-size:0.92rem;color:var(--text);margin-bottom:0.2rem;">Welcome! Let's complete your profile.</div>
           <div style="font-size:0.8rem;color:var(--muted);line-height:1.55;">
@@ -2707,7 +2707,7 @@
       profilePage.insertBefore(banner, profilePage.firstChild);
     }
 
-    // ── Specialty tags — deselect all, then select matching ───────────────
+    // â”€â”€ Specialty tags â€” deselect all, then select matching â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     document.querySelectorAll('.tag-pill:not(#specialty-other-pill)').forEach(tag => {
       tag.classList.remove('selected');
       const tagText = (tag.textContent ?? '').replace(/^\S+\s*/, '').trim();
@@ -2725,7 +2725,7 @@
       if (otherWrap)  otherWrap.style.display = 'block';
     }
 
-    // ── Cert dropdown ────────────────────────────────────────────────────
+    // â”€â”€ Cert dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const certEl         = document.getElementById('profile-cert')            as HTMLSelectElement;
     const certOtherWrap  = document.getElementById('profile-cert-other-wrap') as HTMLDivElement;
     const certOtherInput = document.getElementById('profile-cert-other')      as HTMLInputElement;
@@ -2747,7 +2747,7 @@
       certOtherWrap.style.display = isOther ? 'flex' : 'none';
     });
 
-    // ── Personalised review link ──────────────────────────────────────────
+    // â”€â”€ Personalised review link â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const reviewLinkEl = document.getElementById('review-link') as HTMLInputElement;
     const reviewUrl = `${window.location.origin}/review/${trainer.id}`;
     if (reviewLinkEl) reviewLinkEl.value = reviewUrl;
@@ -2777,7 +2777,7 @@
     // Load feed on initial overview display
     loadOverviewFeed();
 
-    // ── Rankings table (dynamic) ──────────────────────────────────────────
+    // â”€â”€ Rankings table (dynamic) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const { data: leaderboard } = await supabase
       .from('trainers')
       .select('id, name, username, city, location, specialty, bmp_score, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url')
@@ -2786,7 +2786,7 @@
       .order('bmp_score', { ascending: false })
       .limit(100);
 
-    // ── Overview mini-table ───────────────────────────────────────────────
+    // â”€â”€ Overview mini-table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const _renderRankRows = (rows: any[], tbody: HTMLElement, limit: number) => {
       const posClasses = ['r1','r2','r3'];
       if (rows && rows.length > 0) {
@@ -2798,7 +2798,7 @@
               <div class="rank-avatar" style="background:${pt.avatar_bg || '#eaf7ec'};color:${pt.avatar_color || '#2a9438'};">${pt.avatar_initials || '?'}</div>
               <div><div>${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}</div>${pt.username ? '<div style="font-size:0.68rem;color:#7a8f7c;font-weight:600;">@' + pt.username + '</div>' : ''}</div>
             </div></td>
-            <td>${pt.city || pt.location || '—'}</td>
+            <td>${pt.city || pt.location || 'â€”'}</td>
             <td style="padding-right:1.5rem;"><strong>${pt.bmp_score}</strong></td>
           </tr>`;
         }).join('');
@@ -2810,7 +2810,7 @@
     const rankTbody = document.getElementById('rank-tbody') as HTMLElement;
     if (rankTbody) _renderRankRows(leaderboard ?? [], rankTbody, 20);
 
-    // ── Rankings page — glowing cards ────────────────────────────────────
+    // â”€â”€ Rankings page â€” glowing cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const rkData = leaderboard ?? [];
     const rkList = document.getElementById('rk-list') as HTMLElement;
 
@@ -2823,7 +2823,7 @@
         : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
       const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
       const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
-      const meta = [pt.city||pt.location ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+(pt.city||pt.location) : '', pt.specialty ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'+pt.specialty : ''].filter(Boolean).join('  ·  ');
+      const meta = [pt.city||pt.location ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+(pt.city||pt.location) : '', pt.specialty ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'+pt.specialty : ''].filter(Boolean).join('  Â·  ');
       const glow = isYou
         ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
         : 'border:2px solid #7defa0;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);background:#111311;';
@@ -2836,7 +2836,7 @@
           <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.25rem;font-family:'Manrope',sans-serif;">${meta}</div>
         </div>
         <div style="text-align:right;flex-shrink:0;">
-          <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:white;line-height:1;">${bmp > 0 ? bmp : '—'}</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:white;line-height:1;">${bmp > 0 ? bmp : 'â€”'}</div>
           <div style="font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.15rem;font-family:'Manrope',sans-serif;">BMP</div>
           <div style="margin-top:0.35rem;display:flex;gap:2px;justify-content:flex-end;">${_bmpDumbbell(bmp, 44)}</div>
         </div>
@@ -2857,7 +2857,7 @@
 
     _rkRender(rkData);
 
-    // Overview leaderboard — same glowing cards, top 7
+    // Overview leaderboard â€” same glowing cards, top 7
     const ovRkList = document.getElementById('ov-rk-list') as HTMLElement;
     if (ovRkList) {
       const ovData = leaderboard ?? [];
@@ -2899,17 +2899,17 @@
       (document.getElementById('rk-you-name') as HTMLElement).textContent = you.name;
       (document.getElementById('rk-you-city') as HTMLElement).textContent = you.city || you.location || '';
       (document.getElementById('rk-you-rank') as HTMLElement).textContent = `#${yourIdx + 1}`;
-      (document.getElementById('rk-you-bmp')  as HTMLElement).textContent = String(you.bmp_score ?? '—');
-      (document.getElementById('rk-you-reviews') as HTMLElement).textContent = String(you.review_count ?? trainer.review_count ?? '—');
+      (document.getElementById('rk-you-bmp')  as HTMLElement).textContent = String(you.bmp_score ?? 'â€”');
+      (document.getElementById('rk-you-reviews') as HTMLElement).textContent = String(you.review_count ?? trainer.review_count ?? 'â€”');
       rkBanner.style.display = 'flex';
     }
 
-    // ── Mini gauge on Rankings page ───────────────────────────────────────
+    // â”€â”€ Mini gauge on Rankings page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const miniScore  = document.getElementById('mini-gauge-score')  as HTMLElement;
     const miniRank   = document.getElementById('mini-gauge-rank')   as HTMLElement;
     const miniSub    = document.getElementById('mini-gauge-sub')    as HTMLElement;
     const miniCircle = document.getElementById('mini-gauge-circle') as HTMLElement;
-    if (miniScore) miniScore.textContent = hasBmp ? String(trainer.bmp_score) : '—';
+    if (miniScore) miniScore.textContent = hasBmp ? String(trainer.bmp_score) : 'â€”';
     if (miniRank)  miniRank.innerHTML  = hasBmp ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>#${rank} in the UK` : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
     if (miniSub)   miniSub.textContent   = hasBmp ? `Competing with PTs across the UK`       : 'Collect verified reviews to rank';
     if (miniCircle && hasBmp) {
@@ -2917,12 +2917,12 @@
       miniCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
     }
 
-    // ── Load gyms ─────────────────────────────────────────────────────────
+    // â”€â”€ Load gyms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     trainerGyms = Array.isArray(trainer.gyms) ? [...trainer.gyms] : [];
     renderGyms();
   }
 
-  // ── Save Profile (exposed globally so onclick can call it) ──────────────
+  // â”€â”€ Save Profile (exposed globally so onclick can call it) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   (window as any).saveProfile = async () => {
     try {
     if (!trainerId) return;
@@ -2973,13 +2973,13 @@
       .eq('id', trainerId);
 
     if (error) {
-      showToast('❌ Save failed: ' + (error.message || JSON.stringify(error)));
+      showToast('âŒ Save failed: ' + (error.message || JSON.stringify(error)));
     } else {
       // Update sidebar live
       const sbName = document.querySelector('.sb-pt-name') as HTMLElement;
       const savedComplete = !!(trainer.avatar_url && city && bio && specialty);
       sbName.innerHTML = name + (savedComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
-      (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${location}`;
+      (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `â— Active Â· ${location}`;
       const sbAv = document.querySelector('.sb-avatar') as HTMLElement;
       if (sbAv && !sbAv.querySelector('img')) {
         sbAv.textContent = initials;
@@ -2998,15 +2998,15 @@
         if (businessName) { sbBiz.textContent = businessName; sbBiz.style.display = 'block'; }
         else { sbBiz.style.display = 'none'; }
       }
-      showToast('✅ Profile saved successfully!');
+      showToast('âœ… Profile saved successfully!');
     }
     } catch (err: any) {
       console.error('[saveProfile]', err);
-      showToast('❌ Save error: ' + (err?.message || String(err)));
+      showToast('âŒ Save error: ' + (err?.message || String(err)));
     }
   };
 
-  // ── Messages ────────────────────────────────────────────────────────────
+  // â”€â”€ Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   let _msgConvId: string | null   = null;
   let _msgChannel: any            = null;
@@ -3084,7 +3084,7 @@
           </div>
           <div style="flex:1;min-width:0;">
             <div style="font-weight:700;font-size:0.93rem;color:var(--text);">${_esc(rawName)}</div>
-            ${unread && c.last_message_at ? `<div style="font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.2rem;">New Message · ${new Date(c.last_message_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} at ${new Date(c.last_message_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
+            ${unread && c.last_message_at ? `<div style="font-size:0.75rem;color:var(--green);font-weight:600;margin-top:0.2rem;">New Message Â· ${new Date(c.last_message_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})} at ${new Date(c.last_message_at).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}</div>` : ''}
           </div>
           <button class="msg-view-btn" onclick="openMsgThread('${c.id}','${_esc(rawName)}','${initials}')">View Conversation</button>
         </div>
@@ -3182,7 +3182,7 @@
   // Load initial badge count on dashboard open
   _fetchUnreadBadge();
 
-  // ── Sign out ─────────────────────────────────────────────────────────────
+  // â”€â”€ Sign out â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const doSignOut = async () => {
     localStorage.removeItem('cc_trainer');
     await supabase.auth.signOut();
@@ -3193,19 +3193,19 @@
 </script>
 
 <script is:inline>
-  // ── Avatar crop state ────────────────────────────────────────────────────
+  // â”€â”€ Avatar crop state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   var _cropFile = null;
   var _cropOffX = 0, _cropOffY = 0;
   var _cropScale = 1;
   var _cropNatW = 0, _cropNatH = 0;
   var _cropDragging = false, _cropLastX = 0, _cropLastY = 0;
-  var CROP_SIZE = 280; // px — matches #crop-stage
+  var CROP_SIZE = 280; // px â€” matches #crop-stage
 
   function handleAvatarUpload(input) {
     var file = input.files[0];
     input.value = '';
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { showToast('❌ Image too large — max 5 MB'); return; }
+    if (file.size > 5 * 1024 * 1024) { showToast('âŒ Image too large â€” max 5 MB'); return; }
     _cropFile = file;
 
     var reader = new FileReader();
@@ -3270,7 +3270,7 @@
 
   async function saveCrop() {
     var saveBtn = document.querySelector('.crop-save');
-    saveBtn.textContent = 'Saving…';
+    saveBtn.textContent = 'Savingâ€¦';
     saveBtn.disabled = true;
 
     var canvas = document.createElement('canvas');
@@ -3290,11 +3290,11 @@
 
     canvas.toBlob(async function(blob) {
       try {
-        if (!blob) throw new Error('Could not process image — try a different photo.');
+        if (!blob) throw new Error('Could not process image â€” try a different photo.');
 
         var trainerId = window['__ptTrainerId'];
         var userId    = window['__ptUserId'];
-        if (!trainerId || !userId) throw new Error('Session expired — please refresh and try again.');
+        if (!trainerId || !userId) throw new Error('Session expired â€” please refresh and try again.');
 
         var path = userId + '/avatar.jpg';
 
@@ -3305,7 +3305,7 @@
 
         var { data: urlData } = window['__ptSupabase'].storage.from('avatars').getPublicUrl(path);
         var publicUrl = urlData && urlData.publicUrl;
-        if (!publicUrl) throw new Error('Could not get photo URL — please try again.');
+        if (!publicUrl) throw new Error('Could not get photo URL â€” please try again.');
         var urlWithBust = publicUrl + '?t=' + Date.now();
 
         var { error: updateErr } = await window['__ptSupabase'].from('trainers').update({ avatar_url: urlWithBust }).eq('id', trainerId);
@@ -3319,10 +3319,10 @@
         var sbAv = document.querySelector('.sb-avatar');
         if (sbAv) sbAv.innerHTML = '<img src="' + urlWithBust + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
 
-        showToast('✅ Photo saved!');
+        showToast('âœ… Photo saved!');
         closeCropModal();
       } catch (err) {
-        showToast('❌ ' + (err.message || 'Upload failed — please try again.'));
+        showToast('âŒ ' + (err.message || 'Upload failed â€” please try again.'));
       } finally {
         saveBtn.textContent = 'Save Photo';
         saveBtn.disabled = false;
@@ -3330,11 +3330,11 @@
     }, 'image/jpeg', 0.92);
   }
 
-  // ═══════════════════════════════════════════════════════════════════════════
-  // ── Color Picker engine ──────────────────────────────────────────────────
-  // ═══════════════════════════════════════════════════════════════════════════
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+  // â”€â”€ Color Picker engine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  // HSV ↔ Hex helpers
+  // HSV â†” Hex helpers
   function cpHSVtoRGB(h, s, v) {
     var r, g, b, i = Math.floor(h / 60), f = h / 60 - i,
         p = v*(1-s), q = v*(1-f*s), t = v*(1-(1-f)*s);
@@ -3395,7 +3395,7 @@
     if (!canvas) return;
     var ctx = canvas.getContext('2d');
     var w = canvas.width, h = canvas.height;
-    // White → hue gradient (horizontal)
+    // White â†’ hue gradient (horizontal)
     var hGrad = ctx.createLinearGradient(0,0,w,0);
     hGrad.addColorStop(0, '#ffffff');
     var [hr,hg,hb] = cpHSVtoRGB(st.h,1,1);
@@ -3544,16 +3544,16 @@
   }
 
   const titles = {
-    // overview subtitle is set dynamically by the auth script — don't override it here
+    // overview subtitle is set dynamically by the auth script â€” don't override it here
     overview:      ['Overview',       null],
-    profile:       ['My Profile',     'Update your public profile — changes go live immediately.'],
+    profile:       ['My Profile',     'Update your public profile â€” changes go live immediately.'],
     reviews:       ['Reviews',        'All verified client reviews for your profile.'],
     links:         ['Review Links',   'Generate and send review links to your clients.'],
     rankings:      ['Rankings',       'Your position on the UK leaderboard.'],
     notifications: ['Notifications',  'Recent activity on your account.'],
     feed:          ['My Feed',        'Share updates, classes and client progress with your audience.'],
     messages:      ['Messages',       'Direct messages from clients who reached out on your profile.'],
-    setup:         ['Getting Started','Your profile setup checklist — complete each step to maximise your ranking.'],
+    setup:         ['Getting Started','Your profile setup checklist â€” complete each step to maximise your ranking.'],
   };
 
   function showPage(id) {
@@ -3606,13 +3606,13 @@
         // Count current reviews and persist as "last seen"
         const notifCard = document.getElementById('notif-card');
         const count = notifCard ? notifCard.querySelectorAll('.notif-item').length : 0;
-        // We stored review count at login time — update the localStorage key
+        // We stored review count at login time â€” update the localStorage key
         const reviewCount = parseInt(localStorage.getItem('pt_review_count_snap_' + trainerId) || '0', 10);
         localStorage.setItem('pt_last_notif_seen_' + trainerId, String(reviewCount));
       }
       if (badge) badge.style.display = 'none';
       if (dot)   dot.style.display   = 'none';
-      // No DOM bullet elements to update — unread state is purely from DB/localStorage
+      // No DOM bullet elements to update â€” unread state is purely from DB/localStorage
       // Mark appeal notifications as read in the database
       var supa = window['__ptSupabase'];
       var unreadAppealIds = window['__ptUnreadAppealIds'] || [];
@@ -3653,7 +3653,7 @@
     showPage('overview');
   }
 
-  // ── Share Card Builder ────────────────────────────────────────────────────
+  // â”€â”€ Share Card Builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   var _cardBuilt = false;
   var _igFormat = (function() {
     try { return localStorage.getItem('cc_ig_format') || 'story'; } catch(e) { return 'story'; }
@@ -3750,7 +3750,7 @@
     var bmp       = (trainer.bmp_score > 0) ? trainer.bmp_score : null;
     var url       = window['__ptReviewUrl'] || (window.location.origin + '/review/' + trainer.id);
     var customMsgEl = document.getElementById('sc-custom-msg');
-    var ctaMsg    = (customMsgEl && customMsgEl.value.trim()) ? customMsgEl.value.trim() : "I'd love your feedback 🙏";
+    var ctaMsg    = (customMsgEl && customMsgEl.value.trim()) ? customMsgEl.value.trim() : "I'd love your feedback ðŸ™";
 
     var card = document.getElementById('share-card');
     if (!card) return;
@@ -3765,9 +3765,7 @@
       + '<div style="position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:300px;height:260px;background:radial-gradient(circle,' + theme.glow + ' 0%,transparent 60%);pointer-events:none;z-index:0;"></div>'
       + '<div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:16px 20px 14px;">'
         + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">'
-          + '<div style="background:white;border-radius:8px;padding:3px 6px;display:inline-flex;align-items:center;border:2px solid #3ab54a;">'
-            + '<img src="/images/logo.png" style="height:34px;width:auto;object-fit:contain;display:block;" alt="CoachCards" />'
-          + '</div>'
+          + '<img src="/images/cc-logo.png" style="height:36px;width:36px;object-fit:contain;display:block;" alt="CoachCards" />'
           + '<div style="font-size:7.5px;color:rgba(255,255,255,0.3);font-weight:700;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;">VERIFIED REVIEWS</div>'
         + '</div>'
         + '<div style="display:flex;align-items:center;gap:14px;margin-bottom:12px;">'
@@ -3779,8 +3777,8 @@
             + '<div style="font-family:\'Playfair Display\',serif;font-size:1.2rem;font-weight:900;color:white;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + name + '</div>'
             + (username ? '<div style="color:rgba(255,255,255,0.38);font-size:0.67rem;font-weight:600;font-family:\'Manrope\',sans-serif;margin-top:2px;">' + username + '</div>' : '')
             + '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">'
-              + '<div style="color:rgba(255,255,255,0.35);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">📍 ' + city + '</div>'
-              + (specialty ? '<div style="color:rgba(255,255,255,0.28);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">· ' + specialty + '</div>' : '')
+              + '<div style="color:rgba(255,255,255,0.35);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">ðŸ“ ' + city + '</div>'
+              + (specialty ? '<div style="color:rgba(255,255,255,0.28);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">Â· ' + specialty + '</div>' : '')
             + '</div>'
             + (bmp ? '<div style="margin-top:6px;display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:3px 8px;">'
               + '<span style="color:rgba(255,255,255,0.5);font-size:0.6rem;font-weight:700;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">BMP</span>'
@@ -3814,17 +3812,17 @@
 
   function igCopyCaption(btn) {
     var d = getShareData();
-    if (!d.link || d.link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!d.link || d.link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     var caption = d.custom + '\n\n'
-      + 'Leave me a verified review on CoachCards 👇\n'
+      + 'Leave me a verified review on CoachCards ðŸ‘‡\n'
       + d.link + '\n\n'
       + '#PersonalTrainer #FitnessCoach #CoachCards #PT';
     navigator.clipboard.writeText(caption).then(function() {
       var orig = btn.innerHTML;
-      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied âœ“';
       btn.disabled = true;
       setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2400);
-    }).catch(function() { showToast('⚠️ Could not copy — try again'); });
+    }).catch(function() { showToast('âš ï¸ Could not copy â€” try again'); });
   }
 
   function buildShareCard() {
@@ -3858,7 +3856,7 @@
     var bmp    = (trainer.bmp_score > 0) ? trainer.bmp_score : null;
     var url    = window['__ptReviewUrl'] || (window.location.origin + '/review/' + trainer.id);
     var customMsgEl = document.getElementById('sc-custom-msg');
-    var ctaMsg = (customMsgEl && customMsgEl.value.trim()) ? customMsgEl.value.trim() : "I'd love your feedback 🙏";
+    var ctaMsg = (customMsgEl && customMsgEl.value.trim()) ? customMsgEl.value.trim() : "I'd love your feedback ðŸ™";
 
     // Update theme swatch in controls panel
     var swatchEl = document.getElementById('sc-theme-swatch');
@@ -3871,9 +3869,9 @@
       ? '<div style="width:120px;height:120px;min-width:120px;min-height:120px;border-radius:50%;background:url(' + trainer.avatar_url + ') center/cover no-repeat;border:3px solid ' + theme.accent + ';display:block;flex-shrink:0;box-sizing:border-box;"></div>'
       : '<div style="width:120px;height:120px;min-width:120px;min-height:120px;border-radius:50%;background:' + (trainer.avatar_bg||'#1a3d1e') + ';color:' + (trainer.avatar_color||theme.accent) + ';display:flex;align-items:center;justify-content:center;font-size:2.6rem;font-weight:900;border:3px solid ' + theme.accent + ';font-family:\'Manrope\',sans-serif;">' + (trainer.avatar_initials||'?') + '</div>';
 
-    // BMP badge — plain text, no box
+    // BMP badge â€” plain text, no box
     var bmpHtml = bmp
-      ? '<div style="color:white;font-size:13px;font-weight:700;font-family:\'Manrope\',sans-serif;text-align:center;">📊 BMP <span style="color:' + theme.accent + ';font-size:15px;">' + bmp + '</span></div>'
+      ? '<div style="color:white;font-size:13px;font-weight:700;font-family:\'Manrope\',sans-serif;text-align:center;">ðŸ“Š BMP <span style="color:' + theme.accent + ';font-size:15px;">' + bmp + '</span></div>'
       : '';
 
     var card = document.getElementById('share-card');
@@ -3886,11 +3884,9 @@
       + '<div style="position:absolute;bottom:0;left:0;right:0;height:35%;background:rgba(0,0,0,0.3);pointer-events:none;z-index:0;"></div>'
       // Content
       + '<div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;align-items:center;padding:20px 20px 14px;">'
-        // Logo bar — logo left, VERIFIED right, absolutely positioned for reliable rendering
+        // Logo bar â€” logo left, VERIFIED right, absolutely positioned for reliable rendering
         + '<div style="position:relative;align-self:stretch;height:52px;margin-bottom:16px;">'
-          + '<div style="position:absolute;left:0;top:0;background:white;border-radius:10px;padding:4px 8px;display:inline-flex;align-items:center;justify-content:center;border:2px solid #3ab54a;">'
-            + '<img src="/images/logo.png" style="height:44px;width:auto;object-fit:contain;display:block;" alt="CoachCards" />'
-          + '</div>'
+          + '<img src="/images/cc-logo.png" style="position:absolute;left:0;top:0;height:44px;width:44px;object-fit:contain;display:block;" alt="CoachCards" />'
           + '<div style="position:absolute;right:0;top:18px;font-size:9px;color:rgba(255,255,255,0.4);font-weight:700;letter-spacing:1px;font-family:\'Manrope\',sans-serif;">VERIFIED</div>'
         + '</div>'
         // Avatar with glow ring
@@ -3903,7 +3899,7 @@
         // Username
         + (username ? '<div style="color:rgba(255,255,255,0.45);font-size:0.72rem;font-weight:600;text-align:center;margin-bottom:5px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">' + username + '</div>' : '')
         // City
-        + '<div style="color:rgba(255,255,255,0.38);font-size:0.7rem;font-weight:500;text-align:center;margin-bottom:10px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">📍 ' + city + '</div>'
+        + '<div style="color:rgba(255,255,255,0.38);font-size:0.7rem;font-weight:500;text-align:center;margin-bottom:10px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">ðŸ“ ' + city + '</div>'
         // BMP badge
         + (bmpHtml ? '<div style="margin-bottom:12px;">' + bmpHtml + '</div>' : '<div style="margin-bottom:12px;height:28px;"></div>')
         // Divider
@@ -3921,7 +3917,7 @@
         + '<div style="color:rgba(255,255,255,0.22);font-size:0.58rem;letter-spacing:1.5px;font-family:\'Manrope\',sans-serif;text-transform:lowercase;">coachcards.co.uk</div>'
       + '</div>';
 
-    // Draw QR using API — simple and reliable
+    // Draw QR using API â€” simple and reliable
     _cardBuilt = false;
     var qrContainer = document.getElementById('sc-qr-inner');
     if (qrContainer) {
@@ -3936,7 +3932,7 @@
     }
   }
 
-  // Shared canvas rendering — used by both downloadCard() and shareCard()
+  // Shared canvas rendering â€” used by both downloadCard() and shareCard()
   async function generateCardBlob() {
     var card = document.getElementById('share-card');
     if (!card) throw new Error('Card not found');
@@ -3967,7 +3963,7 @@
   async function downloadCard() {
     var btn   = document.getElementById('download-card-btn');
     var label = (_igFormat === 'feed') ? 'Feed Post' : 'Story Card';
-    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + label + '…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + label + 'â€¦'; }
     try {
       var blob = await generateCardBlob();
       var objUrl = URL.createObjectURL(blob);
@@ -3979,7 +3975,7 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(objUrl);
-      showToast('✅ ' + label + ' saved!');
+      showToast('âœ… ' + label + ' saved!');
     } catch(e) {
       if (!e || e.name !== 'AbortError') showToast("We couldn't prepare your " + label + ". Please try again.");
     }
@@ -3990,14 +3986,14 @@
   async function shareCard() {
     var btn   = document.getElementById('ig-share-btn');
     var label = (_igFormat === 'feed') ? 'Feed Post' : 'Story Card';
-    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + label + '…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparing ' + label + 'â€¦'; }
     try {
       var blob     = await generateCardBlob();
       var filename = getCardFilename();
       var title    = (_igFormat === 'feed') ? 'My CoachCards Feed Post' : 'My CoachCards Review Story Card';
       var file     = new File([blob], filename, { type: 'image/png' });
       await navigator.share({ files: [file], title: title });
-      showToast('✅ ' + label + ' shared!');
+      showToast('âœ… ' + label + ' shared!');
     } catch(e) {
       if (!e || e.name !== 'AbortError') showToast("We couldn't share your " + label + ". Please try again.");
     }
@@ -4021,7 +4017,7 @@
     var shareSVG = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
     var dlSVG    = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
 
-    // Share button — only visible when native file sharing is supported
+    // Share button â€” only visible when native file sharing is supported
     if (shareBtn) {
       if (canFileShare) {
         shareBtn.style.display    = 'flex';
@@ -4034,7 +4030,7 @@
       }
     }
 
-    // Download button — ALWAYS visible
+    // Download button â€” ALWAYS visible
     if (dlBtn) {
       dlBtn.innerHTML = dlSVG + ' Download ' + label;
       if (canFileShare) {
@@ -4045,7 +4041,7 @@
         dlBtn.onmouseover = function() { this.style.borderColor = 'var(--green)'; this.style.color = 'var(--green-dark)'; };
         dlBtn.onmouseout  = function() { this.style.borderColor = 'var(--border)'; this.style.color = 'var(--text)'; };
       } else {
-        // Primary style: dark fill — the only action
+        // Primary style: dark fill â€” the only action
         dlBtn.style.background  = 'var(--text)';
         dlBtn.style.color       = 'white';
         dlBtn.style.border      = 'none';
@@ -4070,20 +4066,20 @@
 
   function igCopyLink(btn) {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     navigator.clipboard.writeText(link).then(function() {
       var orig = btn.innerHTML;
-      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied âœ“';
       btn.disabled = true;
       setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2400);
-    }).catch(function() { showToast('⚠️ Could not copy — try again'); });
+    }).catch(function() { showToast('âš ï¸ Could not copy â€” try again'); });
   }
 
-  // ── Central share-message builder ───────────────────────────────────────
+  // â”€â”€ Central share-message builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function getShareData() {
     var link      = document.getElementById('review-link').value;
     var customEl  = document.getElementById('sc-custom-msg');
-    var custom    = (customEl && customEl.value.trim()) ? customEl.value.trim() : "I'd love your feedback 🙏";
+    var custom    = (customEl && customEl.value.trim()) ? customEl.value.trim() : "I'd love your feedback ðŸ™";
     var name      = window.__ptTrainerName || '';
     var firstName = name ? name.split(' ')[0] : '';
     return { link: link, custom: custom, name: name, firstName: firstName };
@@ -4106,51 +4102,51 @@
     }
     return d.custom + '\n\nLeave me a verified review on CoachCards:\n' + d.link;
   }
-  // ────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   function copyUrlBtn(btn) {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     navigator.clipboard.writeText(link).then(function() {
-      btn.textContent = 'Copied ✓';
+      btn.textContent = 'Copied âœ“';
       btn.disabled = true;
       setTimeout(function() { btn.textContent = 'Copy'; btn.disabled = false; }, 2200);
-    }).catch(function() { showToast('⚠️ Could not copy — try manually'); });
+    }).catch(function() { showToast('âš ï¸ Could not copy â€” try manually'); });
   }
 
   function copyShareBtn(btn) {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     navigator.clipboard.writeText(link).then(function() {
       var orig = btn.innerHTML;
-      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
+      btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied âœ“';
       btn.disabled = true;
       setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2200);
-    }).catch(function() { showToast('⚠️ Could not copy — try manually'); });
+    }).catch(function() { showToast('âš ï¸ Could not copy â€” try manually'); });
   }
 
   function shareWhatsApp() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     window.open('https://wa.me/?text=' + encodeURIComponent(buildReviewMessage('whatsapp')), '_blank');
   }
 
   function shareSMS() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     var text = buildReviewMessage('sms');
     var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile) {
       window.open('sms:?body=' + encodeURIComponent(text));
     } else {
       navigator.clipboard.writeText(text).catch(function() {});
-      showToast('📋 Message copied — paste it into your SMS app');
+      showToast('ðŸ“‹ Message copied â€” paste it into your SMS app');
     }
   }
 
   function shareEmail() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     var em = buildReviewMessage('email');
     window.open('mailto:?subject=' + encodeURIComponent(em.subject) + '&body=' + encodeURIComponent(em.body));
   }
@@ -4168,19 +4164,19 @@
 
   function shareFacebook() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link), '_blank');
   }
 
   function shareLinkedIn() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(link), '_blank');
   }
 
   function shareNative() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
     var d = getShareData();
     var bodyText = d.custom + '\n\nLeave me a verified review on CoachCards:';
     if (navigator.share) {
@@ -4188,16 +4184,16 @@
         .catch(function(e) {
           if (e.name !== 'AbortError') {
             navigator.clipboard.writeText(buildReviewMessage('generic')).catch(function() {});
-            showToast('✅ Message copied!');
+            showToast('âœ… Message copied!');
           }
         });
     } else {
       navigator.clipboard.writeText(buildReviewMessage('generic')).catch(function() {});
-      showToast('✅ Message copied to clipboard!');
+      showToast('âœ… Message copied to clipboard!');
     }
   }
 
-  // ── Message preview ──────────────────────────────────────────────────────
+  // â”€â”€ Message preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   var _prevChannel = 'whatsapp';
 
   function toggleSharePreview() {
@@ -4244,12 +4240,12 @@
       pre.textContent = buildReviewMessage(_prevChannel);
     }
   }
-  // ────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
   function downloadQRCode() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠️ Load your dashboard first'); return; }
-    showToast('⏳ Generating QR code…');
+    if (!link || link.includes('...')) { showToast('âš ï¸ Load your dashboard first'); return; }
+    showToast('â³ Generating QR codeâ€¦');
     var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=16&data=' + encodeURIComponent(link);
     var img = new Image();
     img.crossOrigin = 'anonymous';
@@ -4259,12 +4255,12 @@
         canvas.width = 400; canvas.height = 400;
         canvas.getContext('2d').drawImage(img, 0, 0, 400, 400);
         canvas.toBlob(function(blob) {
-          if (!blob) { window.open(qrUrl, '_blank'); showToast('✅ QR opened — right-click to save'); return; }
+          if (!blob) { window.open(qrUrl, '_blank'); showToast('âœ… QR opened â€” right-click to save'); return; }
           var isTouchOnly = navigator.maxTouchPoints > 1 && !window.matchMedia('(pointer:fine)').matches;
           var file = new File([blob], 'coachcards-qr.png', { type: 'image/png' });
           if (isTouchOnly && navigator.canShare && navigator.canShare({ files: [file] })) {
             navigator.share({ files: [file], title: 'My CoachCards QR code' }).catch(function() {});
-            showToast('✅ QR code shared!');
+            showToast('âœ… QR code shared!');
           } else {
             var a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -4273,17 +4269,17 @@
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            showToast('✅ QR code downloaded!');
+            showToast('âœ… QR code downloaded!');
           }
         }, 'image/png');
       } catch(e) {
         window.open(qrUrl, '_blank');
-        showToast('✅ QR opened — right-click to save');
+        showToast('âœ… QR opened â€” right-click to save');
       }
     };
     img.onerror = function() {
       window.open(qrUrl, '_blank');
-      showToast('✅ QR opened — right-click to save');
+      showToast('âœ… QR opened â€” right-click to save');
     };
     img.src = qrUrl;
   }
@@ -4294,17 +4290,17 @@
     const toast = document.getElementById('copy-toast');
     toast.textContent = msg;
     toast.classList.add('show');
-    var dur = msg && msg.startsWith('❌') ? 5000 : 2500;
+    var dur = msg && msg.startsWith('âŒ') ? 5000 : 2500;
     setTimeout(() => toast.classList.remove('show'), dur);
   }
 
-  // ── Feed post functions ──────────────────────────────────────────────────
+  // â”€â”€ Feed post functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   var _postImgFile = null;
 
   function handlePostImgSelect(input) {
     var file = input.files && input.files[0];
     if (!file) return;
-    if (file.size > 10 * 1024 * 1024) { showToast('❌ Image too large — max 10 MB'); return; }
+    if (file.size > 10 * 1024 * 1024) { showToast('âŒ Image too large â€” max 10 MB'); return; }
     _postImgFile = file;
     var reader = new FileReader();
     reader.onload = function(e) {
@@ -4338,7 +4334,7 @@
     var btn     = document.getElementById('post-submit');
     if (!caption && !_postImgFile) { errEl.style.display = 'block'; return; }
     errEl.style.display = 'none';
-    btn.disabled = true; btn.textContent = 'Publishing…';
+    btn.disabled = true; btn.textContent = 'Publishingâ€¦';
     var sb  = window['__ptSupabase'];
     var tid = window['__ptTrainerId'];
     var imageUrl = null;
@@ -4346,15 +4342,15 @@
       var ext  = _postImgFile.name.split('.').pop() || 'jpg';
       var path = tid + '/' + Date.now() + '.' + ext;
       var up   = await sb.storage.from('post-images').upload(path, _postImgFile, { contentType: _postImgFile.type });
-      if (up.error) { showToast('❌ Upload failed: ' + up.error.message); btn.disabled = false; btn.textContent = 'Publish Post'; return; }
+      if (up.error) { showToast('âŒ Upload failed: ' + up.error.message); btn.disabled = false; btn.textContent = 'Publish Post'; return; }
       imageUrl = sb.storage.from('post-images').getPublicUrl(path).data.publicUrl;
     }
     var ins = await sb.from('trainer_posts').insert({ trainer_id: tid, content: caption || null, image_url: imageUrl });
     btn.disabled = false; btn.textContent = 'Publish Post';
-    if (ins.error) { showToast('❌ Failed to publish: ' + ins.error.message); return; }
+    if (ins.error) { showToast('âŒ Failed to publish: ' + ins.error.message); return; }
     document.getElementById('post-caption').value = '';
     clearPostImg();
-    showToast('✅ Post published!');
+    showToast('âœ… Post published!');
     loadFeedPosts();
     loadOverviewFeed();
   }
@@ -4366,7 +4362,7 @@
     var sb  = window['__ptSupabase'];
     var tid = window['__ptTrainerId'];
     if (!sb || !tid) return;
-    listEl.innerHTML = '<div style="color:var(--muted);font-size:0.84rem;text-align:center;padding:1rem 0;">Loading…</div>';
+    listEl.innerHTML = '<div style="color:var(--muted);font-size:0.84rem;text-align:center;padding:1rem 0;">Loadingâ€¦</div>';
     var res   = await sb.from('trainer_posts').select('*').eq('trainer_id', tid).order('created_at', { ascending: true });
     var posts = res.data || [];
     if (subEl) subEl.textContent = posts.length + ' post' + (posts.length !== 1 ? 's' : '') + ' published';
@@ -4396,12 +4392,12 @@
     var sb  = window['__ptSupabase'];
     var tid = window['__ptTrainerId'];
     if (!sb || !tid) return;
-    listEl.innerHTML = '<div style="color:var(--muted);font-size:0.84rem;text-align:center;padding:1rem 0;">Loading…</div>';
+    listEl.innerHTML = '<div style="color:var(--muted);font-size:0.84rem;text-align:center;padding:1rem 0;">Loadingâ€¦</div>';
     var res   = await sb.from('trainer_posts').select('*').eq('trainer_id', tid).order('created_at', { ascending: false }).limit(5);
     var posts = res.data || [];
     if (subEl) subEl.textContent = posts.length + ' recent post' + (posts.length !== 1 ? 's' : '');
     if (posts.length === 0) {
-      listEl.innerHTML = '<div style="text-align:center;padding:2rem 0;"><div style="margin-bottom:0.5rem;display:flex;justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div style="font-weight:700;font-size:0.88rem;color:var(--text);margin-bottom:0.25rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Click "+ New Post →" to share your first update.</div></div>';
+      listEl.innerHTML = '<div style="text-align:center;padding:2rem 0;"><div style="margin-bottom:0.5rem;display:flex;justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div><div style="font-weight:700;font-size:0.88rem;color:var(--text);margin-bottom:0.25rem;">No posts yet</div><div style="font-size:0.78rem;color:var(--muted);">Click "+ New Post â†’" to share your first update.</div></div>';
       return;
     }
     // Fetch like counts for these posts
@@ -4432,11 +4428,11 @@
     var sb  = window['__ptSupabase'];
     var res = await sb.from('trainer_posts').delete().eq('id', id);
     if (!res.error) { loadFeedPosts(); loadOverviewFeed(); }
-    else showToast('❌ Failed to delete post.');
+    else showToast('âŒ Failed to delete post.');
   }
-  // ────────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // ── Fireworks celebration ────────────────────────────────────────────────
+  // â”€â”€ Fireworks celebration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   window['__ptFireCelebration'] = function(newCount) {
     // Small delay so the page has finished rendering
     setTimeout(function() {
@@ -4476,7 +4472,7 @@
       });
     }, 300);
   };
-  // ────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 </script>
 <!-- Mobile bottom navigation -->
 <nav class="mob-bottom-nav" id="mob-bottom-nav">

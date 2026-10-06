@@ -117,7 +117,7 @@ const seoParts = [
 ].filter(Boolean);
 const seoDescription = seoParts.join(' ');
 
-const ogImage = trainer.avatar_url ?? `${Astro.url.origin}/images/logo.png`;
+const ogImage = trainer.avatar_url ?? `${Astro.url.origin}/images/cc-logo.png`;
 
 // Mask full name to initials for anonymous reviews (e.g. "John Smith" → "J. S.")
 const maskName = (name: string): string => {
@@ -365,7 +365,7 @@ const maskName = (name: string): string => {
     .btn-review { padding:0.75rem 1.25rem !important; font-size:0.82rem !important; }
     /* Nav mobile */
     .tp-nav-inner { height:64px !important; padding:0 1rem !important; }
-    .tp-nav-logo  { height:50px !important; }
+    .tp-nav-logo  { height:42px !important; width:42px !important; }
     .tp-nav-links { gap:0.6rem !important; }
     .tp-nav-links .btn-review { padding:0.5rem 0.9rem !important; font-size:0.78rem !important; }
     .tp-nav-text  { font-size:0.78rem !important; }
@@ -426,8 +426,9 @@ const maskName = (name: string): string => {
 <!-- ── NAV ── -->
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div class="tp-nav-inner" style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
-    <a href="/" style="text-decoration:none;">
-      <img class="tp-nav-logo" src="/images/logo.png" alt="CoachCards" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:0.6rem;">
+      <img class="tp-nav-logo" src="/images/cc-logo.png" alt="" aria-hidden="true" style="height:42px;width:42px;flex-shrink:0;" />
+      <span style="font-family:'Manrope',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:-0.2px;line-height:1;"><span style="color:#3ab54a;">Coach</span><span style="color:#111311;">Cards</span></span>
     </a>
     <div class="tp-nav-links" style="display:flex;gap:1.25rem;align-items:center;">
       <a href="/#leaderboard" class="tp-nav-text" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
@@ -862,7 +863,7 @@ const maskName = (name: string): string => {
 <!-- ── FOOTER ── -->
 <footer class="tp-footer" style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
   <div style="display:flex;align-items:center;gap:0.75rem;">
-    <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
+    <img src="/images/cc-logo.png" alt="CoachCards" style="height:38px;width:38px;" />
     <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
   </div>
   <div style="display:flex;gap:2rem;">

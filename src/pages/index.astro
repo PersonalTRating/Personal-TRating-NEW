@@ -207,7 +207,7 @@ const reviews = [
   "@type": "Organization",
   "name": "CoachCards",
   "url": "https://coachcards.co.uk",
-  "logo": "https://coachcards.co.uk/images/logo.png",
+  "logo": "https://coachcards.co.uk/images/cc-logo.png",
   "contactPoint": {
     "@type": "ContactPoint",
     "email": "hello@coachcards.co.uk",
@@ -316,7 +316,7 @@ const reviews = [
   #reviews { position:relative; }
   #reviews::before {
     content:''; position:absolute; inset:0;
-    background-image:url('/images/logo.png');
+    background-image:url('/images/cc-logo.png');
     background-repeat:no-repeat; background-position:center; background-size:70%;
     opacity:0.06; pointer-events:none; z-index:0;
   }
@@ -601,8 +601,9 @@ const reviews = [
 <!-- ── NAV ── -->
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
-    <a href="#top" style="text-decoration:none;display:flex;align-items:center;">
-      <img src="/images/logo.png" alt="CoachCards" style="height:83px;width:auto;object-fit:contain;border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    <a href="#top" style="text-decoration:none;display:flex;align-items:center;gap:0.6rem;">
+      <img src="/images/cc-logo.png" alt="" aria-hidden="true" style="height:42px;width:42px;flex-shrink:0;" />
+      <span style="font-family:'Manrope',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:-0.2px;line-height:1;"><span style="color:#3ab54a;">Coach</span><span style="color:#111311;">Cards</span></span>
     </a>
     <ul class="nav-links-desktop" style="display:flex;gap:2.5rem;list-style:none;margin:0;padding:0;">
       {[['Leaderboard','#leaderboard'],['Reviews','#reviews'],['Map','#map'],['About','#about']].map(([label,href]) => (
@@ -1118,7 +1119,7 @@ const reviews = [
 <!-- ── FOOTER ── -->
 <footer class="idx-footer" style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:white;border-top:3px solid #3ab54a;">
   <div class="idx-footer-left" style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
-    <img src="/images/logo.png" alt="CoachCards" style="height:44px;width:auto;object-fit:contain;background:white;border:2px solid #3ab54a;border-radius:8px;padding:3px;" />
+    <img src="/images/cc-logo.png" alt="CoachCards" style="height:38px;width:38px;" />
     <div class="idx-footer-text">
       <p style="font-size:0.8rem;color:#8a8f8a;margin:0;">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
       <p style="font-size:0.72rem;color:#aab8ac;margin-top:0.2rem;">Unauthorised reproduction of this platform, its design, BMP scoring methodology or content is strictly prohibited.</p>

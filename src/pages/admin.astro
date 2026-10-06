@@ -1,5 +1,5 @@
----
-// Admin Review Queue — CoachCards
+﻿---
+// Admin Review Queue â€” CoachCards
 // Access restricted to admin email defined below
 ---
 <!DOCTYPE html>
@@ -7,7 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Review Queue · CoachCards</title>
+<title>Admin â€” Review Queue Â· CoachCards</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -20,14 +20,14 @@
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); display:flex; min-height:100vh; }
 
-  /* ── SIDEBAR ── */
+  /* â”€â”€ SIDEBAR â”€â”€ */
   .sidebar {
     width:var(--sidebar-w); flex-shrink:0; background:var(--text);
     display:flex; flex-direction:column;
     position:fixed; top:0; left:0; bottom:0; z-index:100;
   }
   .sb-logo { padding:1.5rem 1.25rem; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; justify-content:center; }
-  .sb-logo img { height:57px; width:auto; object-fit:contain; }
+  .sb-logo img { height:48px; width:48px; object-fit:contain; }
   .sb-label { padding:0.75rem 1.25rem 0.4rem; font-size:0.62rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.25); }
   .sb-item {
     display:flex; align-items:center; gap:0.75rem;
@@ -45,7 +45,7 @@
   .sb-footer-link { font-size:0.78rem; color:rgba(255,255,255,0.35); text-decoration:none; background:none; border:none; cursor:pointer; font-family:'Manrope',sans-serif; transition:color 0.15s; }
   .sb-footer-link:hover { color:white; }
 
-  /* ── MAIN ── */
+  /* â”€â”€ MAIN â”€â”€ */
   .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; min-height:100vh; }
   .topbar {
     background:white; border-bottom:1px solid var(--border);
@@ -56,24 +56,24 @@
   .topbar p  { font-size:0.8rem; color:var(--muted); margin-top:0.1rem; }
   .content { padding:2rem 2.5rem; flex:1; }
 
-  /* ── PAGE SECTIONS ── */
+  /* â”€â”€ PAGE SECTIONS â”€â”€ */
   .page { display:none; }
   .page.active { display:block; }
 
-  /* ── STAT CARDS ── */
+  /* â”€â”€ STAT CARDS â”€â”€ */
   .stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:2rem; }
   .stat-card { background:white; border-radius:14px; padding:1.5rem; border:1px solid var(--border); }
   .stat-icon { margin-bottom:0.6rem; display:flex; align-items:center; }
   .stat-label { font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:0.4rem; }
   .stat-value { font-family:'Playfair Display',serif; font-size:2rem; font-weight:900; line-height:1; }
 
-  /* ── CARDS ── */
+  /* â”€â”€ CARDS â”€â”€ */
   .card { background:white; border-radius:14px; border:1px solid var(--border); overflow:hidden; margin-bottom:1.5rem; }
   .card-head { padding:1.25rem 1.5rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
   .card-title { font-weight:800; font-size:0.92rem; }
   .card-sub   { font-size:0.75rem; color:var(--muted); margin-top:0.15rem; }
 
-  /* ── REVIEW QUEUE ITEMS ── */
+  /* â”€â”€ REVIEW QUEUE ITEMS â”€â”€ */
   .review-row {
     padding:1.25rem 1.5rem; border-bottom:1px solid var(--border);
     display:flex; gap:1.25rem; align-items:flex-start;
@@ -104,7 +104,7 @@
   .btn-reject:hover { background:var(--red-light); border-color:var(--red); }
   .btn-approve:disabled, .btn-reject:disabled { opacity:0.5; cursor:not-allowed; }
 
-  /* ── APPROVED LIST ── */
+  /* â”€â”€ APPROVED LIST â”€â”€ */
   .approved-row {
     padding:1rem 1.5rem; border-bottom:1px solid var(--border);
     display:flex; align-items:center; gap:1rem; font-size:0.84rem;
@@ -116,13 +116,13 @@
   .approved-trainer { font-size:0.75rem; color:var(--muted); margin-top:0.1rem; }
   .approved-date { font-size:0.75rem; color:var(--muted); flex-shrink:0; }
 
-  /* ── EMPTY STATE ── */
+  /* â”€â”€ EMPTY STATE â”€â”€ */
   .empty { padding:3.5rem 2rem; text-align:center; }
   .empty-icon { margin-bottom:0.75rem; display:flex; align-items:center; justify-content:center; }
   .empty-title { font-family:'Playfair Display',serif; font-weight:700; font-size:1.15rem; color:var(--text); margin-bottom:0.4rem; }
   .empty-sub { font-size:0.84rem; color:var(--muted); }
 
-  /* ── TOAST ── */
+  /* â”€â”€ TOAST â”€â”€ */
   .toast {
     position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
     background:var(--text); color:white; padding:0.6rem 1.5rem;
@@ -131,7 +131,7 @@
   }
   .toast.show { opacity:1; }
 
-  /* ── ACCESS DENIED ── */
+  /* â”€â”€ ACCESS DENIED â”€â”€ */
   .denied {
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     min-height:100vh; text-align:center; padding:2rem;
@@ -143,10 +143,10 @@
 </head>
 <body>
 
-<!-- ── SIDEBAR ── -->
+<!-- â”€â”€ SIDEBAR â”€â”€ -->
 <aside class="sidebar">
   <div class="sb-logo">
-    <img src="/images/logo.png" alt="CoachCards" style="border:2.5px solid #3ab54a;border-radius:10px;background:white;padding:4px;" />
+    <img src="/images/cc-logo.png" alt="CoachCards" />
   </div>
   <nav style="flex:1;padding:1rem 0;overflow-y:auto;">
     <div class="sb-label">Review Queue</div>
@@ -166,7 +166,7 @@
   </div>
 </aside>
 
-<!-- ── MAIN ── -->
+<!-- â”€â”€ MAIN â”€â”€ -->
 <main class="main">
   <div class="topbar">
     <div>
@@ -183,17 +183,17 @@
         <div class="stat-card">
           <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="stat-label">Awaiting Review</div>
-          <div class="stat-value" id="stat-pending" style="color:var(--red);">—</div>
+          <div class="stat-value" id="stat-pending" style="color:var(--red);">â€”</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
           <div class="stat-label">Approved Today</div>
-          <div class="stat-value" id="stat-approved-today" style="color:var(--green);">—</div>
+          <div class="stat-value" id="stat-approved-today" style="color:var(--green);">â€”</div>
         </div>
         <div class="stat-card">
           <div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
           <div class="stat-label">Total Approved</div>
-          <div class="stat-value" id="stat-total-approved">—</div>
+          <div class="stat-value" id="stat-total-approved">â€”</div>
         </div>
       </div>
 
@@ -207,7 +207,7 @@
         <div id="pending-list">
           <div class="empty">
             <div class="empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-            <div class="empty-title">Loading…</div>
+            <div class="empty-title">Loadingâ€¦</div>
           </div>
         </div>
       </div>
@@ -225,7 +225,7 @@
         <div id="approved-list">
           <div class="empty">
             <div class="empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-            <div class="empty-title">Loading…</div>
+            <div class="empty-title">Loadingâ€¦</div>
           </div>
         </div>
       </div>
@@ -239,11 +239,11 @@
 <script>
   import { supabase } from '../lib/supabase';
 
-  // ── CONFIG — change this to your admin email ──────────────────────────────
+  // â”€â”€ CONFIG â€” change this to your admin email â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const ADMIN_EMAIL = 'modernisetraders@hotmail.com';
-  // ─────────────────────────────────────────────────────────────────────────
+  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-  // ── Auth guard ────────────────────────────────────────────────────────────
+  // â”€â”€ Auth guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
@@ -253,12 +253,12 @@
         <div class="denied-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
         <h2>Access Denied</h2>
         <p>This page is restricted to CoachCards administrators.</p>
-        <a href="/" style="margin-top:1.5rem;display:inline-block;color:#2a9438;font-weight:700;font-size:0.875rem;">← Back to home</a>
+        <a href="/" style="margin-top:1.5rem;display:inline-block;color:#2a9438;font-weight:700;font-size:0.875rem;">â† Back to home</a>
       </div>`;
     throw new Error('unauthorized');
   }
 
-  // ── Data ──────────────────────────────────────────────────────────────────
+  // â”€â”€ Data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   type Review = {
     id: string;
     trainer_id: string;
@@ -314,9 +314,9 @@
     renderApproved();
   }
 
-  // ── Render helpers ────────────────────────────────────────────────────────
+  // â”€â”€ Render helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function stars(n: number) {
-    return '★'.repeat(n) + '☆'.repeat(5 - n);
+    return 'â˜…'.repeat(n) + 'â˜†'.repeat(5 - n);
   }
 
   function timeAgo(iso: string) {
@@ -344,7 +344,7 @@
             <div class="rev-header">
               <span class="rev-name">${r.reviewer_name}</span>
               <span class="rev-rating">${stars(r.rating)}</span>
-              <span class="rev-trainer">→ ${trainerName}</span>
+              <span class="rev-trainer">â†’ ${trainerName}</span>
             </div>
             <div class="rev-text">"${r.review_text}"</div>
             <div class="rev-date">Submitted ${timeAgo(r.created_at)}</div>
@@ -370,21 +370,21 @@
         <div class="approved-row">
           <span class="approved-check"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
           <div class="approved-info">
-            <div class="approved-name">${r.reviewer_name} — ${'★'.repeat(r.rating)}</div>
-            <div class="approved-trainer">For ${trainerName} · "${r.review_text.slice(0, 80)}${r.review_text.length > 80 ? '…' : ''}"</div>
+            <div class="approved-name">${r.reviewer_name} â€” ${'â˜…'.repeat(r.rating)}</div>
+            <div class="approved-trainer">For ${trainerName} Â· "${r.review_text.slice(0, 80)}${r.review_text.length > 80 ? 'â€¦' : ''}"</div>
           </div>
           <div class="approved-date">${date}</div>
         </div>`;
     }).join('');
   }
 
-  // ── Actions ───────────────────────────────────────────────────────────────
+  // â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   (window as any).approveReview = async (id: string) => {
     const approveBtn = document.getElementById(`approve-${id}`) as HTMLButtonElement;
     const rejectBtn  = document.getElementById(`reject-${id}`)  as HTMLButtonElement;
     approveBtn.disabled = true;
     rejectBtn.disabled  = true;
-    approveBtn.textContent = 'Approving…';
+    approveBtn.textContent = 'Approvingâ€¦';
 
     const { error } = await supabase
       .from('reviews')
@@ -392,7 +392,7 @@
       .eq('id', id);
 
     if (error) {
-      showToast('❌ Failed to approve — ' + error.message);
+      showToast('âŒ Failed to approve â€” ' + error.message);
       approveBtn.disabled = false;
       rejectBtn.disabled  = false;
       approveBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Approve';
@@ -404,7 +404,7 @@
     (document.getElementById('stat-pending') as HTMLElement).textContent = String(pendingReviews.length);
     (document.getElementById('sb-pending-count') as HTMLElement).textContent = String(pendingReviews.length);
     if (pendingReviews.length === 0) renderPending();
-    showToast('✅ Review approved and now live!');
+    showToast('âœ… Review approved and now live!');
   };
 
   (window as any).rejectReview = async (id: string) => {
@@ -414,7 +414,7 @@
     const rejectBtn  = document.getElementById(`reject-${id}`)  as HTMLButtonElement;
     approveBtn.disabled = true;
     rejectBtn.disabled  = true;
-    rejectBtn.textContent = 'Rejecting…';
+    rejectBtn.textContent = 'Rejectingâ€¦';
 
     const { error } = await supabase
       .from('reviews')
@@ -422,7 +422,7 @@
       .eq('id', id);
 
     if (error) {
-      showToast('❌ Failed to reject — ' + error.message);
+      showToast('âŒ Failed to reject â€” ' + error.message);
       approveBtn.disabled = false;
       rejectBtn.disabled  = false;
       rejectBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Reject';
@@ -434,10 +434,10 @@
     (document.getElementById('stat-pending') as HTMLElement).textContent = String(pendingReviews.length);
     (document.getElementById('sb-pending-count') as HTMLElement).textContent = String(pendingReviews.length);
     if (pendingReviews.length === 0) renderPending();
-    showToast('🗑️ Review rejected and removed.');
+    showToast('ðŸ—‘ï¸ Review rejected and removed.');
   };
 
-  // ── Navigation ────────────────────────────────────────────────────────────
+  // â”€â”€ Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   (window as any).showPage = (id: string) => {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'));
@@ -453,7 +453,7 @@
     (document.getElementById('page-sub')   as HTMLElement).textContent = sub;
   };
 
-  // ── Toast ─────────────────────────────────────────────────────────────────
+  // â”€â”€ Toast â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   function showToast(msg: string) {
     const t = document.getElementById('toast') as HTMLElement;
     t.textContent = msg;
@@ -461,13 +461,13 @@
     setTimeout(() => t.classList.remove('show'), 3000);
   }
 
-  // ── Sign out ──────────────────────────────────────────────────────────────
+  // â”€â”€ Sign out â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   document.getElementById('sign-out-btn')?.addEventListener('click', async () => {
     await supabase.auth.signOut();
     window.location.href = '/';
   });
 
-  // ── Init ──────────────────────────────────────────────────────────────────
+  // â”€â”€ Init â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   await loadAll();
 </script>
 </body>
