@@ -1,215 +1,272 @@
-﻿---
+---
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Contact Us â€” CoachCards" description="Get in touch with the CoachCards team. Report an issue, share a suggestion, or ask us anything.">
+<Layout title="Contact CoachCards" description="Have a question, suggestion or feedback? Get in touch with the CoachCards team.">
 
 <style>
   body { background:#f7f9f7; }
 
-  .contact-wrap { max-width:820px; margin:0 auto; padding:4rem 2.5rem 6rem; font-family:'Manrope',sans-serif; }
+  .ct-wrap { max-width:760px; margin:0 auto; padding:4rem 2.5rem 6rem; font-family:'Manrope',sans-serif; }
 
-  .eyebrow { font-size:0.72rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:#3ab54a; margin-bottom:0.5rem; }
-  h1 { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; color:#0d1a0e; line-height:1.1; margin-bottom:0.75rem; }
-  .lead { font-size:0.95rem; color:#5a6f5c; line-height:1.8; margin-bottom:3rem; max-width:580px; }
-
-  .contact-grid { display:grid; grid-template-columns:1fr 340px; gap:2.5rem; align-items:start; }
+  .ct-eyebrow { font-size:0.7rem; font-weight:700; letter-spacing:2.5px; text-transform:uppercase; color:#3ab54a; margin-bottom:0.6rem; }
+  .ct-h1 { font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:900; color:#0d1a0e; line-height:1.1; margin-bottom:0.75rem; }
+  .ct-lead { font-size:0.95rem; color:#5a6f5c; line-height:1.8; margin-bottom:2.5rem; max-width:520px; }
 
   /* Form card */
-  .form-card { background:white; border:1px solid #e0e8e1; border-radius:20px; padding:2.5rem; box-shadow:0 4px 24px rgba(0,0,0,0.05); }
-  .form-card h2 { font-family:'Playfair Display',serif; font-size:1.35rem; font-weight:800; color:#0d1a0e; margin-bottom:0.35rem; }
-  .form-card p { font-size:0.85rem; color:#7a8f7c; margin-bottom:2rem; line-height:1.6; }
+  .ct-card { background:white; border:1px solid #e0e8e1; border-radius:20px; padding:2.5rem; box-shadow:0 4px 24px rgba(0,0,0,0.05); }
 
   .field { margin-bottom:1.4rem; }
-  .field label { display:block; font-size:0.78rem; font-weight:700; color:#3d4e3f; letter-spacing:0.5px; margin-bottom:0.45rem; text-transform:uppercase; }
-  .field input, .field textarea, .field select {
+  .field label { display:block; font-size:0.75rem; font-weight:700; color:#3d4e3f; letter-spacing:0.5px; margin-bottom:0.45rem; text-transform:uppercase; }
+  .field input, .field textarea {
     width:100%; box-sizing:border-box;
-    font-family:'Manrope',sans-serif; font-size:0.9rem; color:#0d1a0e;
+    font-family:'Manrope',sans-serif; font-size:0.92rem; color:#0d1a0e;
     background:white; border:1.5px solid #d4dbd5; border-radius:10px;
-    padding:0.75rem 1rem; outline:none;
+    padding:0.78rem 1rem; outline:none;
     transition:border-color 0.15s, box-shadow 0.15s;
   }
-  .field input:focus, .field textarea:focus, .field select:focus {
+  .field input:focus, .field textarea:focus {
     border-color:#3ab54a;
     box-shadow:0 0 0 3px rgba(58,181,74,0.12);
   }
-  .field textarea { resize:vertical; min-height:130px; line-height:1.65; }
-  .field select { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a8f8a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 1rem center; padding-right:2.5rem; }
+  .field input.invalid, .field textarea.invalid {
+    border-color:#dc2626;
+    box-shadow:0 0 0 3px rgba(220,38,38,0.1);
+  }
+  .field textarea { resize:vertical; min-height:140px; line-height:1.65; }
+  .field-err { font-size:0.75rem; color:#dc2626; margin-top:0.35rem; display:none; }
+  .field-err.show { display:block; }
 
-  .char-count { font-size:0.72rem; color:#aab8ac; text-align:right; margin-top:0.3rem; }
+  .ct-honeypot { display:none; visibility:hidden; }
 
-  .submit-btn {
-    width:100%; padding:1rem; background:#0d1a0e; color:white;
+  .ct-submit {
+    width:100%; padding:1rem; background:#3ab54a; color:white;
     border:none; border-radius:12px; font-family:'Manrope',sans-serif;
     font-size:0.95rem; font-weight:800; cursor:pointer; letter-spacing:0.3px;
     transition:background 0.15s, transform 0.1s;
+    display:flex; align-items:center; justify-content:center; gap:0.5rem;
   }
-  .submit-btn:hover { background:#1a3d1e; }
-  .submit-btn:active { transform:scale(0.99); }
-  .submit-btn:disabled { background:#9aaa9c; cursor:not-allowed; }
+  .ct-submit:hover:not(:disabled) { background:#2a9438; }
+  .ct-submit:active:not(:disabled) { transform:scale(0.99); }
+  .ct-submit:disabled { background:#9aaa9c; cursor:not-allowed; }
+
+  /* Reassurance strip */
+  .ct-reassure { margin-top:1.25rem; font-size:0.8rem; color:#8a9a8c; line-height:1.7; text-align:center; }
+  .ct-reassure a { color:#2a9438; font-weight:600; text-decoration:none; }
+  .ct-reassure a:hover { text-decoration:underline; }
+
+  /* Error banner */
+  .ct-error-banner {
+    display:none; background:#fef2f2; border:1.5px solid #fca5a5; border-radius:12px;
+    padding:0.9rem 1.1rem; margin-bottom:1.25rem;
+    font-size:0.85rem; color:#dc2626; line-height:1.6;
+  }
+  .ct-error-banner.show { display:block; }
 
   /* Success state */
-  .success-state { display:none; text-align:center; padding:2rem 1rem; }
-  .success-state .tick { font-size:3.5rem; margin-bottom:1rem; }
-  .success-state h3 { font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900; color:#0d1a0e; margin-bottom:0.5rem; }
-  .success-state p { font-size:0.875rem; color:#5a6f5c; line-height:1.75; }
+  .ct-success { display:none; text-align:center; padding:2rem 1rem; }
+  .ct-success-icon { margin-bottom:1.25rem; display:flex; justify-content:center; }
+  .ct-success-icon svg { width:48px; height:48px; }
+  .ct-success h2 { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; color:#0d1a0e; margin-bottom:0.5rem; }
+  .ct-success p { font-size:0.88rem; color:#5a6f5c; line-height:1.8; }
 
-  /* Sidebar */
-  .sidebar { display:flex; flex-direction:column; gap:1.25rem; }
-
-  .info-card { background:white; border:1px solid #e0e8e1; border-radius:16px; padding:1.5rem 1.75rem; }
-  .info-card-icon { font-size:1.75rem; margin-bottom:0.75rem; }
-  .info-card h3 { font-family:'Playfair Display',serif; font-size:1rem; font-weight:800; color:#0d1a0e; margin-bottom:0.4rem; }
-  .info-card p { font-size:0.82rem; color:#5a6f5c; line-height:1.7; margin:0; }
-  .info-card a { color:#2a9438; font-weight:700; text-decoration:none; }
-  .info-card a:hover { text-decoration:underline; }
-
-  .response-card { background:linear-gradient(135deg,#eaf7ec 0%,#fff 80%); border:2px solid #3ab54a; border-radius:16px; padding:1.5rem 1.75rem; }
-  .response-card h3 { font-size:0.78rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:#3ab54a; margin-bottom:0.5rem; }
-  .response-card p { font-size:0.875rem; color:#3d5c40; line-height:1.7; margin:0; font-weight:600; }
-
-  .back-link { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.82rem; font-weight:700; color:#2a9438; text-decoration:none; margin-bottom:2rem; transition:gap 0.15s; }
-  .back-link:hover { gap:0.65rem; }
-
-  @media (max-width:700px) {
-    .contact-grid { grid-template-columns:1fr; }
-    .contact-wrap { padding:2.5rem 1.25rem 4rem; }
-    h1 { font-size:1.9rem; }
-    .sidebar { order:-1; }
+  @media (max-width:640px) {
+    .ct-wrap { padding:2.5rem 1.25rem 4rem; }
+    .ct-h1 { font-size:2rem; }
+    .ct-card { padding:1.75rem 1.25rem; }
+  }
+  @media (max-width:390px) {
+    .ct-h1 { font-size:1.75rem; }
   }
 </style>
 
 <nav style="background:white;border-bottom:1px solid #e0e8e1;padding:0 2.5rem;">
-  <div style="max-width:820px;margin:0 auto;height:68px;display:flex;align-items:center;justify-content:space-between;">
-    <a href="/" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;">
-      <img src="/images/cc-logo.png" alt="CoachCards" style="height:42px;width:42px;" />
+  <div style="max-width:760px;margin:0 auto;height:68px;display:flex;align-items:center;justify-content:space-between;">
+    <a href="/" style="display:flex;align-items:center;gap:0.7rem;text-decoration:none;">
+      <img src="/images/cc-logo.png" alt="" aria-hidden="true" style="height:42px;width:42px;flex-shrink:0;" />
+      <span style="font-family:'Manrope',sans-serif;font-size:1.1rem;font-weight:800;letter-spacing:-0.2px;line-height:1;">
+        <span style="color:#3ab54a;">Coach</span><span style="color:#111311;">Cards</span>
+      </span>
     </a>
-    <a href="/" style="font-size:0.82rem;font-weight:600;color:#7a8f7c;text-decoration:none;">â† Back to home</a>
+    <a href="/" style="font-size:0.82rem;font-weight:600;color:#7a8f7c;text-decoration:none;transition:color 0.2s;"
+       onmouseover="this.style.color='#111311'" onmouseout="this.style.color='#7a8f7c'">← Back to home</a>
   </div>
 </nav>
 
-<div class="contact-wrap">
+<div class="ct-wrap">
 
-  <a href="/" class="back-link">â† Back to home</a>
+  <div class="ct-eyebrow">Get in Touch</div>
+  <h1 class="ct-h1">CONTACT COACHCARDS</h1>
+  <p class="ct-lead">Have a question, suggestion or feedback? We'd love to hear from you.</p>
 
-  <div class="eyebrow">Get in Touch</div>
-  <h1>We'd love to hear<br/>from you.</h1>
-  <p class="lead">Whether you've spotted a bug, have a suggestion to improve the platform, or just want to ask us something â€” send us a message and we'll get back to you.</p>
+  <div class="ct-card">
 
-  <div class="contact-grid">
+    <!-- Error banner -->
+    <div class="ct-error-banner" id="ct-error-banner" role="alert"></div>
 
     <!-- Form -->
-    <div class="form-card">
-      <h2>Send a message</h2>
-      <p>All messages go directly to the CoachCards team.</p>
-
-      <form id="contact-form" name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field">
-        <input type="hidden" name="form-name" value="contact" />
-        <input type="hidden" name="bot-field" style="display:none;" />
-
-        <div class="field">
-          <label for="cf-name">Your Name</label>
-          <input id="cf-name" name="name" type="text" placeholder="e.g. James Smith" required autocomplete="name" />
-        </div>
-
-        <div class="field">
-          <label for="cf-email">Email Address</label>
-          <input id="cf-email" name="email" type="email" placeholder="e.g. james@example.com" required autocomplete="email" />
-        </div>
-
-        <div class="field">
-          <label for="cf-type">What's this about?</label>
-          <select id="cf-type" name="type" required>
-            <option value="" disabled selected>Select a topicâ€¦</option>
-            <option value="Bug report">Bug report</option>
-            <option value="Suggestion">Suggestion or feature request</option>
-            <option value="Trainer issue">Issue with a trainer listing</option>
-            <option value="Review dispute">Review dispute</option>
-            <option value="General question">General question</option>
-            <option value="Other">Other</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label for="cf-msg">Your Message</label>
-          <textarea id="cf-msg" name="message" placeholder="Tell us what's on your mindâ€¦" required maxlength="1000" oninput="document.getElementById('cf-count').textContent = this.value.length + ' / 1000'"></textarea>
-          <div class="char-count" id="cf-count">0 / 1000</div>
-        </div>
-
-        <button type="submit" class="submit-btn" id="cf-submit">Send Message â†’</button>
-      </form>
-
-      <div class="success-state" id="cf-success">
-        <div class="tick">âœ…</div>
-        <h3>Message received!</h3>
-        <p>Thanks for reaching out. We'll get back to you within 24â€“48 hours at the email address you provided.</p>
+    <form id="ct-form" novalidate>
+      <!-- Honeypot: hidden from real users, filled by bots -->
+      <div class="ct-honeypot" aria-hidden="true">
+        <label>Leave this blank <input type="text" name="website" tabindex="-1" autocomplete="off" /></label>
       </div>
+
+      <div class="field">
+        <label for="ct-name">Name <span style="color:#dc2626;" aria-hidden="true">*</span></label>
+        <input id="ct-name" name="name" type="text" autocomplete="name" required maxlength="200"
+               placeholder="Your name" aria-required="true" />
+        <div class="field-err" id="ct-name-err">Please enter your name.</div>
+      </div>
+
+      <div class="field">
+        <label for="ct-email">Email address <span style="color:#dc2626;" aria-hidden="true">*</span></label>
+        <input id="ct-email" name="email" type="email" autocomplete="email" required maxlength="320"
+               placeholder="you@example.com" aria-required="true" />
+        <div class="field-err" id="ct-email-err">Please enter a valid email address.</div>
+      </div>
+
+      <div class="field">
+        <label for="ct-message">Message <span style="color:#dc2626;" aria-hidden="true">*</span></label>
+        <textarea id="ct-message" name="message" required maxlength="3000"
+                  placeholder="Your question, suggestion or feedback…" aria-required="true"></textarea>
+        <div class="field-err" id="ct-msg-err">Please enter your message.</div>
+      </div>
+
+      <button type="submit" class="ct-submit" id="ct-submit">
+        <span id="ct-submit-label">SEND MESSAGE →</span>
+      </button>
+    </form>
+
+    <!-- Success -->
+    <div class="ct-success" id="ct-success" role="status" aria-live="polite">
+      <div class="ct-success-icon">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="24" cy="24" r="24" fill="#eaf7ec"/>
+          <path d="M14 24.5l7 7 13-14" stroke="#3ab54a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <h2>Message sent successfully.</h2>
+      <p>Thanks for getting in touch. We've received your message and will get back to you as soon as we can.</p>
     </div>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-
-      <div class="response-card">
-        <h3>Response time</h3>
-        <p>We typically reply within 24â€“48 hours, Monday to Friday.</p>
-      </div>
-
-      <div class="info-card">
-        <div class="info-card-icon">ðŸ›</div>
-        <h3>Found a bug?</h3>
-        <p>Select "Bug report" from the dropdown and describe what happened, what you expected, and what device/browser you were using.</p>
-      </div>
-
-      <div class="info-card">
-        <div class="info-card-icon">ðŸ’¡</div>
-        <h3>Have a suggestion?</h3>
-        <p>We build this platform based on feedback from real trainers and clients. If something could be better, tell us â€” we read every message.</p>
-      </div>
-
-      <div class="info-card">
-        <div class="info-card-icon">âœ‰ï¸</div>
-        <h3>Prefer email?</h3>
-        <p>Reach us directly at <a href="mailto:hello@coachcards.co.uk">hello@coachcards.co.uk</a></p>
-      </div>
-
-    </div>
+    <p class="ct-reassure">
+      Prefer email? Contact us directly at <a href="mailto:hello@coachcards.co.uk">hello@coachcards.co.uk</a>.<br/>
+      By submitting this form you agree to our <a href="/privacy">Privacy Policy</a>.
+    </p>
 
   </div>
 </div>
 
+<footer style="background:#0a130b;padding:1.75rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-top:1px solid rgba(255,255,255,0.06);">
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <img src="/images/cc-logo.png" alt="CoachCards" style="height:38px;width:38px;" />
+    <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);margin:0;">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
+  </div>
+  <div style="display:flex;gap:1.5rem;flex-wrap:wrap;">
+    {[['Home','/'],['Find a PT','/find-a-trainer'],['Privacy','/privacy'],['Terms','/terms']].map(([label,href]) => (
+      <a href={href} style="color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.8rem;font-weight:500;transition:color 0.2s;"
+         onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">{label}</a>
+    ))}
+  </div>
+</footer>
+
 <script is:inline>
-  var form = document.getElementById('contact-form');
-  var success = document.getElementById('cf-success');
-  var btn = document.getElementById('cf-submit');
+(function () {
+  var form    = document.getElementById('ct-form');
+  var success = document.getElementById('ct-success');
+  var errBanner = document.getElementById('ct-error-banner');
+  var submitBtn = document.getElementById('ct-submit');
+  var submitLabel = document.getElementById('ct-submit-label');
+  var submitted = false;
 
-  form.addEventListener('submit', function(e) {
+  function showFieldErr(id, msg) {
+    var el = document.getElementById(id);
+    if (el) { el.textContent = msg; el.classList.add('show'); }
+  }
+  function clearFieldErr(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('show');
+  }
+  function markInvalid(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.add('invalid');
+  }
+  function clearInvalid(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('invalid');
+  }
+
+  // Live validation
+  document.getElementById('ct-name').addEventListener('blur', function () {
+    if (!this.value.trim()) { markInvalid('ct-name'); showFieldErr('ct-name-err', 'Please enter your name.'); }
+    else { clearInvalid('ct-name'); clearFieldErr('ct-name-err'); }
+  });
+  document.getElementById('ct-email').addEventListener('blur', function () {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(this.value.trim())) { markInvalid('ct-email'); showFieldErr('ct-email-err', 'Please enter a valid email address.'); }
+    else { clearInvalid('ct-email'); clearFieldErr('ct-email-err'); }
+  });
+  document.getElementById('ct-message').addEventListener('blur', function () {
+    if (!this.value.trim()) { markInvalid('ct-message'); showFieldErr('ct-msg-err', 'Please enter your message.'); }
+    else { clearInvalid('ct-message'); clearFieldErr('ct-msg-err'); }
+  });
+
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-    btn.disabled = true;
-    btn.textContent = 'Sendingâ€¦';
+    if (submitted) return;
 
-    var data = new FormData(form);
+    var name    = document.getElementById('ct-name').value.trim();
+    var email   = document.getElementById('ct-email').value.trim();
+    var message = document.getElementById('ct-message').value.trim();
+    var website = form.querySelector('[name="website"]') ? form.querySelector('[name="website"]').value : '';
+    var valid = true;
 
-    fetch('/', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams(data).toString()
+    clearFieldErr('ct-name-err'); clearInvalid('ct-name');
+    clearFieldErr('ct-email-err'); clearInvalid('ct-email');
+    clearFieldErr('ct-msg-err'); clearInvalid('ct-message');
+    errBanner.classList.remove('show');
+
+    if (!name) { markInvalid('ct-name'); showFieldErr('ct-name-err', 'Please enter your name.'); valid = false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { markInvalid('ct-email'); showFieldErr('ct-email-err', 'Please enter a valid email address.'); valid = false; }
+    if (!message) { markInvalid('ct-message'); showFieldErr('ct-msg-err', 'Please enter your message.'); valid = false; }
+    if (!valid) return;
+
+    submitted = true;
+    submitBtn.disabled = true;
+    submitLabel.textContent = 'Sending…';
+
+    fetch('/.netlify/functions/send-contact-email', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ name: name, email: email, message: message, website: website }),
     })
-    .then(function(res) {
-      if (res.ok) {
+    .then(function (res) { return res.json().then(function (d) { return { ok: res.ok, data: d }; }); })
+    .then(function (r) {
+      if (r.ok && r.data.ok) {
         form.style.display = 'none';
         success.style.display = 'block';
+        // keep reassure text visible
       } else {
-        btn.disabled = false;
-        btn.textContent = 'Send Message â†’';
-        alert('Something went wrong â€” please try again or email us directly.');
+        submitted = false;
+        submitBtn.disabled = false;
+        submitLabel.textContent = 'SEND MESSAGE →';
+        var msg = (r.data && r.data.error) || '';
+        if (msg.indexOf('Too many') !== -1) {
+          errBanner.textContent = msg;
+        } else {
+          errBanner.innerHTML = "Your message couldn’t be sent. Please try again or email <a href=\"mailto:hello@coachcards.co.uk\" style=\"color:#dc2626;font-weight:600;\">hello@coachcards.co.uk</a> directly.";
+        }
+        errBanner.classList.add('show');
       }
     })
-    .catch(function() {
-      btn.disabled = false;
-      btn.textContent = 'Send Message â†’';
-      alert('Something went wrong â€” please try again or email us directly.');
+    .catch(function () {
+      submitted = false;
+      submitBtn.disabled = false;
+      submitLabel.textContent = 'SEND MESSAGE →';
+      errBanner.innerHTML = "Your message couldn’t be sent. Please try again or email <a href=\"mailto:hello@coachcards.co.uk\" style=\"color:#dc2626;font-weight:600;\">hello@coachcards.co.uk</a> directly.";
+      errBanner.classList.add('show');
     });
   });
+})();
 </script>
 
 </Layout>

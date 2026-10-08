@@ -60,24 +60,28 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   data-name={name.toLowerCase()}
   data-city={city.toLowerCase()}
   data-spec={spec.toLowerCase()}
+  data-rank={String(rank ?? 9999)}
 >
   <div class="trc-left">
     {rankStr && <span class="trc-rank">{rankStr}</span>}
 
-    {avatarUrl ? (
-      <img
-        class="trc-av"
-        src={avatarUrl}
-        alt={name}
-        width="56"
-        height="56"
-        style={avatarStyle || undefined}
-      />
-    ) : (
-      <div class="trc-av trc-av-init" style={`background:${avatarBg};color:${avatarColor};`}>
-        {avatarInitials}
-      </div>
-    )}
+    <div class="trc-av-wrap">
+      <img class="trc-crown" src="/images/crown.png" alt="" aria-hidden="true" />
+      {avatarUrl ? (
+        <img
+          class="trc-av"
+          src={avatarUrl}
+          alt={name}
+          width="56"
+          height="56"
+          style={avatarStyle || undefined}
+        />
+      ) : (
+        <div class="trc-av trc-av-init" style={`background:${avatarBg};color:${avatarColor};`}>
+          {avatarInitials}
+        </div>
+      )}
+    </div>
   </div>
 
   <div class="trc-mid">
@@ -174,6 +178,27 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     flex-shrink: 0;
     line-height: 1;
   }
+
+  .trc-av-wrap {
+    position: relative;
+    flex-shrink: 0;
+    display: inline-flex;
+  }
+  .trc-crown {
+    display: none;
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-8deg);
+    width: 34px;
+    height: auto;
+    opacity: 0.82;
+    filter: drop-shadow(0 2px 5px rgba(184,134,11,0.6)) drop-shadow(0 0 10px rgba(212,175,55,0.4));
+    z-index: 20;
+    pointer-events: none;
+    user-select: none;
+  }
+  .trc--crown .trc-crown { display: block; }
 
   .trc-av {
     width: 56px; min-width: 56px; height: 56px;
@@ -381,6 +406,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     }
     .trc-rank { font-size: 1.05rem !important; width: auto !important; line-height: 1.1; }
     .trc-av   { width: 44px !important; min-width: 44px !important; height: 44px !important; }
+    .trc-crown { width: 26px !important; top: -11px !important; }
     .trc-mid  { grid-area: mid; display: contents !important; }
     .trc-mid-top { grid-area: mid; min-width: 0; align-self: start; }
     .trc-bmp  { grid-area: bmp; padding-left: 0 !important; align-self: start; }
