@@ -1,4 +1,4 @@
-﻿---
+---
 // PT Dashboard — CoachCards
 // Route: /dashboard
 ---
@@ -32,7 +32,7 @@
   /* Prevent iOS auto-zoom on input focus */
   input, select, textarea { font-size:max(16px, 1em); }
 
-  /* â”€â”€ SIDEBAR â”€â”€ */
+  /* â"€â"€ SIDEBAR â"€â"€ */
   .sidebar {
     width:var(--sidebar-w); flex-shrink:0;
     background:var(--text);
@@ -110,10 +110,10 @@
   }
   .sb-footer-link:hover { color:white; }
 
-  /* â”€â”€ MAIN â”€â”€ */
+  /* â"€â"€ MAIN â"€â"€ */
   .main { margin-left:var(--sidebar-w); flex:1; min-width:0; display:flex; flex-direction:column; min-height:100vh; }
 
-  /* â”€â”€ TOP BAR â”€â”€ */
+  /* â"€â"€ TOP BAR â"€â"€ */
   .topbar {
     background:white; border-bottom:1px solid var(--border);
     padding:0.9rem 2.5rem; display:flex; align-items:center;
@@ -145,12 +145,12 @@
     background:var(--green); border-radius:50%; border:2px solid white;
   }
 
-  /* â”€â”€ CONTENT â”€â”€ */
+  /* â"€â"€ CONTENT â"€â"€ */
   .content { padding:2rem 2.5rem; }
   .page { display:none; }
   .page.active { display:block; }
 
-  /* â”€â”€ STAT CARDS â”€â”€ */
+  /* â"€â"€ STAT CARDS â"€â"€ */
   .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1.25rem; margin-bottom:2rem; }
   .stat-card {
     background:var(--card); border-radius:14px; padding:1.5rem;
@@ -168,11 +168,11 @@
   .stat-icon { margin-bottom:0.75rem; display:flex; align-items:center; }
   .stat-icon-bg { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; }
 
-  /* â”€â”€ GRID LAYOUTS â”€â”€ */
+  /* â"€â"€ GRID LAYOUTS â"€â"€ */
   .two-col   { display:grid; grid-template-columns:1fr 1fr;  gap:1.25rem; margin-bottom:1.25rem; }
   .three-col { display:grid; grid-template-columns:2fr 1fr;  gap:1.25rem; margin-bottom:1.25rem; }
 
-  /* â”€â”€ CARD â”€â”€ */
+  /* â"€â"€ CARD â"€â"€ */
   .card { background:var(--card); border-radius:14px; border:1px solid var(--border); overflow:hidden; margin-bottom:1.25rem; }
   .card:last-child { margin-bottom:0; }
   .card-head {
@@ -184,14 +184,14 @@
   .card-body  { padding:1.5rem; }
   .card-link  { font-size:0.78rem; color:var(--green); font-weight:700; text-decoration:none; cursor:pointer; background:none; border:none; font-family:'Manrope',sans-serif; }
 
-  /* â”€â”€ CHART BARS â”€â”€ */
+  /* â"€â"€ CHART BARS â"€â"€ */
   .chart-wrap { display:flex; align-items:flex-end; gap:8px; height:120px; padding:0.5rem 0; }
   .chart-bar-group { display:flex; flex-direction:column; align-items:center; flex:1; gap:4px; }
   .chart-bar { width:100%; border-radius:4px 4px 0 0; background:var(--green-mid); transition:background 0.2s; cursor:pointer; }
   .chart-bar:hover, .chart-bar.highlight { background:var(--green); }
   .chart-label { font-size:0.65rem; color:var(--muted); font-weight:600; }
 
-  /* â”€â”€ REVIEWS LIST â”€â”€ */
+  /* â"€â"€ REVIEWS LIST â"€â"€ */
   .rev-card { display:flex; gap:1rem; align-items:flex-start; padding:1.25rem 1.5rem; border:1px solid #e8ede9; border-radius:12px; margin-bottom:0.75rem; background:white; }
   .rev-card:last-child { margin-bottom:0; }
   .rev-avatar { width:44px; height:44px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.82rem; flex-shrink:0; }
@@ -211,7 +211,7 @@
   .appeal-btn.upheld  { border-color:#b45309; color:#b45309; cursor:default; background:transparent; }
   .appeal-btn.upheld:hover  { background:transparent; color:#b45309; }
 
-  /* â”€â”€ APPEAL MODAL â”€â”€ */
+  /* â"€â"€ APPEAL MODAL â"€â"€ */
   .appeal-modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1000; align-items:center; justify-content:center; padding:1rem; }
   .appeal-modal-bg.open { display:flex; }
   .appeal-modal { background:white; border-radius:16px; padding:2rem; max-width:480px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.2); }
@@ -227,7 +227,7 @@
   .appeal-cancel-btn { padding:0.7rem 1.25rem; background:#f4f6f4; color:#3a4a3b; border:none; border-radius:8px; font-weight:700; font-size:0.88rem; cursor:pointer; font-family:inherit; }
   .appeal-cancel-btn:hover { background:#e8ece8; }
 
-  /* â”€â”€ BMP GAUGE â”€â”€ */
+  /* â"€â"€ BMP GAUGE â"€â"€ */
   .bmp-wrap { display:flex; flex-direction:column; align-items:center; padding:1rem 0; }
   .bmp-circle {
     width:130px; height:130px; border-radius:50%;
@@ -245,7 +245,7 @@
   .bmp-rank-val    { font-size:1.1rem; font-weight:800; color:var(--green-dark); }
   .bmp-rank-label  { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
 
-  /* â”€â”€ RANKING TABLE (overview) â”€â”€ */
+  /* â"€â"€ RANKING TABLE (overview) â"€â"€ */
   .rank-table { width:100%; border-collapse:collapse; }
   .rank-table th { text-align:left; padding:0.6rem 1rem; font-size:0.68rem; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); font-weight:700; border-bottom:1px solid var(--border); background:var(--off); }
   .rank-table td { padding:0.9rem 1rem; font-size:0.85rem; border-bottom:1px solid var(--border); vertical-align:middle; }
@@ -259,7 +259,7 @@
   .rank-you-tag { background:var(--green); color:white; font-size:0.6rem; font-weight:800; padding:0.15rem 0.45rem; border-radius:20px; margin-left:0.5rem; letter-spacing:0.5px; }
   .rank-avatar  { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.72rem; }
 
-  /* â”€â”€ RANKINGS PAGE — glowing cards â”€â”€ */
+  /* â"€â"€ RANKINGS PAGE — glowing cards â"€â"€ */
   .rk-card {
     display:flex; align-items:center; gap:1rem;
     background:#111311; border:2px solid #7defa0; border-left:2px solid #7defa0;
@@ -288,7 +288,7 @@
   }
   .rk-chip:hover, .rk-chip.rk-chip-active { border-color:#3ab54a; color:#3ab54a; background:rgba(58,181,74,0.1); }
 
-  /* â”€â”€ PROFILE FORM â”€â”€ */
+  /* â"€â"€ PROFILE FORM â"€â"€ */
   .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; }
   .form-group { display:flex; flex-direction:column; gap:0.4rem; }
   .form-group.full { grid-column:1 / -1; }
@@ -313,7 +313,7 @@
     display:inline-flex; align-items:center; gap:0.35rem;
   }
   .tag-pill.selected { background:var(--green-light); border-color:var(--green); color:var(--green-dark); }
-  /* â”€â”€ Avatar preview circle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* â"€â"€ Avatar preview circle â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
   .avatar-preview-circle {
     width:90px; height:90px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -322,7 +322,7 @@
   }
   .avatar-preview-circle:hover { border-color:var(--green); }
 
-  /* â”€â”€ Crop modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* â"€â"€ Crop modal â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
   #crop-modal {
     display:none; position:fixed; inset:0; z-index:9000;
     background:rgba(0,0,0,0.72); align-items:center; justify-content:center;
@@ -354,7 +354,7 @@
   .crop-save   { flex:2; padding:0.75rem; background:#3ab54a; border:none; border-radius:8px; font-family:'Manrope',sans-serif; font-weight:700; font-size:0.875rem; cursor:pointer; color:white; }
   .crop-save:hover { background:#2a9438; }
 
-  /* â”€â”€ Color picker widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* â"€â"€ Color picker widget â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
   .cp-row { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; }
   .cp-preview { width:40px; height:40px; border-radius:8px; border:2px solid var(--border); flex-shrink:0; }
   .cp-select-btn {
@@ -414,7 +414,7 @@
   .save-msg { font-size:0.78rem; color:var(--green-dark); font-weight:600; opacity:0; transition:opacity 0.3s; margin-right:auto; }
   .save-msg.show { opacity:1; }
 
-  /* â”€â”€ REVIEW LINK GENERATOR â”€â”€ */
+  /* â"€â"€ REVIEW LINK GENERATOR â"€â"€ */
   .link-card {
     background:linear-gradient(135deg,var(--green-light) 0%,white 60%);
     border:1.5px solid var(--green-mid); border-radius:14px; padding:2rem;
@@ -437,7 +437,7 @@
   }
   .link-action-btn:hover { border-color:var(--green); color:var(--green-dark); }
 
-  /* â”€â”€ Share Hub â”€â”€ */
+  /* â"€â"€ Share Hub â"€â"€ */
   .share-section-lbl {
     font-size:0.62rem; font-weight:700; letter-spacing:2px; text-transform:uppercase;
     color:var(--muted); margin-bottom:0.55rem;
@@ -471,7 +471,7 @@
   .lh-status.pending  { background:var(--gold-light);  color:var(--gold); }
   .lh-status.expired  { background:#f5f5f5; color:#aaa; }
 
-  /* â”€â”€ RANKINGS â”€â”€ */
+  /* â"€â"€ RANKINGS â"€â"€ */
   .rank-filters { display:flex; gap:0.6rem; margin-bottom:1.5rem; flex-wrap:wrap; }
   .rank-filter {
     padding:0.4rem 1rem; border-radius:20px; font-size:0.78rem; font-weight:600;
@@ -485,7 +485,7 @@
   .progress-bar-fill { height:100%; background:var(--green); border-radius:4px; }
   .progress-val { font-size:0.78rem; font-weight:700; color:var(--green-dark); width:40px; text-align:right; }
 
-  /* â”€â”€ NOTIFICATIONS â”€â”€ */
+  /* â"€â"€ NOTIFICATIONS â"€â"€ */
   .notif-item {
     display:flex; gap:1rem; padding:1.1rem 1.5rem;
     border-bottom:1px solid var(--border); align-items:flex-start;
@@ -501,11 +501,11 @@
   .notif-text { font-size:0.855rem; line-height:1.55; word-break:break-word; color:var(--text); }
   .notif-time { font-size:0.7rem; color:var(--muted); margin-top:0.15rem; }
 
-  /* â”€â”€ SECTION HEADING â”€â”€ */
+  /* â"€â"€ SECTION HEADING â"€â"€ */
   .section-eyebrow { font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:0.3rem; }
   .section-heading { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; margin-bottom:1.5rem; }
 
-  /* â”€â”€ TOAST â”€â”€ */
+  /* â"€â"€ TOAST â"€â"€ */
   .copy-toast {
     position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
     background:var(--text); color:white; padding:0.6rem 1.5rem;
@@ -514,14 +514,14 @@
   }
   .copy-toast.show { opacity:1; }
 
-  /* â”€â”€ ANIMATIONS â”€â”€ */
+  /* â"€â"€ ANIMATIONS â"€â"€ */
   @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
   .page.active .stat-card { animation:fadeUp 0.4s ease both; }
   .page.active .stat-card:nth-child(2) { animation-delay:0.05s; }
   .page.active .stat-card:nth-child(3) { animation-delay:0.10s; }
   .page.active .stat-card:nth-child(4) { animation-delay:0.15s; }
 
-  /* â”€â”€ RESPONSIVE â”€â”€ */
+  /* â"€â"€ RESPONSIVE â"€â"€ */
   @media (max-width: 1100px) {
     .stats-grid { grid-template-columns:repeat(2,1fr); }
     .three-col  { grid-template-columns:1fr; }
@@ -566,7 +566,7 @@
     .content { padding-bottom:80px; }
   }
 
-  /* â”€â”€ Mobile bottom nav â”€â”€ */
+  /* â"€â"€ Mobile bottom nav â"€â"€ */
   .mob-bottom-nav {
     display:none;
     position:fixed; bottom:0; left:0; right:0; z-index:300;
@@ -607,7 +607,7 @@
     #share-card { width:100% !important; max-width:360px; margin:0 auto; }
   }
 
-  /* â”€â”€ Messages â”€â”€ */
+  /* â"€â"€ Messages â"€â"€ */
   #msg-conv-list { background:none !important; border:none !important; box-shadow:none !important; padding:0 !important; }
   .msg-card {
     display:flex; align-items:stretch;
@@ -648,7 +648,7 @@
   .msg-bubble-c { background:white; color:var(--text); border:1px solid var(--border); padding:0.6rem 0.85rem; border-radius:14px 14px 14px 4px; font-size:0.875rem; line-height:1.5; word-break:break-word; }
   .msg-time { font-size:0.62rem; color:#aab8ac; margin-top:0.2rem; }
 
-  /* â”€â”€ Trainer reply panel (bottom-right) â”€â”€ */
+  /* â"€â"€ Trainer reply panel (bottom-right) â"€â"€ */
   .tr-chat-panel {
     position:fixed; bottom:24px; right:24px; z-index:9999;
     width:360px; max-height:520px;
@@ -710,7 +710,7 @@
 <script is:inline src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style is:global>
-  /* â”€â”€ Onboarding checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* â"€â"€ Onboarding checklist â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
   #onboard-wrap {
     background: linear-gradient(135deg, #0d1a0e 0%, #1a3d1e 100%);
     border-radius: 20px; padding: 2.5rem;
@@ -761,7 +761,7 @@
   }
   #onboard-wrap .onboard-dismiss:hover { color: rgba(255,255,255,0.7); }
 
-  /* â”€â”€ New-review celebration banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+  /* â"€â"€ New-review celebration banner â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€ */
   .review-alert {
     display: flex;
     align-items: center;
@@ -1047,7 +1047,7 @@
         </div>
         <div class="card-body">
 
-          <!-- â”€â”€ Hero preview + Photo upload â”€â”€ -->
+          <!-- â"€â"€ Hero preview + Photo upload â"€â"€ -->
           <div id="profile-hero-preview" style="background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);border-radius:12px;padding:1.75rem;margin-bottom:1.75rem;transition:background 0.5s ease;">
             <div style="font-size:0.62rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:1.1rem;">Live Preview — Your Profile Header</div>
             <div style="display:flex;align-items:center;gap:1.75rem;">
@@ -1068,7 +1068,7 @@
             </div>
           </div>
 
-          <!-- â”€â”€ Avatar colour picker â”€â”€ -->
+          <!-- â"€â"€ Avatar colour picker â"€â"€ -->
           <div style="margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
             <label class="form-label" style="display:block;margin-bottom:0.65rem;">Avatar Colour <span style="font-weight:400;color:var(--muted);">(photo border ring, or initials colour)</span></label>
             <div class="cp-row">
@@ -1088,7 +1088,7 @@
             </div>
           </div>
 
-          <!-- â”€â”€ Hero background colour picker â”€â”€ -->
+          <!-- â"€â"€ Hero background colour picker â"€â"€ -->
           <div style="margin-bottom:1.75rem;padding-bottom:1.75rem;border-bottom:1px solid var(--border);">
             <label class="form-label" style="display:block;margin-bottom:0.65rem;">Profile Page Background <span style="font-weight:400;color:var(--muted);">(pick a base colour — a dark gradient is generated automatically)</span></label>
             <div class="cp-row">
@@ -1745,7 +1745,7 @@
   </div>
 </main>
 
-<!-- â”€â”€ Appeal modal â”€â”€ -->
+<!-- â"€â"€ Appeal modal â"€â"€ -->
 <div class="appeal-modal-bg" id="appeal-modal-bg">
   <div class="appeal-modal">
     <div class="appeal-modal-title">Appeal This Review</div>
@@ -1759,7 +1759,7 @@
   </div>
 </div>
 
-<!-- â”€â”€ Trainer reply panel (bottom-right) â”€â”€ -->
+<!-- â"€â"€ Trainer reply panel (bottom-right) â"€â"€ -->
 <div id="tr-chat-panel" class="tr-chat-panel tr-chat-hidden">
   <div class="tr-chat-hdr">
     <div class="tr-chat-av" id="tr-chat-av">?</div>
@@ -1780,7 +1780,7 @@
 
 <div class="copy-toast" id="copy-toast">✅ Link copied to clipboard!</div>
 
-<!-- â”€â”€ Avatar crop modal â”€â”€ -->
+<!-- â"€â"€ Avatar crop modal â"€â"€ -->
 <div id="crop-modal">
   <div class="crop-box">
     <h3>Adjust your profile photo</h3>
@@ -1789,7 +1789,7 @@
       <img id="crop-img" src="" alt="" draggable="false" />
     </div>
     <div class="crop-zoom-row">
-      <label>ðŸ” Zoom</label>
+      <label>ðŸ" Zoom</label>
       <input id="crop-zoom" type="range" min="100" max="300" value="100" step="1" oninput="cropZoom(this.value)" />
     </div>
     <div class="crop-actions">
@@ -1803,7 +1803,7 @@
   import { supabase } from '../lib/supabase';
   import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
 
-  // â”€â”€ Auth guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Auth guard â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   // Fast path: read from localStorage (persisted across visits).
   let _session: any = (await supabase.auth.getSession()).data.session;
 
@@ -1836,7 +1836,7 @@
 
   const session = _session;
 
-  // â”€â”€ Load trainer record â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Load trainer record â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const { data: _trainerData, error: _trainerErr } = await supabase
     .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
 
@@ -1882,7 +1882,7 @@
   (window as any).__ptSupabase  = supabase;
   (window as any).__ptTrainer   = trainer;
 
-  // â”€â”€ Gyms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Gyms â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   let trainerGyms: { name: string; location: string }[] = [];
 
   function renderGyms() {
@@ -1923,7 +1923,7 @@
   if (trainer) {
     const firstName = trainer.name.split(' ')[0];
 
-    // â”€â”€ Sidebar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Sidebar â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const sbAvatarEl = document.querySelector('.sb-avatar') as HTMLElement;
     if (sbAvatarEl) {
       if (trainer.avatar_url) {
@@ -1946,7 +1946,7 @@
       }
     }
 
-    // â”€â”€ Onboarding checklist â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Onboarding checklist â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     (function initOnboarding() {
       const steps = [
         {
@@ -1997,7 +1997,7 @@
       const dismissBtn = document.getElementById('onboard-dismiss-btn');
       const incomplete = steps.length - doneCount;
 
-      // â”€â”€ Sidebar badge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // â"€â"€ Sidebar badge â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
       const setupBadge = document.getElementById('sb-setup-badge');
       if (setupBadge) {
         if (incomplete > 0) {
@@ -2008,7 +2008,7 @@
         }
       }
 
-      // â”€â”€ Setup page (always rendered) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // â"€â"€ Setup page (always rendered) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
       const pageBar   = document.getElementById('setup-page-bar') as HTMLElement;
       const pageCount = document.getElementById('setup-page-count');
       const pageSub   = document.getElementById('setup-page-sub');
@@ -2039,7 +2039,7 @@
         });
       }
 
-      // â”€â”€ Overview widget (only when incomplete and not dismissed) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+      // â"€â"€ Overview widget (only when incomplete and not dismissed) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
       const dismissKey = `pt_onboard_dismissed_${trainer.id}`;
       if (!localStorage.getItem(dismissKey) && doneCount < steps.length) {
         function renderChecklist() {
@@ -2072,15 +2072,15 @@
       }
     })();
 
-    // â”€â”€ View Public Profile link â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ View Public Profile link â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const profileLink = document.getElementById('view-profile-link') as HTMLAnchorElement;
     if (profileLink) profileLink.href = `/trainers/${trainer.id}`;
 
-    // â”€â”€ Topbar subtitle â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Topbar subtitle â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const pageSub = document.getElementById('page-sub');
     if (pageSub) pageSub.textContent = `Welcome back, ${firstName}. Here's how you're performing.`;
 
-    // â”€â”€ Stat cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Stat cards â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const hasBmp  = (trainer.bmp_score ?? 0) > 0;
     const bmpEl   = document.getElementById('stat-bmp');
     const revEl   = document.getElementById('stat-reviews');
@@ -2103,7 +2103,7 @@
       : 'Earn your first review to unlock';
     if (revChangeEl)  revChangeEl.textContent  = (trainer.review_count ?? 0) > 0 ? `${trainer.review_count} verified reviews` : 'No reviews yet — send your first link';
 
-    // â”€â”€ Profile views â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Profile views â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
     const [{ count: totalViews }, { count: monthViews }] = await Promise.all([
       supabase.from('profile_views').select('*', { count: 'exact', head: true }).eq('trainer_id', trainer.id),
@@ -2112,7 +2112,7 @@
     if (viewsEl)    viewsEl.textContent    = String(totalViews ?? 0);
     if (viewChangeEl) viewChangeEl.textContent = (monthViews ?? 0) > 0 ? `${monthViews} this month` : 'Increases as clients find you';
 
-    // â”€â”€ New-review celebration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ New-review celebration â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const currentCount = trainer.review_count ?? 0;
     const storageKey   = `pt_last_review_count_${trainer.id}`;
     const lastCount    = parseInt(localStorage.getItem(storageKey) || '0', 10);
@@ -2142,7 +2142,7 @@
       }
     }
     localStorage.setItem(storageKey, String(currentCount));
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
     // Compute UK rank
     const { count } = await supabase
@@ -2155,7 +2155,7 @@
     if (rankEl)       rankEl.textContent       = hasBmp ? `#${rank}` : '—';
     if (rankChangeEl) rankChangeEl.textContent = hasBmp ? `Competing with PTs across the UK` : 'Rank unlocks with first review';
 
-    // â”€â”€ BMP Gauge â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ BMP Gauge â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const gaugeCircle = document.getElementById('gauge-circle') as HTMLElement;
     const gaugeScore  = document.getElementById('gauge-score')  as HTMLElement;
     const gaugeRank   = document.getElementById('gauge-rank')   as HTMLElement;
@@ -2168,7 +2168,7 @@
     if (gaugeRank) gaugeRank.innerHTML = hasBmp ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>Ranked #${rank} in the UK` : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
     if (gaugeSub)  gaugeSub.textContent  = hasBmp ? `Competing with PTs across the UK`      : 'Start collecting verified reviews';
 
-    // â”€â”€ Fetch this PT's real reviews â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Fetch this PT's real reviews â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const { data: ptReviews } = await supabase
       .from('reviews')
       .select('id, reviewer_name, reviewer_initials, reviewer_avatar_bg, reviewer_avatar_color, rating, review_text, created_at, appeal_status')
@@ -2177,7 +2177,7 @@
       .order('created_at', { ascending: false });
     const reviews = ptReviews ?? [];
 
-    // â”€â”€ Fetch appeal outcome notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Fetch appeal outcome notifications â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const { data: ptAppealNotifs } = await supabase
       .from('notifications')
       .select('id, type, title, body, created_at, is_read')
@@ -2187,7 +2187,7 @@
       .limit(20);
     const appealNotifs: any[] = ptAppealNotifs ?? [];
 
-    // â”€â”€ Recent reviews (overview) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Recent reviews (overview) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const recentList = document.getElementById('recent-reviews-list');
     if (recentList) {
       if (reviews.length === 0) {
@@ -2220,7 +2220,7 @@
       }
     }
 
-    // â”€â”€ Reviews page stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Reviews page stats â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const avgEl   = document.getElementById('rev-stat-avg');
     const totEl   = document.getElementById('rev-stat-total');
     const verEl   = document.getElementById('rev-stat-verified');
@@ -2237,7 +2237,7 @@
       if (verEl)  verEl.textContent  = '—';
     }
 
-    // â”€â”€ All reviews list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ All reviews list â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const allList = document.getElementById('all-reviews-list');
     if (allList) {
       if (reviews.length === 0) {
@@ -2283,7 +2283,7 @@
       }
     }
 
-    // â”€â”€ Appeal modal logic (lives here so supabase is in scope) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Appeal modal logic (lives here so supabase is in scope) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     let _appealReviewId: string | null = null;
 
     const appealModalBg   = document.getElementById('appeal-modal-bg')!;
@@ -2388,7 +2388,7 @@
       }
     });
 
-    // â”€â”€ Time-ago helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Time-ago helper â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const timeAgo = (iso: string): string => {
       const diff = Date.now() - new Date(iso).getTime();
       const mins  = Math.floor(diff / 60000);
@@ -2402,7 +2402,7 @@
       return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
     };
 
-    // â”€â”€ Reviews chart (real monthly data) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Reviews chart (real monthly data) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const chartWrap = document.getElementById('reviews-chart-wrap') as HTMLElement;
     if (chartWrap) {
       const now = new Date();
@@ -2426,7 +2426,7 @@
       }).join('');
     }
 
-    // â”€â”€ Review History (link history page) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Review History (link history page) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const linkHistoryEl = document.getElementById('link-history-list') as HTMLElement;
     if (linkHistoryEl) {
       if (reviews.length === 0) {
@@ -2455,7 +2455,7 @@
       }
     }
 
-    // â”€â”€ Score Breakdown (real values) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Score Breakdown (real values) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const breakdownEl = document.getElementById('score-breakdown-body') as HTMLElement;
     if (breakdownEl) {
       if (!hasBmp) {
@@ -2509,7 +2509,7 @@
       }
     }
 
-    // â”€â”€ Notifications badge + read state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Notifications badge + read state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const notifKey      = `pt_last_notif_seen_${trainer.id}`;
     const lastNotifSeen = parseInt(localStorage.getItem(notifKey) || '0', 10);
     const reviewUnread  = Math.max(0, reviews.length - lastNotifSeen);
@@ -2532,7 +2532,7 @@
     const notifDot = document.querySelector('.notif-dot') as HTMLElement;
     if (notifDot) notifDot.style.display = unreadCount > 0 ? '' : 'none';
 
-    // â”€â”€ Notifications list â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Notifications list â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const notifCard = document.getElementById('notif-card') as HTMLElement;
     if (notifCard) {
       type NotifItem = { iconBg: string; iconColor: string; iconChar: string; badge: string; title: string; body: string; time: string; isRead: boolean; sortTs: number };
@@ -2616,7 +2616,7 @@
       }
     }
 
-    // â”€â”€ Profile form pre-fill â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Profile form pre-fill â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const nameParts = (trainer.name || '').split(' ');
     const fillText = (id: string, val: string) => {
       const el = document.getElementById(id) as HTMLInputElement | HTMLTextAreaElement | null;
@@ -2642,7 +2642,7 @@
     }
     fillText('booking-url', (trainer as any).booking_url ?? '');
 
-    // â”€â”€ Avatar preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Avatar preview â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const avatarPreview = document.getElementById('profile-avatar-preview') as HTMLElement;
     if (avatarPreview) {
       if (trainer.avatar_url) {
@@ -2658,7 +2658,7 @@
       }
     }
 
-    // â”€â”€ Color picker pre-load â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Color picker pre-load â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     if (typeof (window as any).cpInitFromTrainer === 'function') {
       (window as any).cpInitFromTrainer(trainer);
     }
@@ -2682,7 +2682,7 @@
         : (_grads[_currentTheme] ?? _grads.forest);
     }
 
-    // â”€â”€ Profile completeness banner â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Profile completeness banner â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const isNewProfile = !trainer.bio && !trainer.city && (trainer.review_count ?? 0) === 0;
     const profilePage  = document.getElementById('page-profile');
     if (isNewProfile && profilePage && !profilePage.querySelector('.profile-welcome-banner')) {
@@ -2707,7 +2707,7 @@
       profilePage.insertBefore(banner, profilePage.firstChild);
     }
 
-    // â”€â”€ Specialty tags — deselect all, then select matching â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Specialty tags — deselect all, then select matching â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     document.querySelectorAll('.tag-pill:not(#specialty-other-pill)').forEach(tag => {
       tag.classList.remove('selected');
       const tagText = (tag.textContent ?? '').replace(/^\S+\s*/, '').trim();
@@ -2725,7 +2725,7 @@
       if (otherWrap)  otherWrap.style.display = 'block';
     }
 
-    // â”€â”€ Cert dropdown â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Cert dropdown â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const certEl         = document.getElementById('profile-cert')            as HTMLSelectElement;
     const certOtherWrap  = document.getElementById('profile-cert-other-wrap') as HTMLDivElement;
     const certOtherInput = document.getElementById('profile-cert-other')      as HTMLInputElement;
@@ -2747,7 +2747,7 @@
       certOtherWrap.style.display = isOther ? 'flex' : 'none';
     });
 
-    // â”€â”€ Personalised review link â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Personalised review link â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const reviewLinkEl = document.getElementById('review-link') as HTMLInputElement;
     const reviewUrl = `${window.location.origin}/review/${trainer.id}`;
     if (reviewLinkEl) reviewLinkEl.value = reviewUrl;
@@ -2777,7 +2777,7 @@
     // Load feed on initial overview display
     loadOverviewFeed();
 
-    // â”€â”€ Rankings table (dynamic) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Rankings table (dynamic) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const { data: leaderboard } = await supabase
       .from('trainers')
       .select('id, name, username, city, location, specialty, bmp_score, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url')
@@ -2786,7 +2786,7 @@
       .order('bmp_score', { ascending: false })
       .limit(100);
 
-    // â”€â”€ Overview mini-table â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Overview mini-table â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const _renderRankRows = (rows: any[], tbody: HTMLElement, limit: number) => {
       const posClasses = ['r1','r2','r3'];
       if (rows && rows.length > 0) {
@@ -2810,7 +2810,7 @@
     const rankTbody = document.getElementById('rank-tbody') as HTMLElement;
     if (rankTbody) _renderRankRows(leaderboard ?? [], rankTbody, 20);
 
-    // â”€â”€ Rankings page — glowing cards â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Rankings page — glowing cards â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const rkData = leaderboard ?? [];
     const rkList = document.getElementById('rk-list') as HTMLElement;
 
@@ -2819,30 +2819,30 @@
       const isYou = pt.id === trainer.id;
       const bmp   = pt.bmp_score ?? 0;
       const av = pt.avatar_url
-        ? `<img src=”${pt.avatar_url}” style=”width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);” alt=””>`
-        : `<div style=”width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;”>${pt.avatar_initials||'?'}</div>`;
-      const crownHtml = i === 0 ? `<img src=”/images/crown.png” alt=”” aria-hidden=”true” style=”display:block;position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-8deg);width:36px;height:auto;opacity:0.82;filter:drop-shadow(0 2px 5px rgba(184,134,11,0.6)) drop-shadow(0 0 10px rgba(212,175,55,0.4));z-index:20;pointer-events:none;user-select:none;”>` : '';
-      const avWrap = `<div style=”position:relative;display:inline-flex;flex-shrink:0;”>${crownHtml}${av}</div>`;
-      const tick = `<svg width=”15” height=”15” viewBox=”0 0 16 16” fill=”none” xmlns=”http://www.w3.org/2000/svg” style=”vertical-align:middle;flex-shrink:0;”><circle cx=”8” cy=”8” r=”8” fill=”#3ab54a”/><path d=”M4.5 8.2l2.3 2.3 4.7-4.7” stroke=”white” stroke-width=”1.6” stroke-linecap=”round” stroke-linejoin=”round”/></svg>`;
-      const youPill = isYou ? `<span style=”background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;”>YOU</span>` : '';
-      const cityMeta = (pt.city||pt.location) ? `<span style=”display:inline-flex;align-items:center;gap:3px;white-space:nowrap;”><svg width=”12” height=”12” viewBox=”0 0 24 24” fill=”none” stroke=”#9ca3af” stroke-width=”2” stroke-linecap=”round” stroke-linejoin=”round”><path d=”M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z”/><circle cx=”12” cy=”10” r=”3”/></svg>${pt.city||pt.location}</span>` : '';
-      const specMeta = pt.specialty ? `<span style=”display:inline-flex;align-items:center;gap:3px;white-space:nowrap;”><svg width=”12” height=”12” viewBox=”0 0 24 24” fill=”none” stroke=”#9ca3af” stroke-width=”2” stroke-linecap=”round” stroke-linejoin=”round”><rect x=”2” y=”9” width=”4” height=”6” rx=”1”/><rect x=”18” y=”9” width=”4” height=”6” rx=”1”/><line x1=”6” y1=”12” x2=”18” y2=”12”/></svg>${pt.specialty}</span>` : '';
-      const meta = [cityMeta, specMeta].filter(Boolean).join('<span style=”color:rgba(255,255,255,0.25);margin:0 2px;”>·</span>');
+        ? `<img src="${pt.avatar_url}" style="width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="">`
+        : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
+      const crownHtml = i === 0 ? `<img src="/images/crown.png" alt="" aria-hidden="true" style="display:block;position:absolute;top:-14px;left:50%;transform:translateX(-50%) rotate(-8deg);width:36px;height:auto;opacity:0.82;filter:drop-shadow(0 2px 5px rgba(184,134,11,0.6)) drop-shadow(0 0 10px rgba(212,175,55,0.4));z-index:20;pointer-events:none;user-select:none;">` : '';
+      const avWrap = `<div style="position:relative;display:inline-flex;flex-shrink:0;">${crownHtml}${av}</div>`;
+      const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+      const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
+      const cityMeta = (pt.city||pt.location) ? `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>${pt.city||pt.location}</span>` : '';
+      const specMeta = pt.specialty ? `<span style="display:inline-flex;align-items:center;gap:3px;white-space:nowrap;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>${pt.specialty}</span>` : '';
+      const meta = [cityMeta, specMeta].filter(Boolean).join('<span style="color:rgba(255,255,255,0.25);margin:0 2px;">·</span>');
       const glow = isYou
         ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
         : 'border:2px solid #7defa0;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);background:#111311;';
-      return `<a href=”/trainers/${pt.id}” target=”_blank” style=”display:flex;align-items:center;gap:1rem;${glow}border-radius:12px;padding:1rem 1.25rem;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;”>
-        <div style=”font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:#3ab54a;width:2.25rem;flex-shrink:0;”>${String(i+1).padStart(2,'0')}</div>
+      return `<a href="/trainers/${pt.id}" target="_blank" style="display:flex;align-items:center;gap:1rem;${glow}border-radius:12px;padding:1rem 1.25rem;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;">
+        <div style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:#3ab54a;width:2.25rem;flex-shrink:0;">${String(i+1).padStart(2,'0')}</div>
         ${avWrap}
-        <div style=”flex:1;min-width:0;”>
-          <div style=”font-weight:800;font-size:0.92rem;color:white;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-family:'Manrope',sans-serif;”>${pt.name} ${tick} ${youPill}</div>
-          ${pt.username ? `<div style=”font-size:0.72rem;color:rgba(255,255,255,0.38);font-weight:600;margin-top:0.1rem;font-family:'Manrope',sans-serif;”>@${pt.username}</div>` : ''}
-          <div style=”display:flex;align-items:center;flex-wrap:wrap;gap:0.15rem;font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.25rem;font-family:'Manrope',sans-serif;”>${meta}</div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-weight:800;font-size:0.92rem;color:white;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-family:'Manrope',sans-serif;">${pt.name} ${tick} ${youPill}</div>
+          ${pt.username ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.38);font-weight:600;margin-top:0.1rem;font-family:'Manrope',sans-serif;">@${pt.username}</div>` : ''}
+          <div style="display:flex;align-items:center;flex-wrap:wrap;gap:0.15rem;font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.25rem;font-family:'Manrope',sans-serif;">${meta}</div>
         </div>
-        <div style=”text-align:right;flex-shrink:0;”>
-          <div style=”font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:white;line-height:1;”>${bmp > 0 ? bmp : '—'}</div>
-          <div style=”font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.15rem;font-family:'Manrope',sans-serif;”>BMP</div>
-          <div style=”margin-top:0.35rem;display:flex;gap:2px;justify-content:flex-end;”>${_bmpDumbbell(bmp, 44)}</div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:white;line-height:1;">${bmp > 0 ? bmp : '—'}</div>
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.15rem;font-family:'Manrope',sans-serif;">BMP</div>
+          <div style="margin-top:0.35rem;display:flex;gap:2px;justify-content:flex-end;">${_bmpDumbbell(bmp, 44)}</div>
         </div>
       </a>`;
     };
@@ -2908,7 +2908,7 @@
       rkBanner.style.display = 'flex';
     }
 
-    // â”€â”€ Mini gauge on Rankings page â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Mini gauge on Rankings page â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     const miniScore  = document.getElementById('mini-gauge-score')  as HTMLElement;
     const miniRank   = document.getElementById('mini-gauge-rank')   as HTMLElement;
     const miniSub    = document.getElementById('mini-gauge-sub')    as HTMLElement;
@@ -2921,12 +2921,12 @@
       miniCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
     }
 
-    // â”€â”€ Load gyms â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // â"€â"€ Load gyms â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
     trainerGyms = Array.isArray(trainer.gyms) ? [...trainer.gyms] : [];
     renderGyms();
   }
 
-  // â”€â”€ Save Profile (exposed globally so onclick can call it) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Save Profile (exposed globally so onclick can call it) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   (window as any).saveProfile = async () => {
     try {
     if (!trainerId) return;
@@ -3010,7 +3010,7 @@
     }
   };
 
-  // â”€â”€ Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Messages â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
   let _msgConvId: string | null   = null;
   let _msgChannel: any            = null;
@@ -3186,7 +3186,7 @@
   // Load initial badge count on dashboard open
   _fetchUnreadBadge();
 
-  // â”€â”€ Sign out â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Sign out â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const doSignOut = async () => {
     localStorage.removeItem('cc_trainer');
     await supabase.auth.signOut();
@@ -3197,7 +3197,7 @@
 </script>
 
 <script is:inline>
-  // â”€â”€ Avatar crop state â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Avatar crop state â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   var _cropFile = null;
   var _cropOffX = 0, _cropOffY = 0;
   var _cropScale = 1;
@@ -3335,10 +3335,10 @@
   }
 
   // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-  // â”€â”€ Color Picker engine â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Color Picker engine â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   // â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-  // HSV â†” Hex helpers
+  // HSV â†" Hex helpers
   function cpHSVtoRGB(h, s, v) {
     var r, g, b, i = Math.floor(h / 60), f = h / 60 - i,
         p = v*(1-s), q = v*(1-f*s), t = v*(1-(1-f)*s);
@@ -3657,7 +3657,7 @@
     showPage('overview');
   }
 
-  // â”€â”€ Share Card Builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Share Card Builder â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   var _cardBuilt = false;
   var _igFormat = (function() {
     try { return localStorage.getItem('cc_ig_format') || 'story'; } catch(e) { return 'story'; }
@@ -3781,7 +3781,7 @@
             + '<div style="font-family:\'Playfair Display\',serif;font-size:1.2rem;font-weight:900;color:white;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,0.4);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + name + '</div>'
             + (username ? '<div style="color:rgba(255,255,255,0.38);font-size:0.67rem;font-weight:600;font-family:\'Manrope\',sans-serif;margin-top:2px;">' + username + '</div>' : '')
             + '<div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;">'
-              + '<div style="color:rgba(255,255,255,0.35);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">ðŸ“ ' + city + '</div>'
+              + '<div style="color:rgba(255,255,255,0.35);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">ðŸ" ' + city + '</div>'
               + (specialty ? '<div style="color:rgba(255,255,255,0.28);font-size:0.63rem;font-family:\'Manrope\',sans-serif;">· ' + specialty + '</div>' : '')
             + '</div>'
             + (bmp ? '<div style="margin-top:6px;display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:3px 8px;">'
@@ -3875,7 +3875,7 @@
 
     // BMP badge — plain text, no box
     var bmpHtml = bmp
-      ? '<div style="color:white;font-size:13px;font-weight:700;font-family:\'Manrope\',sans-serif;text-align:center;">ðŸ“Š BMP <span style="color:' + theme.accent + ';font-size:15px;">' + bmp + '</span></div>'
+      ? '<div style="color:white;font-size:13px;font-weight:700;font-family:\'Manrope\',sans-serif;text-align:center;">ðŸ"Š BMP <span style="color:' + theme.accent + ';font-size:15px;">' + bmp + '</span></div>'
       : '';
 
     var card = document.getElementById('share-card');
@@ -3903,7 +3903,7 @@
         // Username
         + (username ? '<div style="color:rgba(255,255,255,0.45);font-size:0.72rem;font-weight:600;text-align:center;margin-bottom:5px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">' + username + '</div>' : '')
         // City
-        + '<div style="color:rgba(255,255,255,0.38);font-size:0.7rem;font-weight:500;text-align:center;margin-bottom:10px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">ðŸ“ ' + city + '</div>'
+        + '<div style="color:rgba(255,255,255,0.38);font-size:0.7rem;font-weight:500;text-align:center;margin-bottom:10px;font-family:\'Manrope\',sans-serif;letter-spacing:0.5px;">ðŸ" ' + city + '</div>'
         // BMP badge
         + (bmpHtml ? '<div style="margin-bottom:12px;">' + bmpHtml + '</div>' : '<div style="margin-bottom:12px;height:28px;"></div>')
         // Divider
@@ -4079,7 +4079,7 @@
     }).catch(function() { showToast('âš ï¸ Could not copy — try again'); });
   }
 
-  // â”€â”€ Central share-message builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Central share-message builder â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   function getShareData() {
     var link      = document.getElementById('review-link').value;
     var customEl  = document.getElementById('sc-custom-msg');
@@ -4106,7 +4106,7 @@
     }
     return d.custom + '\n\nLeave me a verified review on CoachCards:\n' + d.link;
   }
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
   function copyUrlBtn(btn) {
     var link = document.getElementById('review-link').value;
@@ -4144,7 +4144,7 @@
       window.open('sms:?body=' + encodeURIComponent(text));
     } else {
       navigator.clipboard.writeText(text).catch(function() {});
-      showToast('ðŸ“‹ Message copied — paste it into your SMS app');
+      showToast('ðŸ"‹ Message copied — paste it into your SMS app');
     }
   }
 
@@ -4197,7 +4197,7 @@
     }
   }
 
-  // â”€â”€ Message preview â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Message preview â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   var _prevChannel = 'whatsapp';
 
   function toggleSharePreview() {
@@ -4244,7 +4244,7 @@
       pre.textContent = buildReviewMessage(_prevChannel);
     }
   }
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
   function downloadQRCode() {
     var link = document.getElementById('review-link').value;
@@ -4298,7 +4298,7 @@
     setTimeout(() => toast.classList.remove('show'), dur);
   }
 
-  // â”€â”€ Feed post functions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Feed post functions â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   var _postImgFile = null;
 
   function handlePostImgSelect(input) {
@@ -4434,9 +4434,9 @@
     if (!res.error) { loadFeedPosts(); loadOverviewFeed(); }
     else showToast('âŒ Failed to delete post.');
   }
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 
-  // â”€â”€ Fireworks celebration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Fireworks celebration â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   window['__ptFireCelebration'] = function(newCount) {
     // Small delay so the page has finished rendering
     setTimeout(function() {
@@ -4476,7 +4476,7 @@
       });
     }, 300);
   };
-  // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
 </script>
 <!-- Mobile bottom navigation -->
 <nav class="mob-bottom-nav" id="mob-bottom-nav">

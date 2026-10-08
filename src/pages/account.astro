@@ -1,12 +1,12 @@
-﻿---
-// Client Account â€” CoachCards
+---
+// Client Account â€" CoachCards
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Account â€” CoachCards</title>
+<title>My Account â€" CoachCards</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style is:global>
   :root {
@@ -17,7 +17,7 @@
   html { overflow-x:hidden; }
   body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; overflow-x:hidden; }
 
-  /* â”€â”€ Top bar â”€â”€ */
+  /* â"€â"€ Top bar â"€â"€ */
   .topbar {
     background:white; border-bottom:1px solid var(--border);
     box-shadow:0 1px 8px rgba(0,0,0,0.05);
@@ -41,10 +41,10 @@
   }
   .signout-btn:hover { border-color:var(--text); color:var(--text); }
 
-  /* â”€â”€ Page layout â”€â”€ */
+  /* â"€â"€ Page layout â"€â"€ */
   .page { max-width:1100px; margin:0 auto; padding:2.5rem 2.5rem 4rem; }
 
-  /* â”€â”€ Tab nav (desktop) â”€â”€ */
+  /* â"€â"€ Tab nav (desktop) â"€â"€ */
   .acc-tabs {
     display:flex; gap:0; background:white; border:none; border-radius:0;
     padding:0; margin-bottom:2rem;
@@ -63,7 +63,7 @@
   .acc-section { display:none; }
   .acc-section.active { display:block; }
 
-  /* â”€â”€ Mobile bottom nav â”€â”€ */
+  /* â"€â"€ Mobile bottom nav â"€â"€ */
   .acc-bottom-nav {
     display:none; position:fixed; bottom:0; left:0; right:0; z-index:300;
     background:white; border-top:1px solid var(--border);
@@ -80,7 +80,7 @@
   .acc-bottom-nav button.active { color:var(--green); }
   .acc-bottom-nav .bn-icon { display:flex; align-items:center; justify-content:center; line-height:1; }
   .acc-bottom-nav .bn-label { font-size:0.6rem; font-weight:700; letter-spacing:0.3px; text-transform:uppercase; }
-  /* â”€â”€ Real-time toast â”€â”€ */
+  /* â"€â"€ Real-time toast â"€â"€ */
   @keyframes slideInToast {
     from { opacity:0; transform:translateY(16px); }
     to   { opacity:1; transform:translateY(0); }
@@ -103,7 +103,7 @@
     .rt-toast { bottom:calc(68px + env(safe-area-inset-bottom)); right:0.75rem; left:0.75rem; max-width:none; }
   }
 
-  /* â”€â”€ Notification bell â”€â”€ */
+  /* â"€â"€ Notification bell â"€â"€ */
   .notif-bell-btn {
     position:relative; background:none; border:none; cursor:pointer;
     padding:0.35rem 0.45rem; border-radius:8px; transition:background 0.15s;
@@ -117,7 +117,7 @@
     display:none; align-items:center; justify-content:center;
     border:1.5px solid white; font-family:'Manrope',sans-serif;
   }
-  /* â”€â”€ Notification item cards â”€â”€ */
+  /* â"€â"€ Notification item cards â"€â"€ */
   .notif-item-card {
     display:flex; align-items:flex-start; gap:0.85rem;
     background:white; border:1px solid var(--border); border-radius:12px;
@@ -139,7 +139,7 @@
     .welcome-avatar { width:52px; height:52px; font-size:1.2rem; right:1.25rem; }
   }
 
-  /* â”€â”€ Welcome banner â”€â”€ */
+  /* â"€â"€ Welcome banner â"€â"€ */
   .welcome-banner {
     background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);
     border-radius:16px; padding:2.5rem; margin-bottom:2rem;
@@ -168,11 +168,11 @@
     font-size:1.6rem; font-weight:800; color:white;
   }
 
-  /* â”€â”€ Grid â”€â”€ */
+  /* â"€â"€ Grid â"€â"€ */
   .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.25rem; align-items:stretch; }
   .grid-2 > * { display:flex; flex-direction:column; }
 
-  /* â”€â”€ Cards â”€â”€ */
+  /* â"€â"€ Cards â"€â"€ */
   .card {
     background:white; border-radius:14px; border:1px solid var(--border);
     padding:1.75rem; margin-bottom:1.25rem;
@@ -187,7 +187,7 @@
     color:var(--text); margin-bottom:1.25rem;
   }
 
-  /* â”€â”€ Quick action buttons â”€â”€ */
+  /* â"€â"€ Quick action buttons â"€â"€ */
   .action-btn {
     display:flex; align-items:center; gap:1rem;
     background:var(--off); border:1.5px solid var(--border); border-radius:10px;
@@ -207,7 +207,7 @@
   .action-btn-desc  { font-size:0.77rem; color:var(--muted); line-height:1.5; }
   .action-btn-arrow { font-size:1rem; color:var(--green); font-weight:700; }
 
-  /* â”€â”€ Reviews empty state â”€â”€ */
+  /* â"€â"€ Reviews empty state â"€â"€ */
   .empty-state {
     text-align:center; padding:2.5rem 1rem;
     border:2px dashed var(--border); border-radius:10px;
@@ -216,7 +216,7 @@
   .empty-state-title { font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; }
   .empty-state-text  { font-size:0.82rem; color:var(--muted); line-height:1.7; max-width:340px; margin:0 auto; }
 
-  /* â”€â”€ Avatar colour swatches â”€â”€ */
+  /* â"€â"€ Avatar colour swatches â"€â"€ */
   .cl-colour-swatch {
     width:40px; height:40px; border-radius:50%; border:2px solid rgba(0,0,0,0.08);
     cursor:pointer; display:flex; align-items:center; justify-content:center;
@@ -232,7 +232,7 @@
   .cl-profile-input:focus { border-color:var(--green); }
   .cl-profile-label { font-size:0.78rem; font-weight:700; color:var(--muted); display:block; margin-bottom:0.4rem; }
 
-  /* â”€â”€ Account info â”€â”€ */
+  /* â"€â"€ Account info â"€â"€ */
   .info-row {
     display:flex; align-items:center; justify-content:space-between;
     padding:0.85rem 0; border-bottom:1px solid var(--border);
@@ -241,7 +241,7 @@
   .info-label { font-size:0.78rem; font-weight:700; color:var(--muted); }
   .info-value { font-size:0.875rem; font-weight:600; color:var(--text); }
 
-  /* â”€â”€ Message conversation cards â”€â”€ */
+  /* â"€â"€ Message conversation cards â"€â"€ */
   .msg-card {
     background:white; border:1px solid var(--border); border-radius:14px;
     overflow:hidden; display:flex;
@@ -257,7 +257,7 @@
   .msg-card.active { border-color:var(--green); box-shadow:0 0 0 2px rgba(58,181,74,0.15); }
   .msg-card.active .msg-view-btn { background:var(--green); color:white; border-color:var(--green); cursor:default; }
 
-  /* â”€â”€ Client reply panel (bottom-right) â”€â”€ */
+  /* â"€â"€ Client reply panel (bottom-right) â"€â"€ */
   .cl-chat-panel {
     position:fixed; bottom:24px; right:24px; z-index:9999;
     width:360px; max-height:520px;
@@ -325,7 +325,7 @@
     .cl-chat-send { width:46px; height:46px; font-size:1.2rem; }
   }
 
-  /* â”€â”€ Review cards â”€â”€ */
+  /* â"€â"€ Review cards â"€â"€ */
   #reviews-list { display:flex; flex-direction:column; gap:0.85rem; }
   .review-item {
     background:white; border-radius:14px;
@@ -364,7 +364,7 @@
     .topbar-logo img { height:38px; width:38px; }
   }
 
-  /* â”€â”€ Account sidebar â”€â”€ */
+  /* â"€â"€ Account sidebar â"€â"€ */
   :root { --acc-sb-w: 260px; }
   .acc-sidebar {
     position:fixed; top:0; left:0; bottom:0; width:var(--acc-sb-w);
@@ -393,7 +393,7 @@
   #acc-mob-tab.open svg { transform:rotate(180deg); }
   @media (max-width:768px) { #acc-mob-tab { display:flex !important; } }
 
-  /* â”€â”€ Desktop: permanent sidebar â”€â”€ */
+  /* â"€â"€ Desktop: permanent sidebar â"€â"€ */
   @media (min-width:769px) {
     .acc-sidebar { transform:none; transition:none; box-shadow:2px 0 20px rgba(0,0,0,0.18); }
     .acc-mob-overlay { display:none !important; }
@@ -618,7 +618,7 @@
         </div>
       </div>
       <div style="margin-bottom:1.25rem;">
-        <label class="cl-profile-label" for="cl-username">Username <span style="font-weight:400;color:var(--muted);">â€” shown on your reviews</span></label>
+        <label class="cl-profile-label" for="cl-username">Username <span style="font-weight:400;color:var(--muted);">â€" shown on your reviews</span></label>
         <div style="position:relative;">
           <span style="position:absolute;left:0.9rem;top:50%;transform:translateY(-50%);color:var(--muted);font-weight:700;font-size:0.875rem;">@</span>
           <input id="cl-username" type="text" class="cl-profile-input" style="padding-left:1.9rem;" maxlength="30" placeholder="yourname" autocomplete="off" />
@@ -627,7 +627,7 @@
       </div>
       <div class="info-row">
         <div class="info-label">Email</div>
-        <div class="info-value" id="account-email">â€”</div>
+        <div class="info-value" id="account-email">â€"</div>
       </div>
       <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;">
         <button id="cl-save-profile-btn" onclick="clSaveProfile()" style="background:var(--green);color:white;border:none;border-radius:8px;padding:0.7rem 1.75rem;font-family:'Manrope',sans-serif;font-weight:700;font-size:0.875rem;cursor:pointer;transition:background 0.15s;">Save Changes</button>
@@ -676,27 +676,27 @@
   import { supabase } from '../lib/supabase';
   import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
 
-  // â”€â”€ Auth guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Auth guard â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) { window.location.href = '/login'; throw new Error('unauthenticated'); }
 
-  // â”€â”€ Check if trainer (redirect to dashboard) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Check if trainer (redirect to dashboard) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const { data: trainer } = await supabase
     .from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
   if (trainer) { window.location.href = '/dashboard'; throw new Error('is-trainer'); }
 
-  // â”€â”€ Load client record â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Load client record â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const { data: client } = await supabase
     .from('clients').select('*').eq('user_id', session.user.id).maybeSingle();
 
   if (!client) {
-    // Might be a trainer â€” send them to their dashboard instead of signing out
+    // Might be a trainer â€" send them to their dashboard instead of signing out
     const { data: trainerRow } = await supabase.from('trainers').select('id').eq('user_id', session.user.id).maybeSingle();
     window.location.href = trainerRow ? '/dashboard' : '/';
     throw new Error('no-profile');
   }
 
-  // â”€â”€ Populate UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Populate UI â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const firstName = client.name.split(' ')[0];
   const initials  = client.name.split(' ').map((w: string) => w[0] || '').join('').toUpperCase().slice(0, 2);
   const avatarBgInit    = client.avatar_bg    ?? '#eaf7ec';
@@ -712,9 +712,9 @@
     welcomeAv.style.background = avatarBgInit;
     welcomeAv.style.color      = avatarColorInit;
   }
-  (document.getElementById('account-email') as HTMLElement).textContent = session.user.email ?? 'â€”';
+  (document.getElementById('account-email') as HTMLElement).textContent = session.user.email ?? 'â€"';
 
-  // â”€â”€ Profile form pre-populate â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Profile form pre-populate â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const nameParts = client.name.split(' ');
   (document.getElementById('cl-first-name') as HTMLInputElement).value = nameParts[0] || '';
   (document.getElementById('cl-last-name')  as HTMLInputElement).value = nameParts.slice(1).join(' ') || '';
@@ -722,7 +722,7 @@
   // Avatar preview
   const clAvPrev = document.getElementById('cl-avatar-preview') as HTMLElement;
   clAvPrev.textContent       = initials;
-  // Avatar preview â€” photo takes priority; colour becomes border ring when photo is set
+  // Avatar preview â€" photo takes priority; colour becomes border ring when photo is set
   if (client.avatar_url) {
     clAvPrev.innerHTML = `<img src="${client.avatar_url}" style="width:100%;height:100%;object-fit:cover;" />`;
     clAvPrev.style.background = 'transparent';
@@ -758,7 +758,7 @@
   const sbName = document.getElementById('acc-sb-name') as HTMLElement;
   if (sbName) sbName.textContent = client.name;
 
-  // â”€â”€ Load past reviews â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Load past reviews â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   const { data: reviews } = await supabase
     .from('reviews')
     .select('id, rating, review_text, created_at, trainer_id, trainers(name, avatar_initials, avatar_bg, avatar_color, bmp_score, review_count)')
@@ -795,7 +795,7 @@
     }).join('');
   }
 
-  // â”€â”€ Notifications â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Notifications â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   function timeAgoNotif(iso: string): string {
     const d = Date.now() - new Date(iso).getTime();
     const m = Math.floor(d / 60000);
@@ -833,7 +833,7 @@
   let _unreadNotifCount = unreadCount;
   updateNotifBadge(_unreadNotifCount);
 
-  // â”€â”€ Toast helper (appears regardless of which tab is active) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Toast helper (appears regardless of which tab is active) â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   function showToast(icon: string, title: string, body: string, link?: string) {
     const el = document.createElement(link ? 'a' : 'div') as HTMLAnchorElement;
     if (link) el.href = link;
@@ -858,7 +858,7 @@
   if (notifListEl) {
     if (!userNotifs || userNotifs.length === 0) {
       notifListEl.innerHTML = `<div class="empty-state">
-        <span class="empty-state-icon">ðŸ””</span>
+        <span class="empty-state-icon">ðŸ""</span>
         <div class="empty-state-title">No notifications yet</div>
         <div class="empty-state-text">You'll be notified here when your reviews are approved and go live.</div>
       </div>`;
@@ -875,7 +875,7 @@
     }
   }
 
-  // â”€â”€ Real-time: new notification â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Real-time: new notification â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   supabase.channel('rt-notifs-' + session.user.id)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications',
       filter: `user_id=eq.${session.user.id}` }, (p: any) => {
@@ -895,11 +895,11 @@
           listEl.prepend(card);
         }
 
-        showToast('ðŸ””', n.title, n.body ?? '', n.link ?? undefined);
+        showToast('ðŸ""', n.title, n.body ?? '', n.link ?? undefined);
       })
     .subscribe();
 
-  // â”€â”€ Messages â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Messages â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   let _clConvId: string | null = null;
   let _clMsgChannel: any = null;
   let _clConvChannel: any = null;
@@ -976,7 +976,7 @@
     _clHighlightActive();
   }
 
-  // Single delegated listener â€” safe for any trainer name including apostrophes
+  // Single delegated listener â€" safe for any trainer name including apostrophes
   document.getElementById('cl-conv-list')!.addEventListener('click', (e) => {
     const btn = (e.target as Element).closest('[data-cid]') as HTMLElement | null;
     if (!btn) return;
@@ -1006,7 +1006,7 @@
     avEl.style.color      = avColor;
     document.getElementById('cl-chat-name')!.textContent = trainerName;
 
-    // Show panel â€” skip slide animation when already open (just switching conversations)
+    // Show panel â€" skip slide animation when already open (just switching conversations)
     const panel = document.getElementById('cl-chat-panel')!;
     if (panel.classList.contains('cl-chat-hidden') || !panel.classList.contains('open')) {
       panel.classList.remove('cl-chat-hidden');
@@ -1032,7 +1032,7 @@
     if (_clConvId !== convId) return;
 
     const _msgList = msgs || [];
-    const _INTRO = "Hi! Thanks for reaching out. I'd love to hear about your fitness goals â€” feel free to ask me anything or let me know what you're looking for in a PT.";
+    const _INTRO = "Hi! Thanks for reaching out. I'd love to hear about your fitness goals â€" feel free to ask me anything or let me know what you're looking for in a PT.";
     container.innerHTML = (_msgList.length === 0 ? _clRenderMsg({ sender_type: 'trainer', content: _INTRO, created_at: new Date().toISOString() }) : '') + _msgList.map(_clRenderMsg).join('');
     container.scrollTop = container.scrollHeight;
 
@@ -1090,13 +1090,13 @@
 
   _clLoadConvs();
 
-  // â”€â”€ Profile: photo upload â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Profile: photo upload â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   (window as any).clHandleAvatarUpload = async function(input: HTMLInputElement) {
     const file = input.files?.[0];
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) {
       const s = document.getElementById('cl-save-status') as HTMLElement;
-      s.textContent = 'âŒ Image too large â€” max 5 MB'; s.style.color = '#e53935'; s.style.display = 'inline';
+      s.textContent = 'âŒ Image too large â€" max 5 MB'; s.style.color = '#e53935'; s.style.display = 'inline';
       setTimeout(() => { s.style.display = 'none'; }, 4000);
       return;
     }
@@ -1137,7 +1137,7 @@
     if (sbAvEl) sbAvEl.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`;
   };
 
-  // â”€â”€ Profile: colour picker â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Profile: colour picker â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   (window as any).clSelectColour = function(btn: HTMLElement) {
     document.querySelectorAll('.cl-colour-swatch').forEach(s => s.classList.remove('selected'));
     btn.classList.add('selected');
@@ -1151,7 +1151,7 @@
     }
   };
 
-  // â”€â”€ Profile: save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Profile: save â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   (window as any).clSaveProfile = async function() {
     const saveBtn  = document.getElementById('cl-save-profile-btn') as HTMLButtonElement;
     const statusEl = document.getElementById('cl-save-status') as HTMLElement;
@@ -1186,7 +1186,7 @@
       return;
     }
 
-    statusEl.textContent   = 'âœ“ Saved!';
+    statusEl.textContent   = 'âœ" Saved!';
     statusEl.style.color   = 'var(--green)';
     statusEl.style.display = 'inline';
     setTimeout(() => { statusEl.style.display = 'none'; }, 3000);
@@ -1201,13 +1201,13 @@
     if (sbNameEl) sbNameEl.textContent = newName;
   };
 
-  // â”€â”€ Sign out â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Sign out â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   document.getElementById('signout-btn')!.addEventListener('click', async () => {
     await supabase.auth.signOut();
     window.location.href = '/';
   });
 
-  // â”€â”€ Tab navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+  // â"€â"€ Tab navigation â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€â"€
   (window as any).accTab = function(name: string, _btn: HTMLElement) {
     document.querySelectorAll('.acc-section').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.acc-tab').forEach(el => el.classList.remove('active'));

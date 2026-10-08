@@ -1,12 +1,12 @@
-﻿---
-// PT Login â€” CoachCards
+---
+// PT Login â€" CoachCards
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In â€” CoachCards</title>
+<title>Sign In â€" CoachCards</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -21,7 +21,7 @@
   }
   input, select, textarea { font-size:max(16px, 1em); }
 
-  /* â”€â”€ Left panel â”€â”€ */
+  /* â"€â"€ Left panel â"€â"€ */
   .auth-left {
     width:420px; flex-shrink:0;
     background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);
@@ -51,7 +51,7 @@
   .auth-stat-text { font-size:0.82rem; color:rgba(255,255,255,0.6); }
   .auth-stat-text strong { color:white; }
 
-  /* â”€â”€ Right panel â”€â”€ */
+  /* â"€â"€ Right panel â"€â"€ */
   .auth-right {
     flex:1; background:var(--off); display:flex; align-items:center;
     justify-content:center; padding:2rem;
@@ -111,7 +111,7 @@
   </div>
   <div class="auth-left-copy">
     <h2>Your dashboard awaits.</h2>
-    <p>Manage your profile, collect verified reviews, and track your UK ranking â€” all in one place.</p>
+    <p>Manage your profile, collect verified reviews, and track your UK ranking â€" all in one place.</p>
   </div>
   <div class="auth-left-stats">
     <div class="auth-stat">
@@ -120,10 +120,10 @@
     </div>
     <div class="auth-stat">
       <div class="auth-stat-icon">â­</div>
-      <div class="auth-stat-text"><strong>Verified client reviews</strong> â€” not paid placements</div>
+      <div class="auth-stat-text"><strong>Verified client reviews</strong> â€" not paid placements</div>
     </div>
     <div class="auth-stat">
-      <div class="auth-stat-icon">ðŸ“</div>
+      <div class="auth-stat-icon">ðŸ"</div>
       <div class="auth-stat-text">Growing across <strong>towns and cities</strong> nationwide</div>
     </div>
   </div>
@@ -184,7 +184,7 @@
     if (sub) sub.textContent = 'Sign in to set up your profile';
   }
 
-  // No auto-redirect on login page â€” let the user sign in explicitly.
+  // No auto-redirect on login page â€" let the user sign in explicitly.
   // (Auto-redirect caused loops when a stale session for a different account was cached.)
 
   const form      = document.getElementById('login-form') as HTMLFormElement;
