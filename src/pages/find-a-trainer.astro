@@ -161,16 +161,10 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
 </div>
 
 <!-- ── FOOTER ── -->
-<footer style="background:#111311;padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;border-top:1px solid rgba(255,255,255,0.06);">
-  <div style="display:flex;align-items:center;gap:0.75rem;">
+<footer style="background:#111311;padding:2.5rem 2rem;text-align:center;">
+  <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;">
     <img src="/images/cc-logo.png" alt="CoachCards" style="height:38px;width:38px;" />
     <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);margin:0;">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
-  </div>
-  <div style="display:flex;gap:2rem;">
-    {[['Home','/'],['For Trainers','/for-trainers'],['Privacy','/privacy'],['Terms','/terms'],['Contact','/contact']].map(([label,href]) => (
-      <a href={href} style="color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.8rem;font-weight:500;transition:color 0.2s;"
-         onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">{label}</a>
-    ))}
   </div>
 </footer>
 
@@ -358,17 +352,6 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
     });
     visible.forEach(function (c) { listInner.appendChild(c); });
     listInner.appendChild(emptyEl);
-    updateCrowns(visible);
-  }
-
-  /* ── Crown logic: #1-ranked visible trainer gets the crown ── */
-  function updateCrowns(visibleCards) {
-    cards.forEach(function (c) { c.classList.remove('trc--crown'); });
-    if (!visibleCards || visibleCards.length === 0) return;
-    var leader = visibleCards.reduce(function (best, c) {
-      return parseInt(c.getAttribute('data-rank') || '9999') < parseInt(best.getAttribute('data-rank') || '9999') ? c : best;
-    }, visibleCards[0]);
-    leader.classList.add('trc--crown');
   }
 
   /* ── Leaflet map (lazy-loaded on first switch to map view) ── */

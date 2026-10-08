@@ -867,7 +867,7 @@ const maskName = (name: string): string => {
     <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
   </div>
   <div style="display:flex;gap:2rem;">
-    {[['Home','/'],['Privacy','/privacy'],['Terms','/terms'],['Contact','/contact']].map(([label,href]) => (
+    {[['Home','/'],['Privacy','#'],['Terms','#'],['Contact','#']].map(([label,href]) => (
       <a href={href} style="color:rgba(255,255,255,0.3);text-decoration:none;font-size:0.8rem;font-weight:500;transition:color 0.2s;"
         onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">
         {label}
