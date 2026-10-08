@@ -1319,6 +1319,9 @@ const reviews = [
       ? '<img src="' + pt.avatar_url + '" alt="" class="lbc-av" width="40" height="40" style="width:40px;min-width:40px;height:40px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.12);">'
       : '<div class="lbc-av" style="background:' + (pt.avatar_bg || '#eaf7ec') + ';color:' + (pt.avatar_color || '#2a9438') + ';">' + (pt.avatar_initials || '?') + '</div>';
     var cert = pt.cert ? '<span class="lbc-cert">' + pt.cert + '</span>' : '';
+    var wrappedAvatar = rank === 1
+      ? '<div style="position:relative;display:inline-flex;flex-shrink:0;"><img src="/images/crown.png" alt="" aria-hidden="true" style="display:block;position:absolute;top:-13px;left:50%;transform:translateX(-50%) rotate(-8deg);width:32px;height:auto;opacity:0.82;filter:drop-shadow(0 2px 5px rgba(184,134,11,0.6)) drop-shadow(0 0 10px rgba(212,175,55,0.4));z-index:20;pointer-events:none;user-select:none;">' + avatar + '</div>'
+      : avatar;
     var city = pt.city || pt.location || '';
     var spec = pt.specialty ? pt.specialty.split(/[,\/]/)[0].trim() : '';
     var dbs = bmpDumbbell(pt.bmp_score || 0, 44);
@@ -1370,7 +1373,7 @@ const reviews = [
         '<div class="lbc-rank">' + String(rank).padStart(2, '0') +
           (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
         '</div>' +
-        avatar +
+        wrappedAvatar +
         '<div class="lbc-mid">' +
           '<div class="lbc-top">' +
             '<div class="lbc-name">' + pt.name + '</div>' +
@@ -1398,7 +1401,7 @@ const reviews = [
         (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
       '</div>' +
       '<div class="lbc-mid">' +
-        '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + '</div>' +
+        '<div class="lbc-top">' + wrappedAvatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + '</div>' +
         (city ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + city + '</div>' : '') +
         (spec ? '<div class="lbc-detail"><span class="spec-pill">' + spec + '</span></div>' : '') +
         reviewsLine +
@@ -1445,6 +1448,9 @@ const reviews = [
     var av = t.avatar_url
       ? '<img class="hc-av" src="' + t.avatar_url + '" alt="' + t.name + '" width="48" height="48">'
       : '<div class="hc-av" style="background:' + (t.avatar_bg||'#0d1a0e') + ';color:' + (t.avatar_color||'#3ab54a') + ';">' + (t.avatar_initials||'?') + '</div>';
+    var wrappedAv = rank === 1
+      ? '<div style="position:relative;display:inline-flex;flex-shrink:0;"><img src="/images/crown.png" alt="" aria-hidden="true" style="display:block;position:absolute;top:-11px;left:50%;transform:translateX(-50%) rotate(-8deg);width:28px;height:auto;opacity:0.82;filter:drop-shadow(0 2px 5px rgba(184,134,11,0.6)) drop-shadow(0 0 10px rgba(212,175,55,0.4));z-index:20;pointer-events:none;user-select:none;">' + av + '</div>'
+      : av;
 
     var tick = complete
       ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
@@ -1477,7 +1483,7 @@ const reviews = [
 
     return '<a class="hc-card' + (trending ? ' hc-card--trending' : '') + '" href="/trainers/' + t.id + '" data-cc="card"' + (trending ? ' data-cc-trending="1"' : '') + ' style="view-transition-name:tc-' + t.id + ';">' +
       '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
-      av +
+      wrappedAv +
       '<div class="hc-mid">' +
         '<div class="hc-name-row"><span class="hc-name">' + t.name + '</span>' + tick + trendBadge + '</div>' +
         (cityMeta  ? '<div class="hc-meta">'      + cityMeta + '</div>' : '') +
