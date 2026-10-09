@@ -674,7 +674,39 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   text-wrap: balance;
 }
 
-/* ── Section 7: Final CTA ────────────────────────────────────────────────── */
+/* ── Section 7: Early Adopter ───────────────────────────────────────────── */
+#ov-early {
+  background: #0d1a0e;
+  padding: 6rem 0;
+  border-top: 1px solid rgba(58,181,74,0.08);
+}
+.ov-ea-sub {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.42);
+  margin-bottom: 2rem;
+}
+.ov-ea-statement {
+  text-align: center;
+  margin-top: 2.5rem;
+  padding: 2rem 1.5rem;
+  border: 1px solid rgba(58,181,74,0.15);
+  border-radius: 16px;
+  background: rgba(58,181,74,0.03);
+}
+.ov-ea-statement-main {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.3;
+  text-wrap: balance;
+}
+.ov-ea-trending::before { background: rgba(215,70,35,0.9); }
+
+/* ── Section 8: Final CTA ────────────────────────────────────────────────── */
 #ov-cta {
   position: relative;
   overflow: hidden;
@@ -840,6 +872,8 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   #ov-stat, #ov-easy, #ov-why, #ov-grow { padding: 4.5rem 0; }
   #ov-how { padding: 2.5rem 0; }
   .ov-grow-outcome-text { font-size: 1.35rem; }
+  #ov-early { padding: 4.5rem 0; }
+  .ov-ea-statement-main { font-size: 1.5rem; }
   #ov-cta { padding: 4rem 0; }
   .ov-cta-h2 { font-size: 1.9rem; }
   .ov-easy-val { font-size: 2.35rem; }
@@ -1096,9 +1130,6 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
         <p class="ov-grow-desc">Your CoachCard gives potential clients another way to discover, compare and choose you.</p>
       </div>
     </div>
-    <p class="ov-grow-early ov-reveal" data-reveal>
-      Get established early. Build your reputation now. Be ready as the audience grows.
-    </p>
     <div class="ov-grow-outcome ov-reveal" data-reveal>
       <p class="ov-grow-outcome-text">
         <em class="ov-accent">MORE EYES</em> → MORE OPPORTUNITIES → <em class="ov-accent">POTENTIAL BOOKINGS</em>
@@ -1107,7 +1138,43 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   </div>
 </section>
 
-<!-- ── 7 · Final CTA ──────────────────────────────────────────────────────── -->
+<!-- ── 7 · Early Adopter ──────────────────────────────────────────────────── -->
+<section id="ov-early" aria-labelledby="ov-early-h2">
+  <div class="ov-wrap">
+    <div class="ov-eyebrow ov-reveal" data-reveal>EARLY MOVERS</div>
+    <h2 id="ov-early-h2" class="ov-h2 ov-reveal" data-reveal style="margin-bottom:1rem;">
+      GET AHEAD OF THE CURVE.
+    </h2>
+    <p class="ov-ea-sub ov-reveal" data-reveal>BUILD YOUR REPUTATION BEFORE THE COMPETITION.</p>
+    <div class="ov-grow-copy ov-reveal" data-reveal>
+      <p>CoachCards is growing. The trainers who join early have the opportunity to start collecting verified reviews, building their BMP and establishing their presence in the rankings while others are still waiting.</p>
+    </div>
+    <div class="ov-grow-grid">
+      <div class="ov-grow-card ov-reveal" data-reveal>
+        <div class="ov-grow-lbl">BUILD YOUR BMP EARLY</div>
+        <p class="ov-grow-desc">Start collecting verified client reviews and developing your Body Muscle Percentage before competitors who haven't joined.</p>
+      </div>
+      <div class="ov-grow-sep" aria-hidden="true">→</div>
+      <div class="ov-grow-card ov-ea-trending ov-reveal" data-reveal data-d="1">
+        <div class="ov-grow-lbl">COMPETE FOR TRENDING</div>
+        <p class="ov-grow-desc">Build consistent recent review activity and work towards earning Trending status.</p>
+      </div>
+      <div class="ov-grow-sep" aria-hidden="true">→</div>
+      <div class="ov-grow-card ov-reveal" data-reveal data-d="2">
+        <div class="ov-grow-lbl">ESTABLISH YOUR RANKING PRESENCE</div>
+        <p class="ov-grow-desc">Create your CoachCard and start competing in local and UK rankings while the platform grows.</p>
+      </div>
+    </div>
+    <div class="ov-ea-statement ov-reveal" data-reveal>
+      <p class="ov-ea-statement-main">
+        YOUR COMPETITORS CAN JOIN TOMORROW.<br>
+        <em class="ov-accent">YOU CAN START TODAY.</em>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 8 · Final CTA ──────────────────────────────────────────────────────── -->
 <section id="ov-cta" aria-labelledby="ov-cta-h2">
   <div class="ov-cta-bg" aria-hidden="true">
     <img src="/images/hero-bg.webp" alt="" class="ov-cta-bg-img" loading="lazy" />
