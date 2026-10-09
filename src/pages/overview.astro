@@ -510,7 +510,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
 .ov-tl-vfill.ov-tl-go { height: 100%; }
 .ov-tl-steps {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 1.5rem;
   position: relative;
   z-index: 1;
@@ -1097,6 +1097,13 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
             <p class="ov-tl-desc">Stand out when potential clients are comparing personal trainers and give them another reason to choose you.</p>
           </div>
         </div>
+        <div class="ov-tl-step">
+          <div class="ov-tl-num">05</div>
+          <div>
+            <div class="ov-tl-title">TURN VISIBILITY INTO BOOKINGS</div>
+            <p class="ov-tl-desc">Turn increased visibility and a stronger reputation into potential client enquiries and bookings.</p>
+          </div>
+        </div>
       </div>
       <p class="ov-tl-outcome ov-reveal" data-reveal>GET DISCOVERED <span class="ov-accent">→</span> GET BOOKED</p>
     </div>
@@ -1298,21 +1305,23 @@ if (reducedMotion) {
   if (tlVFill) tlVFill.classList.add('ov-tl-go');
   tlSteps.forEach(s => s.classList.add('ov-tl-active'));
 } else if (tlSect) {
-  // Desktop line: 1.5s duration, 0.4s delay. Steps at 12.5/37.5/62.5/87.5% width.
-  // Mobile vline: 1.8s duration, 0.3s delay. Steps at 12.5/37.5/62.5/87.5% height.
+  // Desktop line: 1.5s duration, 0.4s delay. Steps at 10/30/50/70/90% width.
+  // Mobile vline: 1.8s duration, 0.3s delay. Steps at 10/30/50/70/90% height.
   // Activation ms from observer fire (desktop timings):
-  //   step 1: 400 + (0.125 * 1500) = 588ms
-  //   step 2: 400 + (0.375 * 1500) = 963ms
-  //   step 3: 400 + (0.625 * 1500) = 1338ms
-  //   step 4: 400 + (0.875 * 1500) = 1713ms
+  //   step 1: 400 + (0.10 * 1500) = 550ms
+  //   step 2: 400 + (0.30 * 1500) = 850ms
+  //   step 3: 400 + (0.50 * 1500) = 1150ms
+  //   step 4: 400 + (0.70 * 1500) = 1450ms
+  //   step 5: 400 + (0.90 * 1500) = 1750ms
   const isMobile = () => window.innerWidth <= 768;
-  const desktopDelays = [588, 963, 1338, 1713];
+  const desktopDelays = [550, 850, 1150, 1450, 1750];
   // Mobile vline: 1.8s duration, 0.3s delay:
-  //   step 1: 300 + (0.125 * 1800) = 525ms
-  //   step 2: 300 + (0.375 * 1800) = 975ms
-  //   step 3: 300 + (0.625 * 1800) = 1425ms
-  //   step 4: 300 + (0.875 * 1800) = 1875ms
-  const mobileDelays  = [525, 975, 1425, 1875];
+  //   step 1: 300 + (0.10 * 1800) = 480ms
+  //   step 2: 300 + (0.30 * 1800) = 840ms
+  //   step 3: 300 + (0.50 * 1800) = 1200ms
+  //   step 4: 300 + (0.70 * 1800) = 1560ms
+  //   step 5: 300 + (0.90 * 1800) = 1920ms
+  const mobileDelays  = [480, 840, 1200, 1560, 1920];
 
   const tlObs = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting) {
