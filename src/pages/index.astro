@@ -169,6 +169,7 @@ const reviews = [
 
 <Fragment slot="head">
   <link rel="preload" as="image" href="/images/hero-bg.webp" type="image/webp" />
+  <link rel="preload" as="image" href="/images/leaderboard-bg.webp" type="image/webp" />
 </Fragment>
 
 <script is:inline>
@@ -702,8 +703,14 @@ const reviews = [
 </section>
 
 <!-- ── LEADERBOARD ── -->
-<section id="leaderboard" style="padding:2.75rem 0;background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
-  <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
+<section id="leaderboard" style="padding:2.75rem 0;position:relative;overflow:hidden;background:#0a130b;border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
+  <!-- Gym background: weight plates left, green-lit gym environment -->
+  <div style="position:absolute;inset:0;background-image:url('/images/leaderboard-bg.webp');background-size:cover;background-position:left center;"></div>
+  <!-- Dark overlay ~75% to keep cards readable -->
+  <div style="position:absolute;inset:0;background:rgba(6,12,7,0.75);"></div>
+  <!-- Vignette: darken edges, let slight detail breathe at left -->
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 140% 100% at 30% 50%,transparent 15%,rgba(0,0,0,0.42) 100%);pointer-events:none;"></div>
+  <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;position:relative;z-index:1;">
 
     <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:0.75rem;">
       <div>
