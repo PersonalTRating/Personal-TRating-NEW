@@ -13,7 +13,7 @@ const [
 ] = await Promise.all([
   supabase
     .from('trainers')
-    .select('id, name, username, location, city, specialty, cert, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history')
+    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history')
     .eq('is_active', true)
     .gt('bmp_score', 0)
     .gt('review_count', 0)
@@ -53,7 +53,7 @@ const previewTrainers = leaderboard.slice(0, 3).map((t: any, i: number) => {
     ? `<img src="${t.avatar_url}" width="44" height="44" style="width:44px;min-width:44px;height:44px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="" />`
     : `<div style="width:44px;min-width:44px;height:44px;border-radius:50%;background:rgba(58,181,74,0.15);color:#3ab54a;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.82rem;flex-shrink:0;">${t.avatar_initials || '?'}</div>`;
   const profileComplete = !!(t.avatar_url && (t.city || t.location) && t.bio?.trim() && t.specialty?.trim());
-  return { id: t.id, name: t.name as string, username: (t.username || '') as string, city: (t.city || t.location || '') as string, specialty: (t.specialty || '') as string, bmp, rank: i + 1, avatar, dbs, profileComplete, isTrending: t.is_trending === true, recentReviewCount: t.recent_review_count || 0 };
+  return { id: t.id, name: t.name as string, username: (t.username || '') as string, city: (t.city || t.location || '') as string, specialty: (t.specialty || '') as string, coachingType: (t.coaching_type || '') as string, bmp, rank: i + 1, avatar, dbs, profileComplete, isTrending: t.is_trending === true, recentReviewCount: t.recent_review_count || 0 };
 });
 
 const cbg = (id: string): string => {
@@ -834,6 +834,7 @@ const reviews = [
             </div>
             {t.city && <div style="font-size:0.72rem;color:rgba(255,255,255,0.42);display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{t.city}</div>}
             {t.specialty && <div><span class="spec-pill">{t.specialty.split(/[,\/]/)[0].trim()}</span></div>}
+            {t.coachingType && <div><span class="coaching-pill">{t.coachingType === 'in_person' ? 'In Person' : t.coachingType === 'online' ? 'Online' : 'Online & In Person'}</span></div>}
             {t.recentReviewCount >= 1 && (
               <div style={'font-size:0.72rem;display:flex;align-items:center;gap:0.25rem;' + (t.isTrending ? 'color:rgba(220,100,60,0.9);' : 'color:rgba(220,100,60,0.8);')}>
                 <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>{t.recentReviewCount} verified {t.recentReviewCount === 1 ? 'review' : 'reviews'} in the last 30 days

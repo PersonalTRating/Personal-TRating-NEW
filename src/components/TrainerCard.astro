@@ -17,6 +17,7 @@ interface Props {
   avatarBg?: string;
   avatarColor?: string;
   isTrending?: boolean;
+  coachingType?: string;
 }
 
 const {
@@ -35,7 +36,13 @@ const {
   avatarBg = '#0d1a0e',
   avatarColor = '#3ab54a',
   isTrending = false,
+  coachingType = '',
 } = Astro.props;
+
+const coachingLabel = coachingType === 'in_person' ? 'In Person'
+  : coachingType === 'online' ? 'Online'
+  : coachingType === 'hybrid' ? 'Online & In Person'
+  : '';
 
 const rankStr = rank != null ? String(rank).padStart(2, '0') : '';
 const metaCity = city || '';
@@ -60,6 +67,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   data-name={name.toLowerCase()}
   data-city={city.toLowerCase()}
   data-spec={spec.toLowerCase()}
+  data-coaching-type={coachingType}
 >
   <div class="trc-left">
     {rankStr && <span class="trc-rank">{rankStr}</span>}
@@ -99,10 +107,11 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
           </div>
         )}
       </div>
-      {(metaCity || metaSpec) && (
+      {(metaCity || metaSpec || coachingLabel) && (
         <div class="trc-meta">
           {metaCity && <span class="trc-meta-item"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{metaCity}</span>}
           {metaSpec && <span class="spec-pill">{metaSpec}</span>}
+          {coachingLabel && <span class="coaching-pill">{coachingLabel}</span>}
         </div>
       )}
     </div>
@@ -252,6 +261,18 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     background: rgba(58,181,74,0.12);
     border: 1px solid rgba(58,181,74,0.25);
     color: rgba(180,255,185,0.85);
+    font-size: 0.68rem;
+    font-weight: 600;
+    padding: 0.22rem 0.55rem;
+    border-radius: 5px;
+    letter-spacing: 0.2px;
+    line-height: 1.2;
+  }
+  .coaching-pill {
+    display: inline-block;
+    background: rgba(60,120,220,0.12);
+    border: 1px solid rgba(60,120,220,0.25);
+    color: rgba(160,200,255,0.8);
     font-size: 0.68rem;
     font-weight: 600;
     padding: 0.22rem 0.55rem;

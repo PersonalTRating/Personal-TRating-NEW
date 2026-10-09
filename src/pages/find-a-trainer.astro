@@ -5,7 +5,7 @@ import TrainerCard from '../components/TrainerCard.astro';
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending')
+  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
@@ -28,6 +28,7 @@ const allTrainers = raw.map((t: any, i: number) => ({
   avatarBg:           t.avatar_bg || '#0d1a0e',
   avatarColor:        t.avatar_color || '#3ab54a',
   isTrending:         t.is_trending === true,
+  coachingType:       t.coaching_type || '',
 }));
 
 const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning','HIIT','Rehabilitation','Nutrition','Sports Performance','Hyrox','Yoga & Pilates','Boxing','Running'];
@@ -97,7 +98,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
       ))}
     </div>
 
-    <!-- Sort + view toggle -->
+    <!-- Sort + delivery filter + view toggle -->
     <div class="fat-bar-bottom">
       <div style="display:flex;align-items:center;gap:0.5rem;">
         <span style="font-size:0.78rem;color:#8a8f8a;white-space:nowrap;">Sort by:</span>
@@ -105,6 +106,15 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
           <option value="bmp">BMP Score</option>
           <option value="reviews">Most Reviews</option>
           <option value="alpha">A — Z</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.5rem;">
+        <span style="font-size:0.78rem;color:#8a8f8a;white-space:nowrap;">Delivery:</span>
+        <select id="fat-coach-type" onchange="setCoachType()" class="fat-sort-sel">
+          <option value="">Any</option>
+          <option value="online">Online</option>
+          <option value="in_person">In Person</option>
+          <option value="hybrid">Hybrid</option>
         </select>
       </div>
       <div style="display:flex;align-items:center;gap:0.85rem;">
@@ -139,6 +149,7 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
         avatarBg={t.avatarBg}
         avatarColor={t.avatarColor}
         isTrending={t.isTrending}
+        coachingType={t.coachingType}
       />
     ))}
 
@@ -249,9 +260,10 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
 })();
 
 (function () {
-  var activeSpec   = '';
-  var activeSort   = 'bmp';
-  var activeSearch = '';
+  var activeSpec       = '';
+  var activeSort       = 'bmp';
+  var activeSearch     = '';
+  var activeCoachType  = '';
   var mapInited    = false;
 
   var searchEl  = document.getElementById('fat-search');
@@ -297,6 +309,14 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
   }
   window.doSearch = doSearch;
 
+  /* ── Delivery / coaching type filter ── */
+  function setCoachType() {
+    var sel = document.getElementById('fat-coach-type') as HTMLSelectElement;
+    activeCoachType = sel ? sel.value : '';
+    applyFilters();
+  }
+  window.setCoachType = setCoachType;
+
   /* ── Sort ── */
   function doSort() {
     activeSort = sortEl ? sortEl.value : 'bmp';
@@ -332,7 +352,12 @@ const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning',
         }
       }
       var mS = !activeSpec || spec.indexOf(activeSpec) !== -1;
-      var show = mQ && mS;
+      var ct = card.getAttribute('data-coaching-type') || '';
+      var mC = !activeCoachType
+        || (activeCoachType === 'online'    && (ct === 'online'    || ct === 'hybrid'))
+        || (activeCoachType === 'in_person' && (ct === 'in_person' || ct === 'hybrid'))
+        || (activeCoachType === 'hybrid'    && ct === 'hybrid');
+      var show = mQ && mS && mC;
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });

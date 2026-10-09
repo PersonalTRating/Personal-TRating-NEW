@@ -482,6 +482,11 @@ const maskName = (name: string): string => {
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> {trainer.cert}
             </span>
           )}
+          {(trainer as any).coaching_type && (
+            <span style="background:rgba(60,120,220,0.15);color:rgba(160,200,255,0.9);font-size:0.68rem;font-weight:700;padding:0.25rem 0.75rem;border-radius:20px;letter-spacing:1px;text-transform:uppercase;border:1px solid rgba(60,120,220,0.3);display:inline-flex;align-items:center;gap:0.3rem;">
+              {(trainer as any).coaching_type === 'in_person' ? 'In Person' : (trainer as any).coaching_type === 'online' ? 'Online' : 'Online & In Person'}
+            </span>
+          )}
         </div>
 
         <h1 class="tp-hero-name" style="font-family:'Playfair Display',serif;font-size:2.75rem;font-weight:900;color:white;line-height:1.08;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;view-transition-name:trainer-name">
