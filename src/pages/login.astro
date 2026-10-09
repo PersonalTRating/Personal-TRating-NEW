@@ -1,12 +1,12 @@
-﻿---
-// PT Login â€” CoachCards
+---
+// PT Login — CoachCards
 ---
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sign In â€” CoachCards</title>
+<title>Sign In — CoachCards</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -21,7 +21,7 @@
   }
   input, select, textarea { font-size:max(16px, 1em); }
 
-  /* â”€â”€ Left panel â”€â”€ */
+  /* ── Left panel ── */
   .auth-left {
     width:420px; flex-shrink:0;
     background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 55%,#2a5a30 100%);
@@ -51,7 +51,7 @@
   .auth-stat-text { font-size:0.82rem; color:rgba(255,255,255,0.6); }
   .auth-stat-text strong { color:white; }
 
-  /* â”€â”€ Right panel â”€â”€ */
+  /* ── Right panel ── */
   .auth-right {
     flex:1; background:var(--off); display:flex; align-items:center;
     justify-content:center; padding:2rem;
@@ -111,19 +111,19 @@
   </div>
   <div class="auth-left-copy">
     <h2>Your dashboard awaits.</h2>
-    <p>Manage your profile, collect verified reviews, and track your UK ranking â€” all in one place.</p>
+    <p>Manage your profile, collect verified reviews, and track your UK ranking — all in one place.</p>
   </div>
   <div class="auth-left-stats">
     <div class="auth-stat">
-      <div class="auth-stat-icon">ðŸ†</div>
+      <div class="auth-stat-icon">🏆</div>
       <div class="auth-stat-text">The UK's <strong>first merit-based</strong> PT ranking platform</div>
     </div>
     <div class="auth-stat">
-      <div class="auth-stat-icon">â­</div>
-      <div class="auth-stat-text"><strong>Verified client reviews</strong> â€” not paid placements</div>
+      <div class="auth-stat-icon">⭐</div>
+      <div class="auth-stat-text"><strong>Verified client reviews</strong> — not paid placements</div>
     </div>
     <div class="auth-stat">
-      <div class="auth-stat-icon">ðŸ“</div>
+      <div class="auth-stat-icon">📍</div>
       <div class="auth-stat-text">Growing across <strong>towns and cities</strong> nationwide</div>
     </div>
   </div>
@@ -136,7 +136,7 @@
     <p class="auth-sub">Sign in to your PT dashboard</p>
 
     <div id="confirmed-banner" style="display:none;background:linear-gradient(135deg,#eaf7ec 0%,#d0f0d4 100%);border:1.5px solid #3ab54a;border-radius:12px;padding:1.25rem 1.25rem 1rem;margin-bottom:1.5rem;text-align:center;">
-      <div style="font-size:2rem;margin-bottom:0.4rem;">ðŸŽ‰</div>
+      <div style="font-size:2rem;margin-bottom:0.4rem;">🎉</div>
       <div style="font-size:1rem;font-weight:800;color:#1a5c22;margin-bottom:0.25rem;">Email confirmed!</div>
       <div style="font-size:0.82rem;color:#2a7a38;font-weight:500;line-height:1.5;">Your account is ready. Enter your details below to sign in.</div>
     </div>
@@ -157,10 +157,10 @@
 
     <hr class="auth-divider">
     <div class="auth-footer">
-      Don't have an account? <a href="/signup">Create your free profile â†’</a>
+      Don't have an account? <a href="/signup">Create your free profile →</a>
     </div>
     <div class="auth-footer" style="margin-top:0.5rem;">
-      <a href="/">â† Back to CoachCards</a>
+      <a href="/">← Back to CoachCards</a>
     </div>
   </div>
 </div>
@@ -184,7 +184,7 @@
     if (sub) sub.textContent = 'Sign in to set up your profile';
   }
 
-  // No auto-redirect on login page â€” let the user sign in explicitly.
+  // No auto-redirect on login page — let the user sign in explicitly.
   // (Auto-redirect caused loops when a stale session for a different account was cached.)
 
   const form      = document.getElementById('login-form') as HTMLFormElement;
@@ -194,7 +194,7 @@
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     errorMsg.style.display = 'none';
-    submitBtn.textContent  = 'Signing inâ€¦';
+    submitBtn.textContent  = 'Signing in…';
     submitBtn.disabled     = true;
 
     const email    = (document.getElementById('email')    as HTMLInputElement).value.trim();
@@ -218,7 +218,7 @@
       if (_loginRedirect) {
         window.location.replace(_loginRedirect);
       } else {
-        // Route by role: trainers â†’ dashboard, clients â†’ account home
+        // Route by role: trainers → dashboard, clients → account home
         const userId = data.session!.user.id;
         const { data: trainerRow } = await supabase
           .from('trainers').select('id').eq('user_id', userId).maybeSingle();

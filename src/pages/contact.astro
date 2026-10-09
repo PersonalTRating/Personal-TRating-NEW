@@ -1,8 +1,8 @@
-﻿---
+---
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Contact Us â€” CoachCards" description="Get in touch with the CoachCards team. Report an issue, share a suggestion, or ask us anything.">
+<Layout title="Contact Us — CoachCards" description="Get in touch with the CoachCards team. Report an issue, share a suggestion, or ask us anything.">
 
 <style>
   body { background:#f7f9f7; }
@@ -84,17 +84,17 @@ import Layout from '../layouts/Layout.astro';
     <a href="/" style="display:flex;align-items:center;gap:0.75rem;text-decoration:none;">
       <img src="/images/cc-logo.png" alt="CoachCards" style="height:42px;width:42px;" />
     </a>
-    <a href="/" style="font-size:0.82rem;font-weight:600;color:#7a8f7c;text-decoration:none;">â† Back to home</a>
+    <a href="/" style="font-size:0.82rem;font-weight:600;color:#7a8f7c;text-decoration:none;">← Back to home</a>
   </div>
 </nav>
 
 <div class="contact-wrap">
 
-  <a href="/" class="back-link">â† Back to home</a>
+  <a href="/" class="back-link">← Back to home</a>
 
   <div class="eyebrow">Get in Touch</div>
   <h1>We'd love to hear<br/>from you.</h1>
-  <p class="lead">Whether you've spotted a bug, have a suggestion to improve the platform, or just want to ask us something â€” send us a message and we'll get back to you.</p>
+  <p class="lead">Whether you've spotted a bug, have a suggestion to improve the platform, or just want to ask us something — send us a message and we'll get back to you.</p>
 
   <div class="contact-grid">
 
@@ -120,7 +120,7 @@ import Layout from '../layouts/Layout.astro';
         <div class="field">
           <label for="cf-type">What's this about?</label>
           <select id="cf-type" name="type" required>
-            <option value="" disabled selected>Select a topicâ€¦</option>
+            <option value="" disabled selected>Select a topic…</option>
             <option value="Bug report">Bug report</option>
             <option value="Suggestion">Suggestion or feature request</option>
             <option value="Trainer issue">Issue with a trainer listing</option>
@@ -132,17 +132,17 @@ import Layout from '../layouts/Layout.astro';
 
         <div class="field">
           <label for="cf-msg">Your Message</label>
-          <textarea id="cf-msg" name="message" placeholder="Tell us what's on your mindâ€¦" required maxlength="1000" oninput="document.getElementById('cf-count').textContent = this.value.length + ' / 1000'"></textarea>
+          <textarea id="cf-msg" name="message" placeholder="Tell us what's on your mind…" required maxlength="1000" oninput="document.getElementById('cf-count').textContent = this.value.length + ' / 1000'"></textarea>
           <div class="char-count" id="cf-count">0 / 1000</div>
         </div>
 
-        <button type="submit" class="submit-btn" id="cf-submit">Send Message â†’</button>
+        <button type="submit" class="submit-btn" id="cf-submit">Send Message →</button>
       </form>
 
       <div class="success-state" id="cf-success">
-        <div class="tick">âœ…</div>
+        <div class="tick">✅</div>
         <h3>Message received!</h3>
-        <p>Thanks for reaching out. We'll get back to you within 24â€“48 hours at the email address you provided.</p>
+        <p>Thanks for reaching out. We'll get back to you within 24–48 hours at the email address you provided.</p>
       </div>
     </div>
 
@@ -151,23 +151,23 @@ import Layout from '../layouts/Layout.astro';
 
       <div class="response-card">
         <h3>Response time</h3>
-        <p>We typically reply within 24â€“48 hours, Monday to Friday.</p>
+        <p>We typically reply within 24–48 hours, Monday to Friday.</p>
       </div>
 
       <div class="info-card">
-        <div class="info-card-icon">ðŸ›</div>
+        <div class="info-card-icon">🐛</div>
         <h3>Found a bug?</h3>
         <p>Select "Bug report" from the dropdown and describe what happened, what you expected, and what device/browser you were using.</p>
       </div>
 
       <div class="info-card">
-        <div class="info-card-icon">ðŸ’¡</div>
+        <div class="info-card-icon">💡</div>
         <h3>Have a suggestion?</h3>
-        <p>We build this platform based on feedback from real trainers and clients. If something could be better, tell us â€” we read every message.</p>
+        <p>We build this platform based on feedback from real trainers and clients. If something could be better, tell us — we read every message.</p>
       </div>
 
       <div class="info-card">
-        <div class="info-card-icon">âœ‰ï¸</div>
+        <div class="info-card-icon">✉ï¸</div>
         <h3>Prefer email?</h3>
         <p>Reach us directly at <a href="mailto:hello@coachcards.co.uk">hello@coachcards.co.uk</a></p>
       </div>
@@ -185,7 +185,7 @@ import Layout from '../layouts/Layout.astro';
   form.addEventListener('submit', function(e) {
     e.preventDefault();
     btn.disabled = true;
-    btn.textContent = 'Sendingâ€¦';
+    btn.textContent = 'Sending…';
 
     var data = new FormData(form);
 
@@ -200,14 +200,14 @@ import Layout from '../layouts/Layout.astro';
         success.style.display = 'block';
       } else {
         btn.disabled = false;
-        btn.textContent = 'Send Message â†’';
-        alert('Something went wrong â€” please try again or email us directly.');
+        btn.textContent = 'Send Message →';
+        alert('Something went wrong — please try again or email us directly.');
       }
     })
     .catch(function() {
       btn.disabled = false;
-      btn.textContent = 'Send Message â†’';
-      alert('Something went wrong â€” please try again or email us directly.');
+      btn.textContent = 'Send Message →';
+      alert('Something went wrong — please try again or email us directly.');
     });
   });
 </script>
