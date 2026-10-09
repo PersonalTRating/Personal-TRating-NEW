@@ -656,23 +656,23 @@ const reviews = [
     <!-- Left: copy -->
     <div>
       <div class="anim-1" style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(58,181,74,0.18);color:#7de88a;font-size:0.72rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:0.45rem 1rem;border-radius:20px;margin-bottom:1.75rem;border:1px solid rgba(58,181,74,0.3);">
-        The UK's only merit-based PT ranking platform
+        PERSONAL TRAINER DISCOVERY & RANKINGS
       </div>
       <h1 class="anim-2" style="font-family:'Playfair Display',serif;font-size:3.8rem;font-weight:900;line-height:1.08;color:#ffffff;margin-bottom:1.5rem;">
-        Find a trainer who <em style="font-style:normal;color:#3ab54a;">actually</em><br>delivers results.
+        FIND THE RIGHT TRAINER. BACKED BY REAL EXPERIENCES.
       </h1>
       <p class="anim-3" style="font-size:1.05rem;color:rgba(255,255,255,0.78);line-height:1.8;margin-bottom:2.5rem;max-width:470px;font-weight:400;">
-        CoachCards ranks every UK personal trainer by verified client reviews and our BMP scoring system. No paid placements. No guesswork. The best coaches rise to the top on merit — full stop.
+        Discover and compare personal trainers through verified client reviews, meaningful rankings and transparent profiles. No paid ranking positions — just reputation built on genuine feedback.
       </p>
       <div class="anim-4" style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2.75rem;">
         <a href="/find-a-trainer" style="background:#3ab54a;color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;transition:background 0.2s;box-shadow:0 4px 16px rgba(58,181,74,0.35);"
           onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
-          Start My Transformation
+          FIND A TRAINER →
         </a>
-        <a href="#leaderboard" style="border:1.5px solid rgba(255,255,255,0.4);color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:600;font-size:0.9rem;text-decoration:none;transition:all 0.2s;"
+        <a href="/signup" style="border:1.5px solid rgba(255,255,255,0.4);color:white;padding:0.9rem 2rem;border-radius:8px;font-weight:600;font-size:0.9rem;text-decoration:none;transition:all 0.2s;"
           onmouseover="this.style.borderColor='#3ab54a';this.style.background='rgba(58,181,74,0.12)'"
           onmouseout="this.style.borderColor='rgba(255,255,255,0.4)';this.style.background='transparent'">
-          Browse Top Trainers →
+          LIST YOUR PROFILE FREE →
         </a>
       </div>
       <TrustBar />
@@ -892,7 +892,7 @@ const reviews = [
         { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L4 9v12h16V9z"/><path d="M9 21V12h6v9"/></svg>`, title:'Compare trainers side by side', desc:'BMP scores make comparing coaches objective. A trainer with 50 glowing reviews outranks one with 2 — because consistency matters more than a single great session.' },
         { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`, title:'Unbiased, unsponsored results', desc:'Rankings are earned by verified client reviews — not paid for, not gamed. A PT cannot buy their way to the top. Trainers can appeal any review they believe is unfair, keeping the platform honest for everyone.' },
         { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`, title:'Give constructive feedback', desc:'Your review isn\'t just a star rating — it holds coaches accountable and helps them improve. Good feedback makes good trainers great.' },
-        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8L6 7h12l-2-4z"/><circle cx="12" cy="12" r="1.5"/></svg>`, title:'Your business', desc:'We don\'t take a cut of your transactions and actively encourage bookings to happen off the platform. We simply facilitate the successful meeting of trainer and client.' },
+        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8L6 7h12l-2-4z"/><circle cx="12" cy="12" r="1.5"/></svg>`, title:'CONNECT DIRECTLY', desc:'Found a trainer who looks right for you? Explore their profile and contact them directly to take the next step.' },
       ].map(f => (
         <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:14px;padding:1.75rem;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
           <div style="width:44px;height:44px;border-radius:10px;background:#eaf7ec;display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;" set:html={f.icon}></div>
@@ -933,8 +933,8 @@ const reviews = [
   <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
     <div style="text-align:center;margin-bottom:4rem;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">The BMP Score</div>
-      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">One number that actually means something.</div>
-      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;max-width:580px;margin:0 auto;">Star ratings alone can be gamed. One five-star review from a friend tells you nothing. The BMP score is designed to reward trainers who are consistently excellent — not just occasionally lucky.</p>
+      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">A REPUTATION BUILT ON REAL EXPERIENCES.</div>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;max-width:580px;margin:0 auto;">Every verified review contributes to a trainer's Body Muscle Percentage (BMP), helping you understand their reputation, compare trainers and recognise consistent client feedback.</p>
     </div>
 
     <!-- Formula breakdown -->
