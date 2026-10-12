@@ -244,6 +244,7 @@
   .bmp-rank-info   { text-align:center; }
   .bmp-rank-val    { font-size:1.1rem; font-weight:800; color:var(--green-dark); }
   .bmp-rank-label  { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
+  .bmp-geo-row     { font-size:0.72rem; font-weight:700; color:var(--muted); margin-top:0.2rem; }
 
   /* ── RANKING TABLE (overview) ── */
   .rank-table { width:100%; border-collapse:collapse; }
@@ -1022,6 +1023,10 @@
               <div class="bmp-rank-info">
                 <div class="bmp-rank-val" id="gauge-rank">Collect reviews to unlock</div>
                 <div class="bmp-rank-label" id="gauge-sub">Your score updates with every review</div>
+                <div id="gauge-geo-ranks" style="display:none;">
+                  <div class="bmp-geo-row" id="gauge-country-rank"></div>
+                  <div class="bmp-geo-row" id="gauge-local-rank"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -2255,29 +2260,57 @@
     localStorage.setItem(storageKey, String(currentCount));
     // ─────────────────────────────────────────────────────────────────────
 
-    // Compute UK rank
-    const { count } = await supabase
-      .from('trainers')
-      .select('*', { count: 'exact', head: true })
-      .gt('bmp_score', trainer.bmp_score ?? 0);
-    const rank   = (count ?? 0) + 1;
+    // ── Rankings: UK, Country, Local (Phase 3) ───────────────────────────
+    const { data: ranksData } = await (supabase as any).rpc('get_trainer_ranks', { p_trainer_id: trainer.id });
+    const ranksRow    = Array.isArray(ranksData) ? ranksData[0] : (ranksData as any);
+    const ukRank      = (ranksRow?.uk_rank      as number | null) ?? null;
+    const countryRank = (ranksRow?.country_rank  as number | null) ?? null;
+    const localRank   = (ranksRow?.local_rank    as number | null) ?? null;
+    const rank        = ukRank ?? 0;
+
     const rankEl = document.getElementById('stat-rank');
     const rankChangeEl = document.getElementById('stat-rank-change');
-    if (rankEl)       rankEl.textContent       = hasBmp ? `#${rank}` : '—';
-    if (rankChangeEl) rankChangeEl.textContent = hasBmp ? `Competing with PTs across the UK` : 'Rank unlocks with first review';
+    if (rankEl)       rankEl.textContent       = hasBmp && rank ? `#${rank}` : '—';
+    if (rankChangeEl) rankChangeEl.textContent = hasBmp && rank ? `Competing with PTs across the UK` : 'Rank unlocks with first review';
 
     // ── BMP Gauge ────────────────────────────────────────────────────────
-    const gaugeCircle = document.getElementById('gauge-circle') as HTMLElement;
-    const gaugeScore  = document.getElementById('gauge-score')  as HTMLElement;
-    const gaugeRank   = document.getElementById('gauge-rank')   as HTMLElement;
-    const gaugeSub    = document.getElementById('gauge-sub')    as HTMLElement;
+    const gaugeCircle   = document.getElementById('gauge-circle')       as HTMLElement;
+    const gaugeScore    = document.getElementById('gauge-score')        as HTMLElement;
+    const gaugeRank     = document.getElementById('gauge-rank')         as HTMLElement;
+    const gaugeSub      = document.getElementById('gauge-sub')          as HTMLElement;
+    const gaugeGeoRanks = document.getElementById('gauge-geo-ranks')    as HTMLElement;
+    const gaugeCtryRank = document.getElementById('gauge-country-rank') as HTMLElement;
+    const gaugeLocRank  = document.getElementById('gauge-local-rank')   as HTMLElement;
+
     if (gaugeScore) gaugeScore.textContent = hasBmp ? String(trainer.bmp_score) : '—';
     if (gaugeCircle && hasBmp) {
       const deg = Math.round(((trainer.bmp_score ?? 0) / 100) * 360);
       gaugeCircle.style.background = `conic-gradient(var(--green) 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
     }
-    if (gaugeRank) gaugeRank.innerHTML = hasBmp ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>Ranked #${rank} in the UK` : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
-    if (gaugeSub)  gaugeSub.textContent  = hasBmp ? `Competing with PTs across the UK`      : 'Start collecting verified reviews';
+    if (gaugeRank) gaugeRank.innerHTML = hasBmp && rank
+      ? `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>Ranked #${rank} in the UK`
+      : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
+
+    const _t = trainer as any;
+    if (hasBmp && _t.location_confirmed) {
+      if (gaugeSub) gaugeSub.textContent = `Competing with PTs across the UK`;
+      if (countryRank && gaugeCtryRank) {
+        gaugeCtryRank.textContent = `#${countryRank} in ${_t.cc_country ?? 'your country'}`;
+      }
+      if (localRank && _t.cc_local_area && gaugeLocRank) {
+        const { data: areaData } = await (supabase as any).rpc('get_ranking_area_display', { p_area_id: _t.cc_local_area });
+        const areaRow   = Array.isArray(areaData) ? areaData[0] : (areaData as any);
+        const localName = areaRow?.display_name ?? '';
+        if (localName) gaugeLocRank.textContent = `#${localRank} in ${localName}`;
+      } else if (gaugeLocRank) {
+        gaugeLocRank.style.display = 'none';
+      }
+      if (gaugeGeoRanks && (countryRank || localRank)) gaugeGeoRanks.style.display = 'block';
+    } else if (hasBmp && !_t.location_confirmed) {
+      if (gaugeSub) gaugeSub.textContent = `Confirm your location to unlock country & local rankings`;
+    } else {
+      if (gaugeSub) gaugeSub.textContent = `Start collecting verified reviews`;
+    }
 
     // ── Fetch this PT's real reviews ─────────────────────────────────────
     const { data: ptReviews } = await supabase
