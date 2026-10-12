@@ -1213,9 +1213,9 @@ const reviews = [
     var cert = pt.cert ? '<span class="lbc-cert">' + pt.cert + '</span>' : '';
     var city = pt.city || pt.location || '';
     var spec = pt.specialty ? pt.specialty.split(/[,\/]/)[0].trim() : '';
-    var ctLabel = pt.coachingType === 'in_person' ? 'In Person'
-      : pt.coachingType === 'online' ? 'Online'
-      : pt.coachingType === 'hybrid' ? 'Online & In Person'
+    var ctLabel = pt.coaching_type === 'in_person' ? 'In Person'
+      : pt.coaching_type === 'online' ? 'Online'
+      : pt.coaching_type === 'hybrid' ? 'Online & In Person'
       : '';
     var dbs = bmpDumbbell(pt.bmp_score || 0, 44);
     var revCount = pt.review_count || 0;
@@ -1354,9 +1354,9 @@ const reviews = [
       ? '<span style="display:inline-flex;align-items:center;gap:0.2rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + (t.city || t.location) + '</span>'
       : '';
     var specMeta = t.specialty ? '<span class="spec-pill spec-pill--sm">' + t.specialty.split(/[,\/]/)[0].trim() + '</span>' : '';
-    var ctLabel = t.coachingType === 'in_person' ? 'In Person'
-      : t.coachingType === 'online' ? 'Online'
-      : t.coachingType === 'hybrid' ? 'Online & In Person'
+    var ctLabel = t.coaching_type === 'in_person' ? 'In Person'
+      : t.coaching_type === 'online' ? 'Online'
+      : t.coaching_type === 'hybrid' ? 'Online & In Person'
       : '';
     var ctBadge = ctLabel
       ? '<span style="display:block;text-align:right;font-family:Manrope,sans-serif;font-size:0.55rem;font-weight:700;color:rgba(160,200,255,0.8);background:rgba(60,120,220,0.15);border:1px solid rgba(60,120,220,0.28);padding:0.15rem 0.42rem;border-radius:4px;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:0.28rem;white-space:nowrap;">' + ctLabel + '</span>'
