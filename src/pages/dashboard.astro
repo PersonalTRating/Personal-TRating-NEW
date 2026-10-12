@@ -1,4 +1,4 @@
----
+﻿---
 // PT Dashboard — CoachCards
 // Route: /dashboard
 ---
@@ -4154,7 +4154,7 @@
 
   function igCopyCaption(btn) {
     var d = getShareData();
-    if (!d.link || d.link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!d.link || d.link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     var caption = d.custom + '\n\n'
       + 'Leave me a verified review on CoachCards 👇\n'
       + d.link + '\n\n'
@@ -4164,7 +4164,7 @@
       btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
       btn.disabled = true;
       setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2400);
-    }).catch(function() { showToast('⚠ï¸ Could not copy — try again'); });
+    }).catch(function() { showToast('⚠ Could not copy — try again'); });
   }
 
   function buildShareCard() {
@@ -4408,18 +4408,20 @@
 
   function igCopyLink(btn) {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     navigator.clipboard.writeText(link).then(function() {
       var orig = btn.innerHTML;
       btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
       btn.disabled = true;
       setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2400);
-    }).catch(function() { showToast('⚠ï¸ Could not copy — try again'); });
+    }).catch(function() { showToast('⚠ Could not copy — try again'); });
   }
 
   // ── Central share-message builder ───────────────────────────────────────
   function getShareData() {
-    var link      = document.getElementById('review-link').value;
+    var raw  = document.getElementById('review-link').value;
+    // Always absolute https:// so email clients auto-link the URL
+    var link = raw.startsWith('http') ? raw : 'https://coachcards.co.uk' + (raw.startsWith('/') ? '' : '/') + raw;
     var customEl  = document.getElementById('sc-custom-msg');
     var custom    = (customEl && customEl.value.trim()) ? customEl.value.trim() : "I'd love your feedback 🙏";
     var name      = window.__ptTrainerName || '';
@@ -4448,34 +4450,34 @@
 
   function copyUrlBtn(btn) {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     navigator.clipboard.writeText(link).then(function() {
       btn.textContent = 'Copied ✓';
       btn.disabled = true;
       setTimeout(function() { btn.textContent = 'Copy'; btn.disabled = false; }, 2200);
-    }).catch(function() { showToast('⚠ï¸ Could not copy — try manually'); });
+    }).catch(function() { showToast('⚠ Could not copy — try manually'); });
   }
 
   function copyShareBtn(btn) {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     navigator.clipboard.writeText(link).then(function() {
       var orig = btn.innerHTML;
       btn.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Copied ✓';
       btn.disabled = true;
       setTimeout(function() { btn.innerHTML = orig; btn.disabled = false; }, 2200);
-    }).catch(function() { showToast('⚠ï¸ Could not copy — try manually'); });
+    }).catch(function() { showToast('⚠ Could not copy — try manually'); });
   }
 
   function shareWhatsApp() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     window.open('https://wa.me/?text=' + encodeURIComponent(buildReviewMessage('whatsapp')), '_blank');
   }
 
   function shareSMS() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     var text = buildReviewMessage('sms');
     var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     if (isMobile) {
@@ -4488,9 +4490,12 @@
 
   function shareEmail() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
+    // Ensure absolute https:// URL so email clients auto-link it correctly
+    if (!link.startsWith('http')) link = 'https://coachcards.co.uk' + (link.startsWith('/') ? '' : '/') + link;
     var em = buildReviewMessage('email');
-    window.open('mailto:?subject=' + encodeURIComponent(em.subject) + '&body=' + encodeURIComponent(em.body));
+    // Use location.href — more reliable than window.open on iOS Safari (popup blockers)
+    location.href = 'mailto:?subject=' + encodeURIComponent(em.subject) + '&body=' + encodeURIComponent(em.body);
   }
 
   function shareInstagram() {
@@ -4506,19 +4511,19 @@
 
   function shareFacebook() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(link), '_blank');
   }
 
   function shareLinkedIn() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(link), '_blank');
   }
 
   function shareNative() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     var d = getShareData();
     var bodyText = d.custom + '\n\nLeave me a verified review on CoachCards:';
     if (navigator.share) {
@@ -4586,7 +4591,7 @@
 
   function downloadQRCode() {
     var link = document.getElementById('review-link').value;
-    if (!link || link.includes('...')) { showToast('⚠ï¸ Load your dashboard first'); return; }
+    if (!link || link.includes('...')) { showToast('⚠ Load your dashboard first'); return; }
     showToast('⏳ Generating QR code…');
     var qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=16&data=' + encodeURIComponent(link);
     var img = new Image();
