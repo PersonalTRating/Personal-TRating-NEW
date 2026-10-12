@@ -399,6 +399,20 @@
       return;
     }
 
+    // Send reviewer approval notification — non-blocking.
+    // Passes the admin's JWT so send-approval-email can verify the caller.
+    supabase.auth.getSession().then(({ data: { session: s } }) => {
+      if (!s?.access_token) return;
+      fetch('/.netlify/functions/send-approval-email', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${s.access_token}`,
+        },
+        body: JSON.stringify({ reviewId: id }),
+      }).catch(() => {});
+    });
+
     document.getElementById(`row-${id}`)?.remove();
     pendingReviews = pendingReviews.filter(r => r.id !== id);
     (document.getElementById('stat-pending') as HTMLElement).textContent = String(pendingReviews.length);

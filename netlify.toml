@@ -2,6 +2,10 @@
   command = "npm run build"
   publish = "dist"
 
+# Scheduled Netlify functions
+[functions.retry-approval-notifications]
+  schedule = "*/15 * * * *"
+
 [build.environment]
   NODE_VERSION = "22"
 
