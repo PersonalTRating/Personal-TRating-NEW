@@ -157,9 +157,7 @@ function buildApprovalEmail(firstName, trainerName, profileUrl) {
 
       <!-- ── Header ── -->
       <tr><td style="background:linear-gradient(160deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);border-radius:16px 16px 0 0;padding:40px 40px 36px;text-align:center;">
-        <div style="display:inline-block;background:white;border:2px solid #3ab54a;border-radius:10px;padding:8px 16px;margin-bottom:24px;">
-          <span style="font-family:Georgia,serif;font-size:22px;font-weight:900;color:#0d1a0e;letter-spacing:-0.5px;"><span style="color:#3ab54a;">Coach</span>Cards</span>
-        </div>
+        <img src="https://coachcards.co.uk/images/cc-logo.png" alt="CoachCards" width="64" height="64" style="display:block;margin:0 auto 24px;" />
         <div style="display:inline-block;background:rgba(58,181,74,0.15);border:1px solid rgba(58,181,74,0.35);border-radius:50px;padding:8px 20px;margin-bottom:20px;">
           <span style="font-size:11px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;color:#7de88a;">Review Approved ✓</span>
         </div>
