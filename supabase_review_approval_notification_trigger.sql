@@ -2,13 +2,19 @@
 -- CoachCards — Review Approval In-App Notification Trigger
 -- File: supabase_review_approval_notification_trigger.sql
 -- Run in Supabase Dashboard → SQL Editor
--- Safe to re-run (CREATE OR REPLACE + DROP IF EXISTS)
+-- Safe to re-run (CREATE OR REPLACE + DROP IF EXISTS on the NEW trigger only)
 -- ══════════════════════════════════════════════════════════════════════════
 --
 -- Inserts a row into `notifications` whenever a review is approved.
 -- Covers BOTH approval paths automatically:
 --   • Admin dashboard (direct UPDATE via admin.astro)
 --   • Email-link approval (approve_review_by_token RPC)
+--
+-- Trigger name: on_review_approved_notify_client
+-- This is intentionally different from the existing on_review_approved
+-- trigger, which calls update_trainer_stats() and must be preserved.
+-- PostgreSQL allows multiple AFTER UPDATE triggers on the same table;
+-- both fire independently on every qualifying UPDATE.
 --
 -- Idempotent: the trigger condition only fires when is_verified transitions
 -- FALSE → TRUE. A repeated approval or any other UPDATE to the row does not
@@ -19,6 +25,29 @@
 -- notification body or link.
 -- ══════════════════════════════════════════════════════════════════════════
 
+
+-- ── Safety check: confirm the existing trainer-stats trigger is intact ────
+-- This query will return one row if the trigger is safe. If it returns zero
+-- rows, do NOT proceed — the existing trigger is missing and needs investigation.
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM   information_schema.triggers
+    WHERE  trigger_schema = 'public'
+      AND  event_object_table = 'reviews'
+      AND  trigger_name = 'on_review_approved'
+  ) THEN
+    RAISE EXCEPTION
+      'Safety check failed: on_review_approved trigger not found. '
+      'This migration expects the existing trainer-stats trigger to be present. '
+      'Inspect triggers on the reviews table before continuing.';
+  END IF;
+END;
+$$;
+
+
+-- ── 1. Create the notification trigger function ───────────────────────────
 CREATE OR REPLACE FUNCTION notify_reviewer_on_approval()
 RETURNS TRIGGER
 LANGUAGE plpgsql
@@ -60,20 +89,32 @@ BEGIN
 END;
 $$;
 
-DROP TRIGGER IF EXISTS on_review_approved ON reviews;
 
-CREATE TRIGGER on_review_approved
+-- ── 2. Install the notification trigger (unique name) ─────────────────────
+-- DROP only the notification trigger — never the trainer-stats trigger.
+DROP TRIGGER IF EXISTS on_review_approved_notify_client ON reviews;
+
+CREATE TRIGGER on_review_approved_notify_client
   AFTER UPDATE ON reviews
   FOR EACH ROW
   EXECUTE FUNCTION notify_reviewer_on_approval();
 
 
--- ── Tighten the notifications INSERT policy ───────────────────────────────
--- The original "Service can insert notifications" policy uses WITH CHECK (true),
--- which allows any authenticated (or anon) session to INSERT a notification
--- for ANY user_id — including other users' IDs. This is unnecessary because
--- SECURITY DEFINER functions and triggers bypass RLS entirely (they run as
--- the function definer, not the calling role). Dropping this policy means only
--- SECURITY DEFINER code paths can insert notifications; direct client inserts
--- are denied by the absence of a permissive INSERT policy.
+-- ── 3. Tighten the notifications INSERT policy ────────────────────────────
+-- The "Service can insert notifications" policy uses WITH CHECK (true),
+-- which allows any authenticated session to INSERT a notification for ANY
+-- user_id. SECURITY DEFINER triggers bypass RLS entirely, so this policy
+-- is unnecessary and a security risk. Dropping it means only SECURITY
+-- DEFINER code paths can insert notifications.
 DROP POLICY IF EXISTS "Service can insert notifications" ON notifications;
+
+
+-- ── 4. Verify both triggers exist ────────────────────────────────────────
+-- Run this after the migration to confirm both triggers are present.
+-- Expected output: two rows — on_review_approved and on_review_approved_notify_client.
+SELECT trigger_name, event_manipulation, action_statement
+FROM   information_schema.triggers
+WHERE  trigger_schema     = 'public'
+  AND  event_object_table = 'reviews'
+  AND  trigger_name IN ('on_review_approved', 'on_review_approved_notify_client')
+ORDER BY trigger_name;
