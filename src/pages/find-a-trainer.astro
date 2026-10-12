@@ -883,6 +883,8 @@ const participationState: 'empty' | 'growing' | 'full' =
       var bmp  = card.getAttribute('data-bmp') || '—';
       var name = (card.getAttribute('data-name') || '').replace(/\b\w/g, function (c) { return c.toUpperCase(); });
       var href = card.getAttribute('href') || '#';
+      var ct   = card.getAttribute('data-coaching-type') || '';
+      var ctTxt = ct === 'in_person' ? 'In Person' : ct === 'online' ? 'Online' : ct === 'hybrid' ? 'Online & In Person' : '';
       var jitter = [(Math.random()-0.5)*0.04, (Math.random()-0.5)*0.08];
       var icon = L.divIcon({
         className: '',
@@ -890,7 +892,7 @@ const participationState: 'empty' | 'growing' | 'full' =
         iconSize:[34,34], iconAnchor:[17,17],
       });
       L.marker([coords[0]+jitter[0], coords[1]+jitter[1]], { icon: icon }).addTo(map)
-        .bindPopup('<div style="font-family:Manrope,sans-serif;min-width:160px;padding:0.25rem 0;"><div style="font-weight:700;font-size:0.92rem;margin-bottom:0.25rem;">' + name + '</div><div style="font-size:0.75rem;color:#888;margin-bottom:0.5rem;">BMP Score: ' + bmp + '</div><a href="' + href + '" style="display:block;background:#3ab54a;color:white;text-align:center;padding:0.35rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.78rem;">View Profile →</a></div>');
+        .bindPopup('<div style="font-family:Manrope,sans-serif;min-width:160px;padding:0.25rem 0;"><div style="font-weight:700;font-size:0.92rem;margin-bottom:0.25rem;">' + name + '</div>' + (ctTxt ? '<div style="font-size:0.7rem;color:#5585dd;margin-bottom:0.3rem;">' + ctTxt + '</div>' : '') + '<div style="font-size:0.75rem;color:#888;margin-bottom:0.5rem;">BMP Score: ' + bmp + '</div><a href="' + href + '" style="display:block;background:#3ab54a;color:white;text-align:center;padding:0.35rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.78rem;">View Profile →</a></div>');
     });
     var noteEl = document.getElementById('fat-map-note');
     if (noteEl) noteEl.textContent = placed + ' trainer' + (placed !== 1 ? 's' : '') + ' shown on map. Click a pin to view their profile.';
