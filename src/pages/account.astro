@@ -325,6 +325,15 @@
     .cl-chat-send { width:46px; height:46px; font-size:1.2rem; }
   }
 
+  /* ── Review status badge ── */
+  .review-status-badge {
+    display:inline-block; font-size:0.62rem; font-weight:700;
+    padding:0.12rem 0.5rem; border-radius:20px; margin-top:0.25rem;
+    letter-spacing:0.5px; text-transform:uppercase;
+  }
+  .review-status-badge.published { background:#eaf7ec; color:#2a9438; }
+  .review-status-badge.pending   { background:#fef9e7; color:#b07d00; }
+
   /* ── Review cards ── */
   #reviews-list { display:flex; flex-direction:column; gap:0.85rem; }
   .review-item {
@@ -760,7 +769,7 @@
   // ── Load past reviews ──────────────────────────────────────────────────────
   const { data: reviews } = await supabase
     .from('reviews')
-    .select('id, rating, review_text, created_at, trainer_id, trainers(name, avatar_initials, avatar_bg, avatar_color, bmp_score, review_count)')
+    .select('id, rating, review_text, created_at, trainer_id, is_verified, trainers(name, avatar_initials, avatar_bg, avatar_color, bmp_score, review_count)')
     .eq('client_id', client.id)
     .order('created_at', { ascending: false });
 
@@ -780,6 +789,7 @@
             <div>
               <div class="review-trainer-name">${t?.name ?? 'Unknown Trainer'}</div>
               <div class="review-date">${date}</div>
+              <span class="review-status-badge ${r.is_verified ? 'published' : 'pending'}">${r.is_verified ? 'Published' : 'Pending'}</span>
             </div>
           </div>
           <div class="review-text">"${r.review_text}"</div>
