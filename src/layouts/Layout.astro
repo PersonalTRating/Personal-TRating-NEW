@@ -168,7 +168,13 @@ const {
   body { position: relative; }
 
   /* Tailwind preflight sets img { max-width: 100% } which shrinks Leaflet
-     tiles and creates visible seams. Override only within the map container. */
+     tiles and creates visible seams. Override only within the map container.
+     Background matches OSM water tile colour so sub-pixel gaps at non-100%
+     zoom (where tile boundaries land on fractional physical pixels) are
+     invisible instead of showing as grey lines. */
+  .leaflet-container {
+    background: #a8c8f0;
+  }
   .leaflet-container img {
     max-width: none;
   }
