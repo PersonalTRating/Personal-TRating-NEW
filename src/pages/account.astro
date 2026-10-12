@@ -344,22 +344,39 @@
   .hsc-link  { font-size:0.76rem; font-weight:700; color:var(--green); margin-top:0.35rem; }
 
   .home-activity-row {
-    display:flex; align-items:center; gap:1rem;
-    padding:0.9rem 0; border-bottom:1px solid var(--border);
+    display:flex; align-items:stretch; gap:0;
+    border-bottom:1px solid var(--border);
     text-decoration:none; color:var(--text);
-    transition:background 0.15s;
+    transition:box-shadow 0.2s, transform 0.2s;
+    border-radius:12px; border:1px solid var(--border);
+    overflow:hidden; margin-bottom:0.75rem; background:white;
   }
-  .home-activity-row:first-child { padding-top:0; }
-  .home-activity-row:last-child  { border-bottom:none; padding-bottom:0; }
-  .home-activity-row:hover { color:var(--green); }
+  .home-activity-row:last-child { margin-bottom:0; }
+  .home-activity-row:hover { box-shadow:0 4px 20px rgba(0,0,0,0.07); transform:translateY(-1px); }
+  .har-left { flex:1; padding:1.1rem 1.25rem; min-width:0; }
+  .har-header { display:flex; align-items:center; gap:0.65rem; margin-bottom:0.5rem; }
   .har-avatar {
     width:38px; height:38px; border-radius:50%; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
     font-weight:800; font-size:0.8rem;
   }
-  .har-body { flex:1; min-width:0; }
+  .har-meta { min-width:0; }
   .har-name { font-weight:700; font-size:0.875rem; }
-  .har-date { font-size:0.72rem; color:var(--muted); margin-top:0.1rem; }
+  .har-date { font-size:0.72rem; color:var(--muted); margin-top:0.08rem; }
+  .har-text { font-size:0.82rem; color:#3a4a3b; line-height:1.65; font-style:italic; margin-top:0.4rem; overflow-wrap:break-word; }
+  .har-right {
+    flex-shrink:0; width:100px; padding:1.1rem 0.75rem;
+    border-left:1px solid var(--border);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.15rem;
+  }
+  .har-bmp-label { font-size:0.62rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); }
+  .har-bmp-score { font-family:'Playfair Display',serif; font-size:1.75rem; font-weight:900; color:#111311; line-height:1; }
+  .har-bmp-dbs   { font-size:0.9rem; letter-spacing:1px; margin-top:0.1rem; }
+  .har-bmp-none  { font-size:0.72rem; color:var(--muted); text-align:center; line-height:1.4; }
+  @media (max-width:480px) {
+    .har-right { width:80px; }
+    .har-bmp-score { font-size:1.4rem; }
+  }
 
   .home-find-pt {
     background:linear-gradient(135deg,#0d1a0e 0%,#1a3d1e 60%,#2a5a30 100%);
@@ -996,15 +1013,29 @@
 
     const recent = reviews.slice(0, 3);
     recentEl.innerHTML = recent.map((r: any) => {
-      const t    = r.trainers;
-      const date = new Date(r.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const t       = r.trainers;
+      const date    = new Date(r.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const bmp     = t?.bmp_score ?? null;
+      const bmpDisp = bmp !== null ? (bmp % 1 === 0 ? String(bmp) : bmp.toFixed(1)) : null;
+      const dbs     = bmp !== null ? _bmpDumbbell(bmp, 36) : '';
+      const bmpRight = bmpDisp !== null
+        ? `<div class="har-bmp-label">BMP</div>
+           <div class="har-bmp-score">${bmpDisp}</div>
+           <div class="har-bmp-dbs">${dbs}</div>`
+        : `<div class="har-bmp-none">No score<br>yet</div>`;
       return `<a href="/trainers/${r.trainer_id}" class="home-activity-row">
-        <div class="har-avatar" style="background:${t?.avatar_bg ?? '#eaf7ec'};color:${t?.avatar_color ?? '#2a9438'}">${t?.avatar_initials ?? '?'}</div>
-        <div class="har-body">
-          <div class="har-name">${t?.name ?? 'Unknown Trainer'}</div>
-          <div class="har-date">${date}</div>
+        <div class="har-left">
+          <div class="har-header">
+            <div class="har-avatar" style="background:${t?.avatar_bg ?? '#eaf7ec'};color:${t?.avatar_color ?? '#2a9438'}">${t?.avatar_initials ?? '?'}</div>
+            <div class="har-meta">
+              <div class="har-name">${t?.name ?? 'Unknown Trainer'}</div>
+              <div class="har-date">${date}</div>
+            </div>
+            <span class="review-status-badge ${r.is_verified ? 'published' : 'pending'}" style="margin-left:auto;margin-top:0;">${r.is_verified ? 'Published' : 'Pending'}</span>
+          </div>
+          <div class="har-text">"${r.review_text}"</div>
         </div>
-        <span class="review-status-badge ${r.is_verified ? 'published' : 'pending'}" style="flex-shrink:0;">${r.is_verified ? 'Published' : 'Pending'}</span>
+        <div class="har-right">${bmpRight}</div>
       </a>`;
     }).join('');
 
