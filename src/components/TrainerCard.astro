@@ -18,6 +18,11 @@ interface Props {
   avatarColor?: string;
   isTrending?: boolean;
   coachingType?: string;
+  countryRank?: number;
+  localRank?: number;
+  ccCountry?: string;
+  ccLocalArea?: string;
+  locationConfirmed?: boolean;
 }
 
 const {
@@ -37,6 +42,11 @@ const {
   avatarColor = '#3ab54a',
   isTrending = false,
   coachingType = '',
+  countryRank,
+  localRank,
+  ccCountry = '',
+  ccLocalArea = '',
+  locationConfirmed = false,
 } = Astro.props;
 
 const coachingLabel = coachingType === 'in_person' ? 'In Person'
@@ -68,6 +78,12 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   data-city={city.toLowerCase()}
   data-spec={spec.toLowerCase()}
   data-coaching-type={coachingType}
+  data-uk-rank={rank != null ? String(rank) : undefined}
+  data-country-rank={countryRank != null ? String(countryRank) : undefined}
+  data-local-rank={localRank != null ? String(localRank) : undefined}
+  data-cc-country={ccCountry || undefined}
+  data-cc-local-area={ccLocalArea || undefined}
+  data-location-confirmed={locationConfirmed ? 'true' : undefined}
 >
   <div class="trc-left">
     {rankStr && <span class="trc-rank">{rankStr}</span>}

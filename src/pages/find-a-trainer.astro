@@ -5,7 +5,7 @@ import TrainerCard from '../components/TrainerCard.astro';
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending')
+  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
@@ -29,7 +29,40 @@ const allTrainers = raw.map((t: any, i: number) => ({
   avatarColor:        t.avatar_color || '#3ab54a',
   isTrending:         t.is_trending === true,
   coachingType:       t.coaching_type || '',
+  ccCountry:          (t as any).cc_country || '',
+  ccLocalArea:        (t as any).cc_local_area || '',
+  locationConfirmed:  !!(t as any).location_confirmed,
 }));
+
+// Country rank map: rank within each confirmed country group, sorted by BMP
+const countryRankMap: Record<string, number> = {};
+{
+  const groups: Record<string, typeof allTrainers> = {};
+  allTrainers.forEach(t => { if (t.locationConfirmed && t.ccCountry) { (groups[t.ccCountry] = groups[t.ccCountry] || []).push(t); } });
+  Object.values(groups).forEach(group => {
+    group.slice().sort((a, b) => b.bmp - a.bmp).forEach((t, i) => { countryRankMap[t.id] = i + 1; });
+  });
+}
+
+// Local rank map: rank within each confirmed local area group, sorted by BMP
+const localRankMap: Record<string, number> = {};
+{
+  const groups: Record<string, typeof allTrainers> = {};
+  allTrainers.forEach(t => { if (t.locationConfirmed && t.ccLocalArea) { (groups[t.ccLocalArea] = groups[t.ccLocalArea] || []).push(t); } });
+  Object.values(groups).forEach(group => {
+    group.slice().sort((a, b) => b.bmp - a.bmp).forEach((t, i) => { localRankMap[t.id] = i + 1; });
+  });
+}
+
+// Fetch local ranking areas for the Local tab selectors
+const { data: rankingAreasData } = await supabase
+  .from('ranking_areas')
+  .select('id, display_name, country, slug')
+  .eq('area_type', 'local')
+  .eq('is_active', true)
+  .order('display_name', { ascending: true });
+
+const localAreasJson = JSON.stringify(rankingAreasData ?? []);
 
 const specialties  = ['Weight Loss','Muscle Building','Strength & Conditioning','HIIT','Rehabilitation','Nutrition','Sports Performance','Hyrox','Yoga & Pilates','Boxing','Running'];
 
@@ -62,6 +95,10 @@ const participationState: 'empty' | 'growing' | 'full' =
   </div>
 </nav>
 
+<!-- Geo data for client-side JS -->
+<script id="fat-geo-data" type="application/json" set:html={localAreasJson}></script>
+<script id="fat-part-threshold" type="application/json">{PARTICIPATION_THRESHOLD}</script>
+
 <!-- ── HERO ── -->
 <section class="fat-hero">
   <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(58,181,74,0.14) 0%,transparent 68%);pointer-events:none;"></div>
@@ -87,6 +124,44 @@ const participationState: 'empty' | 'growing' | 'full' =
         </div>
       </div>
       <button onclick="doSearch()" class="fat-search-btn">Search</button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── GEO NAV ── -->
+<section class="fat-geo-nav" id="fat-geo-nav">
+  <div class="fat-geo-inner">
+
+    <!-- Tier tabs: always visible -->
+    <div class="fat-tier-tabs">
+      <button id="geo-tab-uk"      class="fat-tier-tab fat-tier-active" onclick="setGeoTier('uk')">🇬🇧 UK</button>
+      <button id="geo-tab-country" class="fat-tier-tab"                 onclick="setGeoTier('country')">Country</button>
+      <button id="geo-tab-local"   class="fat-tier-tab"                 onclick="setGeoTier('local')">Local</button>
+    </div>
+
+    <!-- Selectors: visible when Country or Local tab active -->
+    <div id="fat-geo-selectors" class="fat-geo-selectors" style="display:none;">
+
+      <!-- Country select (Country + Local) -->
+      <select id="geo-country-sel" class="fat-geo-sel" onchange="onGeoCountryChange()" aria-label="Select country">
+        <option value="">Select country…</option>
+        <option value="England">England</option>
+        <option value="Scotland">Scotland</option>
+        <option value="Wales">Wales</option>
+        <option value="Northern Ireland">Northern Ireland</option>
+      </select>
+
+      <!-- Local area inputs: Local tab only -->
+      <div id="geo-local-wrap" style="display:none;display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+        <input id="geo-local-srch" type="text" class="fat-geo-sel" placeholder="Search area…"
+          oninput="onGeoLocalSearch()" autocomplete="off" aria-label="Search local area" style="min-width:150px;">
+        <select id="geo-local-sel" class="fat-geo-sel" onchange="onGeoLocalChange()"
+          aria-label="Select local area" style="min-width:180px;">
+          <option value="">Select area…</option>
+        </select>
+      </div>
+
     </div>
 
   </div>
@@ -137,10 +212,19 @@ const participationState: 'empty' | 'growing' | 'full' =
 
 <!-- ── LIST VIEW ── -->
 <div id="fat-list-view" style="background:#0a120b;min-height:60vh;padding:2rem 0 5rem;">
-  <div style="max-width:1100px;margin:0 auto;padding:0 2rem;display:flex;flex-direction:column;gap:1rem;" id="fat-list-inner">
+  <div style="max-width:1100px;margin:0 auto;padding:0 2rem;" id="fat-list-inner">
+
+    <!-- Leaderboard heading: always visible, updated by JS -->
+    <div id="fat-lb-head" class="fat-lb-head">
+      <div id="fat-lb-title" class="fat-lb-title">United Kingdom Rankings</div>
+      <div id="fat-lb-sub"   class="fat-lb-sub">UK Leaderboard · Ranked by Body Muscle Percentage (BMP)</div>
+    </div>
+
+    <!-- Cards + special states wrapper -->
+    <div style="display:flex;flex-direction:column;gap:1rem;" id="fat-cards-wrap">
 
     {participationState === 'empty' ? (
-      <div style="text-align:center;padding:6rem 2rem;color:rgba(255,255,255,0.7);">
+      <div id="fat-uk-empty" style="text-align:center;padding:6rem 2rem;color:rgba(255,255,255,0.7);">
         <div style="margin-bottom:1.5rem;display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(58,181,74,0.15);border:1px solid rgba(58,181,74,0.3);">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
@@ -167,21 +251,44 @@ const participationState: 'empty' | 'growing' | 'full' =
             avatarColor={t.avatarColor}
             isTrending={t.isTrending}
             coachingType={t.coachingType}
+            countryRank={countryRankMap[t.id]}
+            localRank={localRankMap[t.id]}
+            ccCountry={t.ccCountry}
+            ccLocalArea={t.ccLocalArea}
+            locationConfirmed={t.locationConfirmed}
           />
         ))}
-
-        {participationState === 'growing' && (
-          <div id="fat-growth-msg" style="text-align:center;padding:1.25rem 1rem 0.25rem;font-size:0.78rem;color:rgba(255,255,255,0.22);letter-spacing:0.04em;">More trainers coming soon</div>
-        )}
-
-        <!-- Empty state (filters: no results) -->
-        <div id="fat-empty" style="display:none;text-align:center;padding:5rem 2rem;color:rgba(255,255,255,0.4);">
-          <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
-          <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.4rem;color:rgba(255,255,255,0.8);">No trainers found</div>
-          <div style="font-size:0.88rem;">Try a different city, region or specialty</div>
-        </div>
       </Fragment>
     )}
+
+    <!-- Growth message: hidden by default, JS controls display -->
+    <div id="fat-growth-msg" style="display:none;text-align:center;padding:1.25rem 1rem 0.25rem;font-size:0.78rem;color:rgba(255,255,255,0.22);letter-spacing:0.04em;">More trainers coming soon</div>
+
+    <!-- Filter empty state: filters narrowed to 0 in a populated pool -->
+    <div id="fat-empty" style="display:none;text-align:center;padding:5rem 2rem;color:rgba(255,255,255,0.4);">
+      <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <div style="font-size:1.05rem;font-weight:700;margin-bottom:0.4rem;color:rgba(255,255,255,0.8);">No trainers found</div>
+      <div style="font-size:0.88rem;">Try a different city, region or specialty</div>
+    </div>
+
+    <!-- Geo coming soon: no trainers in selected country/area yet -->
+    <div id="fat-coming-soon" style="display:none;text-align:center;padding:6rem 2rem;color:rgba(255,255,255,0.7);">
+      <div style="margin-bottom:1.5rem;display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:50%;background:rgba(58,181,74,0.15);border:1px solid rgba(58,181,74,0.3);">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div id="fat-coming-soon-title" style="font-family:'Playfair Display',serif;font-size:1.7rem;font-weight:900;color:white;margin-bottom:0.75rem;">Rankings Coming Soon</div>
+      <p style="font-size:0.9rem;color:rgba(255,255,255,0.5);max-width:380px;margin:0 auto 2rem;line-height:1.75;">Be the first personal trainer in this area to join CoachCards, collect verified reviews and claim the #1 spot.</p>
+      <a href="/for-trainers" style="display:inline-block;background:#3ab54a;color:white;font-weight:700;font-size:0.875rem;padding:0.85rem 2rem;border-radius:30px;text-decoration:none;font-family:'Manrope',sans-serif;transition:background 0.2s;" onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">Join CoachCards</a>
+    </div>
+
+    <!-- No geo selection: prompt to select country/area -->
+    <div id="fat-no-geo" style="display:none;text-align:center;padding:5rem 2rem;color:rgba(255,255,255,0.45);">
+      <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(58,181,74,0.4)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <div id="fat-no-geo-title" style="font-size:1rem;font-weight:700;color:white;margin-bottom:0.4rem;">Select a ranking area above</div>
+      <div id="fat-no-geo-sub" style="font-size:0.88rem;">Choose a country to view its trainer rankings</div>
+    </div>
+
+    </div><!-- /.fat-cards-wrap -->
 
   </div>
 </div>
@@ -244,6 +351,32 @@ const participationState: 'empty' | 'growing' | 'full' =
   .vt-btn  { padding:0.28rem 0.85rem; border-radius:16px; border:none; background:transparent; font-size:0.78rem; font-weight:600; color:#8a8f8a; cursor:pointer; transition:all 0.15s; font-family:'Manrope',sans-serif; white-space:nowrap; }
   .vt-active { background:white; color:#111311; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
 
+  /* ── Geo navigation ── */
+  .fat-geo-nav { background:#111311; border-bottom:1px solid rgba(58,181,74,0.18); }
+  .fat-geo-inner { max-width:1100px; margin:0 auto; padding:0.75rem 2rem; display:flex; align-items:center; gap:1.25rem; flex-wrap:wrap; }
+  .fat-tier-tabs { display:flex; gap:0.35rem; flex-shrink:0; }
+  .fat-tier-tab {
+    background:transparent; border:1.5px solid rgba(255,255,255,0.15); border-radius:8px;
+    padding:0.45rem 1.1rem; font-size:0.82rem; font-weight:700; color:rgba(255,255,255,0.45);
+    cursor:pointer; font-family:'Manrope',sans-serif; transition:all 0.15s; white-space:nowrap;
+  }
+  .fat-tier-tab:hover { color:white; border-color:rgba(58,181,74,0.45); }
+  .fat-tier-tab.fat-tier-active { background:#3ab54a; border-color:#3ab54a; color:white; }
+  .fat-geo-selectors { display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; }
+  .fat-geo-sel {
+    border:1.5px solid rgba(255,255,255,0.15); border-radius:8px; padding:0.42rem 0.85rem;
+    font-size:0.82rem; font-family:'Manrope',sans-serif; background:rgba(255,255,255,0.07);
+    color:white; cursor:pointer; outline:none;
+  }
+  .fat-geo-sel:focus { border-color:#3ab54a; }
+  .fat-geo-sel option { background:#111311; color:white; }
+  .fat-geo-sel::placeholder { color:rgba(255,255,255,0.3); }
+
+  /* ── Leaderboard heading ── */
+  .fat-lb-head { padding:1.5rem 0 0.75rem; }
+  .fat-lb-title { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900; color:white; margin-bottom:0.25rem; }
+  .fat-lb-sub { font-size:0.75rem; color:rgba(255,255,255,0.35); letter-spacing:0.3px; }
+
   /* Mobile nav */
   @media (max-width:620px) {
     nav > div { height:60px !important; padding:0 1.1rem !important; }
@@ -259,6 +392,16 @@ const participationState: 'empty' | 'growing' | 'full' =
     .fat-search-wrap { border-radius:14px; padding:0.35rem 0.35rem 0.35rem 1rem; gap:0.5rem; }
     .fat-search-btn  { padding:0.65rem 1.1rem; font-size:0.85rem; }
     .fat-stat-div { display:none; }
+  }
+  /* Mobile geo nav */
+  @media (max-width:620px) {
+    .fat-geo-inner     { padding:0.6rem 1rem; gap:0.75rem; }
+    .fat-tier-tabs     { gap:0.25rem; }
+    .fat-tier-tab      { padding:0.38rem 0.75rem; font-size:0.78rem; }
+    .fat-geo-selectors { gap:0.4rem; }
+    .fat-geo-sel       { font-size:0.78rem; padding:0.35rem 0.65rem; min-width:0 !important; flex:1 1 120px; }
+    #geo-local-wrap    { flex-direction:column; align-items:stretch; }
+    .fat-lb-title      { font-size:1.2rem; }
   }
 </style>
 
@@ -296,7 +439,17 @@ const participationState: 'empty' | 'growing' | 'full' =
   var listView  = document.getElementById('fat-list-view');
   var mapView   = document.getElementById('fat-map-view');
   var listInner = document.getElementById('fat-list-inner');
+  var cardsWrap = document.getElementById('fat-cards-wrap');
   var cards     = Array.from(document.querySelectorAll('.trc'));
+
+  // ── Geo state ──
+  var activeTier    = 'uk';
+  var activeCountry = '';
+  var activeLocal   = '';
+  var localAreaData = [];
+  var PART_THRESHOLD = 10;
+  try { localAreaData   = JSON.parse(document.getElementById('fat-geo-data').textContent || '[]'); } catch(e) {}
+  try { PART_THRESHOLD  = JSON.parse(document.getElementById('fat-part-threshold').textContent || '10'); } catch(e) {}
 
   var regionMap = {
     'scotland':        ['glasgow','edinburgh','aberdeen','dundee','inverness','stirling','perth','falkirk','ayr','paisley','hamilton','livingston','greenock','kirkcaldy','dunfermline','motherwell'],
@@ -340,6 +493,179 @@ const participationState: 'empty' | 'growing' | 'full' =
   }
   window.setCoachType = setCoachType;
 
+  /* ── Geo navigation ── */
+  function setGeoTier(tier) {
+    activeTier = tier;
+    ['uk','country','local'].forEach(function (t) {
+      var el = document.getElementById('geo-tab-' + t);
+      if (el) el.classList.toggle('fat-tier-active', t === tier);
+    });
+    var selWrap   = document.getElementById('fat-geo-selectors');
+    var localWrap = document.getElementById('geo-local-wrap');
+    if (selWrap)   selWrap.style.display   = (tier === 'uk') ? 'none' : '';
+    if (localWrap) localWrap.style.display = (tier === 'local') ? '' : 'none';
+    if (tier === 'uk') {
+      activeCountry = '';
+      activeLocal   = '';
+      var csel = document.getElementById('geo-country-sel');
+      if (csel) csel.value = '';
+    }
+    if (tier !== 'local') {
+      activeLocal = '';
+      var lsel  = document.getElementById('geo-local-sel');
+      var lsrch = document.getElementById('geo-local-srch');
+      if (lsel)  lsel.value  = '';
+      if (lsrch) lsrch.value = '';
+    }
+    if (tier === 'local' && activeCountry) populateLocalAreas(activeCountry);
+    updateLbHead();
+    updateUrl();
+    applyFilters();
+  }
+  window.setGeoTier = setGeoTier;
+
+  function onGeoCountryChange() {
+    var csel = document.getElementById('geo-country-sel');
+    activeCountry = csel ? csel.value : '';
+    activeLocal   = '';
+    var lsel  = document.getElementById('geo-local-sel');
+    var lsrch = document.getElementById('geo-local-srch');
+    if (lsel)  lsel.value  = '';
+    if (lsrch) lsrch.value = '';
+    if (activeTier === 'local' && activeCountry) populateLocalAreas(activeCountry);
+    updateLbHead();
+    updateUrl();
+    applyFilters();
+  }
+  window.onGeoCountryChange = onGeoCountryChange;
+
+  function onGeoLocalChange() {
+    var lsel = document.getElementById('geo-local-sel');
+    activeLocal = lsel ? lsel.value : '';
+    updateLbHead();
+    updateUrl();
+    applyFilters();
+  }
+  window.onGeoLocalChange = onGeoLocalChange;
+
+  function onGeoLocalSearch() {
+    var lsrch = document.getElementById('geo-local-srch');
+    var lsel  = document.getElementById('geo-local-sel');
+    if (!lsrch || !lsel) return;
+    var q = lsrch.value.trim().toLowerCase();
+    var filtered = localAreaData.filter(function (a) {
+      return (!activeCountry || a.country === activeCountry)
+          && a.display_name.toLowerCase().indexOf(q) !== -1;
+    });
+    lsel.innerHTML = '<option value="">Select area…</option>';
+    filtered.forEach(function (a) {
+      var opt = document.createElement('option');
+      opt.value       = a.id;
+      opt.textContent = a.display_name;
+      lsel.appendChild(opt);
+    });
+  }
+  window.onGeoLocalSearch = onGeoLocalSearch;
+
+  function populateLocalAreas(country) {
+    var lsel = document.getElementById('geo-local-sel');
+    if (!lsel) return;
+    var areas = localAreaData.filter(function (a) { return a.country === country; });
+    lsel.innerHTML = '<option value="">Select area…</option>';
+    areas.forEach(function (a) {
+      var opt = document.createElement('option');
+      opt.value       = a.id;
+      opt.textContent = a.display_name;
+      lsel.appendChild(opt);
+    });
+  }
+
+  function updateLbHead() {
+    var titleEl = document.getElementById('fat-lb-title');
+    var subEl   = document.getElementById('fat-lb-sub');
+    if (!titleEl || !subEl) return;
+    if (activeTier === 'uk') {
+      titleEl.textContent = 'United Kingdom Rankings';
+      subEl.textContent   = 'UK Leaderboard · Ranked by Body Muscle Percentage (BMP)';
+    } else if (activeTier === 'country') {
+      if (activeCountry) {
+        titleEl.textContent = activeCountry + ' Rankings';
+        subEl.textContent   = activeCountry + ' Leaderboard · Ranked by Body Muscle Percentage (BMP)';
+      } else {
+        titleEl.textContent = 'Country Rankings';
+        subEl.textContent   = 'Select a country to view its leaderboard';
+      }
+    } else {
+      if (activeLocal) {
+        var area = localAreaData.find(function (a) { return a.id === activeLocal; });
+        var areaName = area ? area.display_name : 'Local Area';
+        titleEl.textContent = areaName + ' Rankings';
+        subEl.textContent   = areaName + ' Leaderboard · Ranked by Body Muscle Percentage (BMP)';
+      } else if (activeCountry) {
+        titleEl.textContent = activeCountry + ' · Local Rankings';
+        subEl.textContent   = 'Select a local area to view its leaderboard';
+      } else {
+        titleEl.textContent = 'Local Rankings';
+        subEl.textContent   = 'Select a country and local area to view its leaderboard';
+      }
+    }
+  }
+
+  function updateRankDisplay() {
+    var rankAttr = activeTier === 'country' ? 'data-country-rank'
+                 : activeTier === 'local'   ? 'data-local-rank'
+                 : 'data-uk-rank';
+    cards.forEach(function (card) {
+      var rankEl = card.querySelector('.trc-rank');
+      if (!rankEl) return;
+      var rank = card.getAttribute(rankAttr);
+      if (rank != null) {
+        var n = parseInt(rank);
+        rankEl.textContent = isNaN(n) ? '' : String(n).padStart(2, '0');
+      }
+    });
+  }
+
+  function updateUrl() {
+    var existing = new URLSearchParams(window.location.search);
+    var params   = new URLSearchParams();
+    var q    = existing.get('q');
+    var spec = existing.get('spec');
+    if (q)    params.set('q', q);
+    if (spec) params.set('spec', spec);
+    if (activeTier !== 'uk') {
+      params.set('tier', activeTier);
+      if (activeCountry) params.set('cc', activeCountry);
+      if (activeTier === 'local' && activeLocal) params.set('area', activeLocal);
+    }
+    var qs = params.toString();
+    history.pushState(null, '', qs ? '?' + qs : window.location.pathname);
+  }
+
+  function restoreGeoUI(tier, country, local) {
+    activeTier    = tier    || 'uk';
+    activeCountry = country || '';
+    activeLocal   = local   || '';
+    ['uk','country','local'].forEach(function (t) {
+      var el = document.getElementById('geo-tab-' + t);
+      if (el) el.classList.toggle('fat-tier-active', t === activeTier);
+    });
+    var selWrap   = document.getElementById('fat-geo-selectors');
+    var localWrap = document.getElementById('geo-local-wrap');
+    if (selWrap)   selWrap.style.display   = (activeTier === 'uk') ? 'none' : '';
+    if (localWrap) localWrap.style.display = (activeTier === 'local') ? '' : 'none';
+    var csel = document.getElementById('geo-country-sel');
+    if (csel) csel.value = activeCountry;
+    if (activeTier === 'local' && activeCountry) {
+      populateLocalAreas(activeCountry);
+      var lsel = document.getElementById('geo-local-sel');
+      if (lsel) lsel.value = activeLocal;
+    }
+    updateLbHead();
+    updateRankDisplay();
+    applyFilters();
+  }
+
   /* ── Sort ── */
   function doSort() {
     activeSort = sortEl ? sortEl.value : 'bmp';
@@ -359,9 +685,60 @@ const participationState: 'empty' | 'growing' | 'full' =
 
   /* ── Core filter ── */
   function applyFilters() {
+    var noGeoEl    = document.getElementById('fat-no-geo');
+    var comingSoon = document.getElementById('fat-coming-soon');
+    var growthMsg  = document.getElementById('fat-growth-msg');
+
+    // No-geo state: user must pick a country/area first
+    var needsSelection = (activeTier === 'country' && !activeCountry)
+                      || (activeTier === 'local'   && (!activeCountry || !activeLocal));
+
+    // Update the no-geo prompt text to match current tier state
+    if (noGeoEl) {
+      var noGeoTitle = document.getElementById('fat-no-geo-title');
+      var noGeoSub   = document.getElementById('fat-no-geo-sub');
+      if (activeTier === 'local' && activeCountry && !activeLocal) {
+        if (noGeoTitle) noGeoTitle.textContent = 'Select a local area above';
+        if (noGeoSub)   noGeoSub.textContent   = 'Select a local area within ' + activeCountry + ' to view rankings';
+      } else if (activeTier === 'local') {
+        if (noGeoTitle) noGeoTitle.textContent = 'Select a ranking area above';
+        if (noGeoSub)   noGeoSub.textContent   = 'Choose a country and local area to view rankings';
+      } else {
+        if (noGeoTitle) noGeoTitle.textContent = 'Select a country above';
+        if (noGeoSub)   noGeoSub.textContent   = 'Choose a country to view its trainer rankings';
+      }
+      noGeoEl.style.display = needsSelection ? '' : 'none';
+    }
+
+    // Geo-filter each card; count the geo pool (trainers in the selected area)
+    var geoPool = 0;
+    cards.forEach(function (card) {
+      var geoPass;
+      if (activeTier === 'uk') {
+        geoPass = true;
+      } else if (activeTier === 'country') {
+        geoPass = !!activeCountry
+          && card.getAttribute('data-cc-country')         === activeCountry
+          && card.getAttribute('data-location-confirmed') === 'true';
+      } else {
+        geoPass = !!activeLocal
+          && card.getAttribute('data-cc-local-area')      === activeLocal
+          && card.getAttribute('data-location-confirmed') === 'true';
+      }
+      card._geoPass = geoPass;
+      if (geoPass) geoPool++;
+    });
+
+    // Participation state for the current geo selection
+    var partState = geoPool === 0 ? 'empty' : (geoPool < PART_THRESHOLD ? 'growing' : 'full');
+    if (comingSoon) comingSoon.style.display = (!needsSelection && partState === 'empty')   ? '' : 'none';
+    if (growthMsg)  growthMsg.style.display  = (!needsSelection && partState === 'growing') ? '' : 'none';
+
+    // Apply all filters (geo + specialty + search + delivery)
     var regionCities = activeSearch ? (regionMap[activeSearch] || null) : null;
     var visible = 0;
     cards.forEach(function (card) {
+      if (needsSelection || !card._geoPass) { card.style.display = 'none'; return; }
       var name = card.getAttribute('data-name') || '';
       var city = card.getAttribute('data-city') || '';
       var spec = card.getAttribute('data-spec') || '';
@@ -384,26 +761,39 @@ const participationState: 'empty' | 'growing' | 'full' =
       card.style.display = show ? '' : 'none';
       if (show) visible++;
     });
-    if (countEl) countEl.textContent = visible + ' trainer' + (visible !== 1 ? 's' : '');
-    if (emptyEl) emptyEl.style.display = visible === 0 ? '' : 'none';
-    var growthMsg = document.getElementById('fat-growth-msg');
-    if (growthMsg) growthMsg.style.display = visible === 0 ? 'none' : '';
+
+    if (countEl) countEl.textContent = needsSelection ? '' : (visible + ' trainer' + (visible !== 1 ? 's' : ''));
+    if (emptyEl) emptyEl.style.display = (!needsSelection && partState === 'full' && visible === 0) ? '' : 'none';
+
+    updateRankDisplay();
     applySortDOM();
   }
 
   /* ── Sort DOM ── */
   function applySortDOM() {
-    if (!listInner) return;
+    if (!cardsWrap) return;
     var visible = cards.filter(function (c) { return c.style.display !== 'none'; });
     visible.sort(function (a, b) {
-      if (activeSort === 'bmp')     return parseFloat(b.getAttribute('data-bmp') || '0') - parseFloat(a.getAttribute('data-bmp') || '0');
+      if (activeSort === 'bmp') {
+        if (activeTier !== 'uk') {
+          var rankAttr = activeTier === 'country' ? 'data-country-rank' : 'data-local-rank';
+          var ra = parseInt(a.getAttribute(rankAttr) || '9999');
+          var rb = parseInt(b.getAttribute(rankAttr) || '9999');
+          if (ra !== rb) return ra - rb;
+        }
+        return parseFloat(b.getAttribute('data-bmp') || '0') - parseFloat(a.getAttribute('data-bmp') || '0');
+      }
       if (activeSort === 'reviews') return parseInt(b.getAttribute('data-reviews') || '0') - parseInt(a.getAttribute('data-reviews') || '0');
       return (a.getAttribute('data-name') || '').localeCompare(b.getAttribute('data-name') || '');
     });
-    visible.forEach(function (c) { listInner.appendChild(c); });
-    var growthMsg = document.getElementById('fat-growth-msg');
-    if (growthMsg) listInner.appendChild(growthMsg);
-    if (emptyEl) listInner.appendChild(emptyEl);
+    visible.forEach(function (c) { cardsWrap.appendChild(c); });
+    var growthMsg  = document.getElementById('fat-growth-msg');
+    var comingSoon = document.getElementById('fat-coming-soon');
+    var noGeoEl    = document.getElementById('fat-no-geo');
+    if (growthMsg)  cardsWrap.appendChild(growthMsg);
+    if (emptyEl)    cardsWrap.appendChild(emptyEl);
+    if (comingSoon) cardsWrap.appendChild(comingSoon);
+    if (noGeoEl)    cardsWrap.appendChild(noGeoEl);
   }
 
   /* ── Leaflet map (lazy-loaded on first switch to map view) ── */
@@ -518,6 +908,9 @@ const participationState: 'empty' | 'growing' | 'full' =
     var params = new URLSearchParams(window.location.search);
     var q    = params.get('q');
     var spec = params.get('spec');
+    var tier = params.get('tier');
+    var cc   = params.get('cc');
+    var area = params.get('area');
     if (q && searchEl) {
       searchEl.value = q;
       activeSearch   = q.toLowerCase();
@@ -528,7 +921,19 @@ const participationState: 'empty' | 'growing' | 'full' =
       var chip = document.querySelector('.chip[data-spec="' + spec.toLowerCase() + '"]');
       if (chip) setSpec(chip, spec.toLowerCase());
     }
+    if (tier && tier !== 'uk') {
+      restoreGeoUI(tier, cc || '', area || '');
+    }
   })();
+
+  /* ── Popstate: browser back/forward ── */
+  window.addEventListener('popstate', function () {
+    var params  = new URLSearchParams(window.location.search);
+    var tier    = params.get('tier')  || 'uk';
+    var country = params.get('cc')    || '';
+    var local   = params.get('area')  || '';
+    restoreGeoUI(tier, country, local);
+  });
 
   /* ── Init ── */
   applyFilters();
