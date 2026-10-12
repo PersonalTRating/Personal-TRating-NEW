@@ -97,7 +97,7 @@ const participationState: 'empty' | 'growing' | 'full' =
 
 <!-- Geo data for client-side JS -->
 <script id="fat-geo-data" type="application/json" set:html={localAreasJson}></script>
-<script id="fat-part-threshold" type="application/json">{PARTICIPATION_THRESHOLD}</script>
+<script id="fat-part-threshold" type="application/json" set:html={PARTICIPATION_THRESHOLD}></script>
 
 <!-- ── HERO ── -->
 <section class="fat-hero">
@@ -153,7 +153,7 @@ const participationState: 'empty' | 'growing' | 'full' =
       </select>
 
       <!-- Local area inputs: Local tab only -->
-      <div id="geo-local-wrap" style="display:none;display:flex;gap:0.5rem;align-items:center;flex-wrap:wrap;">
+      <div id="geo-local-wrap" style="display:none;gap:0.5rem;align-items:center;flex-wrap:wrap;">
         <input id="geo-local-srch" type="text" class="fat-geo-sel" placeholder="Search area…"
           oninput="onGeoLocalSearch()" autocomplete="off" aria-label="Search local area" style="min-width:150px;">
         <select id="geo-local-sel" class="fat-geo-sel" onchange="onGeoLocalChange()"
@@ -172,11 +172,15 @@ const participationState: 'empty' | 'growing' | 'full' =
   <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
 
     <!-- Specialty chips -->
-    <div class="fat-chips" id="fat-chips">
-      <button class="chip chip-active" data-spec="" onclick="setSpec(this,'')">All</button>
-      {specialties.map(s => (
-        <button class="chip" data-spec={s.toLowerCase()} onclick={"setSpec(this,'" + s.toLowerCase().replace(/'/g,"\\'") + "')"}>{s}</button>
-      ))}
+    <div class="fat-chips-wrap">
+      <button class="fat-chips-arrow fat-chips-arrow-l" id="chips-left"  onclick="scrollChips(-1)" aria-label="Scroll left"  tabindex="-1">‹</button>
+      <div class="fat-chips" id="fat-chips">
+        <button class="chip chip-active" data-spec="" onclick="setSpec(this,'')">All</button>
+        {specialties.map(s => (
+          <button class="chip" data-spec={s.toLowerCase()} onclick={"setSpec(this,'" + s.toLowerCase().replace(/'/g,"\\'") + "')"}>{s}</button>
+        ))}
+      </div>
+      <button class="fat-chips-arrow fat-chips-arrow-r" id="chips-right" onclick="scrollChips(1)"  aria-label="Scroll right" tabindex="-1">›</button>
     </div>
 
     <!-- Sort + delivery filter + view toggle -->
@@ -336,8 +340,21 @@ const participationState: 'empty' | 'growing' | 'full' =
 
   /* Filter bar */
   .fat-filters { background:white; border:none; border-top:2.5px solid #3ab54a; border-bottom:2.5px solid #3ab54a; position:sticky; top:72px; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
-  .fat-chips   { display:flex; gap:0.45rem; overflow-x:auto; scrollbar-width:none; padding:0.85rem 0 0.5rem; }
+  /* Chips scroll wrapper: arrows + scrollable row */
+  .fat-chips-wrap { position:relative; display:flex; align-items:center; padding:0.85rem 0 0.5rem; }
+  .fat-chips { display:flex; gap:0.45rem; overflow-x:auto; scrollbar-width:none; flex:1; min-width:0; scroll-behavior:smooth; }
   .fat-chips::-webkit-scrollbar { display:none; }
+  /* Scroll arrows */
+  .fat-chips-arrow {
+    flex-shrink:0; background:white; border:1.5px solid #e0e8e1; border-radius:50%;
+    width:26px; height:26px; display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; line-height:1; color:#5a6b5c; cursor:pointer;
+    transition:border-color 0.15s, color 0.15s; padding:0;
+  }
+  .fat-chips-arrow:hover { border-color:#3ab54a; color:#2a9438; }
+  .fat-chips-arrow-l { margin-right:0.35rem; }
+  .fat-chips-arrow-r { margin-left:0.35rem; }
+  .fat-chips-arrow[disabled] { opacity:0.25; cursor:default; pointer-events:none; }
   .fat-bar-bottom { display:flex; align-items:center; justify-content:space-between; padding:0.5rem 0 0.75rem; gap:1rem; flex-wrap:wrap; }
   .fat-sort-sel { border:1.5px solid #e0e8e1; border-radius:20px; padding:0.3rem 0.85rem; font-size:0.8rem; font-family:'Manrope',sans-serif; color:#111311; background:white; cursor:pointer; outline:none; }
 
@@ -487,7 +504,7 @@ const participationState: 'empty' | 'growing' | 'full' =
 
   /* ── Delivery / coaching type filter ── */
   function setCoachType() {
-    var sel = document.getElementById('fat-coach-type') as HTMLSelectElement;
+    var sel = document.getElementById('fat-coach-type');
     activeCoachType = sel ? sel.value : '';
     applyFilters();
   }
@@ -503,7 +520,7 @@ const participationState: 'empty' | 'growing' | 'full' =
     var selWrap   = document.getElementById('fat-geo-selectors');
     var localWrap = document.getElementById('geo-local-wrap');
     if (selWrap)   selWrap.style.display   = (tier === 'uk') ? 'none' : '';
-    if (localWrap) localWrap.style.display = (tier === 'local') ? '' : 'none';
+    if (localWrap) localWrap.style.display = (tier === 'local') ? 'flex' : 'none';
     if (tier === 'uk') {
       activeCountry = '';
       activeLocal   = '';
@@ -653,7 +670,7 @@ const participationState: 'empty' | 'growing' | 'full' =
     var selWrap   = document.getElementById('fat-geo-selectors');
     var localWrap = document.getElementById('geo-local-wrap');
     if (selWrap)   selWrap.style.display   = (activeTier === 'uk') ? 'none' : '';
-    if (localWrap) localWrap.style.display = (activeTier === 'local') ? '' : 'none';
+    if (localWrap) localWrap.style.display = (activeTier === 'local') ? 'flex' : 'none';
     var csel = document.getElementById('geo-country-sel');
     if (csel) csel.value = activeCountry;
     if (activeTier === 'local' && activeCountry) {
@@ -896,6 +913,30 @@ const participationState: 'empty' | 'growing' | 'full' =
     });
     var noteEl = document.getElementById('fat-map-note');
     if (noteEl) noteEl.textContent = placed + ' trainer' + (placed !== 1 ? 's' : '') + ' shown on map. Click a pin to view their profile.';
+  }
+
+  /* ── Chips scroll arrows ── */
+  function scrollChips(dir) {
+    var el = document.getElementById('fat-chips');
+    if (el) el.scrollLeft += dir * 160;
+    updateChipsArrows();
+  }
+  window.scrollChips = scrollChips;
+
+  function updateChipsArrows() {
+    var el = document.getElementById('fat-chips');
+    var lBtn = document.getElementById('chips-left');
+    var rBtn = document.getElementById('chips-right');
+    if (!el) return;
+    var atStart = el.scrollLeft <= 2;
+    var atEnd   = el.scrollLeft + el.clientWidth >= el.scrollWidth - 2;
+    if (lBtn) lBtn.disabled = atStart;
+    if (rBtn) rBtn.disabled = atEnd;
+  }
+  var chipsEl = document.getElementById('fat-chips');
+  if (chipsEl) {
+    chipsEl.addEventListener('scroll', updateChipsArrows, { passive: true });
+    updateChipsArrows();
   }
 
   /* ── Debounced search input ── */
