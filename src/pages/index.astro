@@ -450,6 +450,79 @@ const reviews = [
     .hc-bmp-num { font-size:1.1rem; }
   }
 
+  /* ── Hero compact v2 — vertically stacked cards ────────────────────── */
+  .hc-v2 {
+    display:flex; flex-direction:column; gap:0.42rem;
+    padding:0.85rem 1rem;
+    background:rgba(8,16,9,0.88);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:10px;
+    text-decoration:none; color:inherit; cursor:pointer;
+    transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+  }
+  .hc-v2:hover {
+    transform:translateY(-2px);
+    border-color:rgba(58,181,74,0.4);
+    box-shadow:0 4px 18px rgba(0,0,0,0.4), 0 0 12px rgba(58,181,74,0.12);
+  }
+  .hc-v2:focus-visible { outline:2px solid #3ab54a; outline-offset:3px; }
+  .hc-v2--trending {
+    border-color:rgba(180,0,0,0.5);
+    box-shadow:0 0 8px rgba(150,0,0,0.45), 0 0 18px rgba(150,0,0,0.2);
+  }
+  .hc-v2--trending:hover {
+    border-color:rgba(200,0,0,0.75);
+    box-shadow:0 4px 18px rgba(0,0,0,0.4), 0 0 14px rgba(160,0,0,0.55), 0 0 28px rgba(150,0,0,0.25);
+  }
+  .hc-v2-header {
+    display:flex; align-items:center; gap:0.65rem;
+  }
+  .hc-v2-av {
+    width:56px; min-width:56px; height:56px; border-radius:50%;
+    object-fit:cover; overflow:hidden;
+    border:2px solid rgba(255,255,255,0.12);
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:0.85rem; flex-shrink:0;
+  }
+  .hc-v2-info-row {
+    display:flex; align-items:flex-start; justify-content:space-between; gap:0.5rem;
+  }
+  .hc-v2-left { flex:1; min-width:0; }
+  .hc-v2-name-row { display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
+  .hc-v2-name {
+    font-family:'Playfair Display',serif; font-size:0.9rem; font-weight:700;
+    color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;
+  }
+  .hc-v2-bmp-col {
+    text-align:right; flex-shrink:0; padding-left:0.4rem; position:relative; cursor:default;
+  }
+  .hc-v2-bmp-col .bmp-tooltip {
+    display:none; position:absolute; top:calc(100% + 6px); right:0;
+    width:220px; background:#051a08; color:rgba(255,255,255,0.88); font-size:0.68rem;
+    padding:0.6rem 0.8rem; border-radius:8px; line-height:1.6; text-align:left; z-index:250;
+    box-shadow:0 4px 16px rgba(0,0,0,0.35); pointer-events:none;
+    border:1px solid rgba(58,181,74,0.2);
+  }
+  .hc-v2-bmp-col .bmp-tooltip::after {
+    content:''; position:absolute; bottom:100%; right:0.75rem;
+    border:6px solid transparent; border-bottom-color:#051a08;
+  }
+  .hc-v2-bmp-col:hover .bmp-tooltip { display:block; }
+  .hc-v2-bmp-num {
+    font-family:'Manrope',sans-serif; font-size:1.45rem; font-weight:800;
+    color:#3ab54a; line-height:1; display:block;
+  }
+  .hc-v2-location {
+    font-size:0.67rem; color:rgba(255,255,255,0.42);
+    display:flex; align-items:center; gap:0.22rem;
+  }
+  .hc-v2-pills { display:flex; gap:0.3rem; flex-wrap:wrap; }
+  .hc-v2-stats {
+    font-size:0.63rem; color:rgba(255,255,255,0.32);
+    display:flex; align-items:center; gap:0.25rem;
+  }
+  .hc-v2-stats--hot { color:rgba(200,60,60,0.85); }
+
   /* Leaderboard section — dark cards on dark green background */
   #leaderboard .lb-card { border-color:rgba(58,181,74,0.28); box-shadow:0 2px 12px rgba(0,0,0,0.35); }
   #leaderboard .lb-card:hover { border-color:rgba(58,181,74,0.5); box-shadow:0 4px 18px rgba(0,0,0,0.45), 0 0 12px rgba(58,181,74,0.15); transform:translateY(-2px); }
@@ -1333,61 +1406,67 @@ const reviews = [
   }
 
   function makeHeroCard(t, rank) {
-    var trending  = t.is_trending;
-    var revCount  = t.review_count || 0;
-    var recent    = t.recent_review_count || 0;
-    var complete  = !!(t.avatar_url && (t.city || t.location) && t.bio && t.specialty);
+    var trending = t.is_trending;
+    var revCount = t.review_count || 0;
+    var recent   = t.recent_review_count || 0;
+    var complete = !!(t.avatar_url && (t.city || t.location) && t.bio && t.specialty);
 
     var av = t.avatar_url
-      ? '<img class="hc-av" src="' + t.avatar_url + '" alt="' + t.name + '" width="48" height="48">'
-      : '<div class="hc-av" style="background:' + (t.avatar_bg||'#0d1a0e') + ';color:' + (t.avatar_color||'#3ab54a') + ';">' + (t.avatar_initials||'?') + '</div>';
+      ? '<img class="hc-v2-av" src="' + t.avatar_url + '" alt="' + t.name + '" width="56" height="56">'
+      : '<div class="hc-v2-av" style="background:' + (t.avatar_bg||'#0d1a0e') + ';color:' + (t.avatar_color||'#3ab54a') + ';">' + (t.avatar_initials||'?') + '</div>';
 
     var tick = complete
-      ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="11" height="11" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+      ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
       : '';
 
     var trendBadge = trending
-      ? '<span class="trend-info"><span class="hc-badge-trend" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span><div class="trend-tooltip">Trending trainers have received at least 2 verified reviews in the last 7 days, plus another verified review within the preceding 21 days.</div></span>'
+      ? '<span class="trend-info" style="display:inline-flex;align-items:center;"><span class="hc-badge-trend" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span><div class="trend-tooltip">Trending trainers have received at least 2 verified reviews in the last 7 days, plus another verified review within the preceding 21 days.</div></span>'
       : '';
 
-    var cityMeta = (t.city || t.location)
-      ? '<span style="display:inline-flex;align-items:center;gap:0.2rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + (t.city || t.location) + '</span>'
+    var city = (t.city || t.location)
+      ? '<div class="hc-v2-location"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + (t.city || t.location) + '</div>'
       : '';
-    var specMeta = t.specialty ? '<span class="spec-pill spec-pill--sm">' + t.specialty.split(/[,\/]/)[0].trim() + '</span>' : '';
+
+    var spec = t.specialty ? t.specialty.split(/[,\/]/)[0].trim() : '';
     var ctLabel = t.coaching_type === 'in_person' ? 'In Person'
       : t.coaching_type === 'online' ? 'Online'
       : t.coaching_type === 'hybrid' ? 'Online & In Person'
       : '';
-    var ctBadge = ctLabel
-      ? '<span style="display:block;text-align:right;font-family:Manrope,sans-serif;font-size:0.55rem;font-weight:700;color:rgba(160,200,255,0.8);background:rgba(60,120,220,0.15);border:1px solid rgba(60,120,220,0.28);padding:0.15rem 0.42rem;border-radius:4px;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:0.28rem;white-space:nowrap;">' + ctLabel + '</span>'
+    var pills = (spec || ctLabel)
+      ? '<div class="hc-v2-pills">' +
+          (spec    ? '<span class="spec-pill spec-pill--sm">' + spec + '</span>' : '') +
+          (ctLabel ? '<span class="coaching-pill">' + ctLabel + '</span>' : '') +
+        '</div>'
       : '';
 
     var statsHtml = '';
     if (revCount === 0) {
-      statsHtml = '<span class="hc-stats">Be first to review</span>';
+      statsHtml = '<div class="hc-v2-stats" style="color:#3ab54a;">Be first to review</div>';
     } else if (recent >= 1) {
-      var rWord2 = recent === 1 ? 'review' : 'reviews';
-      var statsClass = trending ? 'hc-stats-hot' : 'hc-stats';
-      statsHtml = '<span class="' + statsClass + '" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg>' + recent + ' verified ' + rWord2 + ' in the last 7 days</span>';
+      var rWord = recent === 1 ? 'review' : 'reviews';
+      var sc = trending ? 'hc-v2-stats hc-v2-stats--hot' : 'hc-v2-stats';
+      statsHtml = '<div class="' + sc + '"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> ' + recent + ' verified ' + rWord + ' in the last 7 days</div>';
     } else {
-      statsHtml = '<span class="hc-stats">' + revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews') + '</span>';
+      statsHtml = '<div class="hc-v2-stats">' + revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews') + '</div>';
     }
 
     var bmpNum = revCount === 0
-      ? '<span class="hc-bmp-num" style="font-size:0.62rem;line-height:1.3;">First<br>review</span>'
-      : '<span class="hc-bmp-num">' + (t.bmp_score || '—') + '</span>';
-    var hcDbs = revCount > 0 ? bmpDumbbell(t.bmp_score || 0, 38) : '';
+      ? '<span class="hc-v2-bmp-num" style="font-size:0.62rem;line-height:1.3;">First<br>review</span>'
+      : '<span class="hc-v2-bmp-num">' + (t.bmp_score || '—') + '</span>';
+    var hcDbs = revCount > 0 ? bmpDumbbell(t.bmp_score || 0, 32) : '';
 
-    return '<a class="hc-card' + (trending ? ' hc-card--trending' : '') + '" href="/trainers/' + t.id + '" data-cc="card"' + (trending ? ' data-cc-trending="1"' : '') + ' style="view-transition-name:tc-' + t.id + ';">' +
-      '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
-      av +
-      '<div class="hc-mid">' +
-        '<div class="hc-name-row"><span class="hc-name">' + t.name + '</span>' + tick + trendBadge + '</div>' +
-        (cityMeta  ? '<div class="hc-meta">'      + cityMeta + '</div>' : '') +
-        (specMeta  ? '<div class="hc-meta-spec">' + specMeta + '</div>' : '') +
-        (statsHtml  ? '<div>'                  + statsHtml + '</div>' : '') +
+    return '<a class="hc-v2' + (trending ? ' hc-v2--trending' : '') + '" href="/trainers/' + t.id + '" data-cc="card"' + (trending ? ' data-cc-trending="1"' : '') + ' style="view-transition-name:tc-' + t.id + ';">' +
+      '<div class="hc-v2-header">' +
+        '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
+        av +
       '</div>' +
-      '<div class="hc-bmp">' + ctBadge + '<span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div class="hc-bmp-db">' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
+      '<div class="hc-v2-info-row">' +
+        '<div class="hc-v2-left">' +
+          '<div class="hc-v2-name-row"><span class="hc-v2-name">' + t.name + '</span>' + tick + trendBadge + '</div>' +
+        '</div>' +
+        '<div class="hc-v2-bmp-col"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div>' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
+      '</div>' +
+      city + pills + statsHtml +
     '</a>';
   }
 
@@ -1401,7 +1480,7 @@ const reviews = [
       return;
     }
     listEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:8px;">' +
-      trainers.slice(0, 5).map(function (t, i) { return makeHeroCard(t, i + 1); }).join('') +
+      trainers.slice(0, 3).map(function (t, i) { return makeHeroCard(t, i + 1); }).join('') +
     '</div>';
   }
 
