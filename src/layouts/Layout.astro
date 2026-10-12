@@ -167,6 +167,12 @@ const {
   html, body { overflow-x: hidden; max-width: 100%; }
   body { position: relative; }
 
+  /* Tailwind preflight sets img { max-width: 100% } which shrinks Leaflet
+     tiles and creates visible seams. Override only within the map container. */
+  .leaflet-container img {
+    max-width: none;
+  }
+
   /* Leaflet popup overrides */
   .leaflet-popup-content-wrapper {
     border-radius: 10px !important;
