@@ -108,13 +108,14 @@ export const handler = async (event) => {
     });
 
     const resBody = await res.text();
-    console.log('[send-approval-email] Resend status:', res.status, '| to:', reviewer_email);
 
     if (!res.ok) {
       // notification_claimed_at will expire in 5 min, making this retryable.
-      console.error('[send-approval-email] Resend rejected:', resBody);
+      console.error(`[send-approval-email] Resend rejected | reviewId: ${reviewId} status: ${res.status} body: ${resBody}`);
       return { statusCode: 500, body: 'email_send_failed' };
     }
+
+    console.log(`[send-approval-email] Resend accepted | reviewId: ${reviewId} status: ${res.status}`);
     emailOk = true;
   } catch (err) {
     console.error('[send-approval-email] fetch threw:', err.message);
@@ -131,10 +132,12 @@ export const handler = async (event) => {
       // Email was sent. Log but don't fail — the slot stays claimed so a
       // subsequent retry with the same idempotency key won't double-send.
       console.error('[send-approval-email] confirm error (email was sent):', confirmErr.message);
+    } else {
+      console.log(`[send-approval-email] confirmed in Supabase | reviewId: ${reviewId}`);
     }
   }
 
-  console.log('[send-approval-email] Sent successfully to', reviewer_email);
+  console.log(`[send-approval-email] notification complete | reviewId: ${reviewId}`);
   return { statusCode: 200, body: 'sent' };
 };
 

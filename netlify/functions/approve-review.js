@@ -78,12 +78,16 @@ export const handler = async (event) => {
     };
   }
 
-  // ── Send reviewer notification — non-blocking ──────────────────────────
-  // Uses service_role key so the SECURITY DEFINER claim functions are
-  // reachable. Failure here never affects the approval response.
-  sendNotification(token).catch(err =>
-    console.error('[approve-review] notification error:', err.message)
-  );
+  // ── Send reviewer notification — awaited ──────────────────────────────
+  // MUST be awaited. Netlify kills the execution context the moment the
+  // handler returns — any un-awaited fetch inside sendNotification is
+  // silently terminated, leaving notification_claimed_at unset and the
+  // retry scheduler unable to recover the review (it skips NULL claimed_at).
+  try {
+    await sendNotification(token);
+  } catch (err) {
+    console.error('[approve-review] notification: unhandled error —', err.message);
+  }
 
   return {
     statusCode: 200,
@@ -95,13 +99,13 @@ export const handler = async (event) => {
 async function sendNotification(token) {
   const svcKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
   if (!svcKey) {
-    console.warn('[approve-review] SUPABASE_SERVICE_ROLE_KEY not set — skipping notification');
+    console.warn('[approve-review] notification: SUPABASE_SERVICE_ROLE_KEY not set — skipping');
     return;
   }
 
   const resendKey = process.env.RESEND_API_KEY ?? '';
   if (!resendKey) {
-    console.warn('[approve-review] RESEND_API_KEY not set — skipping notification');
+    console.warn('[approve-review] notification: RESEND_API_KEY not set — skipping');
     return;
   }
 
@@ -111,28 +115,37 @@ async function sendNotification(token) {
     { auth: { persistSession: false } }
   );
 
-  // Atomically claim the notification slot.
+  console.log('[approve-review] notification: claiming slot');
+
   const { data: rows, error: rpcErr } = await supabaseService.rpc(
     'claim_approval_notification_by_token',
     { p_token: token }
   );
 
   if (rpcErr) {
-    console.error('[approve-review] claim RPC error:', rpcErr.message);
+    console.error('[approve-review] notification: claim RPC failed —', rpcErr.message);
     return;
   }
 
   if (!rows || rows.length === 0) {
-    console.log('[approve-review] Notification skipped — already sent, guest, or claim active.');
+    console.log('[approve-review] notification: skipped — already sent, guest, claim active, or not found');
     return;
   }
 
   const { reviewer_email, reviewer_name, trainer_name, trainer_id, review_id } = rows[0];
-  if (!reviewer_email) return;
+
+  console.log('[approve-review] notification: claim succeeded | review_id:', review_id);
+
+  if (!reviewer_email) {
+    console.warn('[approve-review] notification: no email address | review_id:', review_id);
+    return;
+  }
 
   const profileUrl = `${SITE_URL}/trainers/${trainer_id}`;
   const firstName  = reviewer_name ? reviewer_name.trim().split(/\s+/)[0] : 'there';
   const html       = buildApprovalEmail(firstName, trainer_name, profileUrl);
+
+  console.log('[approve-review] notification: sending via Resend | review_id:', review_id);
 
   const res = await fetch('https://api.resend.com/emails', {
     method:  'POST',
@@ -150,21 +163,23 @@ async function sendNotification(token) {
   });
 
   const resBody = await res.text();
-  console.log('[approve-review] Resend status:', res.status, '| to:', reviewer_email);
 
   if (!res.ok) {
-    // notification_claimed_at will expire in 5 min; admin can retry via dashboard.
-    console.error('[approve-review] Resend rejected:', resBody);
+    console.error(`[approve-review] notification: Resend rejected | review_id: ${review_id} status: ${res.status} body: ${resBody}`);
     return;
   }
 
-  // Set notification_sent_at only after Resend confirms.
+  console.log(`[approve-review] notification: Resend accepted | review_id: ${review_id} status: ${res.status}`);
+
   const { error: confirmErr } = await supabaseService.rpc(
     'confirm_approval_notification',
     { p_review_id: review_id }
   );
+
   if (confirmErr) {
-    console.error('[approve-review] confirm error (email was sent):', confirmErr.message);
+    console.error(`[approve-review] notification: confirm failed (email was sent) | review_id: ${review_id} —`, confirmErr.message);
+  } else {
+    console.log(`[approve-review] notification: confirmed in Supabase | review_id: ${review_id}`);
   }
 }
 
