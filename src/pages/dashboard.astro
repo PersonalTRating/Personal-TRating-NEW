@@ -341,6 +341,15 @@
   .ctype-hint  { font-size: 0.72rem; color: var(--muted); line-height: 1.3; }
   @media (max-width: 480px) { .coaching-type-select { grid-template-columns: 1fr; } }
 
+  /* ── Location confirmation card ─────────────────────────────── */
+  .loc-notice { font-size:0.82rem; padding:0.75rem 1rem; border-radius:8px; margin-bottom:0.75rem; line-height:1.5; }
+  .loc-notice-info { background:rgba(58,181,74,0.08); color:var(--green-dark); border:1px solid var(--green-mid); }
+  .loc-notice-warn { background:rgba(251,191,36,0.1); color:#92400e; border:1px solid rgba(251,191,36,0.4); }
+  .loc-result-card { background:var(--green-light); border:1.5px solid var(--green-mid); border-radius:10px; padding:1rem 1.25rem; margin-top:0.75rem; }
+  .loc-confirmed-badge { display:inline-flex; align-items:center; gap:0.5rem; background:var(--green-light); border:1.5px solid var(--green-mid); border-radius:10px; padding:0.75rem 1rem; font-size:0.88rem; font-weight:600; color:var(--green-dark); }
+  .loc-geo-btn { background:none; border:1.5px solid var(--border); border-radius:8px; padding:0.5rem 1rem; font-size:0.8rem; font-weight:600; cursor:pointer; color:var(--muted); font-family:inherit; transition:all 0.15s; display:flex; align-items:center; gap:0.4rem; margin-bottom:0.75rem; }
+  .loc-geo-btn:hover { border-color:var(--green); color:var(--green-dark); }
+
   /* ── Avatar preview circle ────────────────────────────── */
   .avatar-preview-circle {
     width:90px; height:90px; border-radius:50%;
@@ -1267,6 +1276,45 @@
         </div>
       </div>
 
+      <div class="card" id="loc-confirm-card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Your Location &amp; Rankings</div>
+            <div class="card-sub">Confirm your location to appear in country and local rankings</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Confirmed + locked state -->
+          <div id="loc-locked" style="display:none;">
+            <div class="loc-confirmed-badge">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span id="loc-confirmed-display">Location confirmed</span>
+            </div>
+            <div id="loc-cooldown-msg" class="loc-notice loc-notice-warn" style="display:none;margin-top:0.75rem;"></div>
+          </div>
+          <!-- Entry form state -->
+          <div id="loc-form">
+            <div id="loc-migrate-notice" class="loc-notice loc-notice-info" style="display:none;"></div>
+            <div style="display:grid;grid-template-columns:1fr auto;gap:0.65rem;align-items:end;margin-bottom:0.75rem;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label">Your postcode</label>
+                <input class="form-input" id="loc-postcode-input" type="text" placeholder="e.g. SW1A 1AA" maxlength="8">
+              </div>
+              <button id="loc-validate-btn" onclick="locValidatePostcode()" class="btn btn-outline" style="height:42px;padding:0 1.1rem;white-space:nowrap;">Validate</button>
+            </div>
+            <button id="loc-geo-btn" class="loc-geo-btn" onclick="locUseGeolocation()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+              Use my current location instead
+            </button>
+            <div id="loc-result" style="display:none;" class="loc-result-card">
+              <div id="loc-result-text" style="font-size:0.88rem;font-weight:600;color:var(--text);"></div>
+              <button id="loc-confirm-btn" onclick="locConfirmLocation()" class="btn btn-green" style="margin-top:1rem;width:100%;">Confirm My Location</button>
+            </div>
+            <div id="loc-error" style="display:none;font-size:0.82rem;color:var(--red);margin-top:0.5rem;"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-head">
           <div>
@@ -2014,9 +2062,9 @@
         },
         {
           id: 'location',
-          label: 'Set your location',
-          hint: 'Helps clients find you in local rankings',
-          done: !!(trainer.city && trainer.city.trim()),
+          label: 'Confirm your location',
+          hint: 'Confirm your postcode to appear in country and local rankings',
+          done: !!(trainer as any).location_confirmed,
           action: () => showPage('profile'),
         },
         {
@@ -3076,6 +3124,190 @@
       showToast('❌ Save error: ' + (err?.message || String(err)));
     }
   };
+
+  // ── Location confirmation (Phase 2) ──────────────────────────────────────
+  let _locResolved: {
+    postcode: string;
+    cc_country: string;
+    local_area_id: string | null;
+    local_name: string;
+    source: 'postcode' | 'geolocation';
+  } | null = null;
+
+  function _locShowError(msg: string) {
+    const el = document.getElementById('loc-error') as HTMLElement;
+    if (el) { el.textContent = msg; el.style.display = 'block'; }
+    const res = document.getElementById('loc-result') as HTMLElement;
+    if (res) res.style.display = 'none';
+  }
+
+  function _locClearError() {
+    const el = document.getElementById('loc-error') as HTMLElement;
+    if (el) { el.textContent = ''; el.style.display = 'none'; }
+  }
+
+  async function _locResolveFromPostcodesIo(pcObj: any, source: 'postcode' | 'geolocation') {
+    const adminCounty   = pcObj.admin_county   ?? null;
+    const adminDistrict = pcObj.admin_district  ?? null;
+    const country       = pcObj.country         ?? null;
+    const normPostcode  = pcObj.postcode        ?? '';
+
+    if (!country) { _locShowError('Could not determine country from postcode.'); return; }
+
+    const { data: rpcData, error: rpcErr } = await supabase.rpc('resolve_postcode_area', {
+      p_admin_county:   adminCounty,
+      p_admin_district: adminDistrict,
+      p_country:        country,
+    } as any);
+
+    if (rpcErr) { _locShowError('Could not resolve location: ' + ((rpcErr as any).message || 'Unknown error')); return; }
+
+    const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+    const ccCountry   = ((row as any)?.cc_country    ?? null) as string | null;
+    const localAreaId = ((row as any)?.local_area_id ?? null) as string | null;
+
+    let localName = (adminCounty || adminDistrict || '') as string;
+    if (localAreaId) {
+      const { data: areaData } = await supabase.rpc('get_ranking_area_display', { p_area_id: localAreaId } as any);
+      const areaRow = Array.isArray(areaData) ? areaData[0] : areaData;
+      if ((areaRow as any)?.display_name) localName = (areaRow as any).display_name as string;
+    }
+
+    _locResolved = { postcode: normPostcode, cc_country: ccCountry ?? country, local_area_id: localAreaId, local_name: localName, source };
+
+    const resultEl = document.getElementById('loc-result') as HTMLElement;
+    const textEl   = document.getElementById('loc-result-text') as HTMLElement;
+    if (textEl) {
+      if (localAreaId) {
+        textEl.innerHTML = `Postcode resolved to: <strong>${localName}</strong>, <strong>${ccCountry ?? country}</strong>`;
+      } else {
+        textEl.innerHTML = `Country: <strong>${ccCountry ?? country}</strong> — local area not found; you'll appear in the country ranking only`;
+      }
+    }
+    if (resultEl) resultEl.style.display = 'block';
+    _locClearError();
+  }
+
+  async function locValidatePostcode() {
+    const input = document.getElementById('loc-postcode-input') as HTMLInputElement;
+    const raw = (input?.value ?? '').trim().toUpperCase().replace(/\s+/g, ' ');
+    if (!raw) { _locShowError('Please enter a postcode.'); return; }
+    const btn = document.getElementById('loc-validate-btn') as HTMLButtonElement;
+    if (btn) { btn.disabled = true; btn.textContent = 'Checking…'; }
+    _locClearError();
+    (document.getElementById('loc-result') as HTMLElement).style.display = 'none';
+    _locResolved = null;
+    try {
+      const resp = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`);
+      const json = await resp.json();
+      if (json.status !== 200 || !json.result) { _locShowError('Postcode not found. Please check and try again.'); return; }
+      await _locResolveFromPostcodesIo(json.result, 'postcode');
+    } catch (err: any) {
+      _locShowError('Validation failed — please check your connection and try again.');
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = 'Validate'; }
+    }
+  }
+  (window as any).locValidatePostcode = locValidatePostcode;
+
+  function locUseGeolocation() {
+    if (!navigator.geolocation) { _locShowError('Geolocation is not supported by your browser.'); return; }
+    const btn = document.getElementById('loc-geo-btn') as HTMLButtonElement;
+    if (btn) btn.textContent = 'Locating…';
+    _locClearError();
+    (document.getElementById('loc-result') as HTMLElement).style.display = 'none';
+    _locResolved = null;
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const { latitude: lat, longitude: lon } = pos.coords;
+          const resp = await fetch(`https://api.postcodes.io/postcodes?lon=${lon}&lat=${lat}&limit=1`);
+          const json = await resp.json();
+          const pc = json.result?.[0];
+          if (!pc) { _locShowError('No postcode found near your location. Please enter it manually.'); return; }
+          await _locResolveFromPostcodesIo(pc, 'geolocation');
+          const input = document.getElementById('loc-postcode-input') as HTMLInputElement;
+          if (input && pc.postcode) input.value = pc.postcode;
+        } catch (err: any) {
+          _locShowError('Location lookup failed — please enter your postcode instead.');
+        } finally {
+          if (btn) btn.textContent = 'Use my current location instead';
+        }
+      },
+      () => {
+        _locShowError('Location permission denied. Please enter your postcode manually.');
+        if (btn) btn.textContent = 'Use my current location instead';
+      }
+    );
+  }
+  (window as any).locUseGeolocation = locUseGeolocation;
+
+  async function locConfirmLocation() {
+    if (!_locResolved || !trainerId) { _locShowError('Please validate a postcode first.'); return; }
+    const btn = document.getElementById('loc-confirm-btn') as HTMLButtonElement;
+    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
+    const cooldownUntil = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+    const { error } = await supabase.from('trainers').update({
+      cc_postcode:              _locResolved.postcode,
+      cc_country:               _locResolved.cc_country,
+      cc_local_area:            _locResolved.local_area_id,
+      location_confirmed:       true,
+      location_confirmed_at:    new Date().toISOString(),
+      location_source:          _locResolved.source,
+      location_cooldown_until:  cooldownUntil,
+      location_mapping_version: 'ONS-2023-12',
+    } as any).eq('id', trainerId);
+    if (error) {
+      _locShowError('Save failed: ' + ((error as any).message || 'Unknown error'));
+      if (btn) { btn.disabled = false; btn.textContent = 'Confirm My Location'; }
+      return;
+    }
+    (trainer as any).location_confirmed = true;
+    const formEl   = document.getElementById('loc-form')              as HTMLElement;
+    const lockedEl = document.getElementById('loc-locked')            as HTMLElement;
+    const dispEl   = document.getElementById('loc-confirmed-display') as HTMLElement;
+    const coolEl   = document.getElementById('loc-cooldown-msg')      as HTMLElement;
+    if (dispEl) dispEl.textContent = _locResolved.local_area_id
+      ? `${_locResolved.local_name}, ${_locResolved.cc_country}`
+      : _locResolved.cc_country;
+    if (coolEl) {
+      const endDate = new Date(cooldownUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      coolEl.textContent = `Your location is locked for 90 days to protect ranking integrity (until ${endDate}). Contact support if you need to change it sooner.`;
+      coolEl.style.display = 'block';
+    }
+    if (formEl)   formEl.style.display   = 'none';
+    if (lockedEl) lockedEl.style.display = 'block';
+    showToast('✅ Location confirmed! You now appear in country and local rankings.');
+  }
+  (window as any).locConfirmLocation = locConfirmLocation;
+
+  (async function initLocationCard() {
+    const form   = document.getElementById('loc-form')              as HTMLElement;
+    const locked = document.getElementById('loc-locked')            as HTMLElement;
+    const disp   = document.getElementById('loc-confirmed-display') as HTMLElement;
+    const cool   = document.getElementById('loc-cooldown-msg')      as HTMLElement;
+    const t = trainer as any;
+    if (t.location_confirmed && t.cc_country) {
+      let displayStr = t.cc_country as string;
+      if (t.cc_local_area) {
+        const { data: ad } = await supabase.rpc('get_ranking_area_display', { p_area_id: t.cc_local_area } as any);
+        const ar = Array.isArray(ad) ? ad[0] : ad;
+        if ((ar as any)?.display_name) displayStr = `${(ar as any).display_name}, ${t.cc_country}`;
+      }
+      if (disp) disp.textContent = displayStr;
+      if (t.location_cooldown_until && new Date(t.location_cooldown_until) > new Date()) {
+        const endDate = new Date(t.location_cooldown_until).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        if (cool) { cool.textContent = `Your location is locked for 90 days to protect ranking integrity (until ${endDate}). Contact support if you need to change it sooner.`; cool.style.display = 'block'; }
+      }
+      if (form)   form.style.display   = 'none';
+      if (locked) locked.style.display = 'block';
+    } else if (trainer.postcode && trainer.postcode.trim()) {
+      const notice = document.getElementById('loc-migrate-notice') as HTMLElement;
+      const input  = document.getElementById('loc-postcode-input') as HTMLInputElement;
+      if (input) input.value = trainer.postcode.trim().toUpperCase();
+      if (notice) { notice.textContent = `We found postcode ${trainer.postcode.trim().toUpperCase()} on your profile — click Validate to confirm it and unlock your local rankings.`; notice.style.display = 'block'; }
+    }
+  })().catch((err: any) => console.error('[initLocationCard]', err));
 
   // ── Messages ────────────────────────────────────────────────────────────
 
