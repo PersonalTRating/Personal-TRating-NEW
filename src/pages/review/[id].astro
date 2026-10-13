@@ -783,7 +783,6 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
         // Pre-check eligibility so we can show a friendly message before form load.
         // Server-side enforcement runs again on submit — this is UX only.
         const { data: elig } = await supabase.rpc('check_review_eligibility', {
-          p_client_id:  client.id,
           p_trainer_id: trainerId,
         });
 
@@ -958,7 +957,6 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
     const { data: rpcResult, error: rpcError } = await supabase.rpc('submit_review_for_client', {
       p_trainer_id:            trainerId,
-      p_client_id:             clientId || null,
       p_reviewer_name:         name,
       p_reviewer_initials:     initials,
       p_reviewer_avatar_bg:    pal.bg,
@@ -972,6 +970,14 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
     if (rpcError) {
       showError('Something went wrong — please try again.');
+      submitBtn.textContent = 'Submit Review →';
+      submitBtn.disabled    = false;
+      return;
+    }
+
+    if (rpcResult?.status === 'not_authenticated' || rpcResult?.status === 'not_a_client') {
+      // Should be unreachable given the frontend guards above, but handle defensively.
+      showError('Your session has expired. Please sign in again.');
       submitBtn.textContent = 'Submit Review →';
       submitBtn.disabled    = false;
       return;
