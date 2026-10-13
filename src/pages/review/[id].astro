@@ -921,6 +921,21 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
       return;
     }
 
+    // Guard: authenticated but no client record — cannot submit a verified review
+    if (!clientId) {
+      if (formState) {
+        formState.innerHTML = `
+          <div style="padding:2.5rem 2rem;text-align:center;max-width:400px;margin:0 auto;">
+            <div style="margin-bottom:1rem;display:flex;justify-content:center;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg></div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:0.75rem;">Account setup needed</h3>
+            <p style="color:var(--muted);font-size:0.9rem;line-height:1.7;margin-bottom:1.5rem;">Your account needs to be fully set up before you can leave a review. It only takes a moment.</p>
+            <a href="${signupUrl}" style="display:inline-flex;align-items:center;gap:0.5rem;background:#3ab54a;color:white;padding:0.75rem 1.5rem;border-radius:8px;font-weight:700;font-size:0.875rem;text-decoration:none;">Complete account setup →</a>
+          </div>`;
+        formState.style.display = 'block';
+      }
+      return;
+    }
+
     const name     = (document.getElementById('rv-name')     as HTMLInputElement).value.trim();
     const location = (document.getElementById('rv-location') as HTMLInputElement).value.trim();
     const text     = rvText.value.trim();
