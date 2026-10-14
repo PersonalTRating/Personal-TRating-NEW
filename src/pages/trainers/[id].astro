@@ -349,12 +349,42 @@ const maskName = (name: string): string => {
     #profile-gate-wrap.pg-gated { max-height:200px; }
   }
 
+  /* ── Mobile hamburger ── */
+  .tp-mob-ham { display:none; flex-direction:column; gap:5px; cursor:pointer; padding:0.5rem; background:none; border:none; }
+  .tp-mob-ham span { display:block; width:22px; height:2px; background:#111311; border-radius:2px; transition:transform 0.25s, opacity 0.25s; }
+  .tp-mob-ham.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+  .tp-mob-ham.open span:nth-child(2) { opacity:0; }
+  .tp-mob-ham.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+  /* ── Mobile dropdown nav ── */
+  .tp-mob-nav {
+    position:sticky; top:64px; z-index:99;
+    background:white; box-shadow:0 8px 24px rgba(0,0,0,0.10);
+    flex-direction:column; align-items:stretch;
+    overflow:hidden; max-height:0;
+    transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+    display:none;
+  }
+  .tp-mob-nav.open { max-height:480px; border-bottom:2px solid #3ab54a; }
+  .tp-mob-nav a {
+    font-size:1rem; font-weight:600; color:#111311; text-decoration:none;
+    padding:1rem 1.5rem; border-bottom:1px solid #f0f4f0;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .tp-mob-nav a:active { background:#f7fbf7; }
+  .tp-mob-nav .tp-mob-nav-btns { display:flex; gap:0.75rem; padding:1rem 1.5rem; }
+
   @media (max-width:860px) {
     .tp-hero-inner   { flex-direction:column !important; align-items:flex-start !important; gap:1.5rem !important; }
     .tp-bmp-box      { align-self:stretch !important; text-align:center !important; }
     .tp-stats-grid   { grid-template-columns:repeat(2,1fr) !important; }
     .tp-rev-grid     { grid-template-columns:1fr !important; }
     .tp-rating-inner { flex-direction:column !important; gap:1.5rem !important; }
+  }
+  @media (max-width:768px) {
+    .tp-nav-inner { height:64px !important; padding:0 1rem !important; }
+    .tp-nav-links { display:none !important; }
+    .tp-mob-ham   { display:flex !important; }
+    .tp-mob-nav   { display:flex; }
   }
   @media (max-width:600px) {
     .tp-hero-name  { font-size:1.85rem !important; }
@@ -363,12 +393,6 @@ const maskName = (name: string): string => {
     .tp-hero-section  { padding:2.5rem 1.25rem 2.5rem !important; }
     section > div[style*="max-width:900px"] { padding-left:1.25rem !important; padding-right:1.25rem !important; }
     .btn-review { padding:0.75rem 1.25rem !important; font-size:0.82rem !important; }
-    /* Nav mobile */
-    .tp-nav-inner { height:64px !important; padding:0 1rem !important; }
-    .tp-nav-logo  { height:42px !important; width:42px !important; }
-    .tp-nav-links { gap:0.6rem !important; }
-    .tp-nav-links .btn-review { padding:0.5rem 0.9rem !important; font-size:0.78rem !important; }
-    .tp-nav-text  { font-size:0.78rem !important; }
     /* Review cards — stack vertically on mobile */
     .tp-rev-card { flex-direction:column !important; align-items:stretch !important; }
     .tp-rev-left { padding:1.125rem !important; }
@@ -440,8 +464,25 @@ const maskName = (name: string): string => {
       </a>
       <a href="/account" id="nav-account" class="tp-nav-text" style="display:none;color:#111311;text-decoration:none;font-size:0.875rem;font-weight:600;">My Account</a>
     </div>
+    <!-- Mobile hamburger -->
+    <button class="tp-mob-ham" id="tp-mob-ham" aria-label="Open menu" aria-expanded="false"
+      onclick="(function(){var n=document.getElementById('tp-mob-nav');var h=document.getElementById('tp-mob-ham');var o=n.classList.toggle('open');h.classList.toggle('open',o);h.setAttribute('aria-expanded',String(o));h.setAttribute('aria-label',o?'Close menu':'Open menu');})()">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- ── MOBILE NAV DROPDOWN ── -->
+<div class="tp-mob-nav" id="tp-mob-nav" role="navigation" aria-label="Mobile navigation">
+  <a href="/#leaderboard" onclick="(function(){document.getElementById('tp-mob-nav').classList.remove('open');var h=document.getElementById('tp-mob-ham');h.classList.remove('open');h.setAttribute('aria-expanded','false');h.setAttribute('aria-label','Open menu');})()">Rankings</a>
+  <a href="/find-a-trainer" onclick="(function(){document.getElementById('tp-mob-nav').classList.remove('open');var h=document.getElementById('tp-mob-ham');h.classList.remove('open');h.setAttribute('aria-expanded','false');h.setAttribute('aria-label','Open menu');})()">Find a Trainer</a>
+  <a id="tp-mob-review-link" href={`/review/${trainer.id}`} onclick="(function(){document.getElementById('tp-mob-nav').classList.remove('open');var h=document.getElementById('tp-mob-ham');h.classList.remove('open');h.setAttribute('aria-expanded','false');h.setAttribute('aria-label','Open menu');})()">Leave a Review</a>
+  <div class="tp-mob-nav-btns">
+    <a href="/login" id="tp-mob-signin" style="flex:1;text-align:center;border:2px solid #3ab54a;color:#3ab54a;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;text-decoration:none;-webkit-tap-highlight-color:transparent;">Sign In</a>
+    <a href="/account" id="tp-mob-account" style="display:none;flex:1;text-align:center;background:#3ab54a;color:white;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;text-decoration:none;-webkit-tap-highlight-color:transparent;">My Account</a>
+    <button id="tp-mob-signout" style="display:none;flex:1;text-align:center;background:none;border:2px solid #d0d8d1;color:#5a6b5c;padding:0.75rem 1rem;border-radius:8px;font-size:0.9rem;font-weight:700;cursor:pointer;font-family:inherit;">Sign Out</button>
+  </div>
+</div>
 
 <!-- ── PROFILE HERO ── -->
 <section id="tp-hero-section" style={`background:${heroBackground};padding:4rem 0 3.5rem;view-transition-name:tc-${trainer.id};overflow:visible;`}>
@@ -1011,7 +1052,23 @@ const maskName = (name: string): string => {
       document.querySelectorAll<HTMLElement>('.btn-review, a[href*="/review/"], #chat-trigger-btn').forEach(el => { el.style.display = 'none'; });
     } else {
       const { data: client } = await supabase.from('clients').select('id').eq('user_id', session.user.id).maybeSingle();
-      if (client) document.getElementById('nav-account')!.style.display = '';
+      if (client) {
+        document.getElementById('nav-account')!.style.display = '';
+        // Mobile nav: swap Sign In for My Account
+        const mobAccount = document.getElementById('tp-mob-account');
+        const mobSignin  = document.getElementById('tp-mob-signin');
+        if (mobAccount) mobAccount.style.display = 'flex';
+        if (mobSignin)  mobSignin.style.display  = 'none';
+      }
+    }
+    // Mobile nav signout
+    const mobSignout = document.getElementById('tp-mob-signout') as HTMLButtonElement | null;
+    if (mobSignout) {
+      mobSignout.style.display = 'flex';
+      mobSignout.addEventListener('click', async () => {
+        await supabase.auth.signOut();
+        window.location.href = '/';
+      });
     }
   }
 </script>
