@@ -509,6 +509,12 @@ const participationState: 'empty' | 'growing' | 'full' =
     body.fat-map-active { overflow: hidden; }
     body.fat-map-active .fat-hero,
     body.fat-map-active footer { display: none !important; }
+    /* Hide geo-nav + filter bar from page flow; re-show when moved into panel */
+    body.fat-map-active #fat-geo-nav,
+    body.fat-map-active #fat-filters { display: none !important; }
+    /* Override above when elements are inside the filter panel (higher specificity) */
+    #fat-mob-filter-inner #fat-geo-nav { display: block !important; }
+    #fat-mob-filter-inner #fat-filters { display: block !important; }
     body.fat-map-active #fat-map-view {
       position: fixed !important;
       top: 112px; left: 0; right: 0; bottom: 0;
@@ -574,12 +580,25 @@ const participationState: 'empty' | 'growing' | 'full' =
   }
   /* Mobile geo nav */
   @media (max-width:620px) {
-    .fat-geo-inner     { padding:0.6rem 1rem; gap:0.75rem; }
+    /* Stack tier tabs + selectors vertically, full width */
+    .fat-geo-inner     { padding:0.6rem 1rem; gap:0.5rem; flex-direction:column !important; align-items:stretch !important; }
     .fat-tier-tabs     { gap:0.25rem; }
     .fat-tier-tab      { padding:0.38rem 0.75rem; font-size:0.78rem; }
-    .fat-geo-selectors { gap:0.4rem; }
-    .fat-geo-sel       { font-size:0.78rem; padding:0.35rem 0.65rem; min-width:0 !important; flex:1 1 120px; }
-    #geo-local-wrap    { flex-direction:column; align-items:stretch; }
+    /* Stack country/local selectors vertically */
+    .fat-geo-selectors { gap:0.45rem; flex-direction:column !important; align-items:stretch !important; }
+    /* Consistent compact height for all inputs/selects, no flex grow */
+    .fat-geo-sel {
+      font-size:0.82rem; padding:0.55rem 0.85rem;
+      min-width:0 !important; flex:none !important;
+      width:100% !important; box-sizing:border-box !important;
+      height:2.6rem !important;
+    }
+    /* Stack local controls vertically, override all inline styles */
+    #geo-local-wrap    {
+      display:flex !important; flex-direction:column !important;
+      align-items:stretch !important; flex-wrap:nowrap !important;
+      gap:0.45rem !important;
+    }
     .fat-lb-title      { font-size:1.2rem; }
   }
 </style>
@@ -1153,21 +1172,18 @@ const participationState: 'empty' | 'growing' | 'full' =
   });
 
   /* ── Mobile Map Mode ── */
-  var _geoNavAnchor  = document.getElementById('fat-geo-nav-anchor');
-  var _filtersAnchor = document.getElementById('fat-filters-anchor');
-  var _geoNavEl      = document.getElementById('fat-geo-nav');
-  var _filtersEl     = document.getElementById('fat-filters');
-  var _filterInner   = document.getElementById('fat-mob-filter-inner');
-
   function activateMobMapView() {
+    var geoNavEl    = document.getElementById('fat-geo-nav');
+    var filtersEl   = document.getElementById('fat-filters');
+    var filterInner = document.getElementById('fat-mob-filter-inner');
     document.body.classList.add('fat-map-active');
     var ms = document.getElementById('fmt-search-input');
     if (ms && searchEl) ms.value = searchEl.value;
-    if (_filterInner && _geoNavEl && _geoNavEl.parentNode !== _filterInner) {
-      _filterInner.appendChild(_geoNavEl);
+    if (filterInner && geoNavEl && geoNavEl.parentNode !== filterInner) {
+      filterInner.appendChild(geoNavEl);
     }
-    if (_filterInner && _filtersEl && _filtersEl.parentNode !== _filterInner) {
-      _filterInner.appendChild(_filtersEl);
+    if (filterInner && filtersEl && filtersEl.parentNode !== filterInner) {
+      filterInner.appendChild(filtersEl);
     }
     setTimeout(function () {
       if (window._fatMapInstance) window._fatMapInstance.invalidateSize();
@@ -1175,6 +1191,10 @@ const participationState: 'empty' | 'growing' | 'full' =
   }
 
   function deactivateMobMapView() {
+    var geoNavEl      = document.getElementById('fat-geo-nav');
+    var filtersEl     = document.getElementById('fat-filters');
+    var geoNavAnchor  = document.getElementById('fat-geo-nav-anchor');
+    var filtersAnchor = document.getElementById('fat-filters-anchor');
     document.body.classList.remove('fat-map-active');
     var panel    = document.getElementById('fat-mob-filter-panel');
     var backdrop = document.getElementById('fat-mob-filter-backdrop');
@@ -1182,11 +1202,11 @@ const participationState: 'empty' | 'growing' | 'full' =
     if (panel)    panel.classList.remove('open');
     if (backdrop) backdrop.classList.remove('open');
     if (fBtn)     fBtn.classList.remove('active');
-    if (_geoNavAnchor && _geoNavEl && _geoNavEl.parentNode !== _geoNavAnchor.parentNode) {
-      _geoNavAnchor.parentNode.insertBefore(_geoNavEl, _geoNavAnchor.nextSibling);
+    if (geoNavAnchor && geoNavEl && geoNavEl.parentNode !== geoNavAnchor.parentNode) {
+      geoNavAnchor.parentNode.insertBefore(geoNavEl, geoNavAnchor.nextSibling);
     }
-    if (_filtersAnchor && _filtersEl && _filtersEl.parentNode !== _filtersAnchor.parentNode) {
-      _filtersAnchor.parentNode.insertBefore(_filtersEl, _filtersAnchor.nextSibling);
+    if (filtersAnchor && filtersEl && filtersEl.parentNode !== filtersAnchor.parentNode) {
+      filtersAnchor.parentNode.insertBefore(filtersEl, filtersAnchor.nextSibling);
     }
   }
 
