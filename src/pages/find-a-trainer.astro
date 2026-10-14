@@ -151,10 +151,8 @@ const participationState: 'empty' | 'growing' | 'full' =
       <button id="geo-tab-local"   class="fat-tier-tab"                 onclick="setGeoTier('local')">Local</button>
     </div>
 
-    <!-- Selectors: visible when Country or Local tab active -->
-    <div id="fat-geo-selectors" class="fat-geo-selectors" style="display:none;">
-
-      <!-- Country select (Country + Local) -->
+    <!-- Country selector: shown on Country tab only -->
+    <div id="fat-geo-country-wrap" style="display:none;width:100%;">
       <select id="geo-country-sel" class="fat-geo-sel" onchange="onGeoCountryChange()" aria-label="Select country">
         <option value="">Select country…</option>
         <option value="England">England</option>
@@ -162,17 +160,18 @@ const participationState: 'empty' | 'growing' | 'full' =
         <option value="Wales">Wales</option>
         <option value="Northern Ireland">Northern Ireland</option>
       </select>
+    </div>
 
-      <!-- Local area inputs: Local tab only -->
-      <div id="geo-local-wrap" style="display:none;gap:0.5rem;align-items:center;flex-wrap:wrap;">
-        <input id="geo-local-srch" type="text" class="fat-geo-sel" placeholder="Search area…"
-          oninput="onGeoLocalSearch()" autocomplete="off" aria-label="Search local area" style="min-width:150px;">
-        <select id="geo-local-sel" class="fat-geo-sel" onchange="onGeoLocalChange()"
-          aria-label="Select local area" style="min-width:180px;">
-          <option value="">Select area…</option>
-        </select>
-      </div>
-
+    <!-- Unified local search: shown on Local tab only -->
+    <div id="fat-geo-local-wrap" style="display:none;width:100%;position:relative;">
+      <input id="geo-local-unified" type="text" class="fat-geo-sel"
+        placeholder="Search town, city or area…"
+        autocomplete="off"
+        oninput="onLocalUnifiedInput()"
+        onfocus="onLocalUnifiedInput()"
+        onblur="onLocalUnifiedBlur()"
+        aria-label="Search local area" />
+      <div id="geo-local-sugg" class="geo-local-sugg" style="display:none;"></div>
     </div>
 
   </div>
@@ -313,8 +312,14 @@ const participationState: 'empty' | 'growing' | 'full' =
 <div id="fat-map-view" style="display:none;">
   <div id="fat-map" style="height:70vh;min-height:480px;width:100%;"></div>
   <div id="fat-map-note" style="text-align:center;padding:0.75rem;font-size:0.78rem;color:rgba(255,255,255,0.4);background:#0a120b;border-top:1px solid rgba(255,255,255,0.08);">
-    Showing trainers matched to known UK cities. Click a pin to view.
+    Pins indicate trainer city areas — not precise trainer locations. Click a pin to view.
   </div>
+  <button id="fat-map-myloc" class="fat-map-myloc" onclick="requestMyLocation()" title="Centre map on my location" aria-label="My location">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
+    </svg>
+  </button>
+  <div id="fat-map-geo-msg" class="fat-map-geo-msg" style="display:none;"></div>
 </div>
 
 <!-- ── MOBILE MAP TOOLBAR ── -->
@@ -578,28 +583,54 @@ const participationState: 'empty' | 'growing' | 'full' =
     .fat-search-btn  { padding:0.65rem 1.1rem; font-size:0.85rem; }
     .fat-stat-div { display:none; }
   }
+  /* ── Local area unified search autocomplete ── */
+  .geo-local-sugg {
+    position:absolute; top:100%; left:0; right:0; z-index:200;
+    background:#1a2a1c; border:1.5px solid rgba(58,181,74,0.35);
+    border-top:none; border-radius:0 0 8px 8px;
+    max-height:180px; overflow-y:auto;
+  }
+  .geo-local-sugg-item {
+    padding:0.6rem 0.85rem; font-size:0.82rem; font-family:'Manrope',sans-serif;
+    color:rgba(255,255,255,0.8); cursor:pointer;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  .geo-local-sugg-item:hover { background:rgba(58,181,74,0.18); color:white; }
+
+  /* ── Map My Location button ── */
+  #fat-map-view { position:relative; }
+  .fat-map-myloc {
+    position:absolute; bottom:5.5rem; right:0.75rem; z-index:401;
+    background:white; border:1.5px solid #e0e8e1; border-radius:8px;
+    width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+    cursor:pointer; box-shadow:0 2px 8px rgba(0,0,0,0.15); color:#111311;
+    transition:background 0.15s;
+  }
+  .fat-map-myloc:active { background:#f0f4f0; }
+  .fat-map-geo-msg {
+    position:absolute; bottom:2rem; left:1rem; right:4rem; z-index:402;
+    background:rgba(0,0,0,0.78); color:white; font-size:0.78rem;
+    font-family:'Manrope',sans-serif; padding:0.5rem 0.85rem;
+    border-radius:8px; text-align:center;
+  }
+
   /* Mobile geo nav */
   @media (max-width:620px) {
     /* Stack tier tabs + selectors vertically, full width */
     .fat-geo-inner     { padding:0.6rem 1rem; gap:0.5rem; flex-direction:column !important; align-items:stretch !important; }
     .fat-tier-tabs     { gap:0.25rem; }
     .fat-tier-tab      { padding:0.38rem 0.75rem; font-size:0.78rem; }
-    /* Stack country/local selectors vertically */
-    .fat-geo-selectors { gap:0.45rem; flex-direction:column !important; align-items:stretch !important; }
-    /* Consistent compact height for all inputs/selects, no flex grow */
+    /* Country wrap and local wrap: full width */
+    #fat-geo-country-wrap,
+    #fat-geo-local-wrap { width:100% !important; }
+    /* Consistent compact height for all inputs/selects */
     .fat-geo-sel {
       font-size:0.82rem; padding:0.55rem 0.85rem;
       min-width:0 !important; flex:none !important;
       width:100% !important; box-sizing:border-box !important;
       height:2.6rem !important;
     }
-    /* Stack local controls vertically, override all inline styles */
-    #geo-local-wrap    {
-      display:flex !important; flex-direction:column !important;
-      align-items:stretch !important; flex-wrap:nowrap !important;
-      gap:0.45rem !important;
-    }
-    .fat-lb-title      { font-size:1.2rem; }
+    .fat-lb-title { font-size:1.2rem; }
   }
 </style>
 
@@ -648,6 +679,81 @@ const participationState: 'empty' | 'growing' | 'full' =
   var PART_THRESHOLD = 10;
   try { localAreaData   = JSON.parse(document.getElementById('fat-geo-data').textContent || '[]'); } catch(e) {}
   try { PART_THRESHOLD  = JSON.parse(document.getElementById('fat-part-threshold').textContent || '10'); } catch(e) {}
+
+  // ── City → country fallback (used when cc_country / cc_local_area not yet set) ──
+  // Precedence: confirmed cc_country > this map. Ambiguous cities resolved to most
+  // common UK meaning (e.g. Newport → Wales, Bangor → Wales).
+  var cityToCountry = {
+    // England
+    'london':'England','manchester':'England','birmingham':'England',
+    'leeds':'England','sheffield':'England','bristol':'England',
+    'liverpool':'England','nottingham':'England','leicester':'England',
+    'coventry':'England','hull':'England','kingston upon hull':'England',
+    'bradford':'England','stoke-on-trent':'England','stoke':'England',
+    'wolverhampton':'England','derby':'England','southampton':'England',
+    'portsmouth':'England','oxford':'England','cambridge':'England',
+    'reading':'England','newcastle upon tyne':'England','newcastle':'England',
+    'sunderland':'England','middlesbrough':'England','york':'England',
+    'peterborough':'England','exeter':'England','plymouth':'England',
+    'brighton':'England','hove':'England','norwich':'England','luton':'England',
+    'gloucester':'England','bath':'England','worcester':'England',
+    'chester':'England','carlisle':'England','salford':'England',
+    'bolton':'England','wigan':'England','blackpool':'England',
+    'warrington':'England','oldham':'England','rochdale':'England',
+    'stockport':'England','burnley':'England','lancaster':'England',
+    'gateshead':'England','hartlepool':'England','darlington':'England',
+    'stockton':'England','south shields':'England','durham':'England',
+    'halifax':'England','huddersfield':'England','wakefield':'England',
+    'doncaster':'England','rotherham':'England','harrogate':'England',
+    'barnsley':'England','scarborough':'England','stafford':'England',
+    'walsall':'England','northampton':'England','shrewsbury':'England',
+    'hereford':'England','west bromwich':'England','lichfield':'England',
+    'solihull':'England','dudley':'England','redditch':'England',
+    'lincoln':'England','mansfield':'England','loughborough':'England',
+    'colchester':'England','chelmsford':'England','southend':'England',
+    'ipswich':'England','milton keynes':'England','guildford':'England',
+    'canterbury':'England','maidstone':'England','eastbourne':'England',
+    'hastings':'England','worthing':'England','crawley':'England',
+    'basingstoke':'England','cheltenham':'England','bournemouth':'England',
+    'poole':'England','salisbury':'England','torquay':'England',
+    'yeovil':'England','taunton':'England','swindon':'England',
+    'truro':'England','preston':'England','bury st edmunds':'England',
+    // Scotland
+    'edinburgh':'Scotland','glasgow':'Scotland','aberdeen':'Scotland',
+    'dundee':'Scotland','inverness':'Scotland','stirling':'Scotland',
+    'perth':'Scotland','falkirk':'Scotland','ayr':'Scotland',
+    'paisley':'Scotland','hamilton':'Scotland','livingston':'Scotland',
+    'greenock':'Scotland','kirkcaldy':'Scotland','dunfermline':'Scotland',
+    'motherwell':'Scotland',
+    // Wales
+    'cardiff':'Wales','swansea':'Wales','newport':'Wales',
+    'bangor':'Wales','wrexham':'Wales','barry':'Wales',
+    'bridgend':'Wales','merthyr':'Wales','rhyl':'Wales',
+    'aberystwyth':'Wales','llandudno':'Wales','cwmbran':'Wales',
+    'pontypridd':'Wales',
+    // Northern Ireland
+    'belfast':'Northern Ireland','derry':'Northern Ireland',
+    'londonderry':'Northern Ireland','lisburn':'Northern Ireland',
+    'newry':'Northern Ireland','armagh':'Northern Ireland',
+    'omagh':'Northern Ireland','ballymena':'Northern Ireland',
+    'antrim':'Northern Ireland'
+  };
+
+  // ── City suggestions built from actual trainer cards ──
+  // Fallback for Local tab when ranking_areas is empty.
+  var cityData = [];
+  (function () {
+    var seen = {};
+    cards.forEach(function (card) {
+      var c = (card.getAttribute('data-city') || '').toLowerCase().trim();
+      if (c && !seen[c]) {
+        seen[c] = true;
+        var label   = c.replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
+        var country = cityToCountry[c] || '';
+        cityData.push({ id: 'city:' + c, display_name: label, country: country });
+      }
+    });
+  }());
 
   var regionMap = {
     'scotland':        ['glasgow','edinburgh','aberdeen','dundee','inverness','stirling','perth','falkirk','ayr','paisley','hamilton','livingston','greenock','kirkcaldy','dunfermline','motherwell'],
@@ -698,10 +804,10 @@ const participationState: 'empty' | 'growing' | 'full' =
       var el = document.getElementById('geo-tab-' + t);
       if (el) el.classList.toggle('fat-tier-active', t === tier);
     });
-    var selWrap   = document.getElementById('fat-geo-selectors');
-    var localWrap = document.getElementById('geo-local-wrap');
-    if (selWrap)   selWrap.style.display   = (tier === 'uk') ? 'none' : '';
-    if (localWrap) localWrap.style.display = (tier === 'local') ? 'flex' : 'none';
+    var countryWrap = document.getElementById('fat-geo-country-wrap');
+    var localUWrap  = document.getElementById('fat-geo-local-wrap');
+    if (countryWrap) countryWrap.style.display = (tier === 'country') ? '' : 'none';
+    if (localUWrap)  localUWrap.style.display  = (tier === 'local')   ? '' : 'none';
     if (tier === 'uk') {
       activeCountry = '';
       activeLocal   = '';
@@ -710,12 +816,12 @@ const participationState: 'empty' | 'growing' | 'full' =
     }
     if (tier !== 'local') {
       activeLocal = '';
-      var lsel  = document.getElementById('geo-local-sel');
-      var lsrch = document.getElementById('geo-local-srch');
-      if (lsel)  lsel.value  = '';
-      if (lsrch) lsrch.value = '';
+      var inp = document.getElementById('geo-local-unified');
+      if (inp) inp.value = '';
     }
-    if (tier === 'local' && activeCountry) populateLocalAreas(activeCountry);
+    if (tier !== 'country') {
+      if (tier === 'uk') { activeCountry = ''; }
+    }
     updateLbHead();
     updateUrl();
     applyFilters();
@@ -726,56 +832,67 @@ const participationState: 'empty' | 'growing' | 'full' =
     var csel = document.getElementById('geo-country-sel');
     activeCountry = csel ? csel.value : '';
     activeLocal   = '';
-    var lsel  = document.getElementById('geo-local-sel');
-    var lsrch = document.getElementById('geo-local-srch');
-    if (lsel)  lsel.value  = '';
-    if (lsrch) lsrch.value = '';
-    if (activeTier === 'local' && activeCountry) populateLocalAreas(activeCountry);
     updateLbHead();
     updateUrl();
     applyFilters();
   }
   window.onGeoCountryChange = onGeoCountryChange;
 
-  function onGeoLocalChange() {
-    var lsel = document.getElementById('geo-local-sel');
-    activeLocal = lsel ? lsel.value : '';
+  /* ── Unified local area search ── */
+  function onLocalUnifiedInput() {
+    var inp  = document.getElementById('geo-local-unified');
+    var sugg = document.getElementById('geo-local-sugg');
+    if (!inp || !sugg) return;
+    var q = inp.value.trim().toLowerCase();
+    if (!q) {
+      activeLocal = '';
+      updateLbHead();
+      updateUrl();
+      applyFilters();
+      sugg.style.display = 'none';
+      return;
+    }
+    var areaMatches = localAreaData.filter(function (a) {
+      return a.display_name.toLowerCase().indexOf(q) !== -1;
+    }).slice(0, 8);
+    var cityMatches = cityData.filter(function (c) {
+      return c.display_name.toLowerCase().indexOf(q) !== -1
+        && !areaMatches.some(function (a) { return a.display_name.toLowerCase() === c.display_name.toLowerCase(); });
+    }).slice(0, 10 - areaMatches.length);
+    var matches = areaMatches.concat(cityMatches);
+    if (!matches.length) { sugg.style.display = 'none'; return; }
+    sugg.innerHTML = '';
+    matches.forEach(function (a) {
+      var item = document.createElement('div');
+      item.className   = 'geo-local-sugg-item';
+      item.textContent = a.display_name + (a.country ? ' · ' + a.country : '');
+      item.onmousedown = function (e) {
+        e.preventDefault();
+        onLocalUnifiedSelect(a.id, a.display_name);
+      };
+      sugg.appendChild(item);
+    });
+    sugg.style.display = '';
+  }
+  window.onLocalUnifiedInput = onLocalUnifiedInput;
+
+  function onLocalUnifiedBlur() {
+    setTimeout(function () {
+      var sugg = document.getElementById('geo-local-sugg');
+      if (sugg) sugg.style.display = 'none';
+    }, 160);
+  }
+  window.onLocalUnifiedBlur = onLocalUnifiedBlur;
+
+  function onLocalUnifiedSelect(id, name) {
+    var inp  = document.getElementById('geo-local-unified');
+    var sugg = document.getElementById('geo-local-sugg');
+    if (inp)  inp.value         = name;
+    if (sugg) sugg.style.display = 'none';
+    activeLocal = id;
     updateLbHead();
     updateUrl();
     applyFilters();
-  }
-  window.onGeoLocalChange = onGeoLocalChange;
-
-  function onGeoLocalSearch() {
-    var lsrch = document.getElementById('geo-local-srch');
-    var lsel  = document.getElementById('geo-local-sel');
-    if (!lsrch || !lsel) return;
-    var q = lsrch.value.trim().toLowerCase();
-    var filtered = localAreaData.filter(function (a) {
-      return (!activeCountry || a.country === activeCountry)
-          && a.display_name.toLowerCase().indexOf(q) !== -1;
-    });
-    lsel.innerHTML = '<option value="">Select area…</option>';
-    filtered.forEach(function (a) {
-      var opt = document.createElement('option');
-      opt.value       = a.id;
-      opt.textContent = a.display_name;
-      lsel.appendChild(opt);
-    });
-  }
-  window.onGeoLocalSearch = onGeoLocalSearch;
-
-  function populateLocalAreas(country) {
-    var lsel = document.getElementById('geo-local-sel');
-    if (!lsel) return;
-    var areas = localAreaData.filter(function (a) { return a.country === country; });
-    lsel.innerHTML = '<option value="">Select area…</option>';
-    areas.forEach(function (a) {
-      var opt = document.createElement('option');
-      opt.value       = a.id;
-      opt.textContent = a.display_name;
-      lsel.appendChild(opt);
-    });
   }
 
   function updateLbHead() {
@@ -795,16 +912,18 @@ const participationState: 'empty' | 'growing' | 'full' =
       }
     } else {
       if (activeLocal) {
-        var area = localAreaData.find(function (a) { return a.id === activeLocal; });
-        var areaName = area ? area.display_name : 'Local Area';
+        var areaName;
+        if (activeLocal.indexOf('city:') === 0) {
+          areaName = activeLocal.slice(5).replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
+        } else {
+          var area = localAreaData.find(function (a) { return a.id === activeLocal; });
+          areaName = area ? area.display_name : 'Local Area';
+        }
         titleEl.textContent = areaName + ' Rankings';
         subEl.textContent   = areaName + ' Leaderboard · Ranked by Body Muscle Percentage (BMP)';
-      } else if (activeCountry) {
-        titleEl.textContent = activeCountry + ' · Local Rankings';
-        subEl.textContent   = 'Select a local area to view its leaderboard';
       } else {
         titleEl.textContent = 'Local Rankings';
-        subEl.textContent   = 'Select a country and local area to view its leaderboard';
+        subEl.textContent   = 'Search for a town, city or area above';
       }
     }
   }
@@ -833,8 +952,8 @@ const participationState: 'empty' | 'growing' | 'full' =
     if (spec) params.set('spec', spec);
     if (activeTier !== 'uk') {
       params.set('tier', activeTier);
-      if (activeCountry) params.set('cc', activeCountry);
-      if (activeTier === 'local' && activeLocal) params.set('area', activeLocal);
+      if (activeTier === 'country' && activeCountry) params.set('cc', activeCountry);
+      if (activeTier === 'local'   && activeLocal)   params.set('area', activeLocal);
     }
     var qs = params.toString();
     history.pushState(null, '', qs ? '?' + qs : window.location.pathname);
@@ -848,16 +967,22 @@ const participationState: 'empty' | 'growing' | 'full' =
       var el = document.getElementById('geo-tab-' + t);
       if (el) el.classList.toggle('fat-tier-active', t === activeTier);
     });
-    var selWrap   = document.getElementById('fat-geo-selectors');
-    var localWrap = document.getElementById('geo-local-wrap');
-    if (selWrap)   selWrap.style.display   = (activeTier === 'uk') ? 'none' : '';
-    if (localWrap) localWrap.style.display = (activeTier === 'local') ? 'flex' : 'none';
+    var countryWrap = document.getElementById('fat-geo-country-wrap');
+    var localUWrap  = document.getElementById('fat-geo-local-wrap');
+    if (countryWrap) countryWrap.style.display = (activeTier === 'country') ? '' : 'none';
+    if (localUWrap)  localUWrap.style.display  = (activeTier === 'local')   ? '' : 'none';
     var csel = document.getElementById('geo-country-sel');
     if (csel) csel.value = activeCountry;
-    if (activeTier === 'local' && activeCountry) {
-      populateLocalAreas(activeCountry);
-      var lsel = document.getElementById('geo-local-sel');
-      if (lsel) lsel.value = activeLocal;
+    if (activeTier === 'local' && activeLocal) {
+      var inp = document.getElementById('geo-local-unified');
+      if (inp) {
+        if (activeLocal.indexOf('city:') === 0) {
+          inp.value = activeLocal.slice(5).replace(/\b\w/g, function (ch) { return ch.toUpperCase(); });
+        } else {
+          var area = localAreaData.find(function (a) { return a.id === activeLocal; });
+          if (area) inp.value = area.display_name;
+        }
+      }
     }
     updateLbHead();
     updateRankDisplay();
@@ -896,18 +1021,15 @@ const participationState: 'empty' | 'growing' | 'full' =
 
     // No-geo state: user must pick a country/area first
     var needsSelection = (activeTier === 'country' && !activeCountry)
-                      || (activeTier === 'local'   && (!activeCountry || !activeLocal));
+                      || (activeTier === 'local'   && !activeLocal);
 
     // Update the no-geo prompt text to match current tier state
     if (noGeoEl) {
       var noGeoTitle = document.getElementById('fat-no-geo-title');
       var noGeoSub   = document.getElementById('fat-no-geo-sub');
-      if (activeTier === 'local' && activeCountry && !activeLocal) {
-        if (noGeoTitle) noGeoTitle.textContent = 'Select a local area above';
-        if (noGeoSub)   noGeoSub.textContent   = 'Select a local area within ' + activeCountry + ' to view rankings';
-      } else if (activeTier === 'local') {
-        if (noGeoTitle) noGeoTitle.textContent = 'Select a ranking area above';
-        if (noGeoSub)   noGeoSub.textContent   = 'Choose a country and local area to view rankings';
+      if (activeTier === 'local') {
+        if (noGeoTitle) noGeoTitle.textContent = 'Search for a local area above';
+        if (noGeoSub)   noGeoSub.textContent   = 'Type a town, city or area to see its rankings';
       } else {
         if (noGeoTitle) noGeoTitle.textContent = 'Select a country above';
         if (noGeoSub)   noGeoSub.textContent   = 'Choose a country to view its trainer rankings';
@@ -922,13 +1044,21 @@ const participationState: 'empty' | 'growing' | 'full' =
       if (activeTier === 'uk') {
         geoPass = true;
       } else if (activeTier === 'country') {
-        geoPass = !!activeCountry
-          && card.getAttribute('data-cc-country')         === activeCountry
-          && card.getAttribute('data-location-confirmed') === 'true';
+        // Prefer confirmed cc_country; fall back to city→country inference
+        var confirmedCountry = card.getAttribute('data-location-confirmed') === 'true'
+          ? card.getAttribute('data-cc-country') : null;
+        var inferredCountry  = cityToCountry[(card.getAttribute('data-city') || '').toLowerCase()] || null;
+        geoPass = !!activeCountry && (confirmedCountry === activeCountry || inferredCountry === activeCountry);
       } else {
-        geoPass = !!activeLocal
-          && card.getAttribute('data-cc-local-area')      === activeLocal
-          && card.getAttribute('data-location-confirmed') === 'true';
+        // local — handle both ranking_areas UUID and city: prefix
+        if (activeLocal.indexOf('city:') === 0) {
+          var cityFilter = activeLocal.slice(5);
+          geoPass = (card.getAttribute('data-city') || '').toLowerCase().trim() === cityFilter;
+        } else {
+          geoPass = !!activeLocal
+            && card.getAttribute('data-cc-local-area')      === activeLocal
+            && card.getAttribute('data-location-confirmed') === 'true';
+        }
       }
       card._geoPass = geoPass;
       if (geoPass) geoPool++;
@@ -1091,7 +1221,14 @@ const participationState: 'empty' | 'growing' | 'full' =
       var href = card.getAttribute('href') || '#';
       var ct   = card.getAttribute('data-coaching-type') || '';
       var ctTxt = ct === 'in_person' ? 'In Person' : ct === 'online' ? 'Online' : ct === 'hybrid' ? 'Online & In Person' : '';
-      var jitter = [(Math.random()-0.5)*0.04, (Math.random()-0.5)*0.08];
+      var trainerId = href.replace('/trainers/', '');
+      var h = 5381;
+      for (var hi = 0; hi < trainerId.length; hi++) { h = ((h << 5) + h + trainerId.charCodeAt(hi)) | 0; }
+      h = h >>> 0;
+      var pinAngle  = ((h >>> 16) & 0xFFFF) / 65536 * 6.28318530718;
+      var pinRadius = Math.sqrt((h & 0xFFFF) / 65536);
+      var cosLat = Math.cos(coords[0] * 0.01745329252);
+      var jitter = [pinRadius * (3.0 / 111.0) * Math.cos(pinAngle), pinRadius * (3.0 / (111.0 * cosLat)) * Math.sin(pinAngle)];
       var icon = L.divIcon({
         className: '',
         html: '<div style="background:#3ab54a;color:white;font-weight:800;font-size:0.62rem;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;box-shadow:0 2px 10px rgba(0,0,0,0.25);line-height:1;">' + bmp + '</div>',
@@ -1101,7 +1238,8 @@ const participationState: 'empty' | 'growing' | 'full' =
         .bindPopup('<div style="font-family:Manrope,sans-serif;min-width:160px;padding:0.25rem 0;"><div style="font-weight:700;font-size:0.92rem;margin-bottom:0.25rem;">' + name + '</div>' + (ctTxt ? '<div style="font-size:0.7rem;color:#5585dd;margin-bottom:0.3rem;">' + ctTxt + '</div>' : '') + '<div style="font-size:0.75rem;color:#888;margin-bottom:0.5rem;">BMP Score: ' + bmp + '</div><a href="' + href + '" style="display:block;background:#3ab54a;color:white;text-align:center;padding:0.35rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.78rem;">View Profile →</a></div>');
     });
     var noteEl = document.getElementById('fat-map-note');
-    if (noteEl) noteEl.textContent = placed + ' trainer' + (placed !== 1 ? 's' : '') + ' shown on map. Click a pin to view their profile.';
+    if (noteEl) noteEl.textContent = placed + ' trainer' + (placed !== 1 ? 's' : '') + ' shown. Pins indicate trainer city areas — not precise trainer locations. Click a pin to view their profile.';
+    tryAutoCenter();
   }
 
   /* ── Chips scroll arrows ── */
@@ -1220,6 +1358,48 @@ const participationState: 'empty' | 'growing' | 'full' =
     if (fBtn)     fBtn.classList.toggle('active', isOpen);
   }
   window.fatToggleFilters = fatToggleFilters;
+
+  /* ── Map geolocation ── */
+  function requestMyLocation() {
+    var msgEl = document.getElementById('fat-map-geo-msg');
+    if (!navigator.geolocation) {
+      if (msgEl) { msgEl.textContent = 'Location not available on this device.'; msgEl.style.display = ''; setTimeout(function () { msgEl.style.display = 'none'; }, 3500); }
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function (pos) {
+        if (window._fatMapInstance) {
+          window._fatMapInstance.setView([pos.coords.latitude, pos.coords.longitude], 11);
+        }
+        if (msgEl) msgEl.style.display = 'none';
+      },
+      function (err) {
+        var msg = err.code === 1
+          ? 'Location access denied. Enable in browser settings to use this feature.'
+          : 'Could not determine your location.';
+        if (msgEl) { msgEl.textContent = msg; msgEl.style.display = ''; setTimeout(function () { msgEl.style.display = 'none'; }, 4000); }
+      },
+      { timeout: 8000, maximumAge: 60000 }
+    );
+  }
+  window.requestMyLocation = requestMyLocation;
+
+  function tryAutoCenter() {
+    if (!navigator.geolocation || !navigator.permissions) return;
+    navigator.permissions.query({ name: 'geolocation' }).then(function (result) {
+      if (result.state === 'granted') {
+        navigator.geolocation.getCurrentPosition(
+          function (pos) {
+            if (window._fatMapInstance) {
+              window._fatMapInstance.setView([pos.coords.latitude, pos.coords.longitude], 11);
+            }
+          },
+          function () { /* silently fail */ },
+          { timeout: 5000, maximumAge: 300000 }
+        );
+      }
+    }).catch(function () { /* permissions API not supported */ });
+  }
 
   var fmtSearch = document.getElementById('fmt-search-input');
   if (fmtSearch) {
