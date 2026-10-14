@@ -99,6 +99,16 @@ const participationState: 'empty' | 'growing' | 'full' =
 <script id="fat-geo-data" type="application/json" set:html={localAreasJson}></script>
 <script id="fat-part-threshold" type="application/json" set:html={PARTICIPATION_THRESHOLD}></script>
 
+<!-- Prevent hero/filters flash when loading directly into mobile map view -->
+<script is:inline>
+(function(){
+  if(new URLSearchParams(window.location.search).get('view')==='map'&&
+     window.matchMedia&&window.matchMedia('(max-width:768px)').matches){
+    document.documentElement.classList.add('fat-map-early');
+  }
+})();
+</script>
+
 <!-- ── HERO ── -->
 <section class="fat-hero">
   <div style="position:absolute;top:-80px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(58,181,74,0.14) 0%,transparent 68%);pointer-events:none;"></div>
@@ -129,6 +139,7 @@ const participationState: 'empty' | 'growing' | 'full' =
   </div>
 </section>
 
+<div id="fat-geo-nav-anchor" style="display:none;"></div>
 <!-- ── GEO NAV ── -->
 <section class="fat-geo-nav" id="fat-geo-nav">
   <div class="fat-geo-inner">
@@ -167,6 +178,7 @@ const participationState: 'empty' | 'growing' | 'full' =
   </div>
 </section>
 
+<div id="fat-filters-anchor" style="display:none;"></div>
 <!-- ── STICKY FILTER BAR ── -->
 <div class="fat-filters" id="fat-filters" style={participationState === 'empty' ? 'display:none;' : ''}>
   <div style="max-width:1100px;margin:0 auto;padding:0 2rem;">
@@ -305,6 +317,37 @@ const participationState: 'empty' | 'growing' | 'full' =
   </div>
 </div>
 
+<!-- ── MOBILE MAP TOOLBAR ── -->
+<div id="fat-mob-toolbar" class="fat-mob-toolbar">
+  <div class="fmt-search-wrap">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8a8f8a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input id="fmt-search-input" type="text" placeholder="Search trainers or city…" autocomplete="off" />
+  </div>
+  <button id="fmt-filter-btn" class="fmt-btn" onclick="fatToggleFilters()">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    Filters
+  </button>
+  <button class="fmt-btn fmt-list-btn" onclick="setView('list')">≡ List</button>
+</div>
+
+<!-- ── MOBILE MAP FILTER PANEL (bottom sheet) ── -->
+<div id="fat-mob-filter-panel" class="fat-mob-filter-panel">
+  <div class="fat-mmfp-drag"></div>
+  <div class="fat-mmfp-hdr">
+    <span class="fat-mmfp-title">Location &amp; Filters</span>
+    <button class="fat-mmfp-close" onclick="fatToggleFilters()" aria-label="Close filters">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="fat-mob-filter-inner" class="fat-mob-filter-inner">
+    <!-- geo nav + filter bar are moved here by JS when mobile map view is active -->
+  </div>
+  <div class="fat-mmfp-footer">
+    <button class="fat-mmfp-apply" onclick="fatToggleFilters()">Done</button>
+  </div>
+</div>
+<div id="fat-mob-filter-backdrop" class="fat-mob-filter-backdrop" onclick="fatToggleFilters()"></div>
+
 <!-- ── FOOTER ── -->
 <footer style="background:#111311;padding:2.5rem 2rem;text-align:center;">
   <div style="display:flex;align-items:center;justify-content:center;gap:0.75rem;">
@@ -367,6 +410,125 @@ const participationState: 'empty' | 'growing' | 'full' =
   .vt-wrap { display:flex; background:#f0f4f0; border-radius:20px; padding:0.2rem; gap:0.1rem; }
   .vt-btn  { padding:0.28rem 0.85rem; border-radius:16px; border:none; background:transparent; font-size:0.78rem; font-weight:600; color:#8a8f8a; cursor:pointer; transition:all 0.15s; font-family:'Manrope',sans-serif; white-space:nowrap; }
   .vt-active { background:white; color:#111311; box-shadow:0 1px 4px rgba(0,0,0,0.1); }
+
+  /* ── Mobile Map Toolbar ── */
+  .fat-mob-toolbar {
+    display: none;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    z-index: 151;
+    background: white;
+    border-bottom: 1.5px solid #e0e8e1;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 0.45rem 0.75rem;
+    gap: 0.45rem;
+    align-items: center;
+    height: 52px;
+    box-sizing: border-box;
+  }
+  .fmt-search-wrap {
+    flex: 1; min-width: 0;
+    display: flex; align-items: center; gap: 0.35rem;
+    background: #f7f9f7; border: 1.5px solid #e0e8e1;
+    border-radius: 30px; padding: 0.38rem 0.8rem;
+  }
+  .fmt-search-wrap input {
+    border: none; outline: none; background: transparent;
+    flex: 1; min-width: 0;
+    font-family: 'Manrope', sans-serif; font-size: 0.85rem; color: #111311;
+  }
+  .fmt-search-wrap input::placeholder { color: rgba(0,0,0,0.35); }
+  .fmt-btn {
+    flex-shrink: 0;
+    border: 1.5px solid #e0e8e1; border-radius: 20px;
+    padding: 0.35rem 0.7rem; font-size: 0.75rem; font-weight: 600;
+    background: white; color: #5a6b5c; cursor: pointer;
+    display: flex; align-items: center; gap: 0.25rem;
+    font-family: 'Manrope', sans-serif; white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .fmt-btn:active { transform: scale(0.97); }
+  .fmt-btn.active { background: #111311; color: white; border-color: #111311; }
+  .fmt-list-btn { background: #f0f4f0; }
+
+  /* ── Mobile Map Filter Panel (bottom sheet) ── */
+  .fat-mob-filter-panel {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 402;
+    background: white;
+    border-radius: 18px 18px 0 0;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.18);
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    display: flex;
+    flex-direction: column;
+    max-height: 82vh;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .fat-mob-filter-panel.open { transform: translateY(0); }
+  .fat-mmfp-drag {
+    width: 36px; height: 4px; background: #d0d8d1;
+    border-radius: 2px; margin: 0.55rem auto 0; flex-shrink: 0;
+  }
+  .fat-mmfp-hdr {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.7rem 1.2rem 0.45rem; flex-shrink: 0;
+    border-bottom: 1px solid #f0f4f0;
+  }
+  .fat-mmfp-title { font-size: 0.95rem; font-weight: 700; color: #111311; }
+  .fat-mmfp-close {
+    background: none; border: none; cursor: pointer; padding: 0.25rem;
+    color: #8a8f8a; line-height: 0;
+  }
+  .fat-mob-filter-inner {
+    flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
+  }
+  .fat-mob-filter-inner .fat-geo-nav { position: static !important; }
+  .fat-mob-filter-inner .fat-filters  { position: static !important; top: auto !important; }
+  .fat-mmfp-footer {
+    flex-shrink: 0; padding: 0.8rem 1.2rem;
+    border-top: 1px solid #f0f4f0; background: white;
+  }
+  .fat-mmfp-apply {
+    width: 100%; background: #3ab54a; color: white;
+    border: none; border-radius: 10px; padding: 0.8rem;
+    font-size: 0.9rem; font-weight: 700; cursor: pointer;
+    font-family: 'Manrope', sans-serif;
+  }
+  .fat-mob-filter-backdrop {
+    position: fixed; inset: 0; z-index: 401;
+    background: rgba(0,0,0,0.45);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .fat-mob-filter-backdrop.open { opacity: 1; pointer-events: auto; }
+
+  /* ── Mobile Map Active layout ── */
+  @media (max-width: 768px) {
+    body.fat-map-active { overflow: hidden; }
+    body.fat-map-active .fat-hero,
+    body.fat-map-active footer { display: none !important; }
+    body.fat-map-active #fat-map-view {
+      position: fixed !important;
+      top: 112px; left: 0; right: 0; bottom: 0;
+      display: block !important;
+      z-index: 50;
+    }
+    body.fat-map-active #fat-map {
+      height: 100% !important;
+      min-height: 0 !important;
+    }
+    body.fat-map-active #fat-map-note { display: none !important; }
+    body.fat-map-active .fat-mob-toolbar { display: flex; }
+  }
+
+  /* Flash prevention: hide hero/footer before JS runs on mobile map entry */
+  @media (max-width: 768px) {
+    html.fat-map-early .fat-hero,
+    html.fat-map-early footer { display: none !important; }
+    html.fat-map-early .fat-mob-toolbar { display: flex; }
+  }
 
   /* ── Geo navigation ── */
   .fat-geo-nav { background:#111311; border-bottom:1px solid rgba(58,181,74,0.18); }
@@ -696,7 +858,14 @@ const participationState: 'empty' | 'growing' | 'full' =
     document.getElementById('btn-map').classList.toggle('vt-active',  v === 'map');
     listView.style.display = v === 'list' ? '' : 'none';
     mapView.style.display  = v === 'map'  ? '' : 'none';
-    if (v === 'map') initMap();
+    if (v === 'map') {
+      initMap();
+      if (window.matchMedia && window.matchMedia('(max-width:768px)').matches) {
+        activateMobMapView();
+      }
+    } else {
+      deactivateMobMapView();
+    }
   }
   window.setView = setView;
 
@@ -879,6 +1048,7 @@ const participationState: 'empty' | 'growing' | 'full' =
       minZoom: 5,
       maxZoom: 13
     }).setView([54.2, -2.5], 6);
+    window._fatMapInstance = map;
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
       maxZoom: 19
@@ -981,6 +1151,74 @@ const participationState: 'empty' | 'growing' | 'full' =
     var local   = params.get('area')  || '';
     restoreGeoUI(tier, country, local);
   });
+
+  /* ── Mobile Map Mode ── */
+  var _geoNavAnchor  = document.getElementById('fat-geo-nav-anchor');
+  var _filtersAnchor = document.getElementById('fat-filters-anchor');
+  var _geoNavEl      = document.getElementById('fat-geo-nav');
+  var _filtersEl     = document.getElementById('fat-filters');
+  var _filterInner   = document.getElementById('fat-mob-filter-inner');
+
+  function activateMobMapView() {
+    document.body.classList.add('fat-map-active');
+    var ms = document.getElementById('fmt-search-input');
+    if (ms && searchEl) ms.value = searchEl.value;
+    if (_filterInner && _geoNavEl && _geoNavEl.parentNode !== _filterInner) {
+      _filterInner.appendChild(_geoNavEl);
+    }
+    if (_filterInner && _filtersEl && _filtersEl.parentNode !== _filterInner) {
+      _filterInner.appendChild(_filtersEl);
+    }
+    setTimeout(function () {
+      if (window._fatMapInstance) window._fatMapInstance.invalidateSize();
+    }, 80);
+  }
+
+  function deactivateMobMapView() {
+    document.body.classList.remove('fat-map-active');
+    var panel    = document.getElementById('fat-mob-filter-panel');
+    var backdrop = document.getElementById('fat-mob-filter-backdrop');
+    var fBtn     = document.getElementById('fmt-filter-btn');
+    if (panel)    panel.classList.remove('open');
+    if (backdrop) backdrop.classList.remove('open');
+    if (fBtn)     fBtn.classList.remove('active');
+    if (_geoNavAnchor && _geoNavEl && _geoNavEl.parentNode !== _geoNavAnchor.parentNode) {
+      _geoNavAnchor.parentNode.insertBefore(_geoNavEl, _geoNavAnchor.nextSibling);
+    }
+    if (_filtersAnchor && _filtersEl && _filtersEl.parentNode !== _filtersAnchor.parentNode) {
+      _filtersAnchor.parentNode.insertBefore(_filtersEl, _filtersAnchor.nextSibling);
+    }
+  }
+
+  function fatToggleFilters() {
+    var panel    = document.getElementById('fat-mob-filter-panel');
+    var backdrop = document.getElementById('fat-mob-filter-backdrop');
+    var fBtn     = document.getElementById('fmt-filter-btn');
+    if (!panel) return;
+    var isOpen = panel.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('open', isOpen);
+    if (fBtn)     fBtn.classList.toggle('active', isOpen);
+  }
+  window.fatToggleFilters = fatToggleFilters;
+
+  var fmtSearch = document.getElementById('fmt-search-input');
+  if (fmtSearch) {
+    fmtSearch.addEventListener('input', function () {
+      if (searchEl) searchEl.value = this.value;
+      doSearch();
+    });
+    fmtSearch.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') doSearch();
+    });
+  }
+
+  if (window.matchMedia) {
+    window.matchMedia('(max-width:768px)').addEventListener('change', function (e) {
+      if (!e.matches && document.body.classList.contains('fat-map-active')) {
+        deactivateMobMapView();
+      }
+    });
+  }
 
   /* ── Init ── */
   applyFilters();
