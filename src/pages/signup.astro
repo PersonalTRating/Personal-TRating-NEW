@@ -692,6 +692,21 @@
       },
     });
 
+    // Detect duplicate email — covers both Supabase configurations:
+    //   Enumeration protection ON  (default): error is null, identities array is empty
+    //   Enumeration protection OFF: error message contains "already registered"
+    const isDuplicateTrainer =
+      (authError?.message?.toLowerCase().includes('already registered')) ||
+      (!authError && data.user?.identities?.length === 0);
+
+    if (isDuplicateTrainer) {
+      successMsg.innerHTML = `<div style="text-align:center;padding:0.5rem 0;"><div style="font-size:2rem;margin-bottom:0.75rem;">📧</div><h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:0.6rem;">Email already registered</h3><p style="font-size:0.875rem;color:var(--muted);line-height:1.7;margin-bottom:1.25rem;">This email address is already associated with a CoachCards account. Would you like to sign in instead?</p><a href="/login" style="display:inline-block;background:var(--green);color:white;font-weight:700;font-size:0.875rem;text-decoration:none;padding:0.65rem 1.25rem;border-radius:8px;margin:0.25rem 0 0.5rem;">Sign in to your account →</a> &nbsp;·&nbsp; <a href="/login" style="color:var(--muted);font-size:0.85rem;text-decoration:underline;">Forgot password?</a></div>`;
+      successMsg.style.display = 'block';
+      submitBtn.textContent    = 'Already registered';
+      submitBtn.disabled       = false;
+      return;
+    }
+
     if (authError) {
       errorMsg.textContent   = authError.message;
       errorMsg.style.display = 'block';
@@ -700,42 +715,56 @@
       return;
     }
 
-    // Supabase intentionally returns no error for duplicate emails (prevents enumeration).
-    // An empty identities array signals a duplicate signup — guard all side-effects behind this.
-    const isNewTrainer = !!(data.user?.identities?.length);
+    if (data.user) {
+      // Supabase cannot distinguish a brand-new user from an existing unconfirmed user
+      // when enumeration protection is ON — both return non-empty identities.
+      // Query the trainers table: if a record already exists, this is a re-registration
+      // of an unconfirmed account. Supabase has already resent the verification email;
+      // we skip the insert and welcome email entirely.
+      const { data: existingTrainer } = await supabase
+        .from('trainers')
+        .select('id')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
 
-    if (isNewTrainer && data.user) {
-      await supabase.from('trainers').insert({
-        user_id:       data.user.id,
-        name:          `${firstName} ${lastName}`.trim(),
-        email,
-        city,
-        postcode,
-        specialty,
-        cert,
-        coaching_type: coachingType || null,
-        is_verified:   false,
-      });
+      if (!existingTrainer) {
+        const { error: insertError } = await supabase.from('trainers').insert({
+          user_id:       data.user.id,
+          name:          `${firstName} ${lastName}`.trim(),
+          email,
+          city,
+          postcode,
+          specialty,
+          cert,
+          coaching_type: coachingType || null,
+          is_verified:   false,
+        });
 
-      fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/send-welcome-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({ record: { name: `${firstName} ${lastName}`.trim(), email } }),
-      }).catch(() => {});
+        // Only send the welcome email if the insert actually succeeded.
+        // This prevents a duplicate send if the SELECT check above was blocked by RLS
+        // and the insert then failed on the unique constraint.
+        if (!insertError) {
+          fetch(`${import.meta.env.PUBLIC_SUPABASE_URL}/functions/v1/send-welcome-email`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${import.meta.env.PUBLIC_SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({ record: { name: `${firstName} ${lastName}`.trim(), email } }),
+          }).catch(() => {});
+        }
+      }
     }
 
     if (data.session) {
       window.location.href = '/dashboard';
     } else {
       _tEmail = email;
-      successMsg.innerHTML = `<strong>Check your email.</strong> If <strong>${email}</strong> is new to CoachCards, a verification link is on its way — click it to activate your profile.<br><br><a href="/login" style="display:inline-block;background:var(--green);color:white;font-weight:700;font-size:0.875rem;text-decoration:none;padding:0.65rem 1.25rem;border-radius:8px;margin:0.25rem 0 0.5rem;">Sign in to your account →</a> &nbsp;·&nbsp; <a href="/login" style="color:var(--muted);font-size:0.85rem;text-decoration:underline;">Forgot password?</a><br><br><span id="t-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendTrainer()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
+      successMsg.innerHTML = `<strong>Check your email.</strong> A verification link is on its way to <strong>${email}</strong> — click it to activate your profile.<br><br><a href="/login" style="display:inline-block;background:var(--green);color:white;font-weight:700;font-size:0.875rem;text-decoration:none;padding:0.65rem 1.25rem;border-radius:8px;margin:0.25rem 0 0.5rem;">Sign in to your account →</a> &nbsp;·&nbsp; <a href="/login" style="color:var(--muted);font-size:0.85rem;text-decoration:underline;">Forgot password?</a><br><br><span id="t-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendTrainer()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
       successMsg.style.display = 'block';
       submitBtn.innerHTML     = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Check your email';
 
-      if (isNewTrainer && data.user) {
+      if (data.user) {
         const ch = supabase.channel('email-confirm:' + data.user.id)
           .on('broadcast', { event: 'confirmed' }, () => {
             ch.unsubscribe();
@@ -782,6 +811,27 @@
       },
     });
 
+    // Detect duplicate email — covers both Supabase configurations:
+    //   Enumeration protection ON  (default): error is null, identities array is empty
+    //   Enumeration protection OFF: error message contains "already registered"
+    const isDuplicateClient =
+      (authError?.message?.toLowerCase().includes('already registered')) ||
+      (!authError && data.user?.identities?.length === 0);
+
+    if (isDuplicateClient) {
+      const loginLink = _reviewDest
+        ? `/login?redirect=${encodeURIComponent(_reviewDest)}`
+        : '/login';
+      const reviewNote = _reviewDest
+        ? `<p style="font-size:0.875rem;color:var(--muted);line-height:1.7;margin-bottom:1.25rem;">This email address is already associated with a CoachCards account. After signing in, you'll be taken straight to review <strong>${_reviewName}</strong>.</p>`
+        : `<p style="font-size:0.875rem;color:var(--muted);line-height:1.7;margin-bottom:1.25rem;">This email address is already associated with a CoachCards account. Would you like to sign in instead?</p>`;
+      successMsg.innerHTML = `<div style="text-align:center;padding:0.5rem 0;"><div style="font-size:2rem;margin-bottom:0.75rem;">📧</div><h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:900;color:var(--text);margin-bottom:0.6rem;">Email already registered</h3>${reviewNote}<a href="${loginLink}" style="display:inline-block;background:var(--green);color:white;font-weight:700;font-size:0.875rem;text-decoration:none;padding:0.65rem 1.25rem;border-radius:8px;margin:0.25rem 0 0.5rem;">Sign in to your account →</a> &nbsp;·&nbsp; <a href="/login" style="color:var(--muted);font-size:0.85rem;text-decoration:underline;">Forgot password?</a></div>`;
+      successMsg.style.display = 'block';
+      submitBtn.textContent    = 'Already registered';
+      submitBtn.disabled       = false;
+      return;
+    }
+
     if (authError) {
       errorMsg.textContent   = authError.message;
       errorMsg.style.display = 'block';
@@ -789,9 +839,6 @@
       submitBtn.disabled     = false;
       return;
     }
-
-    // Supabase returns identities:[] for a duplicate signup — same as trainer, guard with isNewClient
-    const isNewClient = !!(data.user?.identities?.length);
 
     if (data.session) {
       window.location.href = _reviewDest || '/account';
@@ -803,11 +850,11 @@
       const afterMsg = _reviewDest
         ? `Once verified, <a href="${loginLink}" style="color:var(--green-dark);font-weight:700;">sign in here</a> and you'll be taken straight to review <strong>${_reviewName}</strong>.`
         : `Click the link in the email to activate your account, then sign in.`;
-      successMsg.innerHTML = `<strong>Check your email.</strong> If <strong>${email}</strong> is new to CoachCards, a verification link is on its way. ${afterMsg}<br><br><a href="${loginLink}" style="display:inline-block;background:var(--green);color:white;font-weight:700;font-size:0.875rem;text-decoration:none;padding:0.65rem 1.25rem;border-radius:8px;margin:0.25rem 0 0.5rem;">Sign in to your account →</a> &nbsp;·&nbsp; <a href="/login" style="color:var(--muted);font-size:0.85rem;text-decoration:underline;">Forgot password?</a><br><br><span id="c-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendClient()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
+      successMsg.innerHTML = `<strong>Check your email.</strong> A verification link is on its way to <strong>${email}</strong>. ${afterMsg}<br><br><a href="${loginLink}" style="display:inline-block;background:var(--green);color:white;font-weight:700;font-size:0.875rem;text-decoration:none;padding:0.65rem 1.25rem;border-radius:8px;margin:0.25rem 0 0.5rem;">Sign in to your account →</a> &nbsp;·&nbsp; <a href="/login" style="color:var(--muted);font-size:0.85rem;text-decoration:underline;">Forgot password?</a><br><br><span id="c-resend-feedback" style="font-size:0.8rem;color:var(--green-dark);"></span><button onclick="window._resendClient()" style="margin-top:0.5rem;background:none;border:none;color:var(--green-dark);font-family:'Manrope',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;text-decoration:underline;padding:0;">Didn't receive it? Resend email</button>`;
       successMsg.style.display = 'block';
       submitBtn.innerHTML     = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:inline;vertical-align:middle;margin-right:6px" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> Check your email';
 
-      if (isNewClient && data.user) {
+      if (data.user) {
         const loginDest = _reviewDest ? `/login?redirect=${encodeURIComponent(_reviewDest)}&confirmed=1` : '/login?confirmed=1';
         const ch = supabase.channel('email-confirm:' + data.user.id)
           .on('broadcast', { event: 'confirmed' }, () => {
