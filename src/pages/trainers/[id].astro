@@ -2,6 +2,7 @@
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase';
 import { bmpDumbbell } from '../../lib/bmpDumbbell';
+import { getLocalAreaLabel } from '../../lib/rankingAreas';
 
 export async function getStaticPaths() {
   const { data: trainers } = await supabase
@@ -103,8 +104,16 @@ const themeAccent = _isHex
   ? _lightenHex(trainer.hero_theme!, 0.55)
   : (themeAccents[trainer.hero_theme ?? 'forest'] ?? themeAccents.forest);
 
+// ── Location display ─────────────────────────────────────────────────────────
+// When location_confirmed is true, show the resolved area name (e.g. "Fife, Scotland")
+// instead of the manually-entered city, which may be stale or in a different region.
+const verifiedLocation = (trainer.location_confirmed && trainer.cc_local_area)
+  ? getLocalAreaLabel(trainer.cc_local_area as string)
+  : null;
+const displayLocation = verifiedLocation ?? trainer.city ?? trainer.location ?? null;
+
 // ── SEO ──────────────────────────────────────────────────────────────────────
-const trainerCity = trainer.city ?? trainer.location ?? 'the UK';
+const trainerCity = displayLocation ?? 'the UK';
 const seoTitle = `${trainer.name} — Personal Trainer in ${trainerCity} · CoachCards`;
 
 const seoParts = [
@@ -555,8 +564,8 @@ const maskName = (name: string): string => {
         )}
 
         <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.75rem;">
-          {(trainer.city || trainer.location) && (
-            <span style="color:rgba(255,255,255,0.85);font-size:0.88rem;display:inline-flex;align-items:center;gap:0.35rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{trainer.city ?? trainer.location}</span>
+          {displayLocation && (
+            <span style="color:rgba(255,255,255,0.85);font-size:0.88rem;display:inline-flex;align-items:center;gap:0.35rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{displayLocation}</span>
           )}
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
             <span set:html={bmpDumbbell(trainer.bmp_score, 52)} />

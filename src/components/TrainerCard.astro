@@ -23,6 +23,7 @@ interface Props {
   ccCountry?: string;
   ccLocalArea?: string;
   locationConfirmed?: boolean;
+  verifiedLocation?: string | null;
 }
 
 const {
@@ -47,7 +48,12 @@ const {
   ccCountry = '',
   ccLocalArea = '',
   locationConfirmed = false,
+  verifiedLocation,
 } = Astro.props;
+
+// Use the confirmed area name for confirmed trainers; fall back to the
+// manually-entered city for everyone else.
+const displayCity = (locationConfirmed && verifiedLocation) ? verifiedLocation : (city || '');
 
 const coachingLabel = coachingType === 'in_person' ? 'In Person'
   : coachingType === 'online' ? 'Online'
@@ -55,7 +61,7 @@ const coachingLabel = coachingType === 'in_person' ? 'In Person'
   : '';
 
 const rankStr = rank != null ? String(rank).padStart(2, '0') : '';
-const metaCity = city || '';
+const metaCity = displayCity;
 const metaSpec = spec ? spec.split(/[,\/]/)[0].trim() : '';
 
 const reviewsBase = revCount === 0
