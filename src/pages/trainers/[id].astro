@@ -16,7 +16,7 @@ const { id } = Astro.params;
 
 const { data: trainer } = await supabase
   .from('trainers')
-  .select('*')
+  .select('id, name, username, city, location, bio, specialty, cert, coaching_type, bmp_score, star_rating, review_count, is_trending, is_active, avatar_url, avatar_initials, avatar_bg, avatar_color, business_name, hero_theme, gyms, postcode, cc_country, cc_local_area, location_confirmed, location_cooldown_until')
   .eq('id', id)
   .single();
 

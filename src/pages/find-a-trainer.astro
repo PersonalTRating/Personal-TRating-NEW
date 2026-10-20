@@ -34,22 +34,24 @@ const allTrainers = raw.map((t: any, i: number) => ({
   locationConfirmed:  !!(t as any).location_confirmed,
 }));
 
-// Country rank map: rank within each confirmed country group, sorted by BMP
+// Country rank map: rank within confirmed country groups of 10+ trainers, sorted by BMP
 const countryRankMap: Record<string, number> = {};
 {
   const groups: Record<string, typeof allTrainers> = {};
   allTrainers.forEach(t => { if (t.locationConfirmed && t.ccCountry) { (groups[t.ccCountry] = groups[t.ccCountry] || []).push(t); } });
   Object.values(groups).forEach(group => {
+    if (group.length < 10) return;
     group.slice().sort((a, b) => b.bmp - a.bmp).forEach((t, i) => { countryRankMap[t.id] = i + 1; });
   });
 }
 
-// Local rank map: rank within each confirmed local area group, sorted by BMP
+// Local rank map: rank within confirmed local area groups of 10+ trainers, sorted by BMP
 const localRankMap: Record<string, number> = {};
 {
   const groups: Record<string, typeof allTrainers> = {};
   allTrainers.forEach(t => { if (t.locationConfirmed && t.ccLocalArea) { (groups[t.ccLocalArea] = groups[t.ccLocalArea] || []).push(t); } });
   Object.values(groups).forEach(group => {
+    if (group.length < 10) return;
     group.slice().sort((a, b) => b.bmp - a.bmp).forEach((t, i) => { localRankMap[t.id] = i + 1; });
   });
 }

@@ -3276,33 +3276,54 @@
   (window as any).locUseGeolocation = locUseGeolocation;
 
   async function locConfirmLocation() {
-    if (!_locResolved || !trainerId) { _locShowError('Please validate a postcode first.'); return; }
+    if (!_locResolved) { _locShowError('Please validate a postcode first.'); return; }
     const btn = document.getElementById('loc-confirm-btn') as HTMLButtonElement;
     if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
-    const cooldownUntil = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-    const { error } = await supabase.from('trainers').update({
-      cc_postcode:              _locResolved.postcode,
-      cc_country:               _locResolved.cc_country,
-      cc_local_area:            _locResolved.local_area_id,
-      location_confirmed:       true,
-      location_confirmed_at:    new Date().toISOString(),
-      location_source:          _locResolved.source,
-      location_cooldown_until:  cooldownUntil,
-      location_mapping_version: 'ONS-2023-12',
-    } as any).eq('id', trainerId);
-    if (error) {
-      _locShowError('Save failed: ' + ((error as any).message || 'Unknown error'));
+
+    // Refresh session token in case it expired while the trainer was on the page
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    if (!currentSession?.access_token) {
+      _locShowError('Your session has expired. Please refresh the page and try again.');
       if (btn) { btn.disabled = false; btn.textContent = 'Confirm My Location'; }
       return;
     }
+
+    let result: any;
+    try {
+      const resp = await fetch('/.netlify/functions/confirm-location', {
+        method:  'POST',
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${currentSession.access_token}`,
+        },
+        body: JSON.stringify({
+          postcode: _locResolved.postcode,
+          source:   _locResolved.source,
+        }),
+      });
+      result = await resp.json();
+      if (!resp.ok) {
+        _locShowError(result?.error || 'Save failed. Please try again.');
+        if (btn) { btn.disabled = false; btn.textContent = 'Confirm My Location'; }
+        return;
+      }
+    } catch {
+      _locShowError('Network error — please check your connection and try again.');
+      if (btn) { btn.disabled = false; btn.textContent = 'Confirm My Location'; }
+      return;
+    }
+
     (trainer as any).location_confirmed = true;
+    const cooldownUntil: string = result?.cooldown_until
+      ?? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
+
     const formEl   = document.getElementById('loc-form')              as HTMLElement;
     const lockedEl = document.getElementById('loc-locked')            as HTMLElement;
     const dispEl   = document.getElementById('loc-confirmed-display') as HTMLElement;
     const coolEl   = document.getElementById('loc-cooldown-msg')      as HTMLElement;
-    if (dispEl) dispEl.textContent = _locResolved.local_area_id
-      ? `${_locResolved.local_name}, ${_locResolved.cc_country}`
-      : _locResolved.cc_country;
+    if (dispEl) dispEl.textContent = result?.local_name
+      ? `${result.local_name}, ${result.cc_country}`
+      : (result?.cc_country ?? _locResolved.cc_country);
     if (coolEl) {
       const endDate = new Date(cooldownUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
       coolEl.textContent = `Your location is locked for 90 days to protect ranking integrity (until ${endDate}). Contact support if you need to change it sooner.`;
