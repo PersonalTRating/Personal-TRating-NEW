@@ -12,8 +12,8 @@
 --   • Northern Ireland Districts     (11 districts, all have null admin_county)
 --
 -- NOT NEEDED for:
---   • Scotland : admin_county = council area name, matches display_name directly
---   • Wales    : admin_county = principal area name, matches display_name directly
+--   • Scotland : admin_district = council area name, matches display_name directly
+--   • Wales    : admin_district = principal area name, matches display_name directly
 --   • English 2-tier counties (active county council): admin_county is populated
 --
 -- verified=TRUE : admin_district string confirmed against live Postcodes.io.

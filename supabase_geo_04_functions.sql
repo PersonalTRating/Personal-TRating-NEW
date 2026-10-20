@@ -46,20 +46,25 @@ BEGIN
   CASE p_country
 
     WHEN 'Scotland' THEN
-      -- Postcodes.io always populates admin_county = council area name.
+      -- Postcodes.io returns admin_county = null for all Scottish postcodes.
+      -- Scotland uses a single-tier council system; the council area name
+      -- is in admin_district (e.g. "Fife", "City of Edinburgh", "Highland").
       -- Match directly against ranking_areas.display_name.
       SELECT id INTO v_local
       FROM ranking_areas
-      WHERE display_name = p_admin_county
+      WHERE display_name = p_admin_district
         AND area_type    = 'local'
         AND country      = 'Scotland'
         AND is_active    = TRUE;
 
     WHEN 'Wales' THEN
-      -- Postcodes.io always populates admin_county = principal area name.
+      -- Postcodes.io returns admin_county = null for all Welsh postcodes.
+      -- Wales uses a single-tier principal area system; the area name
+      -- is in admin_district (e.g. "Cardiff", "Swansea", "Gwynedd").
+      -- Match directly against ranking_areas.display_name.
       SELECT id INTO v_local
       FROM ranking_areas
-      WHERE display_name = p_admin_county
+      WHERE display_name = p_admin_district
         AND area_type    = 'local'
         AND country      = 'Wales'
         AND is_active    = TRUE;

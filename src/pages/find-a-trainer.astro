@@ -172,8 +172,14 @@ const participationState: 'empty' | 'growing' | 'full' =
         oninput="onLocalUnifiedInput()"
         onfocus="onLocalUnifiedInput()"
         onblur="onLocalUnifiedBlur()"
-        aria-label="Search local area" />
-      <div id="geo-local-sugg" class="geo-local-sugg" style="display:none;"></div>
+        onkeydown="onLocalUnifiedKeydown(event)"
+        aria-label="Search local area"
+        aria-autocomplete="list"
+        aria-haspopup="listbox"
+        role="combobox"
+        aria-expanded="false"
+        aria-controls="geo-local-sugg" />
+      <div id="geo-local-sugg" class="geo-local-sugg" role="listbox" style="display:none;"></div>
     </div>
 
   </div>
@@ -590,14 +596,22 @@ const participationState: 'empty' | 'growing' | 'full' =
     position:absolute; top:100%; left:0; right:0; z-index:200;
     background:#1a2a1c; border:1.5px solid rgba(58,181,74,0.35);
     border-top:none; border-radius:0 0 8px 8px;
-    max-height:180px; overflow-y:auto;
+    max-height:240px; overflow-y:auto;
   }
   .geo-local-sugg-item {
-    padding:0.6rem 0.85rem; font-size:0.82rem; font-family:'Manrope',sans-serif;
+    padding:0.65rem 0.85rem; font-size:0.82rem; font-family:'Manrope',sans-serif;
     color:rgba(255,255,255,0.8); cursor:pointer;
     border-bottom:1px solid rgba(255,255,255,0.06);
   }
-  .geo-local-sugg-item:hover { background:rgba(58,181,74,0.18); color:white; }
+  .geo-local-sugg-item:hover,
+  .geo-local-sugg-item.is-active { background:rgba(58,181,74,0.22); color:white; }
+  .geo-local-sugg-empty {
+    padding:0.65rem 0.85rem; font-size:0.82rem; font-family:'Manrope',sans-serif;
+    color:rgba(255,255,255,0.38); font-style:italic;
+  }
+  @media (max-width:620px) {
+    .geo-local-sugg-item { min-height:44px; display:flex; align-items:center; }
+  }
 
   /* ── Map My Location button ── */
   #fat-map-view { position:relative; }
@@ -678,6 +692,8 @@ const participationState: 'empty' | 'growing' | 'full' =
   var activeCountry = '';
   var activeLocal   = '';
   var localAreaData = [];
+  var _suggIdx      = -1;
+  var _suggMatches  = [];
   var PART_THRESHOLD = 10;
   try { localAreaData   = JSON.parse(document.getElementById('fat-geo-data').textContent || '[]'); } catch(e) {}
   try { PART_THRESHOLD  = JSON.parse(document.getElementById('fat-part-threshold').textContent || '10'); } catch(e) {}
@@ -846,12 +862,15 @@ const participationState: 'empty' | 'growing' | 'full' =
     var sugg = document.getElementById('geo-local-sugg');
     if (!inp || !sugg) return;
     var q = inp.value.trim().toLowerCase();
+    _suggIdx = -1;
     if (!q) {
+      _suggMatches = [];
       activeLocal = '';
       updateLbHead();
       updateUrl();
       applyFilters();
       sugg.style.display = 'none';
+      inp.setAttribute('aria-expanded', 'false');
       return;
     }
     var areaMatches = localAreaData.filter(function (a) {
@@ -862,12 +881,22 @@ const participationState: 'empty' | 'growing' | 'full' =
         && !areaMatches.some(function (a) { return a.display_name.toLowerCase() === c.display_name.toLowerCase(); });
     }).slice(0, 10 - areaMatches.length);
     var matches = areaMatches.concat(cityMatches);
-    if (!matches.length) { sugg.style.display = 'none'; return; }
+    _suggMatches = matches;
     sugg.innerHTML = '';
+    if (!matches.length) {
+      var empty = document.createElement('div');
+      empty.className   = 'geo-local-sugg-empty';
+      empty.textContent = 'No areas match “' + inp.value.trim() + '”';
+      sugg.appendChild(empty);
+      sugg.style.display = '';
+      inp.setAttribute('aria-expanded', 'true');
+      return;
+    }
     matches.forEach(function (a) {
       var item = document.createElement('div');
       item.className   = 'geo-local-sugg-item';
-      item.textContent = a.display_name + (a.country ? ' · ' + a.country : '');
+      item.setAttribute('role', 'option');
+      item.textContent = a.display_name + (a.country ? ' — ' + a.country : '');
       item.onmousedown = function (e) {
         e.preventDefault();
         onLocalUnifiedSelect(a.id, a.display_name);
@@ -875,16 +904,57 @@ const participationState: 'empty' | 'growing' | 'full' =
       sugg.appendChild(item);
     });
     sugg.style.display = '';
+    inp.setAttribute('aria-expanded', 'true');
   }
   window.onLocalUnifiedInput = onLocalUnifiedInput;
 
   function onLocalUnifiedBlur() {
     setTimeout(function () {
       var sugg = document.getElementById('geo-local-sugg');
+      var inp  = document.getElementById('geo-local-unified');
       if (sugg) sugg.style.display = 'none';
+      if (inp)  inp.setAttribute('aria-expanded', 'false');
+      _suggIdx    = -1;
+      _suggMatches = [];
     }, 160);
   }
   window.onLocalUnifiedBlur = onLocalUnifiedBlur;
+
+  function _suggHighlight(idx) {
+    var items = document.querySelectorAll('#geo-local-sugg .geo-local-sugg-item');
+    items.forEach(function (el, i) { el.classList.toggle('is-active', i === idx); });
+    if (idx >= 0 && items[idx]) { items[idx].scrollIntoView({ block: 'nearest' }); }
+  }
+
+  function onLocalUnifiedKeydown(e) {
+    var sugg = document.getElementById('geo-local-sugg');
+    if (!sugg || sugg.style.display === 'none') return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      _suggIdx = Math.min(_suggIdx + 1, _suggMatches.length - 1);
+      _suggHighlight(_suggIdx);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      _suggIdx = Math.max(_suggIdx - 1, -1);
+      _suggHighlight(_suggIdx);
+    } else if (e.key === 'Enter') {
+      if (_suggIdx >= 0 && _suggMatches[_suggIdx]) {
+        e.preventDefault();
+        var m = _suggMatches[_suggIdx];
+        _suggIdx    = -1;
+        _suggMatches = [];
+        onLocalUnifiedSelect(m.id, m.display_name);
+      }
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      sugg.style.display = 'none';
+      var inp = document.getElementById('geo-local-unified');
+      if (inp) inp.setAttribute('aria-expanded', 'false');
+      _suggIdx    = -1;
+      _suggMatches = [];
+    }
+  }
+  window.onLocalUnifiedKeydown = onLocalUnifiedKeydown;
 
   function onLocalUnifiedSelect(id, name) {
     var inp  = document.getElementById('geo-local-unified');
