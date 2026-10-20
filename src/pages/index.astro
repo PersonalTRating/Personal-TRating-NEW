@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
 import TrustBar from '../components/TrustBar.astro';
+import { getLocalAreaLabel } from '../lib/rankingAreas';
 
 // Fetch all build-time data in parallel
 const [
@@ -13,7 +14,7 @@ const [
 ] = await Promise.all([
   supabase
     .from('trainers')
-    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history')
+    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history, location_confirmed, cc_local_area, cc_country')
     .eq('is_active', true)
     .gt('bmp_score', 0)
     .gt('review_count', 0)
@@ -34,7 +35,12 @@ const [
     .limit(5000),
 ]);
 
-const leaderboard = topTrainers || [];
+const leaderboard = (topTrainers || []).map((t: any) => ({
+  ...t,
+  displayCity: (t.location_confirmed && t.cc_local_area)
+    ? getLocalAreaLabel(t.cc_local_area as string)
+    : null,
+}));
 const heroRankings = leaderboard.slice(0, 4).map((t, i) => ({ ...t, rank: i + 1 }));
 
 const distinctCities = new Set(
@@ -1284,7 +1290,7 @@ const reviews = [
       ? '<img src="' + pt.avatar_url + '" alt="" class="lbc-av" width="40" height="40" style="width:40px;min-width:40px;height:40px;border-radius:50%;object-fit:cover;overflow:hidden;flex-shrink:0;border:2px solid rgba(255,255,255,0.12);">'
       : '<div class="lbc-av" style="background:' + (pt.avatar_bg || '#eaf7ec') + ';color:' + (pt.avatar_color || '#2a9438') + ';">' + (pt.avatar_initials || '?') + '</div>';
     var cert = pt.cert ? '<span class="lbc-cert">' + pt.cert + '</span>' : '';
-    var city = pt.city || pt.location || '';
+    var city = pt.displayCity || pt.city || pt.location || '';
     var spec = pt.specialty ? pt.specialty.split(/[,\/]/)[0].trim() : '';
     var ctLabel = pt.coaching_type === 'in_person' ? 'In Person'
       : pt.coaching_type === 'online' ? 'Online'
@@ -1295,7 +1301,7 @@ const reviews = [
     var revText  = revCount + ' ' + (revCount === 1 ? 'review' : 'reviews');
     var bmpDisplay = revCount === 0 ? 'Be first to review' : pt.bmp_score;
     var bmpStyle   = revCount === 0 ? 'font-size:0.7rem;font-weight:700;color:#3ab54a;line-height:1.3;' : '';
-    var lbComplete = !!(pt.avatar_url && (pt.city || pt.location) && pt.bio && pt.specialty);
+    var lbComplete = !!(pt.avatar_url && (pt.displayCity || pt.city || pt.location) && pt.bio && pt.specialty);
     var lbTick = lbComplete ? '<span title="Profile complete" style="display:inline-flex;align-items:center;flex-shrink:0;"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '';
 
     // Rank movement from weekly snapshot
@@ -1409,7 +1415,7 @@ const reviews = [
     var trending = t.is_trending;
     var revCount = t.review_count || 0;
     var recent   = t.recent_review_count || 0;
-    var complete = !!(t.avatar_url && (t.city || t.location) && t.bio && t.specialty);
+    var complete = !!(t.avatar_url && (t.displayCity || t.city || t.location) && t.bio && t.specialty);
 
     var av = t.avatar_url
       ? '<img class="hc-v2-av" src="' + t.avatar_url + '" alt="' + t.name + '" width="56" height="56">'
@@ -1423,8 +1429,9 @@ const reviews = [
       ? '<span class="trend-info" style="display:inline-flex;align-items:center;"><span class="hc-badge-trend" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span><div class="trend-tooltip">Trending trainers have received at least 2 verified reviews in the last 7 days, plus another verified review within the preceding 21 days.</div></span>'
       : '';
 
-    var city = (t.city || t.location)
-      ? '<div class="hc-v2-location"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + (t.city || t.location) + '</div>'
+    var _locDisplay = t.displayCity || t.city || t.location;
+    var city = _locDisplay
+      ? '<div class="hc-v2-location"><svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + _locDisplay + '</div>'
       : '';
 
     var spec = t.specialty ? t.specialty.split(/[,\/]/)[0].trim() : '';
