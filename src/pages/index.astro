@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
 import TrustBar from '../components/TrustBar.astro';
-import { getLocalAreaLabel } from '../lib/rankingAreas';
+import { getLocalAreaLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
 
 // Fetch all build-time data in parallel
 const [
@@ -1203,15 +1203,9 @@ const reviews = [
 
   trainers.forEach(function (t) {
     var cityRaw = (t.city || t.location || '').toLowerCase().split(',')[0].trim();
-    var coords = cityCoords[cityRaw];
-    if (!coords) {
-      var keys = Object.keys(cityCoords);
-      for (var i = 0; i < keys.length; i++) {
-        if (cityRaw.indexOf(keys[i]) !== -1 || keys[i].indexOf(cityRaw) !== -1) {
-          coords = cityCoords[keys[i]]; break;
-        }
-      }
-    }
+    var coords = (window['__resolveCoords'] || function() { return null; })(
+      t.location_confirmed, t.cc_local_area, cityRaw, cityCoords
+    );
     if (!coords) return;
 
     var jitter = [(Math.random()-0.5)*0.04, (Math.random()-0.5)*0.08];
@@ -1236,9 +1230,31 @@ const reviews = [
 </script>
 
 <!-- Pass real trainer data to map + leaderboard -->
-<script define:vars={{ leaderboard }}>
+<script define:vars={{ leaderboard, areaCoords: RANKING_AREA_COORDS }}>
   window['__ptMapData']      = leaderboard;
   window['__ptAllTrainers']  = leaderboard;
+  window['__ptAreaCoords']   = areaCoords;
+  /**
+   * Shared coordinate resolver.
+   * Confirmed trainers: area centroid from RANKING_AREA_COORDS, or null (never city fallback).
+   * Unconfirmed trainers: city-name lookup from the provided cityCoords table.
+   */
+  window['__resolveCoords'] = function(locationConfirmed, ccLocalArea, cityRaw, cityCoords) {
+    var ac = window['__ptAreaCoords'] || {};
+    if (locationConfirmed && ccLocalArea) {
+      return ac[ccLocalArea] || null;
+    }
+    var coords = cityCoords[cityRaw];
+    if (!coords) {
+      var keys = Object.keys(cityCoords);
+      for (var i = 0; i < keys.length; i++) {
+        if (cityRaw.indexOf(keys[i]) !== -1 || keys[i].indexOf(cityRaw) !== -1) {
+          return cityCoords[keys[i]];
+        }
+      }
+    }
+    return coords || null;
+  };
 </script>
 
 <!-- ── LEADERBOARD GEOLOCATION SCRIPT ── -->
@@ -1515,9 +1531,10 @@ const reviews = [
         var uLat = pos.coords.latitude;
         var uLng = pos.coords.longitude;
 
+        var resolveCoords = window['__resolveCoords'] || function() { return null; };
         var nearby = all.filter(function (t) {
-          var key    = (t.city || t.location || '').toLowerCase().split(',')[0].trim();
-          var coords = cityCoords[key];
+          var cityRaw = (t.city || t.location || '').toLowerCase().split(',')[0].trim();
+          var coords = resolveCoords(t.location_confirmed, t.cc_local_area, cityRaw, cityCoords);
           return coords && haversine(uLat, uLng, coords[0], coords[1]) <= 50;
         });
         nearby.sort(function (a, b) { return (b.bmp_score || 0) - (a.bmp_score || 0); });

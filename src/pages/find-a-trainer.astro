@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import TrainerCard from '../components/TrainerCard.astro';
-import { RANKING_AREAS, getLocalAreaLabel } from '../lib/rankingAreas';
+import { RANKING_AREAS, getLocalAreaLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
 
 const { data: trainersData } = await supabase
   .from('trainers')
@@ -106,6 +106,31 @@ const participationState: 'empty' | 'growing' | 'full' =
 <!-- Geo data for client-side JS -->
 <script id="fat-geo-data" type="application/json" set:html={localAreasJson}></script>
 <script id="fat-part-threshold" type="application/json" set:html={PARTICIPATION_THRESHOLD}></script>
+<!-- Area centre coordinates + shared coordinate resolver for map pins -->
+<script define:vars={{ areaCoords: RANKING_AREA_COORDS }}>
+  window['__ptAreaCoords'] = areaCoords;
+  /**
+   * Shared coordinate resolver.
+   * Confirmed trainers: area centroid from RANKING_AREA_COORDS, or null (never city fallback).
+   * Unconfirmed trainers: city-name lookup from the provided cityCoords table.
+   */
+  window['__resolveCoords'] = function(locationConfirmed, ccLocalArea, cityRaw, cityCoords) {
+    var ac = window['__ptAreaCoords'] || {};
+    if (locationConfirmed && ccLocalArea) {
+      return ac[ccLocalArea] || null;
+    }
+    var coords = cityCoords[cityRaw];
+    if (!coords) {
+      var keys = Object.keys(cityCoords);
+      for (var i = 0; i < keys.length; i++) {
+        if (cityRaw.indexOf(keys[i]) !== -1 || keys[i].indexOf(cityRaw) !== -1) {
+          return cityCoords[keys[i]];
+        }
+      }
+    }
+    return coords || null;
+  };
+</script>
 
 <!-- Prevent hero/filters flash when loading directly into mobile map view -->
 <script is:inline>
@@ -327,7 +352,7 @@ const participationState: 'empty' | 'growing' | 'full' =
 <div id="fat-map-view" style="display:none;">
   <div id="fat-map" style="height:70vh;min-height:480px;width:100%;"></div>
   <div id="fat-map-note" style="text-align:center;padding:0.75rem;font-size:0.78rem;color:rgba(255,255,255,0.4);background:#0a120b;border-top:1px solid rgba(255,255,255,0.08);">
-    Pins indicate trainer city areas — not precise trainer locations. Click a pin to view.
+    Pins indicate trainer location areas — not precise trainer locations. Click a pin to view.
   </div>
   <button id="fat-map-myloc" class="fat-map-myloc" onclick="requestMyLocation()" title="Centre map on my location" aria-label="My location">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1287,17 +1312,12 @@ const participationState: 'empty' | 'growing' | 'full' =
       maxZoom: 19
     }).addTo(map);
     var placed = 0;
+    var resolveCoords = window['__resolveCoords'] || function() { return null; };
     cards.forEach(function (card) {
-      var cityRaw = (card.getAttribute('data-city') || '').toLowerCase().trim();
-      var coords = cityCoords[cityRaw];
-      if (!coords) {
-        var keys = Object.keys(cityCoords);
-        for (var i = 0; i < keys.length; i++) {
-          if (cityRaw.indexOf(keys[i]) !== -1 || keys[i].indexOf(cityRaw) !== -1) {
-            coords = cityCoords[keys[i]]; break;
-          }
-        }
-      }
+      var confirmed = card.getAttribute('data-location-confirmed') === 'true';
+      var ccArea    = card.getAttribute('data-cc-local-area') || '';
+      var cityRaw   = (card.getAttribute('data-city') || '').toLowerCase().trim();
+      var coords    = resolveCoords(confirmed, ccArea, cityRaw, cityCoords);
       if (!coords) return;
       placed++;
       var bmp  = card.getAttribute('data-bmp') || '—';
@@ -1322,7 +1342,7 @@ const participationState: 'empty' | 'growing' | 'full' =
         .bindPopup('<div style="font-family:Manrope,sans-serif;min-width:160px;padding:0.25rem 0;"><div style="font-weight:700;font-size:0.92rem;margin-bottom:0.25rem;">' + name + '</div>' + (ctTxt ? '<div style="font-size:0.7rem;color:#5585dd;margin-bottom:0.3rem;">' + ctTxt + '</div>' : '') + '<div style="font-size:0.75rem;color:#888;margin-bottom:0.5rem;">BMP Score: ' + bmp + '</div><a href="' + href + '" style="display:block;background:#3ab54a;color:white;text-align:center;padding:0.35rem;border-radius:8px;text-decoration:none;font-weight:700;font-size:0.78rem;">View Profile →</a></div>');
     });
     var noteEl = document.getElementById('fat-map-note');
-    if (noteEl) noteEl.textContent = placed + ' trainer' + (placed !== 1 ? 's' : '') + ' shown. Pins indicate trainer city areas — not precise trainer locations. Click a pin to view their profile.';
+    if (noteEl) noteEl.textContent = placed + ' trainer' + (placed !== 1 ? 's' : '') + ' shown. Pins indicate trainer location areas — not precise trainer locations. Click a pin to view their profile.';
     tryAutoCenter();
   }
 
