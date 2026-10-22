@@ -1911,6 +1911,7 @@
 <script>
   import { supabase } from '../lib/supabase';
   import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
+  import { getLocalAreaLabel as _getAreaLabel } from '../lib/rankingAreas';
 
   // ── Auth guard ──────────────────────────────────────────────────────────
   // Fast path: read from localStorage (persisted across visits).
@@ -2032,6 +2033,12 @@
   if (trainer) {
     const firstName = trainer.name.split(' ')[0];
 
+    // Resolved verified-location display string. Set to cc_country immediately,
+    // then updated to "Area, Country" once initLocationCard() resolves the area name.
+    let _confirmedLocationStr: string | null = (trainer as any).location_confirmed
+      ? ((trainer as any).cc_country ?? 'Verified location unavailable')
+      : null;
+
     // ── Sidebar ─────────────────────────────────────────────────────────
     const sbAvatarEl = document.querySelector('.sb-avatar') as HTMLElement;
     if (sbAvatarEl) {
@@ -2042,9 +2049,10 @@
       }
     }
     const sbPtName = document.querySelector('.sb-pt-name') as HTMLElement;
-    const isComplete = !!(trainer.avatar_url && trainer.city?.trim() && trainer.bio?.trim() && trainer.specialty?.trim());
+    const isComplete = !!(trainer.avatar_url && (trainer.city?.trim() || (trainer as any).location_confirmed) && trainer.bio?.trim() && trainer.specialty?.trim());
     sbPtName.innerHTML = trainer.name + (isComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
-    (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${trainer.location}`;
+    (document.querySelector('.sb-pt-status') as HTMLElement).textContent =
+      `● Active · ${_confirmedLocationStr ?? trainer.location ?? '—'}`;
     const sbBusiness = document.querySelector('.sb-pt-business') as HTMLElement;
     if (sbBusiness) {
       if (trainer.business_name) {
@@ -2772,6 +2780,21 @@
     fillText('profile-business',  trainer.business_name ?? '');
     fillText('profile-city',      trainer.city     ?? '');
     fillText('profile-postcode',  trainer.postcode ?? '');
+
+    // For confirmed trainers, hide City/Postcode inputs and show a verified-location banner.
+    if ((trainer as any).location_confirmed) {
+      const _cityGrp     = document.getElementById('profile-city')?.closest('.form-group') as HTMLElement | null;
+      const _postcodeGrp = document.getElementById('profile-postcode')?.closest('.form-group') as HTMLElement | null;
+      if (_cityGrp)     _cityGrp.style.display     = 'none';
+      if (_postcodeGrp) _postcodeGrp.style.display = 'none';
+      if (_cityGrp?.parentElement && !_cityGrp.parentElement.querySelector('#verified-loc-banner')) {
+        const _vlb = document.createElement('div');
+        _vlb.id = 'verified-loc-banner';
+        _vlb.style.cssText = 'grid-column:1/-1;background:rgba(58,181,74,0.08);border:1px solid rgba(58,181,74,0.25);border-radius:8px;padding:0.75rem 1rem;';
+        _vlb.innerHTML = `<div style="display:flex;align-items:flex-start;gap:0.6rem;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-top:2px;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;">Verified location: <span id="vl-display">${_confirmedLocationStr ?? 'Verified location unavailable'}</span></div><div style="font-size:0.74rem;color:var(--muted);">Your location is verified and locked. To change it, use the Confirmed Location section below.</div></div></div>`;
+        _cityGrp.insertAdjacentElement('beforebegin', _vlb);
+      }
+    }
     fillText('profile-bio',       trainer.bio ?? '');
     fillText('profile-intro-msg', (trainer as any).intro_message ?? '');
     fillText('social-facebook',   (trainer as any).social_facebook  ?? '');
@@ -2931,7 +2954,7 @@
     // ── Rankings table (dynamic) ──────────────────────────────────────────
     const { data: leaderboard } = await supabase
       .from('trainers')
-      .select('id, name, username, city, location, specialty, bmp_score, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url')
+      .select('id, name, username, city, location, specialty, bmp_score, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, cc_country, cc_local_area, location_confirmed')
       .eq('is_active', true)
       .gt('review_count', 0)
       .order('bmp_score', { ascending: false })
@@ -2949,7 +2972,7 @@
               <div class="rank-avatar" style="background:${pt.avatar_bg || '#eaf7ec'};color:${pt.avatar_color || '#2a9438'};">${pt.avatar_initials || '?'}</div>
               <div><div>${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}</div>${pt.username ? '<div style="font-size:0.68rem;color:#7a8f7c;font-weight:600;">@' + pt.username + '</div>' : ''}</div>
             </div></td>
-            <td>${pt.city || pt.location || '—'}</td>
+            <td>${pt.location_confirmed && pt.cc_country ? (_getAreaLabel(pt.cc_local_area) ?? pt.cc_country) : (pt.city || pt.location || '—')}</td>
             <td style="padding-right:1.5rem;"><strong>${pt.bmp_score}</strong></td>
           </tr>`;
         }).join('');
@@ -2974,7 +2997,8 @@
         : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
       const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
       const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
-      const meta = [pt.city||pt.location ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+(pt.city||pt.location) : '', pt.specialty ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'+pt.specialty : ''].filter(Boolean).join('  ·  ');
+      const _ptLoc = pt.location_confirmed && pt.cc_country ? (_getAreaLabel(pt.cc_local_area) ?? pt.cc_country) : (pt.city || pt.location);
+      const meta = [_ptLoc ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+_ptLoc : '', pt.specialty ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'+pt.specialty : ''].filter(Boolean).join('  ·  ');
       const glow = isYou
         ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
         : 'border:2px solid #7defa0;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);background:#111311;';
@@ -3105,6 +3129,8 @@
 
     const name     = `${firstName} ${lastName}`.trim();
     const location = postcode ? `${city}, ${postcode}` : city;
+    // For confirmed trainers, never overwrite location/city/postcode — legacy data is preserved as-is.
+    const _locFields = (trainer as any).location_confirmed ? {} : { location, city, postcode };
     const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
 
     const avatarColor = (window as any).cpGetAvatarColor?.() ?? '#2a9438';
@@ -3121,7 +3147,7 @@
 
     const { error } = await supabase
       .from('trainers')
-      .update({ name, username, business_name: businessName || null, location, city, postcode, bio, intro_message: introMsg || null, specialty, cert, coaching_type: coachingType || null, avatar_initials: initials, avatar_bg: avatarBg, avatar_color: avatarColor, hero_theme: heroTheme, gyms: trainerGyms, social_facebook: socialFacebook, social_instagram: socialInstagram, social_whatsapp: socialWhatsapp, social_email: socialEmail, accepts_bookings: acceptsBookings, booking_url: acceptsBookings ? bookingUrl : null })
+      .update({ name, username, business_name: businessName || null, ..._locFields, bio, intro_message: introMsg || null, specialty, cert, coaching_type: coachingType || null, avatar_initials: initials, avatar_bg: avatarBg, avatar_color: avatarColor, hero_theme: heroTheme, gyms: trainerGyms, social_facebook: socialFacebook, social_instagram: socialInstagram, social_whatsapp: socialWhatsapp, social_email: socialEmail, accepts_bookings: acceptsBookings, booking_url: acceptsBookings ? bookingUrl : null })
       .eq('id', trainerId);
 
     if (error) {
@@ -3129,9 +3155,10 @@
     } else {
       // Update sidebar live
       const sbName = document.querySelector('.sb-pt-name') as HTMLElement;
-      const savedComplete = !!(trainer.avatar_url && city && bio && specialty);
+      const savedComplete = !!(trainer.avatar_url && (city || (trainer as any).location_confirmed) && bio && specialty);
       sbName.innerHTML = name + (savedComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
-      (document.querySelector('.sb-pt-status')as HTMLElement).textContent = `● Active · ${location}`;
+      (document.querySelector('.sb-pt-status') as HTMLElement).textContent =
+        `● Active · ${(trainer as any).location_confirmed && _confirmedLocationStr ? _confirmedLocationStr : location}`;
       const sbAv = document.querySelector('.sb-avatar') as HTMLElement;
       if (sbAv && !sbAv.querySelector('img')) {
         sbAv.textContent = initials;
@@ -3331,6 +3358,28 @@
     }
     if (formEl)   formEl.style.display   = 'none';
     if (lockedEl) lockedEl.style.display = 'block';
+    // Update sidebar and profile form immediately — don't wait for page reload.
+    const _newLocStr = result?.local_name
+      ? `${result.local_name}, ${result.cc_country}`
+      : (result?.cc_country ?? (_locResolved as any).cc_country ?? 'Verified location unavailable');
+    _confirmedLocationStr = _newLocStr;
+    const _sbEl3 = document.querySelector('.sb-pt-status') as HTMLElement;
+    if (_sbEl3) _sbEl3.textContent = `● Active · ${_confirmedLocationStr}`;
+    const _cg     = document.getElementById('profile-city')?.closest('.form-group') as HTMLElement | null;
+    const _pg     = document.getElementById('profile-postcode')?.closest('.form-group') as HTMLElement | null;
+    if (_cg) _cg.style.display = 'none';
+    if (_pg) _pg.style.display = 'none';
+    const _fgrid = _cg?.parentElement as HTMLElement | null;
+    if (_fgrid && !_fgrid.querySelector('#verified-loc-banner')) {
+      const _vlb2 = document.createElement('div');
+      _vlb2.id = 'verified-loc-banner';
+      _vlb2.style.cssText = 'grid-column:1/-1;background:rgba(58,181,74,0.08);border:1px solid rgba(58,181,74,0.25);border-radius:8px;padding:0.75rem 1rem;';
+      _vlb2.innerHTML = `<div style="display:flex;align-items:flex-start;gap:0.6rem;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-top:2px;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;">Verified location: <span id="vl-display">${_confirmedLocationStr}</span></div><div style="font-size:0.74rem;color:var(--muted);">Your location is verified and locked. To change it, use the Confirmed Location section below.</div></div></div>`;
+      if (_cg) _cg.insertAdjacentElement('beforebegin', _vlb2);
+    } else {
+      const _vld = document.getElementById('vl-display') as HTMLElement;
+      if (_vld) _vld.textContent = _confirmedLocationStr;
+    }
     showToast('✅ Location confirmed! You now appear in country and local rankings.');
   }
   (window as any).locConfirmLocation = locConfirmLocation;
@@ -3349,10 +3398,26 @@
         if ((ar as any)?.display_name) displayStr = `${(ar as any).display_name}, ${t.cc_country}`;
       }
       if (disp) disp.textContent = displayStr;
+      // Update shared variable, sidebar, and profile-form banner with resolved display name.
+      _confirmedLocationStr = displayStr;
+      const _sbEl = document.querySelector('.sb-pt-status') as HTMLElement;
+      if (_sbEl) _sbEl.textContent = `● Active · ${_confirmedLocationStr}`;
+      const _vlDisp = document.getElementById('vl-display') as HTMLElement;
+      if (_vlDisp) _vlDisp.textContent = _confirmedLocationStr;
       if (t.location_cooldown_until && new Date(t.location_cooldown_until) > new Date()) {
         const endDate = new Date(t.location_cooldown_until).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
         if (cool) { cool.textContent = `Your location is locked for 90 days to protect ranking integrity (until ${endDate}). Contact support if you need to change it sooner.`; cool.style.display = 'block'; }
       }
+      if (form)   form.style.display   = 'none';
+      if (locked) locked.style.display = 'block';
+    } else if (t.location_confirmed) {
+      // location_confirmed is true but cc_country is missing — show fallback.
+      _confirmedLocationStr = 'Verified location unavailable';
+      const _sbEl2 = document.querySelector('.sb-pt-status') as HTMLElement;
+      if (_sbEl2) _sbEl2.textContent = `● Active · ${_confirmedLocationStr}`;
+      const _vlDisp2 = document.getElementById('vl-display') as HTMLElement;
+      if (_vlDisp2) _vlDisp2.textContent = _confirmedLocationStr;
+      if (disp) disp.textContent = 'Verified location unavailable';
       if (form)   form.style.display   = 'none';
       if (locked) locked.style.display = 'block';
     } else if (trainer.postcode && trainer.postcode.trim()) {

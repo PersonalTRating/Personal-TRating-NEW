@@ -35,7 +35,7 @@ const reviews    = trainerReviews || [];
 const hasReviews = reviews.length > 0;
 const hasBmp     = hasReviews;
 
-const isProfileComplete = !!(trainer.avatar_url && trainer.city?.trim() && trainer.bio?.trim() && trainer.specialty?.trim());
+const isProfileComplete = !!(trainer.avatar_url && (trainer.city?.trim() || trainer.location_confirmed) && trainer.bio?.trim() && trainer.specialty?.trim());
 
 const starCounts = [5, 4, 3, 2, 1].map(s => ({
   star:  s,
@@ -1448,7 +1448,7 @@ const maskName = (name: string): string => {
 
     // Fetch live trainer row and approved review count in parallel
     const [trainerRes, reviewsRes] = await Promise.all([
-      supabase.from('trainers').select('bmp_score, star_rating, avatar_url, avatar_color, city, bio, specialty, hero_theme').eq('id', trainerId).single(),
+      supabase.from('trainers').select('bmp_score, star_rating, avatar_url, avatar_color, city, bio, specialty, hero_theme, location_confirmed').eq('id', trainerId).single(),
       supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('trainer_id', trainerId).eq('is_verified', true),
     ]);
 
@@ -1519,7 +1519,7 @@ const maskName = (name: string): string => {
 
     // Show/hide verified tick based on live profile completeness
     const td = trainerRes.data;
-    const liveComplete = !!(td?.avatar_url && td?.city?.trim() && td?.bio?.trim() && td?.specialty?.trim());
+    const liveComplete = !!(td?.avatar_url && (td?.city?.trim() || td?.location_confirmed) && td?.bio?.trim() && td?.specialty?.trim());
     const tickEl = document.getElementById('tp-verified-tick') as HTMLElement | null;
     if (tickEl) {
       tickEl.style.display = liveComplete ? 'inline-flex' : 'none';
