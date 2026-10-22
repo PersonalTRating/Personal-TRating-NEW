@@ -1947,7 +1947,7 @@
 
   // ── Load trainer record ─────────────────────────────────────────────────
   const { data: _trainerData, error: _trainerErr } = await supabase
-    .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
+    .rpc('get_own_trainer_profile');
 
   let trainer: any = _trainerData;
 
@@ -1956,7 +1956,7 @@
   if (!trainer && _trainerErr) {
     await new Promise(r => setTimeout(r, 600));
     const { data: _retry } = await supabase
-      .from('trainers').select('*').eq('user_id', session.user.id).maybeSingle();
+      .rpc('get_own_trainer_profile');
     trainer = _retry;
   }
 
