@@ -1951,6 +1951,9 @@
     .rpc('get_own_trainer_profile');
 
   let trainer: any = _trainerData;
+  // Declared at module scope so initLocationCard(), locConfirmLocation() and saveProfile()
+  // can all access it — let inside if(trainer) would be block-scoped and invisible to them.
+  let _confirmedLocationStr: string | null = null;
 
   // Retry once on transient network error (non-null error means network/server issue,
   // not a missing row — missing row returns null data with null error).
@@ -2033,9 +2036,9 @@
   if (trainer) {
     const firstName = trainer.name.split(' ')[0];
 
-    // Resolved verified-location display string. Set to cc_country immediately,
-    // then updated to "Area, Country" once initLocationCard() resolves the area name.
-    let _confirmedLocationStr: string | null = (trainer as any).location_confirmed
+    // Initialise the module-level variable (declared above if(trainer) so all functions can access it).
+    // Set to cc_country immediately; updated to "Area, Country" once initLocationCard() resolves.
+    _confirmedLocationStr = (trainer as any).location_confirmed
       ? ((trainer as any).cc_country ?? 'Verified location unavailable')
       : null;
 
