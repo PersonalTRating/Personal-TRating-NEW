@@ -1153,16 +1153,21 @@ const participationState: 'empty' | 'growing' | 'full' =
       if (activeTier === 'uk') {
         geoPass = true;
       } else if (activeTier === 'country') {
-        // Prefer confirmed cc_country; fall back to city→country inference
-        var confirmedCountry = card.getAttribute('data-location-confirmed') === 'true'
-          ? card.getAttribute('data-cc-country') : null;
-        var inferredCountry  = cityToCountry[(card.getAttribute('data-city') || '').toLowerCase()] || null;
-        geoPass = !!activeCountry && (confirmedCountry === activeCountry || inferredCountry === activeCountry);
+        // Confirmed trainers: use only cc_country — never fall back to city inference.
+        // Unconfirmed trainers: infer country from legacy city field.
+        var isConfirmedCard = card.getAttribute('data-location-confirmed') === 'true';
+        if (isConfirmedCard) {
+          geoPass = !!activeCountry && card.getAttribute('data-cc-country') === activeCountry;
+        } else {
+          geoPass = !!activeCountry && (cityToCountry[(card.getAttribute('data-city') || '').toLowerCase()] || null) === activeCountry;
+        }
       } else {
         // local — handle both ranking_areas UUID and city: prefix
         if (activeLocal.indexOf('city:') === 0) {
           var cityFilter = activeLocal.slice(5);
-          geoPass = (card.getAttribute('data-city') || '').toLowerCase().trim() === cityFilter;
+          // Confirmed trainers must never match a legacy city search; their verified area is the only valid filter.
+          geoPass = card.getAttribute('data-location-confirmed') !== 'true'
+            && (card.getAttribute('data-city') || '').toLowerCase().trim() === cityFilter;
         } else {
           geoPass = !!activeLocal
             && card.getAttribute('data-cc-local-area')      === activeLocal
