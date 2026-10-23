@@ -138,6 +138,25 @@ export function getLocalAreaLabel(areaId: string): string | null {
 }
 
 /**
+ * Returns the best display string for a confirmed trainer's location.
+ *   cc_local_area set  → "Fife, Scotland"  (via getLocalAreaLabel)
+ *   only cc_country    → "Scotland"
+ *   both empty/null    → null
+ * Use this wherever a confirmed trainer's location is shown on cards or
+ * leaderboards, so the fallback logic is never duplicated in page code.
+ */
+export function getVerifiedLocationLabel(
+  ccLocalArea: string | null | undefined,
+  ccCountry:   string | null | undefined,
+): string | null {
+  if (ccLocalArea) {
+    const label = getLocalAreaLabel(ccLocalArea);
+    if (label) return label;
+  }
+  return ccCountry || null;
+}
+
+/**
  * Approximate geographic center coordinates for each ranking area.
  * Used for map pins and Near Me distance filtering.
  * Coordinates are area centroids — never exact trainer postcodes.

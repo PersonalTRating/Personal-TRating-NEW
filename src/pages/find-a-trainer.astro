@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import TrainerCard from '../components/TrainerCard.astro';
-import { RANKING_AREAS, getLocalAreaLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
+import { RANKING_AREAS, getLocalAreaLabel, getVerifiedLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
 
 const { data: trainersData } = await supabase
   .from('trainers')
@@ -33,8 +33,8 @@ const allTrainers = raw.map((t: any, i: number) => ({
   ccCountry:          (t as any).cc_country || '',
   ccLocalArea:        (t as any).cc_local_area || '',
   locationConfirmed:  !!(t as any).location_confirmed,
-  verifiedLocation:   ((t as any).location_confirmed && (t as any).cc_local_area)
-                        ? getLocalAreaLabel((t as any).cc_local_area)
+  verifiedLocation:   (t as any).location_confirmed
+                        ? getVerifiedLocationLabel((t as any).cc_local_area, (t as any).cc_country)
                         : null,
 }));
 
