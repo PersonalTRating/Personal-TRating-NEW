@@ -6,7 +6,7 @@ import { RANKING_AREAS, getLocalAreaLabel, getVerifiedLocationLabel, RANKING_ARE
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed')
+  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed, ranking_visibility')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
@@ -33,27 +33,40 @@ const allTrainers = raw.map((t: any, i: number) => ({
   ccCountry:          (t as any).cc_country || '',
   ccLocalArea:        (t as any).cc_local_area || '',
   locationConfirmed:  !!(t as any).location_confirmed,
+  // Ranking cards show country only for consistency across all confirmed trainers.
+  // The trainer profile page uses getLocalAreaLabel for the full "Area, Country" display.
   verifiedLocation:   (t as any).location_confirmed
-                        ? getVerifiedLocationLabel((t as any).cc_local_area, (t as any).cc_country)
+                        ? ((t as any).cc_country || null)
                         : null,
+  rankingVisibility:  (t as any).ranking_visibility || 'all',
 }));
 
-// Country rank map: rank within confirmed country groups of 10+ trainers, sorted by BMP
+// Country rank map: rank within confirmed country groups of 10+ trainers, sorted by BMP.
+// Trainers who opted to UK-only are excluded from country ranking.
 const countryRankMap: Record<string, number> = {};
 {
   const groups: Record<string, typeof allTrainers> = {};
-  allTrainers.forEach(t => { if (t.locationConfirmed && t.ccCountry) { (groups[t.ccCountry] = groups[t.ccCountry] || []).push(t); } });
+  allTrainers.forEach(t => {
+    if (t.locationConfirmed && t.ccCountry && t.rankingVisibility !== 'uk_only') {
+      (groups[t.ccCountry] = groups[t.ccCountry] || []).push(t);
+    }
+  });
   Object.values(groups).forEach(group => {
     if (group.length < 10) return;
     group.slice().sort((a, b) => b.bmp - a.bmp).forEach((t, i) => { countryRankMap[t.id] = i + 1; });
   });
 }
 
-// Local rank map: rank within confirmed local area groups of 10+ trainers, sorted by BMP
+// Local rank map: rank within confirmed local area groups of 10+ trainers, sorted by BMP.
+// Only trainers who opted into all tiers participate in local rankings.
 const localRankMap: Record<string, number> = {};
 {
   const groups: Record<string, typeof allTrainers> = {};
-  allTrainers.forEach(t => { if (t.locationConfirmed && t.ccLocalArea) { (groups[t.ccLocalArea] = groups[t.ccLocalArea] || []).push(t); } });
+  allTrainers.forEach(t => {
+    if (t.locationConfirmed && t.ccLocalArea && t.rankingVisibility === 'all') {
+      (groups[t.ccLocalArea] = groups[t.ccLocalArea] || []).push(t);
+    }
+  });
   Object.values(groups).forEach(group => {
     if (group.length < 10) return;
     group.slice().sort((a, b) => b.bmp - a.bmp).forEach((t, i) => { localRankMap[t.id] = i + 1; });
@@ -311,6 +324,7 @@ const participationState: 'empty' | 'growing' | 'full' =
             ccLocalArea={t.ccLocalArea}
             locationConfirmed={t.locationConfirmed}
             verifiedLocation={t.verifiedLocation}
+            rankingVisibility={t.rankingVisibility}
           />
         ))}
       </Fragment>
@@ -1156,8 +1170,12 @@ const participationState: 'empty' | 'growing' | 'full' =
         // Confirmed trainers: use only cc_country — never fall back to city inference.
         // Unconfirmed trainers: infer country from legacy city field.
         var isConfirmedCard = card.getAttribute('data-location-confirmed') === 'true';
+        var rv = card.getAttribute('data-ranking-visibility') || 'all';
         if (isConfirmedCard) {
-          geoPass = !!activeCountry && card.getAttribute('data-cc-country') === activeCountry;
+          // Opt-out of country tier (uk_only) → exclude from country rankings.
+          geoPass = !!activeCountry
+            && card.getAttribute('data-cc-country') === activeCountry
+            && rv !== 'uk_only';
         } else {
           geoPass = !!activeCountry && (cityToCountry[(card.getAttribute('data-city') || '').toLowerCase()] || null) === activeCountry;
         }
@@ -1169,9 +1187,12 @@ const participationState: 'empty' | 'growing' | 'full' =
           geoPass = card.getAttribute('data-location-confirmed') !== 'true'
             && (card.getAttribute('data-city') || '').toLowerCase().trim() === cityFilter;
         } else {
+          var rvLocal = card.getAttribute('data-ranking-visibility') || 'all';
+          // Only trainers who opted into all tiers participate in local rankings.
           geoPass = !!activeLocal
             && card.getAttribute('data-cc-local-area')      === activeLocal
-            && card.getAttribute('data-location-confirmed') === 'true';
+            && card.getAttribute('data-location-confirmed') === 'true'
+            && rvLocal === 'all';
         }
       }
       card._geoPass = geoPass;

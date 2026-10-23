@@ -37,9 +37,8 @@ const [
 
 const leaderboard = (topTrainers || []).map((t: any) => ({
   ...t,
-  displayCity: t.location_confirmed
-    ? getVerifiedLocationLabel(t.cc_local_area as string, t.cc_country as string)
-    : null,
+  // Ranking cards show country only for consistency across all confirmed trainers.
+  displayCity: t.location_confirmed ? (t.cc_country || null) : null,
 }));
 const heroRankings = leaderboard.slice(0, 4).map((t, i) => ({ ...t, rank: i + 1 }));
 

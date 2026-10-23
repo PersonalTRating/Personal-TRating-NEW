@@ -24,6 +24,7 @@ interface Props {
   ccLocalArea?: string;
   locationConfirmed?: boolean;
   verifiedLocation?: string | null;
+  rankingVisibility?: string;
 }
 
 const {
@@ -49,6 +50,7 @@ const {
   ccLocalArea = '',
   locationConfirmed = false,
   verifiedLocation,
+  rankingVisibility = 'all',
 } = Astro.props;
 
 // Use the confirmed area name for confirmed trainers; fall back to the
@@ -90,6 +92,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
   data-cc-country={ccCountry || undefined}
   data-cc-local-area={ccLocalArea || undefined}
   data-location-confirmed={locationConfirmed ? 'true' : undefined}
+  data-ranking-visibility={rankingVisibility !== 'all' ? rankingVisibility : undefined}
 >
   <div class="trc-left">
     {rankStr && <span class="trc-rank">{rankStr}</span>}

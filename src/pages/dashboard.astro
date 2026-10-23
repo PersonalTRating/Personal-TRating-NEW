@@ -1296,6 +1296,16 @@
               <span id="loc-confirmed-display">Location confirmed</span>
             </div>
             <div id="loc-cooldown-msg" class="loc-notice loc-notice-warn" style="display:none;margin-top:0.75rem;"></div>
+            <!-- Ranking visibility preference — only shown once location is confirmed -->
+            <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+              <label class="form-label" for="ranking-visibility-select" style="display:block;margin-bottom:0.4rem;">Ranking visibility</label>
+              <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.65rem;">Choose which ranking tiers you appear in. UK ranking is always included.</p>
+              <select class="form-input" id="ranking-visibility-select" style="max-width:320px;">
+                <option value="uk_only">UK only</option>
+                <option value="uk_country">UK &amp; Country</option>
+                <option id="ranking-vis-all-opt" value="all">UK, Country &amp; Local</option>
+              </select>
+            </div>
           </div>
           <!-- Entry form state -->
           <div id="loc-form">
@@ -2975,7 +2985,7 @@
               <div class="rank-avatar" style="background:${pt.avatar_bg || '#eaf7ec'};color:${pt.avatar_color || '#2a9438'};">${pt.avatar_initials || '?'}</div>
               <div><div>${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}</div>${pt.username ? '<div style="font-size:0.68rem;color:#7a8f7c;font-weight:600;">@' + pt.username + '</div>' : ''}</div>
             </div></td>
-            <td>${(pt.location_confirmed && _getVerifiedLoc(pt.cc_local_area, pt.cc_country)) || pt.city || pt.location || '—'}</td>
+            <td>${(pt.location_confirmed && pt.cc_country) || pt.city || pt.location || '—'}</td>
             <td style="padding-right:1.5rem;"><strong>${pt.bmp_score}</strong></td>
           </tr>`;
         }).join('');
@@ -3000,7 +3010,7 @@
         : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
       const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
       const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
-      const _ptLoc = (pt.location_confirmed && _getVerifiedLoc(pt.cc_local_area, pt.cc_country)) || pt.city || pt.location;
+      const _ptLoc = (pt.location_confirmed && pt.cc_country) || pt.city || pt.location;
       const meta = [_ptLoc ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+_ptLoc : '', pt.specialty ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'+pt.specialty : ''].filter(Boolean).join('  ·  ');
       const glow = isYou
         ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
@@ -3148,9 +3158,14 @@
     const bookingUrl      = (document.getElementById('booking-url')      as HTMLInputElement).value.trim() || null;
     const coachingType    = (document.querySelector('#coaching-type-wrap .ctype-btn.ctype-active') as HTMLElement | null)?.dataset.value || null;
 
+    // Ranking visibility — only save if the trainer has confirmed their location.
+    const rvRaw = (document.getElementById('ranking-visibility-select') as HTMLSelectElement | null)?.value;
+    const rankingVisibility = rvRaw && ['all','uk_country','uk_only'].includes(rvRaw) ? rvRaw : null;
+    const _rvField = ((trainer as any).location_confirmed && rankingVisibility) ? { ranking_visibility: rankingVisibility } : {};
+
     const { error } = await supabase
       .from('trainers')
-      .update({ name, username, business_name: businessName || null, ..._locFields, bio, intro_message: introMsg || null, specialty, cert, coaching_type: coachingType || null, avatar_initials: initials, avatar_bg: avatarBg, avatar_color: avatarColor, hero_theme: heroTheme, gyms: trainerGyms, social_facebook: socialFacebook, social_instagram: socialInstagram, social_whatsapp: socialWhatsapp, social_email: socialEmail, accepts_bookings: acceptsBookings, booking_url: acceptsBookings ? bookingUrl : null })
+      .update({ name, username, business_name: businessName || null, ..._locFields, bio, intro_message: introMsg || null, specialty, cert, coaching_type: coachingType || null, avatar_initials: initials, avatar_bg: avatarBg, avatar_color: avatarColor, hero_theme: heroTheme, gyms: trainerGyms, social_facebook: socialFacebook, social_instagram: socialInstagram, social_whatsapp: socialWhatsapp, social_email: socialEmail, accepts_bookings: acceptsBookings, booking_url: acceptsBookings ? bookingUrl : null, ..._rvField })
       .eq('id', trainerId);
 
     if (error) {
@@ -3401,6 +3416,16 @@
         if ((ar as any)?.display_name) displayStr = `${(ar as any).display_name}, ${t.cc_country}`;
       }
       if (disp) disp.textContent = displayStr;
+      // Initialise ranking visibility select.
+      const rvSel = document.getElementById('ranking-visibility-select') as HTMLSelectElement | null;
+      const rvAllOpt = document.getElementById('ranking-vis-all-opt') as HTMLOptionElement | null;
+      if (rvSel) {
+        // "UK, Country & Local" option only available when trainer has a local area.
+        if (!t.cc_local_area && rvAllOpt) rvAllOpt.disabled = true;
+        rvSel.value = (t.ranking_visibility as string) || 'all';
+        // If value didn't stick (column not yet added / DB default), fall back.
+        if (!rvSel.value) rvSel.value = 'all';
+      }
       // Update shared variable, sidebar, and profile-form banner with resolved display name.
       _confirmedLocationStr = displayStr;
       const _sbEl = document.querySelector('.sb-pt-status') as HTMLElement;
