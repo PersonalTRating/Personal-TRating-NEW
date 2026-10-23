@@ -6,11 +6,31 @@ import { RANKING_AREAS, getLocalAreaLabel, getVerifiedLocationLabel, RANKING_ARE
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed, ranking_visibility')
+  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
   .limit(500);
+
+// ranking_visibility is a post-B3 column — fetch it separately so a missing anon
+// grant can never wipe out all trainer cards.
+// If the query succeeds, trainers absent from the map have the DB default ('all').
+// If the query fails, fall back to 'uk_only' so no trainer is silently promoted into
+// Country or Local rankings they may have explicitly opted out of.
+const rvMap: Record<string, string> = {};
+let rvQueryOk = false;
+try {
+  const { data: rvData, error: rvErr } = await supabase
+    .from('trainers')
+    .select('id, ranking_visibility')
+    .eq('is_active', true)
+    .gt('review_count', 0)
+    .limit(500);
+  if (!rvErr && rvData) {
+    rvData.forEach((r: any) => { if (r.ranking_visibility) rvMap[r.id] = r.ranking_visibility; });
+    rvQueryOk = true;
+  }
+} catch (_) { /* column not yet accessible — rvQueryOk stays false */ }
 
 const raw = trainersData || [];
 
@@ -38,7 +58,7 @@ const allTrainers = raw.map((t: any, i: number) => ({
   verifiedLocation:   (t as any).location_confirmed
                         ? ((t as any).cc_country || null)
                         : null,
-  rankingVisibility:  (t as any).ranking_visibility || 'all',
+  rankingVisibility:  rvMap[t.id] || (rvQueryOk ? 'all' : 'uk_only'),
 }));
 
 // Country rank map: rank within confirmed country groups of 10+ trainers, sorted by BMP.
