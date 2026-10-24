@@ -3,7 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
 import TrustBar from '../components/TrustBar.astro';
-import { getLocalAreaLabel, getVerifiedLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
+import { getLocalAreaLabel, getVerifiedLocationLabel, getVisibilityLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
 
 // Fetch all build-time data in parallel
 const [
@@ -14,7 +14,7 @@ const [
 ] = await Promise.all([
   supabase
     .from('trainers')
-    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history, location_confirmed, cc_local_area, cc_country')
+    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history, location_confirmed, cc_local_area, cc_country, ranking_visibility')
     .eq('is_active', true)
     .gt('bmp_score', 0)
     .gt('review_count', 0)
@@ -37,8 +37,9 @@ const [
 
 const leaderboard = (topTrainers || []).map((t: any) => ({
   ...t,
-  // Ranking cards show country only for consistency across all confirmed trainers.
-  displayCity: t.location_confirmed ? (t.cc_country || null) : null,
+  displayCity: t.location_confirmed
+    ? getVisibilityLocationLabel(t.cc_local_area, t.cc_country, t.ranking_visibility || 'all')
+    : null,
 }));
 const heroRankings = leaderboard.slice(0, 4).map((t, i) => ({ ...t, rank: i + 1 }));
 

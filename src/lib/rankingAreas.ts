@@ -157,6 +157,25 @@ export function getVerifiedLocationLabel(
 }
 
 /**
+ * Display label for a confirmed trainer's location, scaled to their
+ * ranking_visibility preference.
+ *
+ *   'all'        → "Fife, Scotland" (or "Scotland" when no local area)
+ *   'uk_country' → "Scotland"
+ *   'uk_only'    → "United Kingdom"
+ *   null / other → same as 'all'
+ */
+export function getVisibilityLocationLabel(
+  ccLocalArea:       string | null | undefined,
+  ccCountry:         string | null | undefined,
+  rankingVisibility: string | null | undefined,
+): string | null {
+  if (rankingVisibility === 'uk_only')    return 'United Kingdom';
+  if (rankingVisibility === 'uk_country') return ccCountry || null;
+  return getVerifiedLocationLabel(ccLocalArea, ccCountry);
+}
+
+/**
  * Approximate geographic center coordinates for each ranking area.
  * Used for map pins and Near Me distance filtering.
  * Coordinates are area centroids — never exact trainer postcodes.
