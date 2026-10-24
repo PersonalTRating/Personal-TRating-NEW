@@ -6,6 +6,9 @@
 [functions.retry-approval-notifications]
   schedule = "*/15 * * * *"
 
+[functions.refresh-trending]
+  schedule = "0 3 * * *"
+
 [build.environment]
   NODE_VERSION = "22"
 
