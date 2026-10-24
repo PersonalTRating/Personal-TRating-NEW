@@ -98,6 +98,13 @@ const {
         var card = e.target.closest('a[data-cc="card"]');
         if (card) card.classList.remove('cc-touch');
       }, { passive: true });
+      window.addEventListener('pageshow', function (e) {
+        if (!e.persisted) return;
+        navigating = false;
+        document.querySelectorAll('a[data-cc="card"]').forEach(function (c) {
+          c.classList.remove('cc-selecting', 'cc-trending', 'cc-activating', 'cc-activating-hot', 'cc-dimmed', 'cc-touch');
+        });
+      });
     })();
     </script>
   </body>
