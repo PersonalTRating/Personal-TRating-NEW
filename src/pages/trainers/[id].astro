@@ -340,7 +340,9 @@ const maskName = (name: string): string => {
 
   /* ── Profile gate ── */
   #profile-gate-wrap { position:relative; }
-  #profile-gate-wrap.pg-gated { max-height:260px; overflow:hidden; }
+  /* max-height must exceed the overlay height (~490px) plus content to tease (~160px)
+     so the gradient's transparent section is visible above the card. */
+  #profile-gate-wrap.pg-gated { max-height:480px; overflow:hidden; }
   #profile-gate-overlay {
     position:absolute; bottom:0; left:0; right:0;
     background:linear-gradient(to bottom, transparent 0%, rgba(247,249,247,0.92) 30%, #f7f9f7 60%);
@@ -355,7 +357,7 @@ const maskName = (name: string): string => {
   }
   @media (max-width:600px) {
     .pg-card { padding:1.75rem 1.25rem; }
-    #profile-gate-wrap.pg-gated { max-height:200px; }
+    #profile-gate-wrap.pg-gated { max-height:380px; }
   }
 
   /* ── Mobile hamburger ── */
@@ -497,10 +499,20 @@ const maskName = (name: string): string => {
 <section id="tp-hero-section" style={`background:${heroBackground};padding:4rem 0 3.5rem;view-transition-name:tc-${trainer.id};overflow:visible;`}>
   <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
 
-    <a href="/#leaderboard" style="color:rgba(255,255,255,0.7);font-size:0.82rem;font-weight:500;text-decoration:none;display:inline-block;margin-bottom:2.25rem;transition:color 0.2s;"
+    <a id="back-rankings-btn" href="/find-a-trainer" style="color:rgba(255,255,255,0.7);font-size:0.82rem;font-weight:500;text-decoration:none;display:inline-block;margin-bottom:2.25rem;transition:color 0.2s;"
       onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
       ← Back to Rankings
     </a>
+<script is:inline>
+(function () {
+  var btn = document.getElementById('back-rankings-btn');
+  if (!btn || window.history.length <= 1) return;
+  var ref = document.referrer;
+  if (ref && ref.indexOf(location.host) !== -1) {
+    btn.addEventListener('click', function (e) { e.preventDefault(); history.back(); });
+  }
+})();
+</script>
 
     <div class="tp-hero-inner" style="display:flex;align-items:center;gap:2.5rem;">
 
