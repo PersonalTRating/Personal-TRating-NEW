@@ -254,6 +254,7 @@ const reviews = [
     position:relative; z-index:1;
     transition:box-shadow 0.2s ease, transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease;
     cursor:pointer;
+    box-shadow:0 0 8px rgba(58,181,74,0.14), 0 0 18px rgba(58,181,74,0.06), 0 2px 12px rgba(0,0,0,0.3);
   }
   .lb-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12); transform:translateY(-3px); border-color:rgba(58,181,74,0.38); z-index:10; }
   .lb-card:focus-visible { outline:3px solid #3ab54a; outline-offset:3px; }
@@ -348,11 +349,12 @@ const reviews = [
     display:flex; align-items:center; gap:0.6rem;
     padding:0.65rem 0.8rem;
     background:rgba(8,16,9,0.88);
-    border:1px solid rgba(255,255,255,0.1);
+    border:1px solid rgba(58,181,74,0.22);
     border-radius:10px;
     text-decoration:none; color:inherit;
     cursor:pointer;
     transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    box-shadow:0 0 7px rgba(58,181,74,0.14), 0 0 16px rgba(58,181,74,0.06), 0 2px 10px rgba(0,0,0,0.3);
     min-height:88px;
   }
   .hc-card:hover {
@@ -461,10 +463,11 @@ const reviews = [
     display:flex; flex-direction:column; gap:0.28rem;
     padding:0.65rem 0.85rem;
     background:rgba(8,16,9,0.88);
-    border:1px solid rgba(255,255,255,0.1);
+    border:1px solid rgba(58,181,74,0.22);
     border-radius:10px;
     text-decoration:none; color:inherit; cursor:pointer;
     transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    box-shadow:0 0 7px rgba(58,181,74,0.14), 0 0 16px rgba(58,181,74,0.06), 0 2px 10px rgba(0,0,0,0.3);
   }
   .hc-v2:hover {
     transform:translateY(-2px);
@@ -530,7 +533,7 @@ const reviews = [
   .hc-v2-stats--hot { color:rgba(200,60,60,0.85); }
 
   /* Leaderboard section — dark cards on dark green background */
-  #leaderboard .lb-card { border-color:rgba(58,181,74,0.28); box-shadow:0 2px 12px rgba(0,0,0,0.35); }
+  #leaderboard .lb-card { border-color:rgba(58,181,74,0.28); box-shadow:0 0 8px rgba(58,181,74,0.14), 0 0 18px rgba(58,181,74,0.06), 0 2px 12px rgba(0,0,0,0.3); }
   #leaderboard .lb-card:hover { border-color:rgba(58,181,74,0.5); box-shadow:0 4px 18px rgba(0,0,0,0.45), 0 0 12px rgba(58,181,74,0.15); transform:translateY(-2px); }
 
   /* ── Trending card — red hot override (same dimensions as standard) ── */
