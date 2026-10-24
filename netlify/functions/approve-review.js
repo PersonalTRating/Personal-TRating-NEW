@@ -89,6 +89,22 @@ export const handler = async (event) => {
     console.error('[approve-review] notification: unhandled error —', err.message);
   }
 
+  // ── Trigger site rebuild to refresh is_trending badges ────────────────────
+  // The DB trigger (zzz_on_review_bmp_update) already updated is_trending
+  // in the database above, but static pages only reflect it after a rebuild.
+  // Awaited for the same reason as sendNotification — Netlify kills un-awaited
+  // fetches on return.  Non-critical: if it fails, the daily 03:00 UTC
+  // refresh-trending job will pick it up at worst 24 hours later.
+  const buildHookUrl = process.env.NETLIFY_BUILD_HOOK_URL ?? '';
+  if (buildHookUrl) {
+    try {
+      await fetch(buildHookUrl, { method: 'POST' });
+      console.log('[approve-review] rebuild triggered for is_trending refresh');
+    } catch (err) {
+      console.warn('[approve-review] rebuild trigger failed (non-critical):', err.message);
+    }
+  }
+
   return {
     statusCode: 200,
     headers: { 'Content-Type': 'text/html' },
