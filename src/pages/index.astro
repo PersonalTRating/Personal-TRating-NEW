@@ -765,6 +765,39 @@ const reviews = [
   </div>
 </section>
 
+<!-- ── FOR CLIENTS ── -->
+<section style="padding:6rem 0;background:white;border-top:3px solid #3ab54a;">
+  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;">
+    <div style="text-align:center;max-width:640px;margin:0 auto 4rem;">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">For Clients</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Stop guessing. Start choosing.</div>
+      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">Finding the right personal trainer used to mean word of mouth, Instagram scrolling, and hope. CoachCards changes that.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="about-features-grid">
+      {[
+        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`, title:'Make an informed choice', desc:'Every trainer profile shows their BMP score, verified reviews, specialty, location and certifications in one place — everything you need to decide with confidence before you spend a penny.' },
+        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, title:'All local coaches in one place', desc:'No more jumping between Google, Instagram and gym noticeboards. Browse every active PT in your area ranked by real performance, all in one directory.' },
+        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L4 9v12h16V9z"/><path d="M9 21V12h6v9"/></svg>`, title:'Compare trainers side by side', desc:'BMP scores make comparing coaches objective. A trainer with 50 glowing reviews outranks one with 2 — because consistency matters more than a single great session.' },
+        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`, title:'Unbiased, unsponsored results', desc:'Rankings are earned by verified client reviews — not paid for, not gamed. A PT cannot buy their way to the top. Trainers can appeal any review they believe is unfair, keeping the platform honest for everyone.' },
+        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`, title:'Give constructive feedback', desc:'Your review isn\'t just a star rating — it holds coaches accountable and helps them improve. Good feedback makes good trainers great.' },
+        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8L6 7h12l-2-4z"/><circle cx="12" cy="12" r="1.5"/></svg>`, title:'Connect directly', desc:'Found a trainer who looks right for you? Explore their profile and contact them directly to take the next step.' },
+      ].map(f => (
+        <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:14px;padding:1.75rem;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+          <div style="width:44px;height:44px;border-radius:10px;background:#eaf7ec;display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;" set:html={f.icon}></div>
+          <div style="font-weight:800;font-size:0.95rem;color:#111311;margin-bottom:0.5rem;line-height:1.3;">{f.title}</div>
+          <div style="font-size:0.82rem;color:#7a8f7c;line-height:1.75;">{f.desc}</div>
+        </div>
+      ))}
+    </div>
+    <div style="text-align:center;margin-top:3rem;">
+      <a href="/find-a-trainer" style="background:#3ab54a;color:white;padding:0.9rem 2.25rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-block;box-shadow:0 4px 16px rgba(58,181,74,0.3);"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        Find Your Trainer →
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ── LEADERBOARD ── -->
 <section id="leaderboard" style="padding:2.75rem 0;position:relative;overflow:hidden;background:#0a130b;border-top:3px solid #3ab54a;border-bottom:3px solid #3ab54a;">
   <!-- Gym background: weight plates left, green-lit gym environment -->
@@ -844,39 +877,6 @@ const reviews = [
           </div>
         </div>
       ))}
-    </div>
-  </div>
-</section>
-
-<!-- ── FOR CLIENTS ── -->
-<section style="padding:6rem 0;background:white;border-top:3px solid #3ab54a;">
-  <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;">
-    <div style="text-align:center;max-width:640px;margin:0 auto 4rem;">
-      <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.75rem;">For Clients</div>
-      <div style="font-family:'Playfair Display',serif;font-size:2.5rem;font-weight:900;color:#111311;line-height:1.15;margin-bottom:1rem;">Stop guessing. Start choosing.</div>
-      <p style="font-size:0.95rem;color:#7a8f7c;line-height:1.8;">Finding the right personal trainer used to mean word of mouth, Instagram scrolling, and hope. CoachCards changes that.</p>
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="about-features-grid">
-      {[
-        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`, title:'Make an informed choice', desc:'Every trainer profile shows their BMP score, verified reviews, specialty, location and certifications in one place — everything you need to decide with confidence before you spend a penny.' },
-        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`, title:'All local coaches in one place', desc:'No more jumping between Google, Instagram and gym noticeboards. Browse every active PT in your area ranked by real performance, all in one directory.' },
-        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3L4 9v12h16V9z"/><path d="M9 21V12h6v9"/></svg>`, title:'Compare trainers side by side', desc:'BMP scores make comparing coaches objective. A trainer with 50 glowing reviews outranks one with 2 — because consistency matters more than a single great session.' },
-        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`, title:'Unbiased, unsponsored results', desc:'Rankings are earned by verified client reviews — not paid for, not gamed. A PT cannot buy their way to the top. Trainers can appeal any review they believe is unfair, keeping the platform honest for everyone.' },
-        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>`, title:'Give constructive feedback', desc:'Your review isn\'t just a star rating — it holds coaches accountable and helps them improve. Good feedback makes good trainers great.' },
-        { icon:`<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4a2 2 0 00-2 2v6a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8L6 7h12l-2-4z"/><circle cx="12" cy="12" r="1.5"/></svg>`, title:'Connect directly', desc:'Found a trainer who looks right for you? Explore their profile and contact them directly to take the next step.' },
-      ].map(f => (
-        <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:14px;padding:1.75rem;transition:box-shadow 0.2s;" onmouseover="this.style.boxShadow='0 4px 20px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
-          <div style="width:44px;height:44px;border-radius:10px;background:#eaf7ec;display:flex;align-items:center;justify-content:center;margin-bottom:0.85rem;" set:html={f.icon}></div>
-          <div style="font-weight:800;font-size:0.95rem;color:#111311;margin-bottom:0.5rem;line-height:1.3;">{f.title}</div>
-          <div style="font-size:0.82rem;color:#7a8f7c;line-height:1.75;">{f.desc}</div>
-        </div>
-      ))}
-    </div>
-    <div style="text-align:center;margin-top:3rem;">
-      <a href="/find-a-trainer" style="background:#3ab54a;color:white;padding:0.9rem 2.25rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-block;box-shadow:0 4px 16px rgba(58,181,74,0.3);"
-        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
-        Find Your Trainer →
-      </a>
     </div>
   </div>
 </section>
