@@ -2192,6 +2192,10 @@
     renderGyms();
   };
 
+  // Declared at module scope so showPage() can call it after the if(trainer) block completes.
+  // Assigned inside if(trainer) once reviews are loaded; remains a no-op until then.
+  let renderMyBmp: () => void = () => {};
+
   if (trainer) {
     const firstName = trainer.name.split(' ')[0];
 
@@ -2538,7 +2542,7 @@
     // All data is derived from the `reviews` array and `trainer` object already
     // loaded above.  No extra DB calls or API costs.
 
-    function renderMyBmp() {
+    renderMyBmp = () => {
       const bmpScore    = (trainer.bmp_score ?? 0) as number;
       const isTrending  = !!(trainer as any).is_trending;
       const totalCount  = reviews.length;
@@ -2797,7 +2801,7 @@
             </div>`).join('');
         }
       }
-    }
+    };
     // ── End My BMP recommendation engine ─────────────────────────────────
 
     // ── Reviews page stats ────────────────────────────────────────────────
