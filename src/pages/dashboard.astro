@@ -544,91 +544,95 @@
   .section-heading { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; margin-bottom:1.5rem; }
 
   /* ── MY BMP PAGE ── */
-  .mybmp-hero { display:flex; align-items:center; gap:2rem; flex-wrap:wrap; padding:1.75rem 1.5rem 1.5rem; }
-  .mybmp-gauge-wrap { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:0.75rem; }
-  .mybmp-gauge {
-    width:160px; height:160px; border-radius:50%;
-    background:var(--green-mid);
-    display:flex; align-items:center; justify-content:center;
-    position:relative;
+  /* Hero card */
+  .mybmp-hero-card { padding:0 !important; overflow:hidden; }
+  .mybmp-db-zone {
+    display:flex; justify-content:center; align-items:center;
+    padding:2rem 1.5rem 1.5rem;
+    background:linear-gradient(180deg,rgba(58,181,74,0.06) 0%,transparent 100%);
+    border-bottom:1px solid var(--border);
   }
-  .mybmp-gauge-inner {
-    width:122px; height:122px; border-radius:50%; background:white;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  .mybmp-score-row {
+    display:flex; align-items:center; gap:1.5rem;
+    padding:1.5rem 1.75rem 1rem; flex-wrap:wrap;
   }
-  .mybmp-score-num { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; line-height:1; }
-  .mybmp-score-lbl { font-size:0.6rem; font-weight:700; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:0.15rem; }
-  .mybmp-bracket-badge {
-    display:inline-flex; align-items:center; gap:0.35rem;
-    padding:0.3rem 0.85rem; border-radius:20px;
-    font-size:0.75rem; font-weight:800; letter-spacing:0.3px;
+  .mybmp-big-score {
+    font-family:'Playfair Display',serif; font-size:4rem; font-weight:900;
+    line-height:1; min-width:96px; letter-spacing:-1px;
   }
-  .mybmp-hero-info { flex:1; min-width:200px; }
-  .mybmp-hero-title { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900; margin-bottom:0.3rem; line-height:1.2; }
-  .mybmp-hero-sub { font-size:0.83rem; color:var(--muted); line-height:1.6; margin-bottom:1rem; }
-  .mybmp-rank-row { display:flex; flex-wrap:wrap; gap:0.65rem; }
-  .mybmp-rank-pill {
-    display:inline-flex; align-items:center; gap:0.35rem;
+  .mybmp-score-side { flex:1; min-width:160px; }
+  .mybmp-tier-badge {
+    display:inline-block; padding:0.3rem 0.9rem; border-radius:20px;
+    font-size:0.78rem; font-weight:800; letter-spacing:0.3px; margin-bottom:0.5rem;
+  }
+  .mybmp-tier-desc { font-size:0.83rem; color:var(--muted); line-height:1.6; }
+  .mybmp-stats-strip {
+    display:flex; flex-wrap:wrap; gap:0.5rem;
+    padding:0 1.75rem 1.5rem;
+  }
+  .mybmp-stat-chip {
+    display:inline-flex; align-items:center; gap:0.4rem;
     background:var(--off); border:1px solid var(--border);
-    border-radius:8px; padding:0.35rem 0.8rem;
+    border-radius:8px; padding:0.3rem 0.8rem;
     font-size:0.78rem; font-weight:700; color:var(--muted);
   }
-  .mybmp-rank-pill span { color:var(--text); }
-  /* Trending status banner */
-  .mybmp-trending-banner {
-    margin:0 1.5rem 1.25rem;
-    border-radius:10px; padding:0.9rem 1.1rem;
-    display:flex; align-items:flex-start; gap:0.75rem;
+  .mybmp-stat-chip span { color:var(--text); }
+  .mybmp-stat-chip.fire-chip { background:rgba(239,68,68,0.07); border-color:rgba(239,68,68,0.28); color:#ef4444; }
+  /* Trending fires section */
+  .mybmp-fires-outer { padding:1.25rem 1.75rem 1.25rem; }
+  .mybmp-fires-grid {
+    display:grid; grid-template-columns:1fr auto 1fr;
+    align-items:start; margin-bottom:1.1rem;
   }
-  .mybmp-trending-banner.trending { background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.22); }
-  .mybmp-trending-banner.not-trending { background:var(--off); border:1px solid var(--border); }
-  .mybmp-trending-banner.close-trending { background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.3); }
-  .mybmp-trending-icon { flex-shrink:0; margin-top:1px; }
-  .mybmp-trending-body {}
-  .mybmp-trending-title { font-size:0.875rem; font-weight:800; color:var(--text); margin-bottom:0.2rem; }
-  .mybmp-trending-desc { font-size:0.8rem; color:var(--muted); line-height:1.55; }
-  .mybmp-trending-pills { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.55rem; }
-  .mybmp-tpill {
+  .mybmp-fires-col { display:flex; flex-direction:column; align-items:center; gap:0.45rem; }
+  .mybmp-fires-col-label {
+    font-size:0.68rem; font-weight:700; text-transform:uppercase;
+    letter-spacing:1.3px; color:var(--muted); text-align:center;
+  }
+  .mybmp-fires-icons { display:flex; gap:0.4rem; justify-content:center; align-items:center; }
+  .mybmp-fires-col-count { font-size:0.82rem; font-weight:800; color:var(--text); text-align:center; }
+  .mybmp-fires-col-sub { font-size:0.72rem; color:var(--muted); text-align:center; line-height:1.4; }
+  .mybmp-fires-sep { width:1px; background:var(--border); height:68px; margin:26px 1.5rem 0; }
+  .mybmp-trend-pill {
+    display:flex; align-items:center; justify-content:center;
+    border-radius:10px; padding:0.65rem 1rem;
+    font-size:0.82rem; font-weight:800; text-align:center; line-height:1.4;
+  }
+  .mybmp-trend-pill.is-trending { background:rgba(239,68,68,0.07); border:1px solid rgba(239,68,68,0.28); color:#ef4444; }
+  .mybmp-trend-pill.close       { background:rgba(245,158,11,0.07); border:1px solid rgba(245,158,11,0.3); color:#d97706; }
+  .mybmp-trend-pill.not         { background:var(--off); border:1px solid var(--border); color:var(--muted); }
+  .mybmp-trend-explain { font-size:0.79rem; color:var(--muted); margin-top:0.65rem; line-height:1.55; text-align:center; }
+  /* How to Improve */
+  .mybmp-recos { padding:0 1.75rem 1.5rem; }
+  .mybmp-reco-row {
+    display:flex; gap:1rem; align-items:flex-start;
+    padding:1.1rem 0; border-bottom:1px solid var(--border);
+  }
+  .mybmp-reco-row:last-child { border-bottom:none; padding-bottom:0; }
+  .mybmp-reco-dot {
+    width:36px; height:36px; border-radius:10px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mybmp-reco-content { flex:1; min-width:0; padding-top:0.1rem; }
+  .mybmp-reco-head { font-weight:800; font-size:0.88rem; color:var(--text); margin-bottom:0.3rem; line-height:1.35; }
+  .mybmp-reco-text { font-size:0.8rem; color:var(--muted); line-height:1.6; }
+  .mybmp-reco-cta {
     display:inline-flex; align-items:center; gap:0.3rem;
-    padding:0.22rem 0.65rem; border-radius:20px;
-    font-size:0.73rem; font-weight:700;
-  }
-  .mybmp-tpill.met { background:rgba(58,181,74,0.12); color:#1a7c2a; }
-  .mybmp-tpill.unmet { background:rgba(239,68,68,0.1); color:#dc2626; }
-  /* Recommendation cards */
-  .mybmp-reco-section { padding:0 1.5rem 1.5rem; }
-  .mybmp-reco-heading { font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:0.85rem; }
-  .mybmp-reco-card {
-    background:white; border:1.5px solid var(--border);
-    border-radius:12px; padding:1.1rem 1.25rem;
-    margin-bottom:0.75rem; display:flex; gap:1rem;
-  }
-  .mybmp-reco-card:last-child { margin-bottom:0; }
-  .mybmp-reco-icon-wrap {
-    width:38px; height:38px; border-radius:10px;
-    display:flex; align-items:center; justify-content:center; flex-shrink:0;
-  }
-  .mybmp-reco-body { flex:1; min-width:0; }
-  .mybmp-reco-title { font-weight:800; font-size:0.88rem; color:var(--text); margin-bottom:0.25rem; }
-  .mybmp-reco-desc { font-size:0.8rem; color:var(--muted); line-height:1.6; }
-  .mybmp-reco-action {
-    display:inline-flex; align-items:center; gap:0.3rem;
-    margin-top:0.55rem; font-size:0.78rem; font-weight:700; color:var(--green);
+    margin-top:0.5rem; font-size:0.77rem; font-weight:700; color:var(--green);
     background:none; border:none; cursor:pointer; padding:0; font-family:inherit;
-    text-decoration:none;
   }
-  .mybmp-reco-action:hover { color:var(--green-dark); }
-  .mybmp-empty { text-align:center; padding:3rem 1.5rem; }
-  .mybmp-empty-icon { display:flex; justify-content:center; margin-bottom:0.75rem; }
-  .mybmp-empty-title { font-weight:800; font-size:1rem; margin-bottom:0.4rem; }
-  .mybmp-empty-desc { font-size:0.82rem; color:var(--muted); line-height:1.6; max-width:320px; margin:0 auto 1.25rem; }
+  .mybmp-reco-cta:hover { color:var(--green-dark); }
+  .mybmp-empty-state { text-align:center; padding:2.5rem 1.75rem; }
+  .mybmp-empty-state-title { font-weight:800; font-size:1rem; margin-bottom:0.4rem; }
+  .mybmp-empty-state-desc { font-size:0.82rem; color:var(--muted); line-height:1.6; max-width:320px; margin:0 auto; }
   @media (max-width:640px) {
-    .mybmp-hero { gap:1.25rem; padding:1.25rem; }
-    .mybmp-gauge { width:130px; height:130px; }
-    .mybmp-gauge-inner { width:98px; height:98px; }
-    .mybmp-score-num { font-size:1.9rem; }
-    .mybmp-reco-section { padding:0 1.25rem 1.25rem; }
-    .mybmp-trending-banner { margin:0 1.25rem 1rem; }
+    .mybmp-db-zone { padding:1.5rem 1rem 1.25rem; }
+    .mybmp-score-row { gap:1rem; padding:1.25rem 1.25rem 0.75rem; }
+    .mybmp-big-score { font-size:3rem; min-width:72px; }
+    .mybmp-stats-strip { padding:0 1.25rem 1.25rem; }
+    .mybmp-fires-outer { padding:1rem 1.25rem 1rem; }
+    .mybmp-fires-sep { margin:26px 0.75rem 0; }
+    .mybmp-recos { padding:0 1.25rem 1.25rem; }
   }
 
   /* ── TOAST ── */
@@ -1849,55 +1853,42 @@
       <div class="section-eyebrow">Performance</div>
       <div class="section-heading">My BMP</div>
 
-      <!-- Score hero card -->
-      <div class="card" style="margin-bottom:1.25rem;">
-        <div class="mybmp-hero">
-          <div class="mybmp-gauge-wrap">
-            <div class="mybmp-gauge" id="mybmp-gauge-circle" style="background:var(--green-mid);">
-              <div class="mybmp-gauge-inner">
-                <div class="mybmp-score-num" id="mybmp-score-num" style="color:var(--green-dark);">—</div>
-                <div class="mybmp-score-lbl">BMP</div>
-              </div>
-            </div>
-            <span class="mybmp-bracket-badge" id="mybmp-bracket-badge" style="background:#f3f4f6;color:#6b7280;">Loading…</span>
-          </div>
-          <div class="mybmp-hero-info">
-            <div class="mybmp-hero-title" id="mybmp-hero-title">Your BMP Score</div>
-            <div class="mybmp-hero-sub" id="mybmp-hero-sub">Loading your performance data…</div>
-            <div class="mybmp-rank-row" id="mybmp-rank-row"></div>
+      <!-- Hero: dumbbell + score + tier -->
+      <div class="card mybmp-hero-card" style="margin-bottom:1.25rem;">
+        <div class="mybmp-db-zone" id="mybmp-db-zone"></div>
+        <div class="mybmp-score-row">
+          <div class="mybmp-big-score" id="mybmp-big-score" style="color:var(--muted);">—</div>
+          <div class="mybmp-score-side">
+            <div class="mybmp-tier-badge" id="mybmp-tier-badge" style="background:rgba(156,163,175,0.15);color:#9ca3af;">Loading…</div>
+            <div class="mybmp-tier-desc" id="mybmp-tier-desc">Loading your performance data…</div>
           </div>
         </div>
-
+        <div class="mybmp-stats-strip" id="mybmp-stats-strip"></div>
       </div>
 
-      <!-- Trending status card -->
+      <!-- Trending: fire progress indicators -->
       <div class="card" style="margin-bottom:1.25rem;">
         <div class="card-head">
           <div>
             <div class="card-title">Trending Status</div>
-            <div class="card-sub">Based on your verified review activity across two rolling windows</div>
+            <div class="card-sub">Based on verified review activity across two rolling windows</div>
           </div>
         </div>
-        <div id="mybmp-trending-section">
-          <div class="mybmp-trending-banner not-trending">
-            <div class="mybmp-trending-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
-            <div class="mybmp-trending-body">
-              <div class="mybmp-trending-title">Loading Trending status…</div>
-            </div>
-          </div>
+        <div id="mybmp-fires-section">
+          <div style="padding:1rem 1.75rem;color:var(--muted);font-size:0.85rem;">Loading Trending status…</div>
         </div>
       </div>
 
-      <!-- Personalised recommendations -->
+      <!-- How to Improve -->
       <div class="card">
         <div class="card-head">
           <div>
             <div class="card-title">How to Improve</div>
-            <div class="card-sub">Personalised recommendations based on your actual performance data</div>
+            <div class="card-sub">Personalised to your actual performance data</div>
           </div>
         </div>
-        <div class="mybmp-reco-section" id="mybmp-reco-list">
-          <div style="text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;">Loading recommendations…</div>
+        <div class="mybmp-recos" id="mybmp-reco-list">
+          <div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:0.85rem;">Loading recommendations…</div>
         </div>
       </div>
     </div>
@@ -2572,76 +2563,83 @@
 
       const bracket = getBracket(bmpScore);
 
-      // ── Update score hero ────────────────────────────────────────────────
-      const gaugeEl     = document.getElementById('mybmp-gauge-circle') as HTMLElement;
-      const scoreNumEl  = document.getElementById('mybmp-score-num')    as HTMLElement;
-      const badgeEl     = document.getElementById('mybmp-bracket-badge') as HTMLElement;
-      const titleEl     = document.getElementById('mybmp-hero-title')   as HTMLElement;
-      const subEl       = document.getElementById('mybmp-hero-sub')     as HTMLElement;
-      const rankRowEl   = document.getElementById('mybmp-rank-row')     as HTMLElement;
+      // ── Update hero ──────────────────────────────────────────────────────
+      const dbZoneEl     = document.getElementById('mybmp-db-zone')     as HTMLElement;
+      const bigScoreEl   = document.getElementById('mybmp-big-score')   as HTMLElement;
+      const tierBadgeEl  = document.getElementById('mybmp-tier-badge')  as HTMLElement;
+      const tierDescEl   = document.getElementById('mybmp-tier-desc')   as HTMLElement;
+      const statsStripEl = document.getElementById('mybmp-stats-strip') as HTMLElement;
 
-      if (scoreNumEl) scoreNumEl.textContent  = bmpScore > 0 ? String(bmpScore) : '—';
-      if (scoreNumEl) scoreNumEl.style.color  = bmpScore > 0 ? bracket.color : '#9ca3af';
-      if (gaugeEl && bmpScore > 0) {
-        const deg = Math.round((bmpScore / 100) * 360);
-        gaugeEl.style.background = `conic-gradient(${bracket.color} 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
+      if (dbZoneEl)    dbZoneEl.innerHTML     = _bmpDumbbell(bmpScore, 260);
+      if (bigScoreEl) {
+        bigScoreEl.textContent = bmpScore > 0 ? String(bmpScore) : '—';
+        bigScoreEl.style.color = bmpScore > 0 ? bracket.color : 'var(--muted)';
       }
-      if (badgeEl) {
-        badgeEl.textContent      = bracket.name;
-        badgeEl.style.background = bracket.bg;
-        badgeEl.style.color      = bracket.color;
+      if (tierBadgeEl) {
+        tierBadgeEl.textContent      = bracket.name;
+        tierBadgeEl.style.background = bracket.bg;
+        tierBadgeEl.style.color      = bracket.color;
       }
-      if (titleEl) titleEl.textContent = bmpScore > 0 ? `You\'re ${bracket.name}` : 'No BMP score yet';
-      if (subEl)   subEl.textContent   = bracket.desc;
+      if (tierDescEl) tierDescEl.textContent = bracket.desc;
 
-      // Rank pills
-      if (rankRowEl) {
-        const pills: string[] = [];
-        if (totalCount > 0) pills.push(`<div class="mybmp-rank-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="flex-shrink:0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>${totalCount} verified review${totalCount === 1 ? '' : 's'}</span></div>`);
-        if (isTrending) pills.push(`<div class="mybmp-rank-pill" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.25);color:#dc2626;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#dc2626" stroke="none" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span>Trending</span></div>`);
-        rankRowEl.innerHTML = pills.join('');
+      if (statsStripEl) {
+        const chips: string[] = [];
+        if (totalCount > 0) chips.push(`<div class="mybmp-stat-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="flex-shrink:0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>${totalCount} verified review${totalCount === 1 ? '' : 's'}</span></div>`);
+        if (isTrending) chips.push(`<div class="mybmp-stat-chip fire-chip"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span>Trending</span></div>`);
+        statsStripEl.innerHTML = chips.join('');
       }
 
-      // ── Trending status ──────────────────────────────────────────────────
-      const trendSection = document.getElementById('mybmp-trending-section') as HTMLElement;
-      if (trendSection) {
-        const pillA = `<span class="mybmp-tpill ${trendA >= 2 ? 'met' : 'unmet'}">${trendA >= 2 ? '✓' : '✗'} ${trendA} of 2+ reviews in last 7 days</span>`;
-        const pillB = `<span class="mybmp-tpill ${trendB >= 1 ? 'met' : 'unmet'}">${trendB >= 1 ? '✓' : '✗'} ${trendB} of 1+ review${trendB === 1 ? '' : 's'} in days 7–28</span>`;
+      // ── Fire-based Trending progress ─────────────────────────────────────
+      const firesSection = document.getElementById('mybmp-fires-section') as HTMLElement;
+      if (firesSection) {
+        const fireA1 = trendA >= 1;
+        const fireA2 = trendA >= 2;
+        const fireB  = trendB >= 1;
 
-        let bannerClass = 'not-trending', iconSvg = '', trendTitle = '', trendDesc = '';
+        const fireSvg = (active: boolean) =>
+          `<svg viewBox="0 0 24 24" width="36" height="36" xmlns="http://www.w3.org/2000/svg" ` +
+          `style="flex-shrink:0;transition:filter 0.2s;filter:${active ? 'drop-shadow(0 0 5px rgba(239,68,68,0.5))' : 'none'}">` +
+          `<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" ` +
+          `fill="${active ? '#ef4444' : '#374151'}"/></svg>`;
+
+        let pillClass = 'not', pillText = '';
         if (isTrending) {
-          bannerClass = 'trending';
-          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
-          trendTitle = 'You\'re Trending';
-          trendDesc  = 'Both review windows are active. Keep collecting genuine client reviews across both windows to maintain Trending status.';
-        } else if (trendA >= 1 && trendB >= 1) {
-          bannerClass = 'close-trending';
-          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
-          trendTitle = 'Close to Trending';
-          trendDesc  = `You have activity in both windows. One more review this week would push you into Trending status.`;
-        } else if (trendA >= 2 && trendB === 0) {
-          bannerClass = 'close-trending';
-          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-          trendTitle = 'Recent burst — continuity missing';
-          trendDesc  = `You have ${trendA} reviews this week (Condition A met) but need at least 1 review from 7–28 days ago to confirm consistent activity. Both conditions need to be active at the same time.`;
-        } else if (totalCount === 0) {
-          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-          trendTitle = 'Not yet active';
-          trendDesc  = 'Trending status requires verified review activity across two rolling time windows. Collect your first reviews to start building towards it.';
+          pillClass = 'is-trending'; pillText = '🔥 You\'re Trending — both windows are active';
+        } else if (fireA1 && !fireA2 && fireB) {
+          pillClass = 'close'; pillText = 'One more review this week meets both Trending conditions';
+        } else if (fireA2 && !fireB) {
+          pillClass = 'close'; pillText = 'Need 1 review from 7–28 days ago to complete Condition B';
+        } else if (!fireA1 && fireB) {
+          pillClass = 'close'; pillText = 'Need 2 reviews this week alongside your prior window activity';
+        } else if (fireA1 && !fireA2 && !fireB) {
+          pillClass = 'close'; pillText = 'One more review this week plus activity in the prior window needed';
         } else {
-          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
-          trendTitle = 'Not Trending';
-          trendDesc  = 'Trending requires 2+ verified reviews within the last 7 days AND 1+ review from the previous 7–28 day window. Both must be active at the same time.';
+          pillText = 'Collect verified reviews across both windows to qualify';
         }
 
-        trendSection.innerHTML = `
-          <div class="mybmp-trending-banner ${bannerClass}">
-            <div class="mybmp-trending-icon">${iconSvg}</div>
-            <div class="mybmp-trending-body">
-              <div class="mybmp-trending-title">${trendTitle}</div>
-              <div class="mybmp-trending-desc">${trendDesc}</div>
-              ${totalCount > 0 ? `<div class="mybmp-trending-pills">${pillA}${pillB}</div>` : ''}
+        const explainText = isTrending
+          ? 'Keep collecting genuine client reviews to maintain your status across both windows.'
+          : 'Trending requires 2+ reviews in the last 7 days AND 1+ review from 7–28 days ago — both at the same time.';
+
+        firesSection.innerHTML = `
+          <div class="mybmp-fires-outer">
+            <div class="mybmp-fires-grid">
+              <div class="mybmp-fires-col">
+                <div class="mybmp-fires-col-label">This week</div>
+                <div class="mybmp-fires-icons">${fireSvg(fireA1)}${fireSvg(fireA2)}</div>
+                <div class="mybmp-fires-col-count">${trendA} of 2</div>
+                <div class="mybmp-fires-col-sub">verified reviews<br>in last 7 days</div>
+              </div>
+              <div class="mybmp-fires-sep"></div>
+              <div class="mybmp-fires-col">
+                <div class="mybmp-fires-col-label">Prior window</div>
+                <div class="mybmp-fires-icons">${fireSvg(fireB)}</div>
+                <div class="mybmp-fires-col-count">${trendB} of 1</div>
+                <div class="mybmp-fires-col-sub">verified review<br>in days 7–28</div>
+              </div>
             </div>
+            <div class="mybmp-trend-pill ${pillClass}">${pillText}</div>
+            <div class="mybmp-trend-explain">${explainText}</div>
           </div>`;
       }
 
@@ -2784,19 +2782,19 @@
       if (recoListEl) {
         if (topRecos.length === 0) {
           recoListEl.innerHTML = `
-            <div class="mybmp-empty">
-              <div class="mybmp-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
-              <div class="mybmp-empty-title">Everything looks great</div>
-              <div class="mybmp-empty-desc">Your score is performing well across all components. Keep collecting genuine client reviews to maintain your position.</div>
+            <div class="mybmp-empty-state">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+              <div class="mybmp-empty-state-title">Everything looks great</div>
+              <div class="mybmp-empty-state-desc">Your score is performing well. Keep collecting genuine client reviews to maintain your position.</div>
             </div>`;
         } else {
           recoListEl.innerHTML = topRecos.map(r => `
-            <div class="mybmp-reco-card">
-              <div class="mybmp-reco-icon-wrap" style="${r.iconBg}">${r.icon}</div>
-              <div class="mybmp-reco-body">
-                <div class="mybmp-reco-title">${r.title}</div>
-                <div class="mybmp-reco-desc">${r.desc}</div>
-                ${r.action ? `<button class="mybmp-reco-action" onclick="showPage('${r.action}')">${r.actionLabel} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>` : ''}
+            <div class="mybmp-reco-row">
+              <div class="mybmp-reco-dot" style="${r.iconBg}">${r.icon}</div>
+              <div class="mybmp-reco-content">
+                <div class="mybmp-reco-head">${r.title}</div>
+                <div class="mybmp-reco-text">${r.desc}</div>
+                ${r.action ? `<button class="mybmp-reco-cta" onclick="showPage('${r.action}')">${r.actionLabel} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>` : ''}
               </div>
             </div>`).join('');
         }
