@@ -543,6 +543,94 @@
   .section-eyebrow { font-size:0.7rem; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--green); margin-bottom:0.3rem; }
   .section-heading { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; margin-bottom:1.5rem; }
 
+  /* ── MY BMP PAGE ── */
+  .mybmp-hero { display:flex; align-items:center; gap:2rem; flex-wrap:wrap; padding:1.75rem 1.5rem 1.5rem; }
+  .mybmp-gauge-wrap { flex-shrink:0; display:flex; flex-direction:column; align-items:center; gap:0.75rem; }
+  .mybmp-gauge {
+    width:160px; height:160px; border-radius:50%;
+    background:var(--green-mid);
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+  }
+  .mybmp-gauge-inner {
+    width:122px; height:122px; border-radius:50%; background:white;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .mybmp-score-num { font-family:'Playfair Display',serif; font-size:2.4rem; font-weight:900; line-height:1; }
+  .mybmp-score-lbl { font-size:0.6rem; font-weight:700; color:var(--muted); letter-spacing:1.5px; text-transform:uppercase; margin-top:0.15rem; }
+  .mybmp-bracket-badge {
+    display:inline-flex; align-items:center; gap:0.35rem;
+    padding:0.3rem 0.85rem; border-radius:20px;
+    font-size:0.75rem; font-weight:800; letter-spacing:0.3px;
+  }
+  .mybmp-hero-info { flex:1; min-width:200px; }
+  .mybmp-hero-title { font-family:'Playfair Display',serif; font-size:1.3rem; font-weight:900; margin-bottom:0.3rem; line-height:1.2; }
+  .mybmp-hero-sub { font-size:0.83rem; color:var(--muted); line-height:1.6; margin-bottom:1rem; }
+  .mybmp-rank-row { display:flex; flex-wrap:wrap; gap:0.65rem; }
+  .mybmp-rank-pill {
+    display:inline-flex; align-items:center; gap:0.35rem;
+    background:var(--off); border:1px solid var(--border);
+    border-radius:8px; padding:0.35rem 0.8rem;
+    font-size:0.78rem; font-weight:700; color:var(--muted);
+  }
+  .mybmp-rank-pill span { color:var(--text); }
+  /* Trending status banner */
+  .mybmp-trending-banner {
+    margin:0 1.5rem 1.25rem;
+    border-radius:10px; padding:0.9rem 1.1rem;
+    display:flex; align-items:flex-start; gap:0.75rem;
+  }
+  .mybmp-trending-banner.trending { background:rgba(239,68,68,0.06); border:1px solid rgba(239,68,68,0.22); }
+  .mybmp-trending-banner.not-trending { background:var(--off); border:1px solid var(--border); }
+  .mybmp-trending-banner.close-trending { background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.3); }
+  .mybmp-trending-icon { flex-shrink:0; margin-top:1px; }
+  .mybmp-trending-body {}
+  .mybmp-trending-title { font-size:0.875rem; font-weight:800; color:var(--text); margin-bottom:0.2rem; }
+  .mybmp-trending-desc { font-size:0.8rem; color:var(--muted); line-height:1.55; }
+  .mybmp-trending-pills { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.55rem; }
+  .mybmp-tpill {
+    display:inline-flex; align-items:center; gap:0.3rem;
+    padding:0.22rem 0.65rem; border-radius:20px;
+    font-size:0.73rem; font-weight:700;
+  }
+  .mybmp-tpill.met { background:rgba(58,181,74,0.12); color:#1a7c2a; }
+  .mybmp-tpill.unmet { background:rgba(239,68,68,0.1); color:#dc2626; }
+  /* Recommendation cards */
+  .mybmp-reco-section { padding:0 1.5rem 1.5rem; }
+  .mybmp-reco-heading { font-size:0.72rem; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:0.85rem; }
+  .mybmp-reco-card {
+    background:white; border:1.5px solid var(--border);
+    border-radius:12px; padding:1.1rem 1.25rem;
+    margin-bottom:0.75rem; display:flex; gap:1rem;
+  }
+  .mybmp-reco-card:last-child { margin-bottom:0; }
+  .mybmp-reco-icon-wrap {
+    width:38px; height:38px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+  }
+  .mybmp-reco-body { flex:1; min-width:0; }
+  .mybmp-reco-title { font-weight:800; font-size:0.88rem; color:var(--text); margin-bottom:0.25rem; }
+  .mybmp-reco-desc { font-size:0.8rem; color:var(--muted); line-height:1.6; }
+  .mybmp-reco-action {
+    display:inline-flex; align-items:center; gap:0.3rem;
+    margin-top:0.55rem; font-size:0.78rem; font-weight:700; color:var(--green);
+    background:none; border:none; cursor:pointer; padding:0; font-family:inherit;
+    text-decoration:none;
+  }
+  .mybmp-reco-action:hover { color:var(--green-dark); }
+  .mybmp-empty { text-align:center; padding:3rem 1.5rem; }
+  .mybmp-empty-icon { display:flex; justify-content:center; margin-bottom:0.75rem; }
+  .mybmp-empty-title { font-weight:800; font-size:1rem; margin-bottom:0.4rem; }
+  .mybmp-empty-desc { font-size:0.82rem; color:var(--muted); line-height:1.6; max-width:320px; margin:0 auto 1.25rem; }
+  @media (max-width:640px) {
+    .mybmp-hero { gap:1.25rem; padding:1.25rem; }
+    .mybmp-gauge { width:130px; height:130px; }
+    .mybmp-gauge-inner { width:98px; height:98px; }
+    .mybmp-score-num { font-size:1.9rem; }
+    .mybmp-reco-section { padding:0 1.25rem 1.25rem; }
+    .mybmp-trending-banner { margin:0 1.25rem 1rem; }
+  }
+
   /* ── TOAST ── */
   .copy-toast {
     position:fixed; bottom:2rem; left:50%; transform:translateX(-50%);
@@ -873,6 +961,9 @@
     </button>
     <button class="sb-item" onclick="showPage('rankings')">
       <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg></span> Rankings
+    </button>
+    <button class="sb-item" onclick="showPage('mybmp')">
+      <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/><line x1="4" y1="9" x2="4" y2="15"/><line x1="20" y1="9" x2="20" y2="15"/></svg></span> My BMP
     </button>
     <button class="sb-item" onclick="showPage('feed')">
       <span class="sb-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></span> My Feed
@@ -1753,6 +1844,64 @@
       </div>
     </div>
 
+    <!-- ══════════ MY BMP ══════════ -->
+    <div class="page" id="page-mybmp">
+      <div class="section-eyebrow">Performance</div>
+      <div class="section-heading">My BMP</div>
+
+      <!-- Score hero card -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="mybmp-hero">
+          <div class="mybmp-gauge-wrap">
+            <div class="mybmp-gauge" id="mybmp-gauge-circle" style="background:var(--green-mid);">
+              <div class="mybmp-gauge-inner">
+                <div class="mybmp-score-num" id="mybmp-score-num" style="color:var(--green-dark);">—</div>
+                <div class="mybmp-score-lbl">BMP</div>
+              </div>
+            </div>
+            <span class="mybmp-bracket-badge" id="mybmp-bracket-badge" style="background:#f3f4f6;color:#6b7280;">Loading…</span>
+          </div>
+          <div class="mybmp-hero-info">
+            <div class="mybmp-hero-title" id="mybmp-hero-title">Your BMP Score</div>
+            <div class="mybmp-hero-sub" id="mybmp-hero-sub">Loading your performance data…</div>
+            <div class="mybmp-rank-row" id="mybmp-rank-row"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Trending status card -->
+      <div class="card" style="margin-bottom:1.25rem;">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Trending Status</div>
+            <div class="card-sub">Based on your verified review activity across two rolling windows</div>
+          </div>
+        </div>
+        <div id="mybmp-trending-section">
+          <div class="mybmp-trending-banner not-trending">
+            <div class="mybmp-trending-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div>
+            <div class="mybmp-trending-body">
+              <div class="mybmp-trending-title">Loading Trending status…</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Personalised recommendations -->
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">How to Improve</div>
+            <div class="card-sub">Personalised recommendations based on your actual performance data</div>
+          </div>
+        </div>
+        <div class="mybmp-reco-section" id="mybmp-reco-list">
+          <div style="text-align:center;padding:2rem;color:var(--muted);font-size:0.85rem;">Loading recommendations…</div>
+        </div>
+      </div>
+    </div>
+
     <!-- ══════════ MY FEED ══════════ -->
     <div class="page" id="page-feed">
       <div class="section-eyebrow">Content</div>
@@ -2384,6 +2533,272 @@
         }).join('');
       }
     }
+
+    // ── My BMP recommendation engine ─────────────────────────────────────
+    // All data is derived from the `reviews` array and `trainer` object already
+    // loaded above.  No extra DB calls or API costs.
+
+    function renderMyBmp() {
+      const bmpScore    = (trainer.bmp_score ?? 0) as number;
+      const isTrending  = !!(trainer as any).is_trending;
+      const totalCount  = reviews.length;
+      const nowMs = Date.now();
+      const ms7d  = 7  * 24 * 60 * 60 * 1000;
+      const ms28d = 28 * 24 * 60 * 60 * 1000;
+
+      const reviews7d   = reviews.filter((r: any) => nowMs - new Date(r.created_at).getTime() < ms7d);
+      const reviewsPrev = reviews.filter((r: any) => {
+        const age = nowMs - new Date(r.created_at).getTime();
+        return age >= ms7d && age < ms28d;
+      });
+
+      const trendA = reviews7d.length;   // condition A: need ≥ 2
+      const trendB = reviewsPrev.length; // condition B: need ≥ 1
+
+      // ── Bracket definition ───────────────────────────────────────────────
+      function getBracket(s: number) {
+        if (!s) return { name:'No score yet', color:'#6b7280', bg:'#f3f4f6', desc:'Start collecting verified reviews to receive your first BMP score.' };
+        if (s < 55) return { name:'Emerging', color:'#d97706', bg:'#fef3c7', desc:'Your reputation is starting to form. Keep collecting genuine client reviews to build momentum.' };
+        if (s < 70) return { name:'Building', color:'#7c3aed', bg:'#ede9fe', desc:'You\'re establishing a solid review history. Consistent activity will push your score higher.' };
+        if (s < 80) return { name:'Established', color:'#0369a1', bg:'#e0f2fe', desc:'A dependable review base and good client ratings put you in the established tier.' };
+        if (s < 90) return { name:'Strong', color:'#2a9438', bg:'#eaf7ec', desc:'Strong review quality and consistent activity mark you as a trusted PT in your area.' };
+        if (s < 95) return { name:'Elite', color:'#166534', bg:'#d1fae5', desc:'Elite scores reflect outstanding review quality and sustained engagement from clients.' };
+        return { name:'Top Performer', color:'#92400e', bg:'#fef3c7', desc:'You\'re among the top-ranked PTs on CoachCards. Maintain your momentum to stay there.' };
+      }
+
+      const bracket = getBracket(bmpScore);
+
+      // ── Update score hero ────────────────────────────────────────────────
+      const gaugeEl     = document.getElementById('mybmp-gauge-circle') as HTMLElement;
+      const scoreNumEl  = document.getElementById('mybmp-score-num')    as HTMLElement;
+      const badgeEl     = document.getElementById('mybmp-bracket-badge') as HTMLElement;
+      const titleEl     = document.getElementById('mybmp-hero-title')   as HTMLElement;
+      const subEl       = document.getElementById('mybmp-hero-sub')     as HTMLElement;
+      const rankRowEl   = document.getElementById('mybmp-rank-row')     as HTMLElement;
+
+      if (scoreNumEl) scoreNumEl.textContent  = bmpScore > 0 ? String(bmpScore) : '—';
+      if (scoreNumEl) scoreNumEl.style.color  = bmpScore > 0 ? bracket.color : '#9ca3af';
+      if (gaugeEl && bmpScore > 0) {
+        const deg = Math.round((bmpScore / 100) * 360);
+        gaugeEl.style.background = `conic-gradient(${bracket.color} 0deg ${deg}deg, var(--green-mid) ${deg}deg 360deg)`;
+      }
+      if (badgeEl) {
+        badgeEl.textContent      = bracket.name;
+        badgeEl.style.background = bracket.bg;
+        badgeEl.style.color      = bracket.color;
+      }
+      if (titleEl) titleEl.textContent = bmpScore > 0 ? `You\'re ${bracket.name}` : 'No BMP score yet';
+      if (subEl)   subEl.textContent   = bracket.desc;
+
+      // Rank pills
+      if (rankRowEl) {
+        const pills: string[] = [];
+        if (totalCount > 0) pills.push(`<div class="mybmp-rank-pill"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" stroke="none" style="flex-shrink:0"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><span>${totalCount} verified review${totalCount === 1 ? '' : 's'}</span></div>`);
+        if (isTrending) pills.push(`<div class="mybmp-rank-pill" style="background:rgba(239,68,68,0.06);border-color:rgba(239,68,68,0.25);color:#dc2626;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#dc2626" stroke="none" style="flex-shrink:0"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg><span>Trending</span></div>`);
+        rankRowEl.innerHTML = pills.join('');
+      }
+
+      // ── Trending status ──────────────────────────────────────────────────
+      const trendSection = document.getElementById('mybmp-trending-section') as HTMLElement;
+      if (trendSection) {
+        const pillA = `<span class="mybmp-tpill ${trendA >= 2 ? 'met' : 'unmet'}">${trendA >= 2 ? '✓' : '✗'} ${trendA} of 2+ reviews in last 7 days</span>`;
+        const pillB = `<span class="mybmp-tpill ${trendB >= 1 ? 'met' : 'unmet'}">${trendB >= 1 ? '✓' : '✗'} ${trendB} of 1+ review${trendB === 1 ? '' : 's'} in days 7–28</span>`;
+
+        let bannerClass = 'not-trending', iconSvg = '', trendTitle = '', trendDesc = '';
+        if (isTrending) {
+          bannerClass = 'trending';
+          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="#ef4444" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
+          trendTitle = 'You\'re Trending';
+          trendDesc  = 'Both review windows are active. Keep collecting genuine client reviews across both windows to maintain Trending status.';
+        } else if (trendA >= 1 && trendB >= 1) {
+          bannerClass = 'close-trending';
+          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
+          trendTitle = 'Close to Trending';
+          trendDesc  = `You have activity in both windows. One more review this week would push you into Trending status.`;
+        } else if (trendA >= 2 && trendB === 0) {
+          bannerClass = 'close-trending';
+          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+          trendTitle = 'Recent burst — continuity missing';
+          trendDesc  = `You have ${trendA} reviews this week (Condition A met) but need at least 1 review from 7–28 days ago to confirm consistent activity. Both conditions need to be active at the same time.`;
+        } else if (totalCount === 0) {
+          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+          trendTitle = 'Not yet active';
+          trendDesc  = 'Trending status requires verified review activity across two rolling time windows. Collect your first reviews to start building towards it.';
+        } else {
+          iconSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+          trendTitle = 'Not Trending';
+          trendDesc  = 'Trending requires 2+ verified reviews within the last 7 days AND 1+ review from the previous 7–28 day window. Both must be active at the same time.';
+        }
+
+        trendSection.innerHTML = `
+          <div class="mybmp-trending-banner ${bannerClass}">
+            <div class="mybmp-trending-icon">${iconSvg}</div>
+            <div class="mybmp-trending-body">
+              <div class="mybmp-trending-title">${trendTitle}</div>
+              <div class="mybmp-trending-desc">${trendDesc}</div>
+              ${totalCount > 0 ? `<div class="mybmp-trending-pills">${pillA}${pillB}</div>` : ''}
+            </div>
+          </div>`;
+      }
+
+      // ── Recommendation engine ────────────────────────────────────────────
+      // Evaluate all possible recommendations, score each by priority, pick top 2-3.
+      interface Reco { priority: number; icon: string; iconBg: string; title: string; desc: string; action?: string; actionLabel?: string; }
+      const recos: Reco[] = [];
+
+      // R1: Zero reviews
+      if (totalCount === 0) {
+        recos.push({
+          priority: 100,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
+          iconBg: 'background:var(--green)',
+          title: 'Collect your first verified review',
+          desc: 'Your BMP score is unlocked by your first verified client review. Generate a personal review link and send it to a recent client after a session.',
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+        recos.push({
+          priority: 90,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+          iconBg: 'background:#7c3aed',
+          title: 'How BMP works',
+          desc: 'BMP is built from three components: rating quality, review volume, and recent activity. Every genuine verified review from a real client contributes to all three.',
+        });
+      }
+
+      // R2: Very few reviews (1–4)
+      if (totalCount > 0 && totalCount < 5) {
+        recos.push({
+          priority: 95,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
+          iconBg: 'background:#d97706',
+          title: `Build your review foundation`,
+          desc: `You have ${totalCount} verified review${totalCount === 1 ? '' : 's'}. Your Confidence component — which rewards review volume — has room to grow. Each new review from a different client strengthens your score.`,
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // R3: Currently Trending
+      if (isTrending) {
+        recos.push({
+          priority: 85,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+          iconBg: 'background:#ef4444',
+          title: 'Maintain your Trending momentum',
+          desc: `You're Trending — you have ${trendA} review${trendA !== 1 ? 's' : ''} this week and ${trendB} from the previous window. Trending status refreshes daily. To keep it, ensure at least 2 verified reviews arrive within any rolling 7-day window alongside prior-window activity.`,
+        });
+      }
+
+      // R4: Close to Trending (A=1, B≥1)
+      if (!isTrending && trendA === 1 && trendB >= 1) {
+        recos.push({
+          priority: 88,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+          iconBg: 'background:#f59e0b',
+          title: 'One more review this week meets both Trending conditions',
+          desc: `You have ${trendB} review${trendB !== 1 ? 's' : ''} from the 7–28 day window and 1 review in the last 7 days. One more genuine verified review this week would satisfy both Trending conditions.`,
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // R5: Close to Trending (A≥2, B=0)
+      if (!isTrending && trendA >= 2 && trendB === 0) {
+        recos.push({
+          priority: 82,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+          iconBg: 'background:#f59e0b',
+          title: 'Build continuity across both review windows',
+          desc: `${trendA} reviews this week meets Condition A. Trending also requires at least 1 verified review from the 7–28 day window to confirm consistent activity. Once a client leaves a review in that window, both conditions are met.`,
+        });
+      }
+
+      // R6: Close to Trending (A=0, B≥1) — has prior window but no recent
+      if (!isTrending && trendA === 0 && trendB >= 1 && totalCount > 0) {
+        recos.push({
+          priority: 78,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+          iconBg: 'background:#f59e0b',
+          title: 'Restart your recent window to qualify for Trending',
+          desc: `You have ${trendB} review${trendB !== 1 ? 's' : ''} from 7–28 days ago (Condition B met) but no reviews in the last 7 days. Two or more verified reviews this week would satisfy both conditions.`,
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // R7: No recent reviews at all (has a score but stagnant)
+      const noRecentActivity = reviews7d.length === 0 && reviewsPrev.length === 0;
+      if (totalCount > 0 && noRecentActivity) {
+        recos.push({
+          priority: 70,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
+          iconBg: 'background:#0369a1',
+          title: 'Re-engage clients for recent feedback',
+          desc: 'You have no verified reviews in the last 28 days. Momentum rewards recent high-quality reviews — without fresh activity, that part of your score gradually reduces. Send a review link to a client you\'ve worked with recently.',
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // R8: Established history but BMP below 70 — quality likely the constraint
+      if (totalCount >= 5 && bmpScore > 0 && bmpScore < 70) {
+        recos.push({
+          priority: 65,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+          iconBg: 'background:#dc2626',
+          title: 'Focus on session quality, not review volume',
+          desc: 'Your Quality component is the biggest driver of BMP. With enough reviews to count, the limiting factor is likely average client satisfaction. Review recent client feedback for patterns — small service improvements tend to move scores more than collecting extra reviews.',
+          action: 'reviews', actionLabel: 'Read your reviews →',
+        });
+      }
+
+      // R9: High BMP with no recent activity (score ≥ 70, no recent reviews)
+      if (bmpScore >= 70 && noRecentActivity && totalCount > 0) {
+        recos.push({
+          priority: 60,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
+          iconBg: 'background:var(--green)',
+          title: 'Keep activity consistent to protect momentum',
+          desc: `Your score is strong, but Momentum rewards recent high-quality reviews. Without fresh reviews, that part of your score gradually reduces as older reviews age out.`,
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // R10: Good BMP, decent activity — grow confidence via volume
+      if (bmpScore >= 55 && totalCount > 0 && totalCount < 20) {
+        recos.push({
+          priority: 55,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+          iconBg: 'background:#7c3aed',
+          title: 'Grow review volume to boost Confidence',
+          desc: `The Confidence component rewards trainers who have earned trust from many clients. You currently have ${totalCount} verified reviews — each additional review from a different client pushes this component higher.`,
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // Sort and render top 3
+      recos.sort((a, b) => b.priority - a.priority);
+      const topRecos = recos.slice(0, 3);
+
+      const recoListEl = document.getElementById('mybmp-reco-list') as HTMLElement;
+      if (recoListEl) {
+        if (topRecos.length === 0) {
+          recoListEl.innerHTML = `
+            <div class="mybmp-empty">
+              <div class="mybmp-empty-icon"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
+              <div class="mybmp-empty-title">Everything looks great</div>
+              <div class="mybmp-empty-desc">Your score is performing well across all components. Keep collecting genuine client reviews to maintain your position.</div>
+            </div>`;
+        } else {
+          recoListEl.innerHTML = topRecos.map(r => `
+            <div class="mybmp-reco-card">
+              <div class="mybmp-reco-icon-wrap" style="${r.iconBg}">${r.icon}</div>
+              <div class="mybmp-reco-body">
+                <div class="mybmp-reco-title">${r.title}</div>
+                <div class="mybmp-reco-desc">${r.desc}</div>
+                ${r.action ? `<button class="mybmp-reco-action" onclick="showPage('${r.action}')">${r.actionLabel} <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>` : ''}
+              </div>
+            </div>`).join('');
+        }
+      }
+    }
+    // ── End My BMP recommendation engine ─────────────────────────────────
 
     // ── Reviews page stats ────────────────────────────────────────────────
     const avgEl   = document.getElementById('rev-stat-avg');
@@ -4004,6 +4419,7 @@
     feed:          ['My Feed',        'Share updates, classes and client progress with your audience.'],
     messages:      ['Messages',       'Direct messages from clients who reached out on your profile.'],
     setup:         ['Getting Started','Your profile setup checklist — complete each step to maximise your ranking.'],
+    mybmp:         ['My BMP',         'Your Body Movement Performance score — what drives it and how to grow it.'],
   };
 
   function showPage(id) {
@@ -4018,6 +4434,9 @@
     // Only update subtitle when we have one (overview keeps the personalised welcome set by auth script)
     if (sub) document.getElementById('page-sub').textContent = sub;
     window.scrollTo(0, 0);
+
+    // Render My BMP recommendations when opening that page
+    if (id === 'mybmp') renderMyBmp();
 
     // Load feed posts when navigating to that page
     if (id === 'feed') loadFeedPosts();
