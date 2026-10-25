@@ -2803,6 +2803,13 @@
       }
     };
     // ── End My BMP recommendation engine ─────────────────────────────────
+    // renderMyBmp is module-scoped but showPage lives in an is:inline global
+    // script.  Assign to window so showPage can reach it, then render
+    // immediately if the user already navigated to My BMP before init finished.
+    (window as any).renderMyBmp = renderMyBmp;
+    if (document.getElementById('page-mybmp')?.classList.contains('active')) {
+      renderMyBmp();
+    }
 
     // ── Reviews page stats ────────────────────────────────────────────────
     const avgEl   = document.getElementById('rev-stat-avg');
@@ -4423,7 +4430,7 @@
     feed:          ['My Feed',        'Share updates, classes and client progress with your audience.'],
     messages:      ['Messages',       'Direct messages from clients who reached out on your profile.'],
     setup:         ['Getting Started','Your profile setup checklist — complete each step to maximise your ranking.'],
-    mybmp:         ['My BMP',         'Your Body Movement Performance score — what drives it and how to grow it.'],
+    mybmp:         ['My BMP',         'Your Body Muscle Percentage score — what drives it and how to grow it.'],
   };
 
   function showPage(id) {
@@ -4440,7 +4447,7 @@
     window.scrollTo(0, 0);
 
     // Render My BMP recommendations when opening that page
-    if (id === 'mybmp') renderMyBmp();
+    if (id === 'mybmp') { if (typeof window.renderMyBmp === 'function') window.renderMyBmp(); }
 
     // Load feed posts when navigating to that page
     if (id === 'feed') loadFeedPosts();
