@@ -544,6 +544,8 @@
   .section-heading { font-family:'Playfair Display',serif; font-size:1.6rem; font-weight:900; margin-bottom:1.5rem; }
 
   /* ── MY BMP PAGE — dark theme ── */
+  /* Static elements get Astro's cid; dynamic innerHTML does NOT →
+     use :global() for anything injected by JS at runtime.           */
   #page-mybmp {
     margin:-2rem -2.5rem; padding:2rem 2.5rem;
     min-height:calc(100vh - 64px); background:#0b0b0b;
@@ -555,17 +557,15 @@
   #page-mybmp .card-title { color:#f0f0f0; }
   #page-mybmp .card-sub { color:rgba(255,255,255,0.42); }
 
-  /* Two-column layout */
+  /* Two-column layout (static → cid ok) */
   .mybmp-top-grid {
     display:grid; grid-template-columns:1.15fr 1fr;
     gap:1.25rem; margin-bottom:1.25rem; align-items:start;
   }
   .mybmp-hero-card { padding:0 !important; overflow:hidden; }
 
-  /* Score card inner */
-  .mybmp-score-inner {
-    display:flex; align-items:center; gap:1.5rem; padding:1.5rem;
-  }
+  /* Score inner — all static (cid ok) */
+  .mybmp-score-inner { display:flex; align-items:center; gap:1.5rem; padding:1.5rem; }
   .mybmp-db-zone { flex-shrink:0; display:flex; align-items:center; justify-content:center; }
   .mybmp-score-info { flex:1; min-width:0; }
   .mybmp-big-score {
@@ -579,54 +579,53 @@
   }
   .mybmp-tier-desc { font-size:0.82rem; color:rgba(255,255,255,0.48); line-height:1.55; }
 
-  /* Stats strip */
+  /* Stats strip container is static; chips are JS-generated → :global */
   .mybmp-stats-strip { display:flex; border-top:1px solid rgba(255,255,255,0.07); }
-  .mybmp-stat-chip {
-    flex:1; display:flex; flex-direction:column;
-    align-items:center; justify-content:center;
-    gap:0.2rem; padding:0.85rem 0.5rem;
+  :global(.mybmp-stat-chip) {
+    flex:1; display:flex; flex-direction:column; align-items:center;
+    justify-content:center; gap:0.2rem; padding:0.85rem 0.5rem;
     border-right:1px solid rgba(255,255,255,0.07); text-align:center;
   }
-  .mybmp-stat-chip:last-child { border-right:none; }
-  .mybmp-stat-chip .sc-icon { color:rgba(255,255,255,0.28); margin-bottom:0.1rem; }
-  .mybmp-stat-chip .sc-value { font-size:0.9rem; font-weight:800; color:#f0f0f0; line-height:1; }
-  .mybmp-stat-chip .sc-label { font-size:0.67rem; font-weight:600; color:rgba(255,255,255,0.38); }
+  :global(.mybmp-stat-chip:last-child) { border-right:none; }
+  :global(.mybmp-stat-chip .sc-icon) { color:rgba(255,255,255,0.28); margin-bottom:0.1rem; }
+  :global(.mybmp-stat-chip .sc-value) { font-size:0.9rem; font-weight:800; color:#f0f0f0; line-height:1; }
+  :global(.mybmp-stat-chip .sc-label) { font-size:0.67rem; font-weight:600; color:rgba(255,255,255,0.38); }
 
-  /* Trending fires */
-  .mybmp-fires-outer { padding:1.25rem 1.5rem 1.5rem; }
-  .mybmp-fires-row { display:flex; align-items:flex-start; margin-bottom:1.25rem; }
-  .mybmp-fire-group {
+  /* Trending fires — everything inside fires-section is JS-generated → :global */
+  :global(.mybmp-fires-outer) { padding:1.25rem 1.5rem 1.5rem; }
+  :global(.mybmp-fires-row) { display:flex; align-items:flex-start; margin-bottom:1.25rem; }
+  :global(.mybmp-fire-group) {
     flex:1; display:flex; flex-direction:column;
     align-items:center; gap:0.4rem; padding:0 0.75rem;
   }
-  .mybmp-fire-group:first-child { padding-left:0; }
-  .mybmp-fire-group:last-child  { padding-right:0; }
-  .mybmp-fire-group.with-sep { border-right:1px solid rgba(255,255,255,0.08); }
-  .mybmp-fire-icons { display:flex; gap:0.5rem; align-items:center; justify-content:center; }
-  .mybmp-fire-label {
+  :global(.mybmp-fire-group:first-child) { padding-left:0; }
+  :global(.mybmp-fire-group:last-child)  { padding-right:0; }
+  :global(.mybmp-fire-group.with-sep) { border-right:1px solid rgba(255,255,255,0.08); }
+  :global(.mybmp-fire-icons) { display:flex; gap:0.5rem; align-items:center; justify-content:center; }
+  :global(.mybmp-fire-label) {
     font-size:0.65rem; font-weight:700; text-transform:uppercase;
     letter-spacing:1.2px; color:rgba(255,255,255,0.32);
   }
-  .mybmp-fire-count { font-size:0.8rem; font-weight:800; color:#f0f0f0; }
-  .mybmp-fire-sub { font-size:0.68rem; color:rgba(255,255,255,0.38); text-align:center; line-height:1.45; }
-  .mybmp-trend-status { font-size:1.3rem; font-weight:900; color:#f0f0f0; margin-bottom:0.4rem; line-height:1.2; }
-  .mybmp-trend-explain { font-size:0.78rem; color:rgba(255,255,255,0.42); line-height:1.55; }
+  :global(.mybmp-fire-count) { font-size:0.8rem; font-weight:800; color:#f0f0f0; }
+  :global(.mybmp-fire-sub) { font-size:0.68rem; color:rgba(255,255,255,0.38); text-align:center; line-height:1.45; }
+  :global(.mybmp-trend-status) { font-size:1.3rem; font-weight:900; color:#f0f0f0; margin-bottom:0.4rem; line-height:1.2; }
+  :global(.mybmp-trend-explain) { font-size:0.78rem; color:rgba(255,255,255,0.42); line-height:1.55; }
 
-  /* How to Improve recos */
+  /* Reco cards — JS-generated → :global */
   .mybmp-recos { padding:0.25rem 0; }
-  .mybmp-reco-row {
+  :global(.mybmp-reco-row) {
     display:flex; align-items:center; gap:1rem;
     padding:1rem 1.5rem; border-bottom:1px solid rgba(255,255,255,0.06);
   }
-  .mybmp-reco-row:last-child { border-bottom:none; }
-  .mybmp-reco-dot {
+  :global(.mybmp-reco-row:last-child) { border-bottom:none; }
+  :global(.mybmp-reco-dot) {
     width:42px; height:42px; border-radius:11px; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
   }
-  .mybmp-reco-content { flex:1; min-width:0; }
-  .mybmp-reco-head { font-weight:800; font-size:0.88rem; color:#f0f0f0; margin-bottom:0.3rem; line-height:1.35; }
-  .mybmp-reco-text { font-size:0.78rem; color:rgba(255,255,255,0.45); line-height:1.6; }
-  .mybmp-reco-btn {
+  :global(.mybmp-reco-content) { flex:1; min-width:0; }
+  :global(.mybmp-reco-head) { font-weight:800; font-size:0.88rem; color:#f0f0f0; margin-bottom:0.3rem; line-height:1.35; }
+  :global(.mybmp-reco-text) { font-size:0.78rem; color:rgba(255,255,255,0.45); line-height:1.6; }
+  :global(.mybmp-reco-btn) {
     flex-shrink:0; padding:0.5rem 0.85rem;
     border:1.5px solid rgba(58,181,74,0.45); background:transparent;
     color:#3ab54a; border-radius:8px; font-size:0.75rem; font-weight:700;
@@ -634,10 +633,10 @@
     transition:background 0.15s,border-color 0.15s;
     display:flex; align-items:center; gap:0.3rem;
   }
-  .mybmp-reco-btn:hover { background:rgba(58,181,74,0.1); border-color:#3ab54a; }
-  .mybmp-empty-state { text-align:center; padding:2.5rem 1.75rem; }
-  .mybmp-empty-state-title { font-weight:800; font-size:1rem; color:#f0f0f0; margin-bottom:0.4rem; }
-  .mybmp-empty-state-desc { font-size:0.82rem; color:rgba(255,255,255,0.4); line-height:1.6; max-width:320px; margin:0 auto; }
+  :global(.mybmp-reco-btn:hover) { background:rgba(58,181,74,0.1); border-color:#3ab54a; }
+  :global(.mybmp-empty-state) { text-align:center; padding:2.5rem 1.75rem; }
+  :global(.mybmp-empty-state-title) { font-weight:800; font-size:1rem; color:#f0f0f0; margin-bottom:0.4rem; }
+  :global(.mybmp-empty-state-desc) { font-size:0.82rem; color:rgba(255,255,255,0.4); line-height:1.6; max-width:320px; margin:0 auto; }
 
   @media (max-width:960px) { .mybmp-top-grid { grid-template-columns:1fr; } }
   @media (max-width:768px) {
@@ -648,8 +647,8 @@
   @media (max-width:520px) {
     .mybmp-score-inner { flex-direction:column; text-align:center; }
     .mybmp-db-zone { margin-bottom:0.25rem; }
-    .mybmp-reco-row { flex-wrap:wrap; }
-    .mybmp-reco-btn { width:100%; justify-content:center; margin-top:0.5rem; }
+    :global(.mybmp-reco-row) { flex-wrap:wrap; }
+    :global(.mybmp-reco-btn) { width:100%; justify-content:center; margin-top:0.5rem; }
   }
 
   /* ── TOAST ── */
@@ -2597,7 +2596,10 @@
       const tierDescEl   = document.getElementById('mybmp-tier-desc')   as HTMLElement;
       const statsStripEl = document.getElementById('mybmp-stats-strip') as HTMLElement;
 
-      if (dbZoneEl)    dbZoneEl.innerHTML = _bmpDumbbell(bmpScore, 240);
+      if (dbZoneEl) {
+        dbZoneEl.innerHTML = _bmpDumbbell(bmpScore, 340);
+        dbZoneEl.style.filter = bmpScore >= 50 ? 'drop-shadow(0 0 18px rgba(58,181,74,0.5))' : 'none';
+      }
       if (bigScoreEl) {
         bigScoreEl.textContent = bmpScore > 0 ? bmpScore + '%' : '—';
         bigScoreEl.style.color = '#f0f0f0';
