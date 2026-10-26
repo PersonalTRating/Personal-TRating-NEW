@@ -41,7 +41,7 @@ export const handler = async (event) => {
       </div>
 
       <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:12px;padding:16px 20px;margin-bottom:16px;">
-        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8f7c;margin-bottom:8px;">BMP Score Given</div>
+        <div style="font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#7a8f7c;margin-bottom:8px;">Review Rating</div>
         <div style="font-size:36px;font-weight:900;color:#0d1a0e;line-height:1;">${bmp}<span style="font-size:16px;color:#7a8f7c;">%</span></div>
         <div style="font-size:18px;margin-top:6px;">${dumbbells}</div>
       </div>

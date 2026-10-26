@@ -1,0 +1,191 @@
+<svg viewBox="0 0 2000 727" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <!-- ── Gradients ── -->
+
+  <!-- Plate face: vivid green radial, upper-left light source -->
+  <radialGradient id="pf" cx="37%" cy="28%" r="75%">
+    <stop offset="0%"   stop-color="#d4ffdf"/>
+    <stop offset="12%"  stop-color="#4ade80"/>
+    <stop offset="42%"  stop-color="#16a34a"/>
+    <stop offset="78%"  stop-color="#0a5c26"/>
+    <stop offset="100%" stop-color="#031508"/>
+  </radialGradient>
+
+  <!-- Inner hub face: deeper green -->
+  <radialGradient id="ih" cx="38%" cy="30%" r="72%">
+    <stop offset="0%"   stop-color="#86efac"/>
+    <stop offset="25%"  stop-color="#22c55e"/>
+    <stop offset="60%"  stop-color="#0d5e29"/>
+    <stop offset="100%" stop-color="#021208"/>
+  </radialGradient>
+
+  <!-- Handle: top-lit cylinder gradient -->
+  <linearGradient id="hg" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%"   stop-color="#6ee7b7"/>
+    <stop offset="18%"  stop-color="#22c55e"/>
+    <stop offset="55%"  stop-color="#0f5c26"/>
+    <stop offset="100%" stop-color="#021208"/>
+  </linearGradient>
+
+  <!-- Handle collar: small connectors -->
+  <radialGradient id="hc" cx="40%" cy="28%" r="70%">
+    <stop offset="0%"   stop-color="#4ade80"/>
+    <stop offset="50%"  stop-color="#15803d"/>
+    <stop offset="100%" stop-color="#031508"/>
+  </radialGradient>
+
+  <!-- Ambient glow blur filter -->
+  <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
+    <feGaussianBlur stdDeviation="14" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+
+  <!-- Subtle outer glow for neon ring -->
+  <filter id="ring-glow" x="-15%" y="-15%" width="130%" height="130%">
+    <feGaussianBlur stdDeviation="6" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+
+<!-- ═══════════════════════════════════════════════════════
+     HANDLE (drawn first — plates render on top at the ends)
+     Centre y = 355, height = 102, from x=575 to x=1425
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- Handle shadow -->
+<rect x="575" y="370" width="850" height="30" rx="15" fill="rgba(0,80,0,0.45)" filter="url(#glow)"/>
+
+<!-- Handle body -->
+<rect x="575" y="304" width="850" height="102" rx="14" fill="url(#hg)"/>
+
+<!-- Handle top sheen (rim light) -->
+<rect x="575" y="304" width="850" height="22" rx="14" fill="white" opacity="0.28"/>
+
+<!-- Handle bottom shadow -->
+<rect x="575" y="385" width="850" height="21" rx="0" fill="rgba(0,0,0,0.30)"/>
+
+<!-- Knurl crosshatch texture on handle (horizontal bands) -->
+<rect x="680" y="314" width="640" height="82" fill="none" stroke="rgba(0,50,0,0.35)" stroke-width="1.5"
+  style="stroke-dasharray:6,6"/>
+
+<!-- Vertical grain lines for knurl -->
+<line x1="680"  y1="314" x2="680"  y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="730"  y1="314" x2="730"  y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="780"  y1="314" x2="780"  y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="830"  y1="314" x2="830"  y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="880"  y1="314" x2="880"  y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="930"  y1="314" x2="930"  y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="980"  y1="314" x2="980"  y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="1030" y1="314" x2="1030" y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="1080" y1="314" x2="1080" y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="1130" y1="314" x2="1130" y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="1180" y1="314" x2="1180" y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="1230" y1="314" x2="1230" y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="1280" y1="314" x2="1280" y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+<line x1="1320" y1="314" x2="1320" y2="396" stroke="rgba(0,40,0,0.20)" stroke-width="1.2"/>
+
+<!-- Horizontal grip lines -->
+<line x1="680" y1="330" x2="1320" y2="330" stroke="rgba(0,50,0,0.30)" stroke-width="1.5"/>
+<line x1="680" y1="345" x2="1320" y2="345" stroke="rgba(0,50,0,0.28)" stroke-width="1.2"/>
+<line x1="680" y1="355" x2="1320" y2="355" stroke="rgba(0,50,0,0.28)" stroke-width="1.2"/>
+<line x1="680" y1="365" x2="1320" y2="365" stroke="rgba(0,50,0,0.28)" stroke-width="1.2"/>
+<line x1="680" y1="380" x2="1320" y2="380" stroke="rgba(0,50,0,0.30)" stroke-width="1.5"/>
+
+<!-- Collar connectors (wider disc where handle meets plate) -->
+<ellipse cx="575" cy="355" rx="52" ry="48" fill="url(#hc)"/>
+<ellipse cx="1425" cy="355" rx="52" ry="48" fill="url(#hc)"/>
+<ellipse cx="575" cy="355" rx="28" ry="26" fill="#0d4a1e"/>
+<ellipse cx="1425" cy="355" rx="28" ry="26" fill="#0d4a1e"/>
+
+<!-- ═══════════════════════════════════════════════════════
+     LEFT PLATE  cx=300, cy=355, r=275
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- Ambient glow behind left plate -->
+<circle cx="300" cy="355" r="290" fill="#2eff6a" opacity="0.12" filter="url(#glow)"/>
+
+<!-- Drop shadow -->
+<ellipse cx="305" cy="368" rx="280" ry="24" fill="rgba(0,50,0,0.55)"/>
+
+<!-- Main plate face (outer disc section) -->
+<circle cx="300" cy="355" r="275" fill="url(#pf)"/>
+
+<!-- Neon green accent ring (at r=210, width=38) -->
+<circle cx="300" cy="355" r="210" fill="none" stroke="#39ff14" stroke-width="40" opacity="0.92" filter="url(#ring-glow)"/>
+<!-- Ring inner dark edge (groove definition) -->
+<circle cx="300" cy="355" r="190" fill="none" stroke="rgba(0,40,0,0.65)" stroke-width="2.5"/>
+<!-- Ring outer bright edge -->
+<circle cx="300" cy="355" r="230" fill="none" stroke="rgba(120,255,120,0.35)" stroke-width="2"/>
+
+<!-- Inner plate face (inset disc, slightly darker, r=190) -->
+<circle cx="300" cy="355" r="188" fill="url(#ih)"/>
+
+<!-- Inner ring groove (second boundary, r=120) -->
+<circle cx="300" cy="355" r="120" fill="none" stroke="rgba(0,45,0,0.60)" stroke-width="2.5"/>
+<circle cx="300" cy="355" r="120" fill="none" stroke="rgba(80,210,80,0.20)" stroke-width="1"/>
+
+<!-- Hub area (r=105) -->
+<circle cx="300" cy="355" r="105" fill="#0d4a1e"/>
+<circle cx="300" cy="355" r="105" fill="none" stroke="rgba(0,60,0,0.55)" stroke-width="2"/>
+
+<!-- Hub collar groove (r=65) -->
+<circle cx="300" cy="355" r="65" fill="#0a3515"/>
+<circle cx="300" cy="355" r="65" fill="none" stroke="rgba(0,50,0,0.45)" stroke-width="1.5"/>
+
+<!-- Bolt (r=38) -->
+<circle cx="300" cy="355" r="38" fill="#062210"/>
+<circle cx="300" cy="355" r="38" fill="none" stroke="rgba(0,40,0,0.40)" stroke-width="1.5"/>
+
+<!-- 3D rim at top of plate (visible edge showing depth) -->
+<ellipse cx="300" cy="83" rx="264" ry="16" fill="rgba(80,255,100,0.22)" transform="rotate(-1,300,83)"/>
+<ellipse cx="300" cy="78" rx="180" ry="9" fill="rgba(100,255,120,0.18)"/>
+
+<!-- Specular highlights (light source upper-left) -->
+<ellipse cx="200" cy="225" rx="105" ry="48" fill="white" opacity="0.42" transform="rotate(-24,200,225)"/>
+<ellipse cx="225" cy="202" rx="58" ry="27" fill="white" opacity="0.55" transform="rotate(-27,225,202)"/>
+
+<!-- ═══════════════════════════════════════════════════════
+     RIGHT PLATE  cx=1700, cy=355, r=275
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- Ambient glow behind right plate -->
+<circle cx="1700" cy="355" r="290" fill="#2eff6a" opacity="0.12" filter="url(#glow)"/>
+
+<!-- Drop shadow -->
+<ellipse cx="1705" cy="368" rx="280" ry="24" fill="rgba(0,50,0,0.55)"/>
+
+<!-- Main plate face -->
+<circle cx="1700" cy="355" r="275" fill="url(#pf)"/>
+
+<!-- Neon green accent ring -->
+<circle cx="1700" cy="355" r="210" fill="none" stroke="#39ff14" stroke-width="40" opacity="0.92" filter="url(#ring-glow)"/>
+<circle cx="1700" cy="355" r="190" fill="none" stroke="rgba(0,40,0,0.65)" stroke-width="2.5"/>
+<circle cx="1700" cy="355" r="230" fill="none" stroke="rgba(120,255,120,0.35)" stroke-width="2"/>
+
+<!-- Inner plate face -->
+<circle cx="1700" cy="355" r="188" fill="url(#ih)"/>
+
+<!-- Inner ring groove -->
+<circle cx="1700" cy="355" r="120" fill="none" stroke="rgba(0,45,0,0.60)" stroke-width="2.5"/>
+<circle cx="1700" cy="355" r="120" fill="none" stroke="rgba(80,210,80,0.20)" stroke-width="1"/>
+
+<!-- Hub area -->
+<circle cx="1700" cy="355" r="105" fill="#0d4a1e"/>
+<circle cx="1700" cy="355" r="105" fill="none" stroke="rgba(0,60,0,0.55)" stroke-width="2"/>
+
+<!-- Hub collar groove -->
+<circle cx="1700" cy="355" r="65" fill="#0a3515"/>
+<circle cx="1700" cy="355" r="65" fill="none" stroke="rgba(0,50,0,0.45)" stroke-width="1.5"/>
+
+<!-- Bolt -->
+<circle cx="1700" cy="355" r="38" fill="#062210"/>
+<circle cx="1700" cy="355" r="38" fill="none" stroke="rgba(0,40,0,0.40)" stroke-width="1.5"/>
+
+<!-- 3D rim at top -->
+<ellipse cx="1700" cy="83" rx="264" ry="16" fill="rgba(80,255,100,0.22)" transform="rotate(-1,1700,83)"/>
+<ellipse cx="1700" cy="78" rx="180" ry="9" fill="rgba(100,255,120,0.18)"/>
+
+<!-- Specular highlights -->
+<ellipse cx="1600" cy="225" rx="105" ry="48" fill="white" opacity="0.42" transform="rotate(-24,1600,225)"/>
+<ellipse cx="1625" cy="202" rx="58" ry="27" fill="white" opacity="0.55" transform="rotate(-27,1625,202)"/>
+</svg>

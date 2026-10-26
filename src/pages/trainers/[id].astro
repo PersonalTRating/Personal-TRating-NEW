@@ -3,6 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase';
 import { bmpDumbbell } from '../../lib/bmpDumbbell';
 import { getLocalAreaLabel } from '../../lib/rankingAreas';
+import { getPublicRankBadge } from '../../lib/bmpConfig';
 
 export async function getStaticPaths() {
   const { data: trainers } = await supabase
@@ -17,7 +18,7 @@ const { id } = Astro.params;
 
 const { data: trainer } = await supabase
   .from('trainers')
-  .select('id, name, username, city, location, bio, specialty, cert, coaching_type, bmp_score, star_rating, review_count, is_trending, is_active, avatar_url, avatar_initials, avatar_bg, avatar_color, business_name, hero_theme, gyms, cc_country, cc_local_area, location_confirmed')
+  .select('id, name, username, city, location, bio, specialty, cert, coaching_type, bmp_score, star_rating, review_count, is_trending, is_active, avatar_url, avatar_initials, avatar_bg, avatar_color, business_name, hero_theme, gyms, cc_country, cc_local_area, location_confirmed, distinct_reviewer_count')
   .eq('id', id)
   .single();
 
@@ -42,11 +43,12 @@ const starCounts = [5, 4, 3, 2, 1].map(s => ({
   count: reviews.filter(r => Math.round(r.rating) === s).length,
 }));
 
-const rankBadge =
-  trainer.bmp_score >= 95 ? { label: 'Elite',    color: '#b8860b', bg: '#fdf6e3' } :
-  trainer.bmp_score >= 85 ? { label: 'Advanced', color: '#2a9438', bg: '#eaf7ec' } :
-  trainer.bmp_score >= 75 ? { label: 'Skilled',  color: '#1a4b6b', bg: '#e8f0f7' } :
-                             { label: 'Rising',   color: '#6b1a6b', bg: '#f5e8f7' };
+const rankBadge = getPublicRankBadge(trainer.bmp_score);
+
+// distinct_reviewer_count is null until the v3 migration adds the column and the
+// SELECT is updated (post-migration step). null → badge hidden safely.
+const trainerDistinctCount: number | null = (trainer as any).distinct_reviewer_count ?? null;
+const trainerIsFreshFace = trainerDistinctCount !== null && trainerDistinctCount >= 1 && trainerDistinctCount <= 2;
 
 
 const formatDate = (dateStr: string) =>
@@ -589,6 +591,9 @@ const maskName = (name: string): string => {
                 <div class="trend-tooltip">Trending trainers have received at least 2 verified reviews in the last 7 days, plus another verified review within the preceding 21 days.</div>
               </div>
             )}
+            {trainerIsFreshFace && (
+              <span style="display:inline-flex;align-items:center;gap:3px;background:rgba(96,165,250,0.12);color:#60a5fa;font-size:0.6rem;font-weight:800;letter-spacing:1.5px;padding:0.2rem 0.55rem;border-radius:20px;border:1px solid rgba(96,165,250,0.3);">✨ FRESH FACE</span>
+            )}
           </div>
         </div>
 
@@ -606,7 +611,7 @@ const maskName = (name: string): string => {
       {hasBmp && (
         <div class="tp-bmp-box bmp-panel bmp-info" id="bmp-panel-hero">
           <div class="bmp-tooltip">
-            BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Recent Momentum (up to 10 pts). Only verified reviews count.
+            BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Activity & Trending (up to 10 pts). Only verified reviews count.
           </div>
           <div class="bmp-panel-label">BMP SCORE ⓘ</div>
           <div class="bmp-panel-score">{trainer.bmp_score}</div>
@@ -690,7 +695,7 @@ const maskName = (name: string): string => {
     <div class="tp-stats-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
 
       <div class="tp-stat bmp-info" id="tp-bmp-stat">
-        <div class="bmp-tooltip">BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Recent Momentum (up to 10 pts). Only verified reviews count.</div>
+        <div class="bmp-tooltip">BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Activity & Trending (up to 10 pts). Only verified reviews count.</div>
         <div style="font-size:0.62rem;color:#8a8f8a;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:0.5rem;">BMP Score ⓘ</div>
         {hasBmp ? (
           <div id="tp-bmp-val" style="font-family:'Manrope',sans-serif;font-size:2.1rem;font-weight:800;color:#3ab54a;line-height:1;">{trainer.bmp_score}</div>

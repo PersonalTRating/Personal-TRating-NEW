@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import ForTrainersTrustBar from '../components/ForTrainersTrustBar.astro';
+import { BMP_BRACKET_TIERS } from '../lib/bmpConfig';
 
 const { count: totalTrainers } = await supabase
   .from('trainers')
@@ -317,9 +318,9 @@ const { count: totalReviews } = await supabase
       <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
         <div style="margin-bottom:1.25rem;">
           <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#e65c00;line-height:1;margin-bottom:0.3rem;">10 PTS</div>
-          <div style="font-weight:800;font-size:0.78rem;color:#e65c00;margin-bottom:0.4rem;">Recent Momentum</div>
+          <div style="font-weight:800;font-size:0.78rem;color:#e65c00;margin-bottom:0.4rem;">Activity & Trending</div>
         </div>
-        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">Rewards <strong style="color:#111311;">consistent recent activity</strong>. Reviews in the last 7 days carry 3× more weight than reviews from last month. A steady flow beats a one-off burst every time.</p>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">Rewards <strong style="color:#111311;">consistent recent activity</strong>. Trending trainers earn a direct +2 pt bonus here. An established review history (20+ reviews) protects against inactivity through a score floor.</p>
       </div>
     </div>
 
@@ -327,8 +328,8 @@ const { count: totalReviews } = await supabase
       <div style="font-weight:800;font-size:1.1rem;color:white;margin-bottom:1.5rem;text-align:center;">What this means for you as a PT</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;" class="ft-proof-grid">
         {[
-          { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`, title:'A fair playing field', desc:'Every PT starts at zero. Your score grows purely through verified client feedback — no pay-to-win, no favouritism.' },
-          { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`, title:'Rewards staying active', desc:'The momentum component means trainers who keep collecting reviews rank higher. Going quiet costs you — staying active rewards you.' },
+          { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>`, title:'A fair playing field', desc:'Your score grows through verified client feedback — no pay-to-win, no favouritism. Established trainers retain a baseline activity floor to reward their track record.' },
+          { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`, title:'Rewards staying active', desc:'The Activity & Trending component rewards consistent review collection. Staying active earns you points — and Trending status adds a 2-pt bonus on top.' },
           { icon:`<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`, title:'Full transparency', desc:'You can see your score breakdown at any time in your dashboard. No black box — the three components are clearly defined.' },
         ].map(w => (
           <div style="text-align:center;">
@@ -340,13 +341,8 @@ const { count: totalReviews } = await supabase
       </div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;">
-      {[
-        { range:'75–100', label:'Elite',       color:'#b8860b', bg:'#fdf6e3', desc:'Consistently outstanding' },
-        { range:'50–74',  label:'Strong',      color:'#2a9438', bg:'#eaf7ec', desc:'Above average, solid volume' },
-        { range:'25–49',  label:'Developing',  color:'#1a4b6b', bg:'#e8f0f7', desc:'Early stage or mixed history' },
-        { range:'0–24',   label:'Rising',      color:'#6b1a6b', bg:'#f5e8f7', desc:'New — building reputation' },
-      ].map(b => (
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
+      {BMP_BRACKET_TIERS.map(b => (
         <div style={`background:${b.bg};border-radius:12px;padding:1.25rem 0.75rem;`}>
           <div style={`font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:${b.color};line-height:1;margin-bottom:0.3rem;`}>{b.range}</div>
           <div style={`font-weight:800;font-size:0.78rem;color:${b.color};margin-bottom:0.4rem;`}>{b.label}</div>
@@ -434,7 +430,7 @@ const { count: totalReviews } = await supabase
         { q:'Is it really free?',
           a:'Yes, completely. There are no subscription tiers, no premium listings, no credit card required. Every PT gets the same profile, the same tools, and the same shot at the top of the leaderboard.' },
         { q:'What is the BMP score?',
-          a:'BMP (Body Muscle %) is our 0–100 ranking score. It combines Review Quality (up to 70 pts), Review Confidence based on volume (up to 20 pts), and Recent Momentum for consistent activity (up to 10 pts). Only verified reviews count — unverified submissions never touch your score. It\'s formula-driven, transparent, and cannot be bought or gamed.' },
+          a:'BMP (Body Muscle %) is our 0–100 ranking score. It combines Review Quality (up to 70 pts), Review Confidence based on volume (up to 20 pts), and Activity & Trending (up to 10 pts). Only verified reviews count — unverified submissions never touch your score. It\'s formula-driven, transparent, and cannot be bought or gamed.' },
         { q:'Are reviews verified?',
           a:'Every single one. When someone submits a review it goes straight to our team for manual approval before it appears anywhere on the platform. Anything suspicious, spammy, or fake gets rejected and deleted — it never reaches your profile or your score.' },
         { q:'What if I get a bad review?',

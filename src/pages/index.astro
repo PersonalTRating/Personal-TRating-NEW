@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
 import TrustBar from '../components/TrustBar.astro';
 import { getLocalAreaLabel, getVerifiedLocationLabel, getVisibilityLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
+import { BMP_BRACKET_TIERS } from '../lib/bmpConfig';
 
 // Fetch all build-time data in parallel
 const [
@@ -14,7 +15,7 @@ const [
 ] = await Promise.all([
   supabase
     .from('trainers')
-    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history, location_confirmed, cc_local_area, cc_country, ranking_visibility')
+    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, rank_history, location_confirmed, cc_local_area, cc_country, ranking_visibility, distinct_reviewer_count')
     .eq('is_active', true)
     .gt('bmp_score', 0)
     .gt('review_count', 0)
@@ -820,7 +821,7 @@ const reviews = [
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7de88a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg> Ranked by BMP Score (0–100) <span style="opacity:0.65;font-size:0.65rem;">ⓘ</span>
           <div class="bmp-chip-tip">
             <strong style="color:white;">What is BMP?</strong><br/>
-            Body Muscle % is our 0–100 trust score for every PT. It combines Review Quality (up to 70 pts), Review Confidence from volume (up to 20 pts), and Recent Momentum for consistent activity (up to 10 pts). The higher the score, the more trusted and active the trainer.
+            Body Muscle % is our 0–100 trust score for every PT. It combines Review Quality (up to 70 pts), Review Confidence from volume (up to 20 pts), and Activity & Trending (up to 10 pts). The higher the score, the more trusted and active the trainer.
           </div>
         </div>
       </div>
@@ -874,9 +875,9 @@ const reviews = [
       <div style="background:#f7f9f7;border:1px solid #e0e8e1;border-radius:16px;padding:2rem;">
         <div style="margin-bottom:1.25rem;">
           <div style="font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#e65c00;line-height:1;margin-bottom:0.3rem;">10 PTS</div>
-          <div style="font-weight:800;font-size:0.78rem;color:#e65c00;margin-bottom:0.4rem;">Recent Momentum</div>
+          <div style="font-weight:800;font-size:0.78rem;color:#e65c00;margin-bottom:0.4rem;">Activity & Trending</div>
         </div>
-        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">Rewards <strong style="color:#111311;">consistent recent activity</strong>. Reviews in the last 7 days count 3× more than those from last month. Consistency beats a single burst — you can't game it with one good week.</p>
+        <p style="font-size:0.875rem;color:#7a8f7c;line-height:1.8;">Rewards <strong style="color:#111311;">consistent recent activity</strong>. Trending trainers earn a direct +2 pt bonus within this component. An established review history also protects against inactivity through a score floor.</p>
       </div>
     </div>
 
@@ -887,7 +888,7 @@ const reviews = [
         {[
           { icon:'🎲', title:'Removes luck', desc:'A single 5-star review could be a friend or a fluke. BMP smooths out early noise — you cannot fake consistency over time.' },
           { icon:'📏', title:'Rewards the long game', desc:'A PT with 30 reviews averaging 4.8 stars will outscore one with 3 reviews at 5 stars. Real quality shows over time.' },
-          { icon:'🔥', title:'Rewards staying active', desc:'The momentum component means trainers who keep collecting reviews rank higher. Going quiet costs you — staying active rewards you.' },
+          { icon:'🔥', title:'Rewards staying active', desc:'The Activity & Trending component rewards consistent review collection. Established trainers retain a score floor — and Trending status earns a 2-point bonus.' },
         ].map(w => (
           <div style="text-align:center;">
             <div style="font-size:1.75rem;margin-bottom:0.65rem;">{w.icon}</div>
@@ -898,14 +899,9 @@ const reviews = [
       </div>
     </div>
 
-    <!-- BMP example range -->
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;text-align:center;">
-      {[
-        { range:'75–100', label:'Elite', color:'#b8860b', bg:'#fdf6e3', desc:'Consistently outstanding with strong recent activity' },
-        { range:'50–74',  label:'Strong', color:'#2a9438', bg:'#eaf7ec', desc:'Above average quality with solid review history' },
-        { range:'25–49',  label:'Developing', color:'#1a4b6b', bg:'#e8f0f7', desc:'Building momentum — early stage or inconsistent' },
-        { range:'0–24',   label:'Rising', color:'#6b1a6b', bg:'#f5e8f7', desc:'New to the platform — building their reputation' },
-      ].map(b => (
+    <!-- BMP score tiers -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;text-align:center;">
+      {BMP_BRACKET_TIERS.map(b => (
         <div style={`background:${b.bg};border-radius:12px;padding:1.25rem 0.75rem;`}>
           <div style={`font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:${b.color};line-height:1;margin-bottom:0.3rem;`}>{b.range}</div>
           <div style={`font-weight:800;font-size:0.78rem;color:${b.color};margin-bottom:0.4rem;`}>{b.label}</div>
@@ -1038,7 +1034,7 @@ const reviews = [
       <div class="about-features-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
         {[
           { icon:'✅', title:'Verified Reviews Only',         desc:'Trainers send unique links directly to real clients after sessions. No anonymous trolling, no paid placements, no fake stars.' },
-          { icon:'📊', title:'The BMP Score',                 desc:'Body Muscle Percentage scores PTs from 0–100 using Review Quality, Review Confidence, and Recent Momentum. Consistency is rewarded.' },
+          { icon:'📊', title:'The BMP Score',                 desc:'Body Muscle Percentage scores PTs from 0–100 using Review Quality, Review Confidence, and Activity & Trending. Consistency is rewarded.' },
           { icon:'🇬🇧', title:'UK-Wide Coverage',            desc:'City-level leaderboards across Scotland, England, Wales and Northern Ireland. Whether you\'re in Glasgow or Guildford, you\'re ranked.' },
           { icon:'🔒', title:'Data Safe & GDPR Compliant',   desc:'All data is encrypted, stored securely, and never sold. We comply fully with the UK GDPR and Data Protection Act 2018.' },
           { icon:'🆓', title:'Free for Every Trainer',        desc:'Every PT can join, build their profile, and start collecting verified reviews at no cost. No hidden fees, no upsells.' },
@@ -1341,6 +1337,12 @@ const reviews = [
       else if (bmpDiff < 0) bmpChangeHtml = '<div style="font-size:0.68rem;font-weight:800;color:#c0392b;margin-top:0.15rem;">' + bmpDiff + ' this month</div>';
     }
 
+    // ── Fresh Face badge (1–2 distinct authenticated reviewers) ─────────────
+    var drc = pt.distinct_reviewer_count;
+    var freshFaceBadge = (drc != null && drc >= 1 && drc <= 2)
+      ? '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(3,105,161,0.15);color:#0369a1;font-size:0.6rem;font-weight:800;letter-spacing:1px;padding:0.2rem 0.55rem;border-radius:20px;border:1px solid rgba(3,105,161,0.3);white-space:nowrap;">✨ Fresh Face</span>'
+      : '';
+
     // ── Recent reviews line (all trainers) ─────────────────────────────────
     var recentCount  = pt.recent_review_count || 0;
     var reviewsLine  = '';
@@ -1370,6 +1372,7 @@ const reviews = [
             '<div class="lbc-name">' + pt.name + '</div>' +
             lbTick +
             trendingBadge +
+            freshFaceBadge +
             cert +
           '</div>' +
           (city ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + city + '</div>' : '') +
@@ -1381,7 +1384,7 @@ const reviews = [
           '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
           '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
           (bmpChangeHtml || '') +
-          '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div>' +
+          '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div>' +
         '</div>' +
       '</a>';
     }
@@ -1392,7 +1395,7 @@ const reviews = [
         (moveHtml ? '<div style="margin-top:0.2rem;">' + moveHtml + '</div>' : '') +
       '</div>' +
       '<div class="lbc-mid">' +
-        '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + '</div>' +
+        '<div class="lbc-top">' + avatar + '<div class="lbc-name">' + pt.name + lbTick + '</div>' + cert + freshFaceBadge + '</div>' +
         (city ? '<div class="lbc-detail" style="display:flex;align-items:center;gap:0.25rem;"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>' + city + '</div>' : '') +
         (spec ? '<div class="lbc-detail"><span class="spec-pill">' + spec + '</span></div>' : '') +
         reviewsLine +
@@ -1402,7 +1405,7 @@ const reviews = [
         '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
         '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
         (bmpChangeHtml || '') +
-        '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div>' +
+        '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div>' +
       '</div>' +
     '</a>';
   }
@@ -1447,6 +1450,10 @@ const reviews = [
     var trendBadge = trending
       ? '<span class="trend-info" style="display:inline-flex;align-items:center;"><span class="hc-badge-trend" style="display:inline-flex;align-items:center;gap:0.25rem;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"/></svg> TRENDING</span><div class="trend-tooltip">Trending trainers have received at least 2 verified reviews in the last 7 days, plus another verified review within the preceding 21 days.</div></span>'
       : '';
+    var hcDrc = t.distinct_reviewer_count;
+    var hcFreshFace = (hcDrc != null && hcDrc >= 1 && hcDrc <= 2)
+      ? '<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(3,105,161,0.15);color:#0369a1;font-size:0.58rem;font-weight:800;letter-spacing:1px;padding:0.18rem 0.45rem;border-radius:20px;border:1px solid rgba(3,105,161,0.3);white-space:nowrap;">✨ Fresh Face</span>'
+      : '';
 
     var _locDisplay = t.displayCity || t.city || t.location;
     var city = _locDisplay
@@ -1488,9 +1495,9 @@ const reviews = [
       '</div>' +
       '<div class="hc-v2-info-row">' +
         '<div class="hc-v2-left">' +
-          '<div class="hc-v2-name-row"><span class="hc-v2-name">' + t.name + '</span>' + tick + trendBadge + '</div>' +
+          '<div class="hc-v2-name-row"><span class="hc-v2-name">' + t.name + '</span>' + tick + trendBadge + hcFreshFace + '</div>' +
         '</div>' +
-        '<div class="hc-v2-bmp-col"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div>' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
+        '<div class="hc-v2-bmp-col"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div>' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
       '</div>' +
       city + pills + statsHtml +
     '</a>';

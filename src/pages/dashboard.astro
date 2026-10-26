@@ -1885,6 +1885,7 @@
             <div class="mybmp-score-info">
               <div class="mybmp-big-score" id="mybmp-big-score">—</div>
               <div class="mybmp-tier-badge" id="mybmp-tier-badge" style="background:rgba(156,163,175,0.15);color:#9ca3af;">Loading…</div>
+              <span id="mybmp-fresh-face" hidden style="display:inline-flex;align-items:center;gap:3px;background:rgba(96,165,250,0.12);color:#60a5fa;font-size:0.62rem;font-weight:800;letter-spacing:1.2px;padding:0.18rem 0.5rem;border-radius:20px;border:1px solid rgba(96,165,250,0.3);margin-top:0.35rem;">✨ FRESH FACE</span>
               <div class="mybmp-tier-desc" id="mybmp-tier-desc">Loading your performance data…</div>
             </div>
           </div>
@@ -2088,6 +2089,7 @@
   import { supabase } from '../lib/supabase';
   import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
   import { getLocalAreaLabel as _getAreaLabel, getVerifiedLocationLabel as _getVerifiedLoc } from '../lib/rankingAreas';
+  import { getDashboardBracket as _getDashboardBracket } from '../lib/bmpConfig';
 
   // ── Auth guard ──────────────────────────────────────────────────────────
   // Fast path: read from localStorage (persisted across visits).
@@ -2573,21 +2575,18 @@
         return age >= ms7d && age < ms28d;
       });
 
-      const trendA = reviews7d.length;   // condition A: need ≥ 2
-      const trendB = reviewsPrev.length; // condition B: need ≥ 1
+      // Trending requires rating ≥ 3.5 (matches SQL trending conditions)
+      const trendA = reviews7d.filter((r: any) => r.rating >= 3.5).length;   // condition A: need ≥ 2
+      const trendB = reviewsPrev.filter((r: any) => r.rating >= 3.5).length; // condition B: need ≥ 1
 
-      // ── Bracket definition ───────────────────────────────────────────────
-      function getBracket(s: number) {
-        if (!s) return { name:'No score yet', color:'#6b7280', bg:'#f3f4f6', desc:'Start collecting verified reviews to receive your first BMP score.' };
-        if (s < 55) return { name:'Emerging', color:'#d97706', bg:'#fef3c7', desc:'Your reputation is starting to form. Keep collecting genuine client reviews to build momentum.' };
-        if (s < 70) return { name:'Building', color:'#7c3aed', bg:'#ede9fe', desc:'You\'re establishing a solid review history. Consistent activity will push your score higher.' };
-        if (s < 80) return { name:'Established', color:'#0369a1', bg:'#e0f2fe', desc:'A dependable review base and good client ratings put you in the established tier.' };
-        if (s < 90) return { name:'Strong', color:'#2a9438', bg:'#eaf7ec', desc:'Strong review quality and consistent activity mark you as a trusted PT in your area.' };
-        if (s < 95) return { name:'Elite', color:'#166534', bg:'#d1fae5', desc:'Elite scores reflect outstanding review quality and sustained engagement from clients.' };
-        return { name:'Top Performer', color:'#92400e', bg:'#fef3c7', desc:'You\'re among the top-ranked PTs on CoachCards. Maintain your momentum to stay there.' };
-      }
-
-      const bracket = getBracket(bmpScore);
+      // ── Bracket definition (delegates to bmpConfig) ──────────────────────
+      const bracketData = _getDashboardBracket(bmpScore);
+      const bracket = bracketData ?? {
+        name:  'Building Reputation',
+        color: '#6b7280',
+        bg:    '#f3f4f6',
+        desc:  'Start collecting verified reviews to receive your first BMP score.',
+      };
 
       // ── Update hero ──────────────────────────────────────────────────────
       const dbZoneEl     = document.getElementById('mybmp-db-zone')     as HTMLElement;
@@ -2598,23 +2597,36 @@
 
       if (dbZoneEl) {
         dbZoneEl.innerHTML = _bmpDumbbell(bmpScore, 340);
-        const _gr = bmpScore >= 95 ? 36 : bmpScore >= 70 ? 22 : bmpScore >= 40 ? 12 : 0;
-        const _ga = bmpScore >= 95 ? 0.70 : bmpScore >= 70 ? 0.48 : bmpScore >= 40 ? 0.28 : 0;
-        dbZoneEl.style.filter = _gr > 0
-          ? `drop-shadow(0 0 ${_gr}px rgba(58,181,74,${_ga}))`
-          : 'none';
+        if (bmpScore >= 95) {
+          // Premium dual-layer halo: Elite tier
+          dbZoneEl.style.filter = 'drop-shadow(0 0 52px rgba(58,181,74,0.88)) drop-shadow(0 0 22px rgba(58,181,74,0.65))';
+        } else if (bmpScore >= 80) {
+          // Strong/Advanced tier glow
+          dbZoneEl.style.filter = 'drop-shadow(0 0 26px rgba(58,181,74,0.52))';
+        } else if (bmpScore >= 70) {
+          // Established tier subtle glow
+          dbZoneEl.style.filter = 'drop-shadow(0 0 13px rgba(58,181,74,0.30))';
+        } else {
+          dbZoneEl.style.filter = 'none';
+        }
       }
       if (bigScoreEl) {
         bigScoreEl.textContent = bmpScore > 0 ? bmpScore + '%' : '—';
         bigScoreEl.style.color = '#f0f0f0';
       }
       if (tierBadgeEl) {
-        const crown = bracket.name === 'Top Performer' ? '👑 ' : '';
+        const crown = bracket.name === 'Elite' ? '👑 ' : '';
         tierBadgeEl.textContent      = crown + bracket.name;
         tierBadgeEl.style.background = bracket.bg;
         tierBadgeEl.style.color      = bracket.color;
       }
       if (tierDescEl) tierDescEl.textContent = bracket.desc;
+
+      const ffEl = document.getElementById('mybmp-fresh-face') as HTMLElement;
+      if (ffEl) {
+        const dCount = (trainer as any).distinct_reviewer_count;
+        ffEl.hidden = !(dCount !== null && dCount !== undefined && dCount >= 1 && dCount <= 2);
+      }
 
       if (statsStripEl) {
         const icoReviews = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`;
@@ -2773,7 +2785,7 @@
         });
       }
 
-      // R8: Established history but BMP below 70 — quality likely the constraint
+      // R8: Review history but BMP below 70 (Developing bracket) — quality likely the constraint
       if (totalCount >= 5 && bmpScore > 0 && bmpScore < 70) {
         recos.push({
           priority: 65,
@@ -3085,34 +3097,39 @@
       if (!hasBmp) {
         breakdownEl.innerHTML = `<div style="text-align:center;color:var(--muted);font-size:0.82rem;padding:0.75rem 0;">Collect reviews to unlock your score breakdown.</div>`;
       } else {
-        // BMP v2 — client-side approximation matching the server formula
+        // BMP v3 — client-side approximation (prior 8@4.0★, activity floor, trending +2)
         const n          = trainer.review_count ?? 0;
         const sumRatings = (trainer.star_rating ?? 0) * n;
-        const smoothedAvg = (sumRatings + 5 * 3.5) / (n + 5);
+        const smoothedAvg = (sumRatings + 8.0 * 4.0) / (n + 8.0);
         const qualityPts  = Math.round(Math.min((smoothedAvg / 5) * 70, 70) * 10) / 10;
         const qualityPct  = Math.round((qualityPts / 70) * 100);
 
         const confPts  = Math.round(Math.min(Math.log(n + 1) / Math.log(51), 1) * 20 * 10) / 10;
         const confPct  = Math.round((confPts / 20) * 100);
 
-        // Momentum: approximate from last review date (server has full per-review data)
+        // Activity: momentum * 0.8 + trending bonus, with activity floor, capped at 10
         const now = Date.now();
-        let momPts = 0;
+        let momRaw = 0;
         reviews.forEach((r: any) => {
           const age = (now - new Date(r.created_at).getTime()) / 86400000;
           if (r.rating >= 3.5) {
-            if (age <= 7)  momPts += 3.0;
-            else if (age <= 30) momPts += 1.5;
-            else if (age <= 90) momPts += 0.75;
+            if (age <= 7)  momRaw += 3.0;
+            else if (age <= 30) momRaw += 1.5;
+            else if (age <= 90) momRaw += 0.75;
           }
         });
-        momPts = Math.round(Math.min(momPts / 7.5, 1) * 10 * 10) / 10;
-        const momPct = Math.round((momPts / 10) * 100);
+        const momNorm       = Math.min(momRaw / 7.5, 1) * 10;
+        const activityFloor = Math.min(n / 20, 1) * 5;
+        const isTrendingBool = (trainer as any).is_trending;
+        const trendingBonus  = isTrendingBool ? 2.0 : 0.0;
+        // Model C: floor applied after cap — max(min(momentum*0.8 + bonus, 10), floor)
+        const activityPts = Math.round(Math.max(Math.min(momNorm * 0.8 + trendingBonus, 10), activityFloor) * 10) / 10;
+        const activityPct = Math.round((activityPts / 10) * 100);
 
-        const trendHtml = (trainer as any).is_trending
+        const trendHtml = isTrendingBool
           ? `<div style="margin-top:1rem;padding:0.65rem 0.9rem;background:rgba(255,160,0,0.12);border:1px solid rgba(255,160,0,0.3);border-radius:8px;display:flex;align-items:center;gap:0.5rem;">
-               <span style="font-size:0.75rem;font-weight:800;color:#ff9800;letter-spacing:1px;">TRENDING</span>
-               <span style="font-size:0.72rem;color:rgba(255,255,255,0.55);">You're gaining momentum — keep collecting reviews.</span>
+               <span style="font-size:0.75rem;font-weight:800;color:#ff9800;letter-spacing:1px;">TRENDING +2 PTS</span>
+               <span style="font-size:0.72rem;color:rgba(255,255,255,0.55);">Trending status adds a 2-pt bonus to your Activity score.</span>
              </div>`
           : '';
 
@@ -3128,7 +3145,7 @@
         breakdownEl.innerHTML =
           row('Review Quality', qualityPct, qualityPts) +
           row('Confidence', confPct, confPts) +
-          row('Momentum', momPct, momPts) +
+          row('Activity & Trending', activityPct, activityPts) +
           trendHtml;
       }
     }

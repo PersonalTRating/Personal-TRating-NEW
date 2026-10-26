@@ -25,6 +25,7 @@ interface Props {
   locationConfirmed?: boolean;
   verifiedLocation?: string | null;
   rankingVisibility?: string;
+  distinctReviewerCount?: number | null;
 }
 
 const {
@@ -51,6 +52,7 @@ const {
   locationConfirmed = false,
   verifiedLocation,
   rankingVisibility = 'all',
+  distinctReviewerCount = null,
 } = Astro.props;
 
 // Use the confirmed area name for confirmed trainers; fall back to the
@@ -71,6 +73,11 @@ const reviewsBase = revCount === 0
   : revCount + ' verified ' + (revCount === 1 ? 'review' : 'reviews');
 const reviewsHot = recentReviewCount >= 1 && revCount > 0;
 
+// null  = column unavailable (pre-migration) → hide badge safely
+// 0     = post-migration, no authenticated distinct reviewers
+// 1–2   = Fresh Face ✅
+// 3+    = not Fresh Face
+const isFreshFace = distinctReviewerCount !== null && distinctReviewerCount >= 1 && distinctReviewerCount <= 2;
 const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
 ---
 
@@ -131,6 +138,9 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
             <div class="trend-tooltip">Trending trainers have received at least 2 verified reviews in the last 7 days, plus another verified review within the preceding 21 days.</div>
           </div>
         )}
+        {isFreshFace && (
+          <span class="trc-fresh-face-pill">✨ Fresh Face</span>
+        )}
       </div>
       {(metaCity || metaSpec || coachingLabel) && (
         <div class="trc-meta">
@@ -158,7 +168,7 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     {bmpDisplay != null && (
       <div class="trc-bmp-db"><Fragment set:html={bmpDumbbell(bmpScore, 38)} /></div>
     )}
-    <div class="bmp-tooltip">BMP — Body Muscle Percentage.<br/>CoachCards' verified ranking score:<br/><strong>Quality 70pts · Confidence 20pts · Momentum 10pts</strong><br/>Calculated from real, verified client reviews only.</div>
+    <div class="bmp-tooltip">BMP — Body Muscle Percentage.<br/>CoachCards' verified ranking score:<br/><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br/>Calculated from real, verified client reviews only.</div>
   </div>
 </a>
 
@@ -265,6 +275,21 @@ const bmpDisplay = revCount === 0 ? null : (bmpScore || '—');
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
+  }
+
+  .trc-fresh-face-pill {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: #0369a1;
+    background: #e0f2fe;
+    border: 1px solid rgba(3,105,161,0.25);
+    padding: 0.18rem 0.55rem;
+    border-radius: 20px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   .trc-meta {

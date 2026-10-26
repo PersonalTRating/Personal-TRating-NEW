@@ -6,7 +6,7 @@ import { RANKING_AREAS, getLocalAreaLabel, getVerifiedLocationLabel, getVisibili
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed')
+  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed, distinct_reviewer_count')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
@@ -60,7 +60,8 @@ const allTrainers = raw.map((t: any, i: number) => ({
                             rvMap[t.id] || (rvQueryOk ? 'all' : 'uk_only')
                           )
                         : null,
-  rankingVisibility:  rvMap[t.id] || (rvQueryOk ? 'all' : 'uk_only'),
+  rankingVisibility:      rvMap[t.id] || (rvQueryOk ? 'all' : 'uk_only'),
+  distinctReviewerCount:  (t as any).distinct_reviewer_count ?? null,
 }));
 
 // Country rank map: rank within confirmed country groups of 10+ trainers, sorted by BMP.
@@ -347,6 +348,7 @@ const participationState: 'empty' | 'growing' | 'full' =
             locationConfirmed={t.locationConfirmed}
             verifiedLocation={t.verifiedLocation}
             rankingVisibility={t.rankingVisibility}
+            distinctReviewerCount={t.distinctReviewerCount}
           />
         ))}
       </Fragment>
