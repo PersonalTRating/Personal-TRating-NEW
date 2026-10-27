@@ -603,7 +603,7 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
 
 <script>
   import { supabase } from '../../lib/supabase';
-  import { bmpDumbbell as _bmpDumbbell } from '../../lib/bmpDumbbell';
+  import { bmpDumbbell as _bmpDumbbell, bmpFrameSrc as _bmpFrameSrc } from '../../lib/bmpDumbbell';
 
   const dataEl      = document.getElementById('rv-data') as HTMLElement;
   const trainerId   = dataEl.dataset.trainerId!;
@@ -847,7 +847,10 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     selectedRating         = parseInt(slider.value);
     pctDisplay.textContent = String(selectedRating);
     labelEl.textContent    = bmpLabel(selectedRating);
-    bmpDbsEl.innerHTML     = _bmpDumbbell(selectedRating);
+    const _sliderFs = _bmpFrameSrc(selectedRating);
+    bmpDbsEl.innerHTML = _sliderFs
+      ? `<img src="${_sliderFs}" alt="" width="1000" height="410" style="width:52px;height:auto;display:block;" loading="eager" decoding="async">`
+      : _bmpDumbbell(selectedRating);
     updateSliderTrack(selectedRating);
   });
 

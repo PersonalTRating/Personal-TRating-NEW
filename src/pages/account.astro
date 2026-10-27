@@ -765,7 +765,7 @@
 
 <script>
   import { supabase } from '../lib/supabase';
-  import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
+  import { bmpDumbbell as _bmpDumbbell, bmpFrameSrc as _bmpFrameSrc } from '../lib/bmpDumbbell';
 
   // ── Auth guard ─────────────────────────────────────────────────────────────
   const { data: { session } } = await supabase.auth.getSession();
@@ -863,7 +863,10 @@
       const date    = new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
       const bmp     = t?.bmp_score ?? 0;
       const bmpDisp = bmp % 1 === 0 ? String(bmp) : bmp.toFixed(1);
-      const dbs = _bmpDumbbell(bmp, 48);
+      const _dbsSrc48 = _bmpFrameSrc(bmp);
+      const dbs = _dbsSrc48
+        ? `<img src="${_dbsSrc48}" alt="" width="1000" height="410" style="width:48px;height:auto;display:block;" loading="lazy" decoding="async">`
+        : _bmpDumbbell(bmp, 48);
       const revCount = t?.review_count ?? 0;
       return `<a href="/trainers/${r.trainer_id}" class="review-item">
         <div class="review-left">
@@ -1018,7 +1021,12 @@
       const date    = new Date(r.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
       const bmp     = t?.bmp_score ?? null;
       const bmpDisp = bmp !== null ? (bmp % 1 === 0 ? String(bmp) : bmp.toFixed(1)) : null;
-      const dbs     = bmp !== null ? _bmpDumbbell(bmp, 36) : '';
+      const _dbsSrc36 = bmp !== null ? _bmpFrameSrc(bmp) : null;
+      const dbs     = bmp !== null
+        ? (_dbsSrc36
+            ? `<img src="${_dbsSrc36}" alt="" width="1000" height="410" style="width:36px;height:auto;display:block;" loading="lazy" decoding="async">`
+            : _bmpDumbbell(bmp, 36))
+        : '';
       const bmpRight = bmpDisp !== null
         ? `<div class="har-bmp-label">BMP</div>
            <div class="har-bmp-score">${bmpDisp}</div>

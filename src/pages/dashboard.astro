@@ -858,6 +858,12 @@
 <script is:inline src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style is:global>
+  /* ── All Reviews — mobile card wrap ── */
+  @media (max-width:640px) {
+    .all-review-card { flex-wrap:wrap !important; }
+    .all-review-appeal { width:100%; display:flex !important; justify-content:flex-end; padding-top:0.5rem; }
+  }
+
   /* ── Onboarding checklist ──────────────────────────────── */
   #onboard-wrap {
     background: linear-gradient(135deg, #0d1a0e 0%, #1a3d1e 100%);
@@ -2089,17 +2095,9 @@
 
 <script>
   import { supabase } from '../lib/supabase';
-  import { bmpDumbbell as _bmpDumbbell } from '../lib/bmpDumbbell';
+  import { bmpDumbbell as _bmpDumbbell, bmpFrameSrc as _bmpFrameSrc } from '../lib/bmpDumbbell';
   import { getLocalAreaLabel as _getAreaLabel, getVerifiedLocationLabel as _getVerifiedLoc } from '../lib/rankingAreas';
   import { getDashboardBracket as _getDashboardBracket } from '../lib/bmpConfig';
-
-  // BMP v3 frame URL: score 1–94 → bmp-0XX.webp, 95+ → bmp-100.webp, else null
-  function _bmpFrameSrc(score: number | null | undefined): string | null {
-    if (score == null || !Number.isFinite(score) || score <= 0) return null;
-    const _s = Math.max(0, Math.min(100, score));
-    const _f = _s >= 95 ? 100 : Math.min(94, Math.round(_s));
-    return `/assets/bmp-frames/bmp-${String(_f).padStart(3, '0')}.webp`;
-  }
 
   // ── Auth guard ──────────────────────────────────────────────────────────
   // Fast path: read from localStorage (persisted across visits).
@@ -2549,6 +2547,10 @@
         recentList.innerHTML = reviews.slice(0, 3).map((r: any) => {
           const date = new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
           const bmpPct = Math.round(r.rating * 20);
+          const _fs48 = _bmpFrameSrc(r.rating * 20);
+          const _dbs48 = _fs48
+            ? `<img src="${_fs48}" alt="" width="1000" height="410" style="width:48px;height:auto;display:block;" loading="lazy" decoding="async">`
+            : _bmpDumbbell(r.rating * 20, 48);
           return `<div style="display:flex;flex-direction:column;gap:0.55rem;border:2px solid rgba(58,181,74,0.35);box-shadow:0 0 8px rgba(58,181,74,0.2),0 0 22px rgba(58,181,74,0.1);border-radius:12px;padding:1.1rem 1.25rem;background:#111311;">
             <div style="display:flex;align-items:center;gap:0.85rem;">
               <div style="width:52px;height:52px;border-radius:50%;background:${r.reviewer_avatar_bg||'#1a3d1e'};color:${r.reviewer_avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.85rem;flex-shrink:0;font-family:'Manrope',sans-serif;">${r.reviewer_initials||'?'}</div>
@@ -2557,7 +2559,7 @@
                   <div style="font-weight:800;font-size:0.92rem;color:white;font-family:'Manrope',sans-serif;">${r.reviewer_name} <span style="font-weight:400;color:rgba(255,255,255,0.4);font-size:0.78rem;">· Verified Client</span></div>
                   <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);font-family:'Manrope',sans-serif;flex-shrink:0;">${date}</div>
                 </div>
-                <div style="display:flex;gap:3px;margin-top:0.3rem;">${_bmpDumbbell(r.rating * 20, 48)}</div>
+                <div style="display:flex;gap:3px;margin-top:0.3rem;">${_dbs48}</div>
                 <div style="font-size:0.78rem;color:#3ab54a;font-weight:700;margin-top:0.2rem;font-family:'Manrope',sans-serif;">BMP assigned: ${bmpPct}%</div>
               </div>
             </div>
@@ -3083,8 +3085,12 @@
           } else if (appealStatus === 'upheld') {
             appealHtml = `<button class="appeal-btn upheld" disabled>Appeal Rejected</button>`;
           }
+          const _fs52 = _bmpFrameSrc(r.rating * 20);
+          const _dbs52 = _fs52
+            ? `<img src="${_fs52}" alt="" width="1000" height="410" style="width:52px;height:auto;display:block;" loading="lazy" decoding="async">`
+            : _bmpDumbbell(r.rating * 20, 52);
           return `
-          <div style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem 1.5rem;border:1px solid #e8ede9;border-radius:12px;margin-bottom:0.75rem;background:white;">
+          <div class="all-review-card" style="display:flex;gap:1rem;align-items:flex-start;padding:1.25rem 1.5rem;border:1px solid #e8ede9;border-radius:12px;margin-bottom:0.75rem;background:white;">
             <div style="width:44px;height:44px;border-radius:50%;background:${r.reviewer_avatar_bg||'#eaf7ec'};color:${r.reviewer_avatar_color||'#2a9438'};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.82rem;flex-shrink:0;">${r.reviewer_initials||'?'}</div>
             <div style="flex:1;min-width:0;">
               <div style="display:flex;align-items:center;gap:0.35rem;flex-wrap:wrap;margin-bottom:0.3rem;">
@@ -3095,12 +3101,12 @@
                 <span style="font-size:0.78rem;color:#7a8f7c;">${new Date(r.created_at).toLocaleDateString('en-GB')}</span>
               </div>
               <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.35rem;">
-                <div style="display:flex;gap:3px;align-items:center;">${_bmpDumbbell(r.rating * 20, 52)}</div>
+                <div style="display:flex;gap:3px;align-items:center;">${_dbs52}</div>
                 <span style="font-size:0.78rem;font-weight:700;color:#3ab54a;">BMP assigned: ${Math.round(r.rating * 20)}%</span>
               </div>
               <div style="font-size:0.83rem;color:#3a4a3b;line-height:1.6;overflow-wrap:break-word;word-break:break-word;">"${r.review_text}"</div>
             </div>
-            <div style="flex-shrink:0;display:flex;align-items:center;">${appealHtml}</div>
+            <div class="all-review-appeal" style="flex-shrink:0;display:flex;align-items:center;">${appealHtml}</div>
           </div>`;
         }).join('');
       }
@@ -3260,6 +3266,10 @@
           const initials = r.is_anonymous ? '?' : (r.reviewer_initials || (r.reviewer_name||'?').slice(0,2).toUpperCase());
           const displayName = r.is_anonymous ? 'Anonymous' : (r.reviewer_name || 'Client');
           const bmp = Math.round((r.rating || 0) * 20);
+          const _fs44 = _bmpFrameSrc(r.rating * 20);
+          const _dbs44 = _fs44
+            ? `<img src="${_fs44}" alt="" width="1000" height="410" style="width:44px;height:auto;display:block;margin:0 auto;" loading="lazy" decoding="async">`
+            : _bmpDumbbell(r.rating * 20, 44);
           return `<div style="display:flex;gap:1rem;padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);align-items:flex-start;">
             <div style="width:42px;height:42px;border-radius:50%;background:${r.reviewer_avatar_bg||'#e8f5e9'};color:${r.reviewer_avatar_color||'#2a6b35'};display:flex;align-items:center;justify-content:center;font-size:0.88rem;font-weight:800;flex-shrink:0;font-family:'Manrope',sans-serif;">${initials}</div>
             <div style="flex:1;min-width:0;">
@@ -3270,7 +3280,7 @@
             <div style="text-align:center;flex-shrink:0;min-width:72px;">
               <div style="font-size:0.58rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:0.1rem;">BMP</div>
               <div style="font-size:1.65rem;font-weight:900;color:var(--text);line-height:1;">${bmp}<span style="font-size:0.72rem;font-weight:600;color:var(--muted);">%</span></div>
-              <div style="margin:0.3rem 0;">${_bmpDumbbell(r.rating * 20, 44)}</div>
+              <div style="margin:0.3rem 0;">${_dbs44}</div>
               <div style="font-size:0.65rem;font-weight:700;color:var(--green-dark);">✓ Verified Client</div>
             </div>
           </div>`;

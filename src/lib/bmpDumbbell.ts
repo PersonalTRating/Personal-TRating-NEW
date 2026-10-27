@@ -36,3 +36,10 @@ export function bmpDumbbell(bmp: number, w = 52): string {
     `</div>`
   );
 }
+
+export function bmpFrameSrc(score: number | null | undefined): string | null {
+  if (score == null || !Number.isFinite(score) || score <= 0) return null;
+  const s = Math.max(0, Math.min(100, score));
+  const f = s >= 95 ? 100 : Math.min(94, Math.round(s));
+  return `/assets/bmp-frames/bmp-${String(f).padStart(3, '0')}.webp`;
+}

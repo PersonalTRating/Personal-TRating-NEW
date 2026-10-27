@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase';
-import { bmpDumbbell } from '../../lib/bmpDumbbell';
+import { bmpDumbbell, bmpFrameSrc } from '../../lib/bmpDumbbell';
 import { getLocalAreaLabel } from '../../lib/rankingAreas';
 import { getPublicRankBadge } from '../../lib/bmpConfig';
 
@@ -74,6 +74,12 @@ function _heroGradient(hex: string): string {
   const lum = _luminanceHex(hex);
   const fMid = lum > 0.5 ? 0.82 : lum > 0.2 ? 0.70 : 0.52;
   return `linear-gradient(to right,#050403 0%,${_darkenHex(hex,fMid)} 50%,${hex} 100%)`;
+}
+function _bmpImg(score: number | null | undefined, w: number): string {
+  const src = bmpFrameSrc(score);
+  return src
+    ? `<img src="${src}" alt="" width="1000" height="410" style="width:${w}px;height:auto;display:inline-block;" loading="lazy" decoding="async">`
+    : bmpDumbbell(score ?? 0, w);
 }
 
 const heroThemes: Record<string, string> = {
@@ -582,7 +588,7 @@ const maskName = (name: string): string => {
             <span style="color:rgba(255,255,255,0.85);font-size:0.88rem;display:inline-flex;align-items:center;gap:0.35rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{displayLocation}</span>
           )}
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-            <span set:html={bmpDumbbell(trainer.bmp_score, 52)} />
+            <span set:html={_bmpImg(trainer.bmp_score, 52)} />
             <span style="font-family:'Manrope',sans-serif;color:#3ab54a;font-weight:800;font-size:0.9rem;">{trainer.bmp_score}</span>
             <span style="font-family:'Manrope',sans-serif;color:rgba(255,255,255,0.65);font-size:0.82rem;">BMP · {reviews.length} verified {reviews.length === 1 ? 'review' : 'reviews'}</span>
             {trainer.is_trending && (
@@ -807,7 +813,7 @@ const maskName = (name: string): string => {
             <div style="text-align:center;flex-shrink:0;">
               <div style="font-size:4rem;font-weight:900;color:#111311;line-height:1;">{trainer.star_rating}</div>
               <div style="display:flex;gap:4px;justify-content:center;margin:0.5rem 0;">
-                <span set:html={bmpDumbbell(trainer.bmp_score, 60)} />
+                <span set:html={_bmpImg(trainer.bmp_score, 60)} />
               </div>
               <div style="font-size:0.78rem;color:#8a8f8a;">{reviews.length} verified {reviews.length === 1 ? 'review' : 'reviews'}</div>
             </div>
@@ -817,7 +823,7 @@ const maskName = (name: string): string => {
               {starCounts.map(({ star, count }) => (
                 <div style="display:flex;align-items:center;gap:0.75rem;">
                   <span style="font-size:0.75rem;font-weight:700;color:#111311;width:10px;text-align:right;flex-shrink:0;">{star}</span>
-                  <span style="flex-shrink:0;line-height:1;"><Fragment set:html={bmpDumbbell(star * 20, 13)} /></span>
+                  <span style="flex-shrink:0;line-height:1;"><Fragment set:html={_bmpImg(star * 20, 18)} /></span>
                   <div class="db-bar-track">
                     <div class="db-bar-fill" style={`width:${reviews.length > 0 ? Math.round((count / reviews.length) * 100) : 0}%`}></div>
                   </div>
@@ -864,7 +870,7 @@ const maskName = (name: string): string => {
               <div class="tp-rev-bmp-panel" style="width:160px;flex-shrink:0;border-left:1px solid #e0e8e1;background:#fafbfa;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 1rem;gap:0.5rem;text-align:center;">
                 <div style="font-size:0.62rem;font-weight:700;letter-spacing:0.08em;color:#8a8f8a;">BMP</div>
                 <div style="font-size:2.5rem;font-weight:900;line-height:1;color:#111311;">{Math.round(r.rating * 20)}<span style="font-size:1.1rem;font-weight:700;color:#2a9438;">%</span></div>
-                <span style="display:flex;gap:2px;justify-content:center;"><Fragment set:html={bmpDumbbell(r.rating * 20, 52)} /></span>
+                <span style="display:flex;gap:2px;justify-content:center;"><Fragment set:html={_bmpImg(r.rating * 20, 52)} /></span>
                 <div style="font-size:0.7rem;color:#2a9438;font-weight:600;margin-top:0.2rem;display:flex;align-items:center;gap:0.25rem;justify-content:center;">
                   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2a9438" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   {r.is_anonymous ? 'Verified · Anonymous' : 'Verified Client'}
@@ -877,7 +883,7 @@ const maskName = (name: string): string => {
       </>
     ) : (
       <div style="background:#f4f6f4;border-radius:16px;border:1px dashed #c3e6c8;padding:4rem 2rem;text-align:center;">
-        <div style="font-size:2.5rem;margin-bottom:1rem;"><Fragment set:html={bmpDumbbell(0, 60)} /></div>
+        <div style="font-size:2.5rem;margin-bottom:1rem;"><Fragment set:html={_bmpImg(0, 60)} /></div>
         <div style="font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:#111311;margin-bottom:0.6rem;">No reviews yet</div>
         <div style="color:#8a8f8a;font-size:0.9rem;margin-bottom:2rem;max-width:380px;margin-left:auto;margin-right:auto;line-height:1.7;">
           Be the first to leave a verified review and help {trainer.name} build their ranking.
