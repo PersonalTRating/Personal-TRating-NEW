@@ -2596,19 +2596,20 @@
       const statsStripEl = document.getElementById('mybmp-stats-strip') as HTMLElement;
 
       if (dbZoneEl) {
-        dbZoneEl.innerHTML = _bmpDumbbell(bmpScore, 340);
-        if (bmpScore >= 95) {
-          // Premium dual-layer halo: Elite tier
-          dbZoneEl.style.filter = 'drop-shadow(0 0 52px rgba(58,181,74,0.88)) drop-shadow(0 0 22px rgba(58,181,74,0.65))';
-        } else if (bmpScore >= 80) {
-          // Strong/Advanced tier glow
-          dbZoneEl.style.filter = 'drop-shadow(0 0 26px rgba(58,181,74,0.52))';
-        } else if (bmpScore >= 70) {
-          // Established tier subtle glow
-          dbZoneEl.style.filter = 'drop-shadow(0 0 13px rgba(58,181,74,0.30))';
-        } else {
-          dbZoneEl.style.filter = 'none';
+        // BMP v3 frame images: score 0–94 → bmp-0XX.webp; 95+ → bmp-100.webp (glow baked in)
+        const _rawBmp = (trainer as any).bmp_score;
+        let _frameSrc: string | null = null;
+        if (_rawBmp != null && Number.isFinite(_rawBmp) && _rawBmp > 0) {
+          const _s = Math.max(0, Math.min(100, _rawBmp));
+          const _f = _s >= 95 ? 100 : Math.min(94, Math.round(_s));
+          _frameSrc = `/assets/bmp-frames/bmp-${String(_f).padStart(3, '0')}.webp`;
         }
+        if (_frameSrc) {
+          dbZoneEl.innerHTML = `<img src="${_frameSrc}" alt="BMP score dumbbell" width="1000" height="410" style="width:100%;height:auto;display:block;object-fit:contain;" loading="eager" decoding="async">`;
+        } else {
+          dbZoneEl.innerHTML = _bmpDumbbell(bmpScore, 340);
+        }
+        dbZoneEl.style.filter = 'none';
       }
       if (bigScoreEl) {
         bigScoreEl.textContent = bmpScore > 0 ? bmpScore + '%' : '—';
