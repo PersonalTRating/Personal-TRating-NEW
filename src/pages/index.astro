@@ -250,12 +250,12 @@ const reviews = [
   .lb-card {
     display:flex; align-items:center; gap:1.25rem;
     background:rgba(8,16,9,0.95); border-radius:14px; padding:1.1rem 1.4rem;
-    border:1px solid rgba(58,181,74,0.18); border-left:3px solid rgba(58,181,74,0.45);
+    border:1px solid rgba(58,181,74,0.4); border-left:3px solid rgba(58,181,74,0.8);
     text-decoration:none; color:inherit;
     position:relative; z-index:1;
     transition:box-shadow 0.2s ease, transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease;
     cursor:pointer;
-    box-shadow:0 0 8px rgba(58,181,74,0.14), 0 0 18px rgba(58,181,74,0.06), 0 2px 12px rgba(0,0,0,0.3);
+    box-shadow:0 0 10px rgba(58,181,74,0.28), 0 0 22px rgba(58,181,74,0.13), 0 2px 12px rgba(0,0,0,0.3);
   }
   .lb-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12); transform:translateY(-3px); border-color:rgba(58,181,74,0.38); z-index:10; }
   .lb-card:focus-visible { outline:3px solid #3ab54a; outline-offset:3px; }
@@ -464,11 +464,11 @@ const reviews = [
     display:flex; flex-direction:column; gap:0.28rem;
     padding:0.65rem 0.85rem;
     background:rgba(8,16,9,0.88);
-    border:1px solid rgba(58,181,74,0.22);
+    border:1px solid rgba(58,181,74,0.4);
     border-radius:10px;
     text-decoration:none; color:inherit; cursor:pointer;
     transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
-    box-shadow:0 0 7px rgba(58,181,74,0.14), 0 0 16px rgba(58,181,74,0.06), 0 2px 10px rgba(0,0,0,0.3);
+    box-shadow:0 0 10px rgba(58,181,74,0.28), 0 0 20px rgba(58,181,74,0.13), 0 2px 10px rgba(0,0,0,0.3);
   }
   .hc-v2:hover {
     transform:translateY(-2px);
@@ -477,8 +477,8 @@ const reviews = [
   }
   .hc-v2:focus-visible { outline:2px solid #3ab54a; outline-offset:3px; }
   .hc-v2--trending {
-    border-color:rgba(180,0,0,0.5);
-    box-shadow:0 0 8px rgba(150,0,0,0.45), 0 0 18px rgba(150,0,0,0.2);
+    border-color:rgba(200,0,0,0.65);
+    box-shadow:0 0 10px rgba(200,0,0,0.5), 0 0 24px rgba(150,0,0,0.28), 0 2px 10px rgba(0,0,0,0.35);
   }
   .hc-v2--trending:hover {
     border-color:rgba(200,0,0,0.75);
@@ -534,15 +534,15 @@ const reviews = [
   .hc-v2-stats--hot { color:rgba(200,60,60,0.85); }
 
   /* Leaderboard section — dark cards on dark green background */
-  #leaderboard .lb-card { border-color:rgba(58,181,74,0.28); box-shadow:0 0 8px rgba(58,181,74,0.14), 0 0 18px rgba(58,181,74,0.06), 0 2px 12px rgba(0,0,0,0.3); }
+  #leaderboard .lb-card { border-color:rgba(58,181,74,0.45); box-shadow:0 0 10px rgba(58,181,74,0.28), 0 0 22px rgba(58,181,74,0.13), 0 2px 12px rgba(0,0,0,0.3); }
   #leaderboard .lb-card:hover { border-color:rgba(58,181,74,0.5); box-shadow:0 4px 18px rgba(0,0,0,0.45), 0 0 12px rgba(58,181,74,0.15); transform:translateY(-2px); }
 
   /* ── Trending card — red hot override (same dimensions as standard) ── */
   .lb-card--trending {
     background:rgba(20,4,4,0.96) !important;
-    border:1px solid rgba(200,0,0,0.5) !important;
+    border:1px solid rgba(200,0,0,0.65) !important;
     border-left:3px solid #cc0000 !important;
-    box-shadow:0 0 8px rgba(150,0,0,0.45), 0 0 18px rgba(150,0,0,0.2), 0 2px 12px rgba(0,0,0,0.35) !important;
+    box-shadow:0 0 10px rgba(200,0,0,0.5), 0 0 24px rgba(150,0,0,0.28), 0 2px 12px rgba(0,0,0,0.35) !important;
   }
   .lb-card--trending:hover {
     border-color:rgba(220,0,0,0.7) !important;
@@ -1288,6 +1288,13 @@ const reviews = [
     return i === 0 ? '#b8860b' : i === 1 ? '#888888' : i === 2 ? '#b07040' : '#8a8f8a';
   }
 
+  function _lbFrameSrc(score) {
+    if (!score || score <= 0 || !isFinite(score)) return null;
+    var s = Math.max(0, Math.min(100, score));
+    var f = s >= 95 ? 100 : Math.min(94, Math.round(s));
+    return '/assets/bmp-frames/bmp-' + String(f).padStart(3, '0') + '.webp';
+  }
+
   function bmpDumbbell(bmp, w) {
     var score = Math.max(0, Math.min(100, bmp || 0));
     var h = Math.round(w * 0.42);
@@ -1311,7 +1318,10 @@ const reviews = [
       : pt.coaching_type === 'online' ? 'Online'
       : pt.coaching_type === 'hybrid' ? 'Online & In Person'
       : '';
-    var dbs = bmpDumbbell(pt.bmp_score || 0, 44);
+    var _dbFr = _lbFrameSrc(pt.bmp_score);
+    var dbs = _dbFr
+      ? '<img src="' + _dbFr + '" alt="" width="1000" height="410" style="width:44px;height:auto;display:block;object-fit:contain;" loading="lazy" decoding="async">'
+      : bmpDumbbell(pt.bmp_score || 0, 44);
     var revCount = pt.review_count || 0;
     var revText  = revCount + ' ' + (revCount === 1 ? 'review' : 'reviews');
     var bmpDisplay = revCount === 0 ? 'Be first to review' : pt.bmp_score;
@@ -1486,7 +1496,10 @@ const reviews = [
     var bmpNum = revCount === 0
       ? '<span class="hc-v2-bmp-num" style="font-size:0.62rem;line-height:1.3;">First<br>review</span>'
       : '<span class="hc-v2-bmp-num">' + (t.bmp_score || '—') + '</span>';
-    var hcDbs = revCount > 0 ? bmpDumbbell(t.bmp_score || 0, 32) : '';
+    var _hcFr = revCount > 0 ? _lbFrameSrc(t.bmp_score) : null;
+    var hcDbs = _hcFr
+      ? '<img src="' + _hcFr + '" alt="" width="1000" height="410" style="width:32px;height:auto;display:block;object-fit:contain;" loading="lazy" decoding="async">'
+      : (revCount > 0 ? bmpDumbbell(t.bmp_score || 0, 32) : '');
 
     return '<a class="hc-v2' + (trending ? ' hc-v2--trending' : '') + '" href="/trainers/' + t.id + '" data-cc="card"' + (trending ? ' data-cc-trending="1"' : '') + ' style="view-transition-name:tc-' + t.id + ';">' +
       '<div class="hc-v2-header">' +
