@@ -2518,7 +2518,7 @@
     // ── Fetch this PT's real reviews ─────────────────────────────────────
     const { data: ptReviews } = await supabase
       .from('reviews')
-      .select('id, reviewer_name, reviewer_initials, reviewer_avatar_bg, reviewer_avatar_color, rating, review_text, created_at, appeal_status')
+      .select('id, reviewer_name, reviewer_initials, reviewer_avatar_bg, reviewer_avatar_color, rating, review_text, created_at, appeal_status, client_id')
       .eq('trainer_id', trainer.id)
       .eq('is_verified', true)
       .order('created_at', { ascending: false });
@@ -2571,6 +2571,32 @@
     // All data is derived from the `reviews` array and `trainer` object already
     // loaded above.  No extra DB calls or API costs.
 
+    // Share the trainer's public CoachCard URL via native share API or clipboard fallback.
+    function _shareCoachCard(btn: HTMLButtonElement) {
+      const url = window.location.origin + '/trainers/' + (trainer as any).id;
+      const title = ((trainer as any).name || 'My CoachCard') + ' — CoachCards';
+      if (navigator.share) {
+        navigator.share({ url, title }).catch(() => {/* user cancelled — no action needed */});
+      } else {
+        navigator.clipboard.writeText(url).then(() => {
+          const orig = btn.textContent ?? '';
+          btn.textContent = 'Link copied!';
+          setTimeout(() => { btn.textContent = orig; }, 2000);
+        }).catch(() => {
+          // Last resort: select a temporary input
+          const inp = document.createElement('input');
+          inp.value = url;
+          document.body.appendChild(inp);
+          inp.select();
+          document.execCommand('copy');
+          document.body.removeChild(inp);
+          const orig = btn.textContent ?? '';
+          btn.textContent = 'Link copied!';
+          setTimeout(() => { btn.textContent = orig; }, 2000);
+        });
+      }
+    }
+
     renderMyBmp = () => {
       const bmpScore    = (trainer.bmp_score ?? 0) as number;
       const isTrending  = !!(trainer as any).is_trending;
@@ -2579,15 +2605,41 @@
       const ms7d  = 7  * 24 * 60 * 60 * 1000;
       const ms28d = 28 * 24 * 60 * 60 * 1000;
 
-      const reviews7d   = reviews.filter((r: any) => nowMs - new Date(r.created_at).getTime() < ms7d);
-      const reviewsPrev = reviews.filter((r: any) => {
+      // ── Effective review set (mirrors BMP v3 SQL dedup logic) ────────────
+      // 1. Latest review per authenticated client (client_id IS NOT NULL)
+      const latestPerClient = new Map<string, any>();
+      for (const r of reviews) {
+        if (r.client_id != null) {
+          const existing = latestPerClient.get(r.client_id);
+          if (!existing || new Date(r.created_at) > new Date(existing.created_at)) {
+            latestPerClient.set(r.client_id, r);
+          }
+        }
+      }
+      // 2. Up to 5 most recent anonymous reviews (client_id IS NULL)
+      const anonReviews = reviews
+        .filter((r: any) => r.client_id == null)
+        .sort((a: any, b: any) => {
+          const diff = new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          return diff !== 0 ? diff : b.id - a.id;
+        })
+        .slice(0, 5);
+      // 3. Union: deduped authenticated + capped anonymous
+      const effReviews: any[] = [...latestPerClient.values(), ...anonReviews];
+
+      // Accurate Trending counts (conditions A and B)
+      const effReviews7d   = effReviews.filter((r: any) => nowMs - new Date(r.created_at).getTime() < ms7d);
+      const effReviewsPrev = effReviews.filter((r: any) => {
         const age = nowMs - new Date(r.created_at).getTime();
         return age >= ms7d && age < ms28d;
       });
+      const trendA = effReviews7d.filter((r: any) => r.rating >= 3.5).length;   // condition A: need ≥ 2
+      const trendB = effReviewsPrev.filter((r: any) => r.rating >= 3.5).length; // condition B: need ≥ 1
 
-      // Trending requires rating ≥ 3.5 (matches SQL trending conditions)
-      const trendA = reviews7d.filter((r: any) => r.rating >= 3.5).length;   // condition A: need ≥ 2
-      const trendB = reviewsPrev.filter((r: any) => r.rating >= 3.5).length; // condition B: need ≥ 1
+      // Effective average rating (used by R1 — more aligned with BMP quality than raw star_rating)
+      const effAvgRating = effReviews.length > 0
+        ? effReviews.reduce((s: number, r: any) => s + r.rating, 0) / effReviews.length
+        : null;
 
       // ── Bracket definition (delegates to bmpConfig) ──────────────────────
       const bracketData = _getDashboardBracket(bmpScore);
@@ -2694,139 +2746,238 @@
       }
 
       // ── Recommendation engine ────────────────────────────────────────────
-      // Evaluate all possible recommendations, score each by priority, pick top 2-3.
-      interface Reco { priority: number; icon: string; iconBg: string; title: string; desc: string; action?: string; actionLabel?: string; }
-      const recos: Reco[] = [];
+      // 10 approved categories; max 3 shown; explicit conflict groups.
+      // Priority: higher number = higher importance (shown first).
+      // Conflict groups: at most 1 recommendation per group reaches the output.
+      interface Reco {
+        id: string;
+        conflictGroup?: string;
+        priority: number;
+        icon: string;
+        iconBg: string;
+        title: string;
+        desc: string;
+        action?: string;        // page name for showPage(), or 'share_coachcard' for sharing
+        actionLabel?: string;
+      }
 
-      // R1: Zero reviews
-      if (totalCount === 0) {
-        recos.push({
+      // Conflict group keys
+      const GRP_PROFILE   = 'profile';    // R2, R3, R7, R8 — all resolve on profile page
+      const GRP_COACHCARD = 'coachcard';  // R9, R10, R0 — profile promotion / first review
+      const GRP_REVLINK   = 'revlink';    // R4_R5 combined, R5, R6 — review-link generation
+
+      const allCandidates: Reco[] = [];
+
+      // ── Derived flags ──────────────────────────────────────────────────
+      const hasBooking         = !!(trainer.accepts_bookings && trainer.booking_url);
+      const hasSocial          = !!(trainer.social_facebook || trainer.social_instagram
+                                  || trainer.social_whatsapp || trainer.social_email);
+      const isInPersonOrHybrid = trainer.coaching_type === 'in_person'
+                                 || trainer.coaching_type === 'hybrid';
+      const trainerUsername    = trainer.username as string | null | undefined;
+      // distinct_reviewer_count: used by Fresh Face badge; validated defensively.
+      const dCount: number | null = typeof trainer.distinct_reviewer_count === 'number'
+                                    && Number.isInteger(trainer.distinct_reviewer_count)
+                                    ? trainer.distinct_reviewer_count : null;
+
+      // ── R1: Improve review quality ────────────────────────────────────
+      // Uses effective average (deduped per-client + capped anon) with ≥ 5 eff reviews
+      // as a count guard. Does not infer poor quality from Bayesian shrinkage or low volume.
+      if (effReviews.length >= 5 && effAvgRating !== null && effAvgRating < 4.0) {
+        allCandidates.push({
+          id: 'R1',
           priority: 100,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+          iconBg: 'background:#dc2626',
+          title: 'Improve your review quality',
+          desc: `Your effective average rating is ${effAvgRating.toFixed(1)} stars across ${effReviews.length} qualifying review${effReviews.length !== 1 ? 's' : ''}. The Quality component drives up to 70 pts of your BMP score — it is directly tied to client satisfaction. Reading your reviews and addressing patterns in client feedback is the most direct way to improve your score.`,
+          action: 'reviews', actionLabel: 'Read my reviews →',
+        });
+      }
+
+      // ── R2: Complete trainer profile ──────────────────────────────────
+      {
+        const missing: string[] = [];
+        if (!trainer.bio || (trainer.bio as string).trim().length < 20) missing.push('a bio');
+        if (!trainer.avatar_url)                                          missing.push('a profile photo');
+        if (!trainer.specialty || (trainer.specialty as string).trim().length < 2) missing.push('your specialty');
+        if (!trainer.coaching_type || (trainer.coaching_type as string).trim().length < 2) missing.push('your training type');
+        if (missing.length > 0) {
+          allCandidates.push({
+            id: 'R2',
+            conflictGroup: GRP_PROFILE,
+            priority: 90,
+            icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+            iconBg: 'background:#0369a1',
+            title: 'Complete your trainer profile',
+            desc: `Your CoachCard is missing ${missing.join(' and ')}. A complete profile helps prospective clients find you and choose you over other trainers.`,
+            action: 'profile', actionLabel: 'Edit my profile →',
+          });
+        }
+      }
+
+      // ── R3: Make it easier for clients to contact you ─────────────────
+      // Fires when no booking link is set (whether or not social links exist).
+      if (!hasBooking) {
+        allCandidates.push({
+          id: 'R3',
+          conflictGroup: GRP_PROFILE,
+          priority: 80,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+          iconBg: 'background:#0f766e',
+          title: 'Make it easier for clients to contact you',
+          desc: hasSocial
+            ? 'You have contact details but no booking link. Adding a direct booking link — Calendly, your website, or any scheduling service — gives interested clients a frictionless path to hiring you.'
+            : 'Your profile has no booking link and no contact details. Clients who find your CoachCard have no direct way to enquire or book a session.',
+          action: 'profile', actionLabel: 'Update booking details →',
+        });
+      }
+
+      // ── R4: Complete Trending requirements (7-day met, prior missing) ──
+      // Condition A met (trendA ≥ 2), Condition B outstanding (trendB = 0).
+      if (!isTrending && trendA >= 2 && trendB === 0) {
+        allCandidates.push({
+          id: 'R4',
+          priority: 70,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+          iconBg: 'background:#f59e0b',
+          title: 'Complete your Trending requirements',
+          desc: `Condition A is met — ${trendA} qualifying review${trendA !== 1 ? 's' : ''} in the last 7 days. Condition B is outstanding — you need at least 1 qualifying review from the 7–28 day window. Once a client from that earlier period leaves a review, both conditions will be active simultaneously.`,
+          action: 'mybmp', actionLabel: 'View Trending criteria →',
+        });
+      }
+
+      // ── R5: Restart recent review activity (prior met, fewer than 2 this week) ──
+      // Condition B met (trendB ≥ 1), Condition A outstanding (trendA < 2).
+      // Suppressed for Trending trainers.
+      if (!isTrending && trendB >= 1 && trendA < 2) {
+        allCandidates.push({
+          id: 'R5',
+          conflictGroup: GRP_REVLINK,
+          priority: 65,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+          iconBg: 'background:#f97316',
+          title: 'Restart your recent review activity',
+          desc: `You have met the prior-window requirement (${trendB} qualifying review${trendB !== 1 ? 's' : ''} from days 7–28) but ${trendA === 0 ? 'no qualifying reviews' : `only ${trendA} qualifying review`} in the last 7 days. You need 2 qualifying reviews this week — Condition A — for both requirements to be active simultaneously.`,
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // ── R4+R5 combined: both Trending conditions missing ───────────────
+      // Per spec: one combined recommendation when both conditions are unmet.
+      // Mutually exclusive with R4 and R5 by their respective conditions.
+      if (!isTrending && trendA < 2 && trendB === 0 && totalCount > 0) {
+        allCandidates.push({
+          id: 'R4_R5',
+          conflictGroup: GRP_REVLINK,
+          priority: 70,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
+          iconBg: 'background:#f59e0b',
+          title: 'Build review activity to reach Trending',
+          desc: `Neither Trending condition is currently active. Condition A requires at least 2 qualifying reviews in the last 7 days (currently: ${trendA}). Condition B requires at least 1 qualifying review from days 7–28 (currently: ${trendB}). Both must be active simultaneously.`,
+          action: 'links', actionLabel: 'Generate review link →',
+        });
+      }
+
+      // ── R6: Build confidence through unique reviewers ─────────────────
+      // Fires only when distinct_reviewer_count is available and below threshold.
+      // Threshold: < 10 distinct reviewers (Confidence component has meaningful growth room).
+      if (dCount !== null && dCount < 10 && totalCount > 0) {
+        allCandidates.push({
+          id: 'R6',
+          conflictGroup: GRP_REVLINK,
+          priority: 60,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+          iconBg: 'background:#7c3aed',
+          title: 'Build confidence through unique reviewers',
+          desc: `Your Confidence component is based on how many distinct clients have reviewed you — currently ${dCount}. Growing this number has meaningful room to improve your BMP score. Share your review link with clients you have not yet received a review from.`,
+          action: 'links', actionLabel: 'Share review link →',
+        });
+      }
+
+      // ── R7: Improve local discoverability ─────────────────────────────
+      // Only for confirmed in-person or hybrid trainers (coaching_type must be known).
+      if (isInPersonOrHybrid && !trainer.location_confirmed) {
+        allCandidates.push({
+          id: 'R7',
+          conflictGroup: GRP_PROFILE,
+          priority: 55,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+          iconBg: 'background:#dc2626',
+          title: 'Improve local discoverability',
+          desc: `You offer ${trainer.coaching_type === 'in_person' ? 'in-person' : 'in-person and online'} training but your location is not confirmed. Confirming your location makes you visible in CoachCards\' country and local area leaderboards, where clients search for trainers nearby.`,
+          action: 'profile', actionLabel: 'Update location →',
+        });
+      }
+
+      // ── R8: Strengthen professional credibility ────────────────────────
+      if (!trainer.cert || (trainer.cert as string).trim().length < 2) {
+        allCandidates.push({
+          id: 'R8',
+          conflictGroup: GRP_PROFILE,
+          priority: 50,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>',
+          iconBg: 'background:#d97706',
+          title: 'Strengthen your professional credibility',
+          desc: 'Your CoachCard has no qualifications listed. Adding your PT certifications, specialist certs or CPD courses helps prospective clients assess your credentials before enquiring.',
+          action: 'profile', actionLabel: 'Update qualifications →',
+        });
+      }
+
+      // ── R9: Get your CoachCard noticed (1–5 reviews) ──────────────────
+      if (trainerUsername && totalCount >= 1 && totalCount <= 5) {
+        allCandidates.push({
+          id: 'R9',
+          conflictGroup: GRP_COACHCARD,
+          priority: 45,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>',
+          iconBg: 'background:var(--green)',
+          title: 'Get your CoachCard noticed',
+          desc: `You have ${totalCount} verified review${totalCount !== 1 ? 's' : ''} and a published public profile. Sharing your CoachCard — on social media, in your Instagram bio, or via direct message — brings new visitors to a profile that already has real client feedback.`,
+          action: 'share_coachcard', actionLabel: 'Share My CoachCard',
+        });
+      }
+
+      // ── R10: Showcase your established reputation (6+ reviews) ────────
+      if (trainerUsername && totalCount >= 6) {
+        allCandidates.push({
+          id: 'R10',
+          conflictGroup: GRP_COACHCARD,
+          priority: 40,
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="8 2 8 7 16 7 16 2"/><path d="M17 7h1a3 3 0 0 1 0 6h-1"/><path d="M7 7H6a3 3 0 0 0 0 6h1"/><path d="M8 13v4"/><path d="M16 13v4"/><path d="M5 17h14"/></svg>',
+          iconBg: 'background:var(--green)',
+          title: 'Showcase your established reputation',
+          desc: `With ${totalCount} verified reviews, your CoachCard makes a strong first impression. Sharing it actively — on your social profiles, in your Instagram bio and in email signatures — brings it in front of clients already searching for a trainer.`,
+          action: 'share_coachcard', actionLabel: 'Share My CoachCard',
+        });
+      }
+
+      // ── R0: Zero-review onboarding (supplements approved 10) ──────────
+      // Lower priority than all approved categories; in GRP_COACHCARD so it
+      // does not appear alongside R9 or produce a duplicate links CTA.
+      if (totalCount === 0) {
+        allCandidates.push({
+          id: 'R0',
+          conflictGroup: GRP_COACHCARD,
+          priority: 35,
           icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>',
           iconBg: 'background:var(--green)',
           title: 'Collect your first verified review',
-          desc: 'Your BMP score is unlocked by your first verified client review. Generate a personal review link and send it to a recent client after a session.',
-          action: 'links', actionLabel: 'Generate review link →',
-        });
-        recos.push({
-          priority: 90,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
-          iconBg: 'background:#7c3aed',
-          title: 'How BMP works',
-          desc: 'BMP is built from three components: rating quality, review volume, and recent activity. Every genuine verified review from a real client contributes to all three.',
-        });
-      }
-
-      // R2: Very few reviews (1–4)
-      if (totalCount > 0 && totalCount < 5) {
-        recos.push({
-          priority: 95,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
-          iconBg: 'background:#d97706',
-          title: `Build your review foundation`,
-          desc: `You have ${totalCount} verified review${totalCount === 1 ? '' : 's'}. Your Confidence component — which rewards review volume — has room to grow. Each new review from a different client strengthens your score.`,
+          desc: 'Your BMP score is at — until your first verified client review arrives. Generate a personal review link and send it to a client you\'ve worked with recently.',
           action: 'links', actionLabel: 'Generate review link →',
         });
       }
 
-      // R3: Currently Trending
-      if (isTrending) {
-        recos.push({
-          priority: 85,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="white" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
-          iconBg: 'background:#ef4444',
-          title: 'Maintain your Trending momentum',
-          desc: `You're Trending — you have ${trendA} review${trendA !== 1 ? 's' : ''} this week and ${trendB} from the previous window. Trending status refreshes daily. To keep it, ensure at least 2 verified reviews arrive within any rolling 7-day window alongside prior-window activity.`,
-        });
+      // ── Apply conflict groups; cap at 3 ───────────────────────────────
+      allCandidates.sort((a, b) => b.priority - a.priority);
+      const seenConflictGroups = new Set<string>();
+      const topRecos: Reco[] = [];
+      for (const reco of allCandidates) {
+        if (topRecos.length >= 3) break;
+        if (reco.conflictGroup && seenConflictGroups.has(reco.conflictGroup)) continue;
+        topRecos.push(reco);
+        if (reco.conflictGroup) seenConflictGroups.add(reco.conflictGroup);
       }
-
-      // R4: Close to Trending (A=1, B≥1)
-      if (!isTrending && trendA === 1 && trendB >= 1) {
-        recos.push({
-          priority: 88,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
-          iconBg: 'background:#f59e0b',
-          title: 'One more review this week meets both Trending conditions',
-          desc: `You have ${trendB} review${trendB !== 1 ? 's' : ''} from the 7–28 day window and 1 review in the last 7 days. One more genuine verified review this week would satisfy both Trending conditions.`,
-          action: 'links', actionLabel: 'Generate review link →',
-        });
-      }
-
-      // R5: Close to Trending (A≥2, B=0)
-      if (!isTrending && trendA >= 2 && trendB === 0) {
-        recos.push({
-          priority: 82,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
-          iconBg: 'background:#f59e0b',
-          title: 'Build continuity across both review windows',
-          desc: `${trendA} reviews this week meets Condition A. Trending also requires at least 1 verified review from the 7–28 day window to confirm consistent activity. Once a client leaves a review in that window, both conditions are met.`,
-        });
-      }
-
-      // R6: Close to Trending (A=0, B≥1) — has prior window but no recent
-      if (!isTrending && trendA === 0 && trendB >= 1 && totalCount > 0) {
-        recos.push({
-          priority: 78,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>',
-          iconBg: 'background:#f59e0b',
-          title: 'Restart your recent window to qualify for Trending',
-          desc: `You have ${trendB} review${trendB !== 1 ? 's' : ''} from 7–28 days ago (Condition B met) but no reviews in the last 7 days. Two or more verified reviews this week would satisfy both conditions.`,
-          action: 'links', actionLabel: 'Generate review link →',
-        });
-      }
-
-      // R7: No recent reviews at all (has a score but stagnant)
-      const noRecentActivity = reviews7d.length === 0 && reviewsPrev.length === 0;
-      if (totalCount > 0 && noRecentActivity) {
-        recos.push({
-          priority: 70,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
-          iconBg: 'background:#0369a1',
-          title: 'Re-engage clients for recent feedback',
-          desc: 'You have no verified reviews in the last 28 days. Momentum rewards recent high-quality reviews — without fresh activity, that part of your score gradually reduces. Send a review link to a client you\'ve worked with recently.',
-          action: 'links', actionLabel: 'Generate review link →',
-        });
-      }
-
-      // R8: Review history but BMP below 70 (Developing bracket) — quality likely the constraint
-      if (totalCount >= 5 && bmpScore > 0 && bmpScore < 70) {
-        recos.push({
-          priority: 65,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
-          iconBg: 'background:#dc2626',
-          title: 'Focus on session quality, not review volume',
-          desc: 'Your Quality component is the biggest driver of BMP. With enough reviews to count, the limiting factor is likely average client satisfaction. Review recent client feedback for patterns — small service improvements tend to move scores more than collecting extra reviews.',
-          action: 'reviews', actionLabel: 'Read your reviews →',
-        });
-      }
-
-      // R9: High BMP with no recent activity (score ≥ 70, no recent reviews)
-      if (bmpScore >= 70 && noRecentActivity && totalCount > 0) {
-        recos.push({
-          priority: 60,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>',
-          iconBg: 'background:var(--green)',
-          title: 'Keep activity consistent to protect momentum',
-          desc: `Your score is strong, but Momentum rewards recent high-quality reviews. Without fresh reviews, that part of your score gradually reduces as older reviews age out.`,
-          action: 'links', actionLabel: 'Generate review link →',
-        });
-      }
-
-      // R10: Good BMP, decent activity — grow confidence via volume
-      if (bmpScore >= 55 && totalCount > 0 && totalCount < 20) {
-        recos.push({
-          priority: 55,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
-          iconBg: 'background:#7c3aed',
-          title: 'Grow review volume to boost Confidence',
-          desc: `The Confidence component rewards trainers who have earned trust from many clients. You currently have ${totalCount} verified reviews — each additional review from a different client pushes this component higher.`,
-          action: 'links', actionLabel: 'Generate review link →',
-        });
-      }
-
-      // Sort and render top 3
-      recos.sort((a, b) => b.priority - a.priority);
-      const topRecos = recos.slice(0, 3);
 
       const recoListEl = document.getElementById('mybmp-reco-list') as HTMLElement;
       if (recoListEl) {
@@ -2834,19 +2985,32 @@
           recoListEl.innerHTML = `
             <div class="mybmp-empty-state">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <div class="mybmp-empty-state-title">Everything looks great</div>
-              <div class="mybmp-empty-state-desc">Your score is performing well. Keep collecting genuine client reviews to maintain your position.</div>
+              <div class="mybmp-empty-state-title">Your profile is on track</div>
+              <div class="mybmp-empty-state-desc">Your profile is complete and your score is performing well. Keep collecting genuine client reviews to maintain your position.</div>
             </div>`;
         } else {
-          recoListEl.innerHTML = topRecos.map(r => `
+          recoListEl.innerHTML = topRecos.map(r => {
+            let btnHtml = '';
+            if (r.action === 'share_coachcard') {
+              btnHtml = `<button class="mybmp-reco-btn" id="reco-share-btn-${r.id}">${r.actionLabel}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+            } else if (r.action) {
+              btnHtml = `<button class="mybmp-reco-btn" onclick="showPage('${r.action}')">${r.actionLabel}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+            }
+            return `
             <div class="mybmp-reco-row">
               <div class="mybmp-reco-dot" style="${r.iconBg}">${r.icon}</div>
               <div class="mybmp-reco-content">
                 <div class="mybmp-reco-head">${r.title}</div>
                 <div class="mybmp-reco-text">${r.desc}</div>
               </div>
-              ${r.action ? `<button class="mybmp-reco-btn" onclick="showPage('${r.action}')">${r.actionLabel}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>` : ''}
-            </div>`).join('');
+              ${btnHtml}
+            </div>`;
+          }).join('');
+          // Wire up CoachCard share buttons after innerHTML is set
+          topRecos.filter(r => r.action === 'share_coachcard').forEach(r => {
+            const btn = document.getElementById(`reco-share-btn-${r.id}`);
+            if (btn) btn.addEventListener('click', () => _shareCoachCard(btn as HTMLButtonElement));
+          });
         }
       }
     };
