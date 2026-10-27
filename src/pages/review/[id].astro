@@ -78,7 +78,8 @@ const specialtyIcon = trainer.specialty ? (specialtyIconSvg[trainer.specialty] ?
     --muted:#7a8f7c; --off:#f7f9f7; --gold:#e6a800;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; }
+  html { overflow-x:hidden; overflow-x:clip; overscroll-behavior-x:none; }
+  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; overflow-x:hidden; overflow-x:clip; }
 
   /* ── Top nav ── */
   .rv-nav {

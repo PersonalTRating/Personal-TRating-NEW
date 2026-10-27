@@ -14,8 +14,8 @@
     --border:#e0e8e1; --text:#0d1a0e; --muted:#7a8f7c; --off:#f7f9f7;
   }
   * { margin:0; padding:0; box-sizing:border-box; }
-  html { overflow-x:hidden; }
-  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; overflow-x:hidden; }
+  html { overflow-x:hidden; overflow-x:clip; overscroll-behavior-x:none; }
+  body { font-family:'Manrope',sans-serif; color:var(--text); background:var(--off); min-height:100vh; overflow-x:hidden; overflow-x:clip; }
 
   /* ── Top bar ── */
   .topbar {

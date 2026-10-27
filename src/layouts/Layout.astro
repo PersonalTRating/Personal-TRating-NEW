@@ -171,8 +171,18 @@ const {
     .cc-touch              { transform:none !important; }
   }
 
-  html, body { overflow-x: hidden; max-width: 100%; }
-  body { position: relative; }
+  html {
+    overflow-x: hidden; /* fallback for browsers without clip */
+    overflow-x: clip;
+    max-width: 100%;
+    overscroll-behavior-x: none;
+  }
+  body {
+    overflow-x: hidden; /* fallback */
+    overflow-x: clip;
+    max-width: 100%;
+    position: relative;
+  }
 
   /* Tailwind preflight sets img { max-width: 100% } which shrinks Leaflet
      tiles and creates visible seams. Override only within the map container.
