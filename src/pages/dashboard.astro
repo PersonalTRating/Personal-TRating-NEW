@@ -578,6 +578,8 @@
     font-size:0.78rem; font-weight:800; letter-spacing:0.3px; margin-bottom:0.55rem;
   }
   .mybmp-tier-desc { font-size:0.82rem; color:rgba(255,255,255,0.48); line-height:1.55; }
+  /* inline style="display:inline-flex" on this element overrides UA [hidden]; !important restores correct behaviour */
+  #mybmp-fresh-face[hidden] { display: none !important; }
 
   /* Stats strip container is static; chips are JS-generated → :global */
   .mybmp-stats-strip { display:flex; border-top:1px solid rgba(255,255,255,0.07); }
@@ -2626,7 +2628,8 @@
       const ffEl = document.getElementById('mybmp-fresh-face') as HTMLElement;
       if (ffEl) {
         const dCount = (trainer as any).distinct_reviewer_count;
-        ffEl.hidden = !(dCount !== null && dCount !== undefined && dCount >= 1 && dCount <= 2);
+        const isFreshFace = typeof dCount === 'number' && Number.isInteger(dCount) && dCount >= 1 && dCount <= 2;
+        ffEl.hidden = !isFreshFace;
       }
 
       if (statsStripEl) {
