@@ -611,7 +611,7 @@ const maskName = (name: string): string => {
       {hasBmp && (
         <div class="tp-bmp-box bmp-panel bmp-info" id="bmp-panel-hero">
           <div class="bmp-tooltip">
-            BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Activity & Trending (up to 10 pts). Only verified reviews count.
+            BMP — Body Muscle Percentage. CoachCards' review-based trainer reputation score, 0–100. Quality (up to 70 pts) + Confidence (up to 20 pts) + Activity (up to 10 pts). Trending trainers may receive a small additional boost.
           </div>
           <div class="bmp-panel-label">BMP SCORE ⓘ</div>
           <div class="bmp-panel-score">{trainer.bmp_score}</div>
@@ -695,7 +695,7 @@ const maskName = (name: string): string => {
     <div class="tp-stats-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;">
 
       <div class="tp-stat bmp-info" id="tp-bmp-stat">
-        <div class="bmp-tooltip">BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Activity & Trending (up to 10 pts). Only verified reviews count.</div>
+        <div class="bmp-tooltip">BMP — Body Muscle Percentage. CoachCards' review-based trainer reputation score, 0–100. Quality (up to 70 pts) + Confidence (up to 20 pts) + Activity (up to 10 pts). Trending trainers may receive a small additional boost.</div>
         <div style="font-size:0.62rem;color:#8a8f8a;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;margin-bottom:0.5rem;">BMP Score ⓘ</div>
         {hasBmp ? (
           <div id="tp-bmp-val" style="font-family:'Manrope',sans-serif;font-size:2.1rem;font-weight:800;color:#3ab54a;line-height:1;">{trainer.bmp_score}</div>

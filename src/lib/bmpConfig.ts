@@ -51,5 +51,5 @@ export const BMP_BRACKET_TIERS = [
 ] as const;
 
 // ── Tooltip strings (shared across pages) ─────────────────────────────────────
-export const BMP_TOOLTIP_SHORT = 'Quality 70pts · Confidence 20pts · Activity 10pts';
-export const BMP_TOOLTIP_LONG  = 'BMP scores PTs 0–100: Review Quality (up to 70 pts) + Review Confidence (up to 20 pts) + Activity & Trending (up to 10 pts). Only verified reviews count.';
+export const BMP_TOOLTIP_SHORT = 'Quality 70 pts · Confidence 20 pts · Activity 10 pts';
+export const BMP_TOOLTIP_LONG  = 'BMP scores PTs 0–100: Quality (up to 70 pts) + Confidence (up to 20 pts) + Activity (up to 10 pts). Trending trainers may receive a small additional boost. Only verified reviews count.';

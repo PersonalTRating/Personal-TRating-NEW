@@ -510,18 +510,8 @@ const reviews = [
     border-left:1px solid rgba(58,181,74,0.13);
     position:relative; cursor:default;
   }
-  .hc-v2-bmp-col .bmp-tooltip {
-    display:none; position:absolute; top:calc(100% + 6px); right:0;
-    width:220px; background:#051a08; color:rgba(255,255,255,0.88); font-size:0.68rem;
-    padding:0.6rem 0.8rem; border-radius:8px; line-height:1.6; text-align:left; z-index:250;
-    box-shadow:0 4px 16px rgba(0,0,0,0.35); pointer-events:none;
-    border:1px solid rgba(58,181,74,0.2);
-  }
-  .hc-v2-bmp-col .bmp-tooltip::after {
-    content:''; position:absolute; bottom:100%; right:0.75rem;
-    border:6px solid transparent; border-bottom-color:#051a08;
-  }
-  .hc-v2-bmp-col:hover .bmp-tooltip { display:block; }
+  /* Hero BMP tooltip is rendered via JS portal (#hc-bmp-gtip) to escape stacking contexts */
+  .hc-v2-bmp-col:focus-visible { outline:2px solid rgba(58,181,74,0.5); outline-offset:3px; border-radius:4px; }
   .hc-v2-bmp-num {
     font-family:'Manrope',sans-serif; font-size:2.1rem; font-weight:800;
     color:#3ab54a; line-height:1; display:block; margin-top:0.1rem;
@@ -1404,7 +1394,7 @@ const reviews = [
           '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
           '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
           (bmpChangeHtml || '') +
-          '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div>' +
+          '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' review-based trainer reputation score, 0–100.<br><strong>Quality 70 pts · Confidence 20 pts · Activity 10 pts</strong><br>Trending trainers may receive a small additional boost.</div>' +
         '</div>' +
       '</a>';
     }
@@ -1425,7 +1415,7 @@ const reviews = [
         '<div class="lbc-bmp-score" style="' + bmpStyle + '">' + bmpDisplay + '</div>' +
         '<div class="lbc-bmp-dbs">' + dbs + '</div>' +
         (bmpChangeHtml || '') +
-        '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div>' +
+        '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' review-based trainer reputation score, 0–100.<br><strong>Quality 70 pts · Confidence 20 pts · Activity 10 pts</strong><br>Trending trainers may receive a small additional boost.</div>' +
       '</div>' +
     '</a>';
   }
@@ -1520,7 +1510,7 @@ const reviews = [
         '<div class="hc-v2-name-row"><span class="hc-v2-name">' + t.name + '</span>' + tick + trendBadge + hcFreshFace + '</div>' +
         city + pills + statsHtml +
       '</div>' +
-      '<div class="hc-v2-bmp-col"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div class="hc-v2-bmp-db">' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
+      '<div class="hc-v2-bmp-col" tabindex="0" aria-label="BMP score — tap or hover for details" aria-describedby="hc-bmp-gtip"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div class="hc-v2-bmp-db">' + hcDbs + '</div>' : '') + '</div>' +
     '</a>';
   }
 
@@ -1595,6 +1585,103 @@ const reviews = [
   }
 
   init();
+
+  // ── Hero BMP tooltip portal ────────────────────────────────────────────────
+  // Bypasses stacking contexts created by backdrop-filter on the hero panel
+  // and view-transition-name on each card. The tooltip lives at body level.
+  (function () {
+    var BMP_TIP_HTML =
+      '<strong style="display:block;margin-bottom:0.35rem;font-size:0.72rem;color:#fff;">BMP — Body Muscle Percentage</strong>' +
+      '<span style="color:rgba(255,255,255,0.65);">CoachCards’ review-based trainer reputation score, measured 0–100.</span>' +
+      '<br><br>' +
+      '<strong style="color:rgba(255,255,255,0.9);">• Quality (70 pts)</strong> <span style="color:rgba(255,255,255,0.6);">Review quality, adjusted for reliability.</span><br>' +
+      '<strong style="color:rgba(255,255,255,0.9);">• Confidence (20 pts)</strong> <span style="color:rgba(255,255,255,0.6);">Evidence from genuine, independent reviewers.</span><br>' +
+      '<strong style="color:rgba(255,255,255,0.9);">• Activity (10 pts)</strong> <span style="color:rgba(255,255,255,0.6);">Consistent recent feedback &amp; review volume.</span>' +
+      '<br><br>' +
+      '<span style="color:rgba(255,255,255,0.38);font-size:0.63rem;">Trending trainers may receive a small additional boost.</span>';
+
+    var tip = document.createElement('div');
+    tip.id = 'hc-bmp-gtip';
+    tip.setAttribute('role', 'tooltip');
+    tip.style.cssText = 'display:none;position:fixed;z-index:9999;width:240px;background:#051a08;color:rgba(255,255,255,0.82);font-size:0.68rem;line-height:1.65;padding:0.65rem 0.85rem;border-radius:8px;border:1px solid rgba(58,181,74,0.22);box-shadow:0 6px 24px rgba(0,0,0,0.55);pointer-events:none;font-family:Manrope,sans-serif;text-align:left;';
+    tip.innerHTML = BMP_TIP_HTML;
+
+    var arrow = document.createElement('span');
+    arrow.id = 'hc-bmp-gtip-arrow';
+    arrow.style.cssText = 'position:absolute;border:6px solid transparent;pointer-events:none;';
+    tip.appendChild(arrow);
+    document.body.appendChild(tip);
+
+    function positionAndShow(col) {
+      var r = col.getBoundingClientRect();
+      var vw = window.innerWidth;
+      var vh = window.innerHeight;
+
+      // Measure actual rendered height before final placement
+      tip.style.visibility = 'hidden';
+      tip.style.display = 'block';
+      tip.style.top = '-9999px';
+      var tipH = tip.offsetHeight;
+      var tipW = tip.offsetWidth;
+
+      // Vertical: show below if it fits, otherwise above
+      var below = r.bottom + 10 + tipH <= vh;
+      var top;
+      if (below) {
+        top = r.bottom + 8;
+        arrow.style.cssText = 'position:absolute;bottom:100%;right:0.75rem;border:6px solid transparent;border-bottom-color:#051a08;pointer-events:none;';
+      } else {
+        top = Math.max(8, r.top - tipH - 8);
+        arrow.style.cssText = 'position:absolute;top:100%;right:0.75rem;border:6px solid transparent;border-top-color:#051a08;pointer-events:none;';
+      }
+
+      // Horizontal: prefer right-aligned to col, clamp both edges within viewport
+      var right = vw - r.right;
+      right = Math.max(8, right);
+      // Ensure left edge doesn't go off-screen
+      var leftEdge = vw - right - tipW;
+      if (leftEdge < 8) right = Math.max(8, vw - tipW - 8);
+
+      tip.style.top  = top + 'px';
+      tip.style.right = right + 'px';
+      tip.style.left  = 'auto';
+      tip.style.visibility = 'visible';
+    }
+    function hide() { tip.style.display = 'none'; tip.style.visibility = 'hidden'; }
+
+    // Mouse
+    document.addEventListener('mouseover', function (e) {
+      var col = e.target.closest && e.target.closest('.hc-v2-bmp-col');
+      if (col) positionAndShow(col);
+    });
+    document.addEventListener('mouseout', function (e) {
+      var col = e.target.closest && e.target.closest('.hc-v2-bmp-col');
+      if (col && !col.contains(e.relatedTarget)) hide();
+    });
+    // Keyboard
+    document.addEventListener('focusin', function (e) {
+      var col = e.target.closest && e.target.closest('.hc-v2-bmp-col');
+      if (col) positionAndShow(col);
+    });
+    document.addEventListener('focusout', function (e) {
+      var col = e.target.closest && e.target.closest('.hc-v2-bmp-col');
+      if (col) hide();
+    });
+    // Mobile tap toggle — prevent card navigation when tapping BMP col
+    document.addEventListener('click', function (e) {
+      var col = e.target.closest && e.target.closest('.hc-v2-bmp-col');
+      if (col) {
+        tip.style.display === 'none' ? positionAndShow(col) : hide();
+        e.preventDefault();
+        e.stopPropagation();
+      } else if (tip.style.display !== 'none') {
+        hide();
+      }
+    });
+    // Dismiss on scroll / resize
+    document.addEventListener('scroll', hide, { passive: true });
+    window.addEventListener('resize',   hide, { passive: true });
+  })();
 })();
 </script>
 
