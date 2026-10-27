@@ -2093,6 +2093,14 @@
   import { getLocalAreaLabel as _getAreaLabel, getVerifiedLocationLabel as _getVerifiedLoc } from '../lib/rankingAreas';
   import { getDashboardBracket as _getDashboardBracket } from '../lib/bmpConfig';
 
+  // BMP v3 frame URL: score 1–94 → bmp-0XX.webp, 95+ → bmp-100.webp, else null
+  function _bmpFrameSrc(score: number | null | undefined): string | null {
+    if (score == null || !Number.isFinite(score) || score <= 0) return null;
+    const _s = Math.max(0, Math.min(100, score));
+    const _f = _s >= 95 ? 100 : Math.min(94, Math.round(_s));
+    return `/assets/bmp-frames/bmp-${String(_f).padStart(3, '0')}.webp`;
+  }
+
   // ── Auth guard ──────────────────────────────────────────────────────────
   // Fast path: read from localStorage (persisted across visits).
   let _session: any = (await supabase.auth.getSession()).data.session;
@@ -2598,19 +2606,10 @@
       const statsStripEl = document.getElementById('mybmp-stats-strip') as HTMLElement;
 
       if (dbZoneEl) {
-        // BMP v3 frame images: score 0–94 → bmp-0XX.webp; 95+ → bmp-100.webp (glow baked in)
-        const _rawBmp = (trainer as any).bmp_score;
-        let _frameSrc: string | null = null;
-        if (_rawBmp != null && Number.isFinite(_rawBmp) && _rawBmp > 0) {
-          const _s = Math.max(0, Math.min(100, _rawBmp));
-          const _f = _s >= 95 ? 100 : Math.min(94, Math.round(_s));
-          _frameSrc = `/assets/bmp-frames/bmp-${String(_f).padStart(3, '0')}.webp`;
-        }
-        if (_frameSrc) {
-          dbZoneEl.innerHTML = `<img src="${_frameSrc}" alt="BMP score dumbbell" width="1000" height="410" style="width:100%;height:auto;display:block;object-fit:contain;" loading="eager" decoding="async">`;
-        } else {
-          dbZoneEl.innerHTML = _bmpDumbbell(bmpScore, 340);
-        }
+        const _frameSrc = _bmpFrameSrc((trainer as any).bmp_score);
+        dbZoneEl.innerHTML = _frameSrc
+          ? `<img src="${_frameSrc}" alt="BMP score dumbbell" width="1000" height="410" style="width:100%;height:auto;display:block;object-fit:contain;" loading="eager" decoding="async">`
+          : _bmpDumbbell(bmpScore, 340);
         dbZoneEl.style.filter = 'none';
       }
       if (bigScoreEl) {
@@ -3483,8 +3482,9 @@
 
 
     const _rkCard = (pt: any, i: number) => {
-      const isYou = pt.id === trainer.id;
-      const bmp   = pt.bmp_score ?? 0;
+      const isYou  = pt.id === trainer.id;
+      const bmp    = pt.bmp_score ?? 0;
+      const _dbSrc = _bmpFrameSrc(bmp);
       const av = pt.avatar_url
         ? `<img src="${pt.avatar_url}" style="width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid rgba(255,255,255,0.15);" alt="">`
         : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
@@ -3506,7 +3506,7 @@
         <div style="text-align:right;flex-shrink:0;">
           <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:white;line-height:1;">${bmp > 0 ? bmp : '—'}</div>
           <div style="font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.15rem;font-family:'Manrope',sans-serif;">BMP</div>
-          <div style="margin-top:0.35rem;display:flex;gap:2px;justify-content:flex-end;">${_bmpDumbbell(bmp, 44)}</div>
+          <div style="margin-top:0.35rem;">${_dbSrc ? `<img src="${_dbSrc}" alt="" width="1000" height="410" style="width:80px;height:auto;display:block;object-fit:contain;margin-left:auto;" loading="lazy" decoding="async">` : _bmpDumbbell(bmp, 44)}</div>
         </div>
       </a>`;
     };
