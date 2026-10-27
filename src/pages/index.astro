@@ -461,10 +461,10 @@ const reviews = [
     .hc-bmp-num { font-size:1.1rem; }
   }
 
-  /* ── Hero compact v2 — vertically stacked cards ────────────────────── */
+  /* ── Hero compact v2 — 2-column row cards ──────────────────────────── */
   .hc-v2 {
-    display:flex; flex-direction:column; gap:0.28rem;
-    padding:0.65rem 0.85rem;
+    display:flex; flex-direction:row; align-items:center; gap:0.65rem;
+    padding:0.7rem 0.9rem;
     background:rgba(8,16,9,0.88);
     border:1px solid rgba(58,181,74,0.55);
     border-radius:10px;
@@ -487,27 +487,28 @@ const reviews = [
     box-shadow:0 4px 18px rgba(0,0,0,0.4), 0 0 14px rgba(160,0,0,0.55), 0 0 28px rgba(150,0,0,0.25);
   }
   .hc-v2-header {
-    display:flex; align-items:center; gap:0.65rem;
+    display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;
   }
   .hc-v2-av {
-    width:46px; min-width:46px; height:46px; border-radius:50%;
+    width:52px; min-width:52px; height:52px; border-radius:50%;
     object-fit:cover; overflow:hidden;
     border:2px solid rgba(255,255,255,0.12);
     display:flex; align-items:center; justify-content:center;
     font-weight:800; font-size:0.75rem; flex-shrink:0;
   }
-  .hc-v2-info-row {
-    display:flex; align-items:flex-start; justify-content:space-between; gap:0.5rem;
+  .hc-v2-left {
+    flex:1; min-width:0; display:flex; flex-direction:column; gap:0.22rem;
   }
-  .hc-v2-left { flex:1; min-width:0; }
   .hc-v2-name-row { display:flex; align-items:center; gap:4px; flex-wrap:wrap; }
   .hc-v2-name {
     font-family:'Playfair Display',serif; font-size:0.9rem; font-weight:700;
-    color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:150px;
+    color:white; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
   .hc-v2-bmp-col {
     display:flex; flex-direction:column; align-items:center;
-    flex-shrink:0; padding-left:0.5rem; position:relative; cursor:default;
+    flex-shrink:0; padding-left:0.75rem;
+    border-left:1px solid rgba(58,181,74,0.13);
+    position:relative; cursor:default;
   }
   .hc-v2-bmp-col .bmp-tooltip {
     display:none; position:absolute; top:calc(100% + 6px); right:0;
@@ -523,11 +524,13 @@ const reviews = [
   .hc-v2-bmp-col:hover .bmp-tooltip { display:block; }
   .hc-v2-bmp-num {
     font-family:'Manrope',sans-serif; font-size:2.1rem; font-weight:800;
-    color:#3ab54a; line-height:1; display:block;
+    color:#3ab54a; line-height:1; display:block; margin-top:0.1rem;
   }
+  .hc-v2-bmp-db { margin-top:0.15rem; }
   @media (max-width:600px) {
     .hc-v2-bmp-num { font-size:1.65rem; }
-    .hc-v2-bmp-col img { width:90px !important; }
+    .hc-v2-bmp-col { padding-left:0.55rem; }
+    .hc-v2-bmp-col img { width:80px !important; }
   }
   .hc-v2-location {
     font-size:0.67rem; color:rgba(255,255,255,0.42);
@@ -1457,7 +1460,7 @@ const reviews = [
     var complete = !!(t.avatar_url && (t.displayCity || t.city || t.location) && t.bio && t.specialty);
 
     var av = t.avatar_url
-      ? '<img class="hc-v2-av" src="' + t.avatar_url + '" alt="' + t.name + '" width="46" height="46">'
+      ? '<img class="hc-v2-av" src="' + t.avatar_url + '" alt="' + t.name + '" width="52" height="52">'
       : '<div class="hc-v2-av" style="background:' + (t.avatar_bg||'#0d1a0e') + ';color:' + (t.avatar_color||'#3ab54a') + ';">' + (t.avatar_initials||'?') + '</div>';
 
     var tick = complete
@@ -1509,17 +1512,15 @@ const reviews = [
       : (revCount > 0 ? bmpDumbbell(t.bmp_score || 0, 132) : '');
 
     return '<a class="hc-v2' + (trending ? ' hc-v2--trending' : '') + '" href="/trainers/' + t.id + '" data-cc="card"' + (trending ? ' data-cc-trending="1"' : '') + ' style="view-transition-name:tc-' + t.id + ';">' +
-      '<div class="hc-v2-header">' +
-        '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
-        av +
-      '</div>' +
-      '<div class="hc-v2-info-row">' +
-        '<div class="hc-v2-left">' +
-          '<div class="hc-v2-name-row"><span class="hc-v2-name">' + t.name + '</span>' + tick + trendBadge + hcFreshFace + '</div>' +
+      '<div class="hc-v2-left">' +
+        '<div class="hc-v2-header">' +
+          '<span class="hc-rank">' + String(rank).padStart(2, '0') + '</span>' +
+          av +
         '</div>' +
-        '<div class="hc-v2-bmp-col"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div>' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
+        '<div class="hc-v2-name-row"><span class="hc-v2-name">' + t.name + '</span>' + tick + trendBadge + hcFreshFace + '</div>' +
+        city + pills + statsHtml +
       '</div>' +
-      city + pills + statsHtml +
+      '<div class="hc-v2-bmp-col"><span class="hc-bmp-lbl">BMP</span>' + bmpNum + (hcDbs ? '<div class="hc-v2-bmp-db">' + hcDbs + '</div>' : '') + '<div class="bmp-tooltip">BMP — Body Muscle Percentage.<br>CoachCards\' verified ranking score:<br><strong>Quality 70pts · Confidence 20pts · Activity 10pts</strong><br>Calculated from verified client reviews only.</div></div>' +
     '</a>';
   }
 
