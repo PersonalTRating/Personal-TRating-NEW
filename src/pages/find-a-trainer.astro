@@ -1090,6 +1090,8 @@ const participationState: 'empty' | 'growing' | 'full' =
       if (rank != null) {
         var n = parseInt(rank);
         rankEl.textContent = isNaN(n) ? '' : String(n).padStart(2, '0');
+      } else if (activeTier !== 'uk') {
+        rankEl.textContent = '';
       }
     });
   }
