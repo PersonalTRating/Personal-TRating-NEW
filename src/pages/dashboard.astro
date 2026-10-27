@@ -3491,7 +3491,11 @@
       const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
       const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
       const _ptLoc = (pt.location_confirmed && pt.cc_country) || pt.city || pt.location;
-      const meta = [_ptLoc ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'+_ptLoc : '', pt.specialty ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:3px"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>'+pt.specialty : ''].filter(Boolean).join('  ·  ');
+      const _metaRow = (svg: string, text: string) => `<div style="display:flex;align-items:center;gap:4px;font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.18rem;font-family:'Manrope',sans-serif;">${svg}<span>${text}</span></div>`;
+      const _locSvg  = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
+      const _specSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>`;
+      const locRow   = _ptLoc      ? _metaRow(_locSvg,  _ptLoc)      : '';
+      const specRow  = pt.specialty ? _metaRow(_specSvg, pt.specialty) : '';
       const glow = isYou
         ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
         : 'border:2px solid #7defa0;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);background:#111311;';
@@ -3501,12 +3505,12 @@
         <div style="flex:1;min-width:0;">
           <div style="font-weight:800;font-size:0.92rem;color:white;display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;font-family:'Manrope',sans-serif;">${pt.name} ${tick} ${youPill}</div>
           ${pt.username ? `<div style="font-size:0.72rem;color:rgba(255,255,255,0.38);font-weight:600;margin-top:0.1rem;font-family:'Manrope',sans-serif;">@${pt.username}</div>` : ''}
-          <div style="font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.25rem;font-family:'Manrope',sans-serif;">${meta}</div>
+          ${locRow}${specRow}
         </div>
-        <div style="text-align:right;flex-shrink:0;">
+        <div style="display:flex;flex-direction:column;align-items:center;flex-shrink:0;">
           <div style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:white;line-height:1;">${bmp > 0 ? bmp : '—'}</div>
-          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.15rem;font-family:'Manrope',sans-serif;">BMP</div>
-          <div style="margin-top:0.35rem;">${_dbSrc ? `<img src="${_dbSrc}" alt="" width="1000" height="410" style="width:80px;height:auto;display:block;object-fit:contain;margin-left:auto;" loading="lazy" decoding="async">` : _bmpDumbbell(bmp, 44)}</div>
+          <div style="font-size:0.62rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-top:0.1rem;font-family:'Manrope',sans-serif;">BMP</div>
+          <div style="margin-top:0.3rem;">${_dbSrc ? `<img src="${_dbSrc}" alt="" width="1000" height="410" style="width:80px;height:auto;display:block;object-fit:contain;" loading="lazy" decoding="async">` : _bmpDumbbell(bmp, 44)}</div>
         </div>
       </a>`;
     };
