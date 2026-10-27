@@ -976,6 +976,10 @@ const participationState: 'empty' | 'growing' | 'full' =
         e.preventDefault();
         onLocalUnifiedSelect(a.id, a.display_name);
       };
+      item.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        onLocalUnifiedSelect(a.id, a.display_name);
+      }, { passive: false });
       sugg.appendChild(item);
     });
     sugg.style.display = '';
