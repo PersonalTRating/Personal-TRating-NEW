@@ -250,14 +250,14 @@ const reviews = [
   .lb-card {
     display:flex; align-items:center; gap:1.25rem;
     background:rgba(8,16,9,0.95); border-radius:14px; padding:1.1rem 1.4rem;
-    border:1px solid rgba(58,181,74,0.4); border-left:3px solid rgba(58,181,74,0.8);
+    border:1px solid rgba(58,181,74,0.6); border-left:3px solid rgba(58,181,74,0.95);
     text-decoration:none; color:inherit;
     position:relative; z-index:1;
     transition:box-shadow 0.2s ease, transform 0.18s ease, opacity 0.18s ease, filter 0.18s ease;
     cursor:pointer;
-    box-shadow:0 0 10px rgba(58,181,74,0.28), 0 0 22px rgba(58,181,74,0.13), 0 2px 12px rgba(0,0,0,0.3);
+    box-shadow:0 0 12px rgba(58,181,74,0.5), 0 0 28px rgba(58,181,74,0.25), 0 0 50px rgba(58,181,74,0.1), 0 2px 12px rgba(0,0,0,0.3);
   }
-  .lb-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 10px rgba(58,181,74,0.12); transform:translateY(-3px); border-color:rgba(58,181,74,0.38); z-index:10; }
+  .lb-card:hover { box-shadow:0 4px 20px rgba(0,0,0,0.4), 0 0 16px rgba(58,181,74,0.5), 0 0 35px rgba(58,181,74,0.22); transform:translateY(-3px); border-color:rgba(58,181,74,0.75); z-index:10; }
   .lb-card:focus-visible { outline:3px solid #3ab54a; outline-offset:3px; }
 
   .lbc-rank  { font-family:'Playfair Display',serif; font-size:1.65rem; font-weight:900; width:2.5rem; flex-shrink:0; line-height:1; color:#3ab54a; }
@@ -267,7 +267,7 @@ const reviews = [
   .lbc-name  { font-family:'Playfair Display',serif; font-size:1rem; font-weight:700; color:white; }
   .lbc-cert  { font-size:0.68rem; font-weight:600; color:#3ab54a; background:rgba(58,181,74,0.12); padding:0.15rem 0.5rem; border-radius:10px; border:1px solid rgba(58,181,74,0.28); white-space:nowrap; }
   .lbc-detail { font-size:0.78rem; color:rgba(255,255,255,0.42); margin-top:0.18rem; display:flex; align-items:center; gap:0.35rem; }
-  .lbc-bmp   { text-align:right; flex-shrink:0; position:relative; cursor:default; }
+  .lbc-bmp   { display:flex; flex-direction:column; align-items:center; flex-shrink:0; position:relative; cursor:default; }
   .bmp-tooltip {
     display:none; position:absolute; top:calc(100% + 6px); right:0;
     width:230px; background:#051a08; color:rgba(255,255,255,0.88); font-size:0.72rem;
@@ -281,8 +281,9 @@ const reviews = [
   }
   .lbc-bmp:hover .bmp-tooltip { display:block; }
   .lbc-bmp-label  { font-family:'Manrope',sans-serif; font-size:0.58rem; color:rgba(255,255,255,0.35); letter-spacing:1.5px; text-transform:uppercase; font-weight:700; }
-  .lbc-bmp-score  { font-family:'Manrope',sans-serif; font-size:1.7rem; font-weight:800; color:#3ab54a; line-height:1.1; }
-  .lbc-bmp-dbs   { display:flex; gap:2px; justify-content:flex-end; margin-top:0.2rem; }
+  .lbc-bmp-score  { font-family:'Manrope',sans-serif; font-size:2.1rem; font-weight:800; color:#3ab54a; line-height:1.1; }
+  .lbc-bmp-dbs   { display:flex; gap:2px; justify-content:center; margin-top:0.3rem; }
+  .lbc-bmp-img   { width:110px; height:auto; display:block; object-fit:contain; }
   .lbc-bmp-rev   { font-size:0.7rem; color:rgba(255,255,255,0.3); margin-top:0.15rem; }
 
   @media (max-width:600px) {
@@ -290,14 +291,15 @@ const reviews = [
     .lb-card {
       flex-direction:column; align-items:stretch; gap:0.3rem;
       padding:1.1rem 1.1rem 1rem;
-      border:1px solid rgba(58,181,74,0.35) !important;
-      border-left:3px solid rgba(58,181,74,0.55) !important;
+      border:1px solid rgba(58,181,74,0.5) !important;
+      border-left:3px solid rgba(58,181,74,0.9) !important;
       border-radius:16px !important;
     }
     .lbc-rank  { display:none; }
-    .lbc-bmp   { text-align:left; display:flex; align-items:center; gap:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(58,181,74,0.15); margin-top:0.35rem; }
+    .lbc-bmp   { text-align:left; display:flex; flex-direction:row; align-items:center; gap:0.75rem; padding-top:0.65rem; border-top:1px solid rgba(58,181,74,0.15); margin-top:0.35rem; }
     .lbc-bmp-score { font-size:1.3rem; }
     .lbc-bmp-dbs   { justify-content:flex-start; margin-top:0; }
+    .lbc-bmp-img   { width:56px; }
     .lbc-bmp-rev   { margin-top:0; }
     #lb-list > div { display:flex; flex-direction:column; gap:1rem; }
   }
@@ -464,11 +466,11 @@ const reviews = [
     display:flex; flex-direction:column; gap:0.28rem;
     padding:0.65rem 0.85rem;
     background:rgba(8,16,9,0.88);
-    border:1px solid rgba(58,181,74,0.4);
+    border:1px solid rgba(58,181,74,0.55);
     border-radius:10px;
     text-decoration:none; color:inherit; cursor:pointer;
     transition:transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
-    box-shadow:0 0 10px rgba(58,181,74,0.28), 0 0 20px rgba(58,181,74,0.13), 0 2px 10px rgba(0,0,0,0.3);
+    box-shadow:0 0 12px rgba(58,181,74,0.45), 0 0 26px rgba(58,181,74,0.22), 0 0 48px rgba(58,181,74,0.1), 0 2px 10px rgba(0,0,0,0.3);
   }
   .hc-v2:hover {
     transform:translateY(-2px);
@@ -477,8 +479,8 @@ const reviews = [
   }
   .hc-v2:focus-visible { outline:2px solid #3ab54a; outline-offset:3px; }
   .hc-v2--trending {
-    border-color:rgba(200,0,0,0.65);
-    box-shadow:0 0 10px rgba(200,0,0,0.5), 0 0 24px rgba(150,0,0,0.28), 0 2px 10px rgba(0,0,0,0.35);
+    border-color:rgba(200,0,0,0.75);
+    box-shadow:0 0 12px rgba(200,0,0,0.6), 0 0 28px rgba(150,0,0,0.35), 0 0 48px rgba(130,0,0,0.16), 0 2px 10px rgba(0,0,0,0.35);
   }
   .hc-v2--trending:hover {
     border-color:rgba(200,0,0,0.75);
@@ -534,15 +536,15 @@ const reviews = [
   .hc-v2-stats--hot { color:rgba(200,60,60,0.85); }
 
   /* Leaderboard section — dark cards on dark green background */
-  #leaderboard .lb-card { border-color:rgba(58,181,74,0.45); box-shadow:0 0 10px rgba(58,181,74,0.28), 0 0 22px rgba(58,181,74,0.13), 0 2px 12px rgba(0,0,0,0.3); }
+  #leaderboard .lb-card { border-color:rgba(58,181,74,0.65); box-shadow:0 0 12px rgba(58,181,74,0.5), 0 0 28px rgba(58,181,74,0.25), 0 0 50px rgba(58,181,74,0.1), 0 2px 12px rgba(0,0,0,0.3); }
   #leaderboard .lb-card:hover { border-color:rgba(58,181,74,0.5); box-shadow:0 4px 18px rgba(0,0,0,0.45), 0 0 12px rgba(58,181,74,0.15); transform:translateY(-2px); }
 
   /* ── Trending card — red hot override (same dimensions as standard) ── */
   .lb-card--trending {
     background:rgba(20,4,4,0.96) !important;
-    border:1px solid rgba(200,0,0,0.65) !important;
+    border:1px solid rgba(200,0,0,0.75) !important;
     border-left:3px solid #cc0000 !important;
-    box-shadow:0 0 10px rgba(200,0,0,0.5), 0 0 24px rgba(150,0,0,0.28), 0 2px 12px rgba(0,0,0,0.35) !important;
+    box-shadow:0 0 12px rgba(200,0,0,0.65), 0 0 28px rgba(150,0,0,0.38), 0 0 50px rgba(130,0,0,0.18), 0 2px 12px rgba(0,0,0,0.35) !important;
   }
   .lb-card--trending:hover {
     border-color:rgba(220,0,0,0.7) !important;
@@ -1320,8 +1322,8 @@ const reviews = [
       : '';
     var _dbFr = _lbFrameSrc(pt.bmp_score);
     var dbs = _dbFr
-      ? '<img src="' + _dbFr + '" alt="" width="1000" height="410" style="width:44px;height:auto;display:block;object-fit:contain;" loading="lazy" decoding="async">'
-      : bmpDumbbell(pt.bmp_score || 0, 44);
+      ? '<img src="' + _dbFr + '" alt="" width="1000" height="410" class="lbc-bmp-img" loading="lazy" decoding="async">'
+      : bmpDumbbell(pt.bmp_score || 0, 110);
     var revCount = pt.review_count || 0;
     var revText  = revCount + ' ' + (revCount === 1 ? 'review' : 'reviews');
     var bmpDisplay = revCount === 0 ? 'Be first to review' : pt.bmp_score;

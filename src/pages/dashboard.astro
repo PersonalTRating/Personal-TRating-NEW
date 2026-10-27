@@ -3498,10 +3498,10 @@
       const specRow  = pt.specialty ? _metaRow(_specSvg, pt.specialty) : '';
       const isTrending = pt.is_trending === true;
       const glow = isTrending
-        ? 'border:2px solid #cc0000;box-shadow:0 0 10px rgba(200,0,0,0.9),0 0 28px rgba(200,0,0,0.7),0 0 55px rgba(150,0,0,0.5);background:#140404;'
+        ? 'border:2px solid #cc0000;box-shadow:0 0 12px rgba(220,0,0,0.95),0 0 32px rgba(200,0,0,0.8),0 0 60px rgba(150,0,0,0.55),0 0 80px rgba(130,0,0,0.2);background:#140404;'
         : isYou
-          ? 'border:2px solid #3ab54a;box-shadow:0 0 10px #3ab54a,0 0 28px rgba(58,181,74,0.9),0 0 55px rgba(58,181,74,0.6);background:#0d1a0e;'
-          : 'border:2px solid #7defa0;box-shadow:0 0 8px #4cd46a,0 0 22px rgba(58,181,74,0.9),0 0 50px rgba(58,181,74,0.5);background:#111311;';
+          ? 'border:2px solid #3ab54a;box-shadow:0 0 14px #3ab54a,0 0 32px rgba(58,181,74,0.95),0 0 65px rgba(58,181,74,0.65),0 0 90px rgba(58,181,74,0.22);background:#0d1a0e;'
+          : 'border:2px solid #7defa0;box-shadow:0 0 12px #4cd46a,0 0 28px rgba(58,181,74,0.95),0 0 60px rgba(58,181,74,0.55),0 0 80px rgba(58,181,74,0.2);background:#111311;';
       return `<a href="/trainers/${pt.id}" target="_blank" style="display:flex;align-items:center;gap:1rem;${glow}border-radius:12px;padding:1rem 1.25rem;text-decoration:none;transition:transform 0.15s,box-shadow 0.2s;">
         <div style="font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:#3ab54a;width:2.25rem;flex-shrink:0;">${String(i+1).padStart(2,'0')}</div>
         ${av}
