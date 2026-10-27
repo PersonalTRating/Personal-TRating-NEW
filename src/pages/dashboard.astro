@@ -714,6 +714,13 @@
     .content { padding-bottom:80px; }
   }
 
+  /* ── Reviews stats: 2-col desktop and mobile ── */
+  .stats-grid.rev-stats-grid { grid-template-columns:repeat(2,1fr); }
+  @media (max-width:480px) {
+    .stats-grid.rev-stats-grid .stat-card { padding:1rem 1.25rem; }
+    .stats-grid.rev-stats-grid .stat-value { font-size:1.75rem; }
+  }
+
   /* ── Mobile bottom nav ── */
   .mob-bottom-nav {
     display:none;
@@ -1534,10 +1541,9 @@
       <div class="section-eyebrow">Client Feedback</div>
       <div class="section-heading">Your Reviews</div>
 
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="stats-grid rev-stats-grid">
         <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="#F59E0B" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div class="stat-label">Average Rating</div><div class="stat-value" id="rev-stat-avg" style="color:var(--gold)">—</div><div class="stat-change up" id="rev-stat-avg-sub"></div></div>
         <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div><div class="stat-label">Total Reviews</div><div class="stat-value" id="rev-stat-total">—</div><div class="stat-change up" id="rev-stat-total-sub"></div></div>
-        <div class="stat-card"><div class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3ab54a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div><div class="stat-label">Verified Rate</div><div class="stat-value" id="rev-stat-verified">—</div><div class="stat-change up">All client-verified</div></div>
       </div>
 
       <div class="card">
@@ -3048,18 +3054,15 @@
     // ── Reviews page stats ────────────────────────────────────────────────
     const avgEl   = document.getElementById('rev-stat-avg');
     const totEl   = document.getElementById('rev-stat-total');
-    const verEl   = document.getElementById('rev-stat-verified');
     const totSubEl = document.getElementById('rev-stat-total-sub');
     if (reviews.length > 0) {
       const avg = (reviews.reduce((s: number, r: any) => s + r.rating, 0) / reviews.length).toFixed(1);
       if (avgEl)  avgEl.textContent  = avg;
       if (totEl)  totEl.textContent  = String(reviews.length);
-      if (verEl)  verEl.textContent  = '100%';
       if (totSubEl) totSubEl.textContent = reviews.length === 1 ? '1 review received' : `${reviews.length} reviews received`;
     } else {
       if (avgEl)  avgEl.textContent  = '—';
       if (totEl)  totEl.textContent  = '0';
-      if (verEl)  verEl.textContent  = '—';
     }
 
     // ── All reviews list ──────────────────────────────────────────────────
