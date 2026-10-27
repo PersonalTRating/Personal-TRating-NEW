@@ -2571,6 +2571,15 @@
     // All data is derived from the `reviews` array and `trainer` object already
     // loaded above.  No extra DB calls or API costs.
 
+    // Navigate to My Profile and scroll the Social Links section into view.
+    function _showProfileSocial() {
+      (window as any).showPage('profile');
+      requestAnimationFrame(() => {
+        const el = document.getElementById('social-facebook');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+    }
+
     // Share the trainer's public CoachCard URL via native share API or clipboard fallback.
     function _shareCoachCard(btn: HTMLButtonElement) {
       const url = window.location.origin + '/trainers/' + (trainer as any).id;
@@ -2770,8 +2779,14 @@
 
       // ── Derived flags ──────────────────────────────────────────────────
       const hasBooking         = !!(trainer.accepts_bookings && trainer.booking_url);
-      const hasSocial          = !!(trainer.social_facebook || trainer.social_instagram
-                                  || trainer.social_whatsapp || trainer.social_email);
+      // hasSocial: at least one supported social field is a non-empty, non-whitespace string.
+      // Loose falsiness check is insufficient for whitespace-only values saved in older records.
+      const hasSocial = [
+        trainer.social_facebook,
+        trainer.social_instagram,
+        trainer.social_whatsapp,
+        trainer.social_email,
+      ].some((v: any) => typeof v === 'string' && v.trim().length > 0);
       const isInPersonOrHybrid = trainer.coaching_type === 'in_person'
                                  || trainer.coaching_type === 'hybrid';
       const trainerUsername    = trainer.username as string | null | undefined;
@@ -2817,19 +2832,18 @@
       }
 
       // ── R3: Make it easier for clients to contact you ─────────────────
-      // Fires when no booking link is set (whether or not social links exist).
-      if (!hasBooking) {
+      // Fires when no supported social media account is linked.
+      // Does not use booking link — that is a separate concern.
+      if (!hasSocial) {
         allCandidates.push({
           id: 'R3',
           conflictGroup: GRP_PROFILE,
           priority: 80,
-          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>',
+          icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>',
           iconBg: 'background:#0f766e',
           title: 'Make it easier for clients to contact you',
-          desc: hasSocial
-            ? 'You have contact details but no booking link. Adding a direct booking link — Calendly, your website, or any scheduling service — gives interested clients a frictionless path to hiring you.'
-            : 'Your profile has no booking link and no contact details. Clients who find your CoachCard have no direct way to enquire or book a session.',
-          action: 'profile', actionLabel: 'Update booking details →',
+          desc: "Your profile doesn't have any social media accounts linked. Add your Instagram, Facebook or other supported social accounts so potential clients can contact you directly.",
+          action: 'profile_social', actionLabel: 'Add social media →',
         });
       }
 
@@ -2993,6 +3007,8 @@
             let btnHtml = '';
             if (r.action === 'share_coachcard') {
               btnHtml = `<button class="mybmp-reco-btn" id="reco-share-btn-${r.id}">${r.actionLabel}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`;
+            } else if (r.action === 'profile_social') {
+              btnHtml = `<button class="mybmp-reco-btn" id="reco-social-btn-${r.id}">${r.actionLabel}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`;
             } else if (r.action) {
               btnHtml = `<button class="mybmp-reco-btn" onclick="showPage('${r.action}')">${r.actionLabel}<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>`;
             }
@@ -3006,10 +3022,14 @@
               ${btnHtml}
             </div>`;
           }).join('');
-          // Wire up CoachCard share buttons after innerHTML is set
+          // Wire up special-action buttons after innerHTML is set
           topRecos.filter(r => r.action === 'share_coachcard').forEach(r => {
             const btn = document.getElementById(`reco-share-btn-${r.id}`);
             if (btn) btn.addEventListener('click', () => _shareCoachCard(btn as HTMLButtonElement));
+          });
+          topRecos.filter(r => r.action === 'profile_social').forEach(r => {
+            const btn = document.getElementById(`reco-social-btn-${r.id}`);
+            if (btn) btn.addEventListener('click', () => _showProfileSocial());
           });
         }
       }
