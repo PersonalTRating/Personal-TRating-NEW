@@ -470,8 +470,8 @@ const maskName = (name: string): string => {
 <nav style="position:sticky;top:0;z-index:100;background:white;border-bottom:1px solid #e0e8e1;box-shadow:0 1px 8px rgba(0,0,0,0.05);">
   <div class="tp-nav-inner" style="max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:100px;">
     <a href="/" style="text-decoration:none;display:flex;align-items:center;gap:0.6rem;">
-      <img class="tp-nav-logo" src="/images/cc-logo.png" alt="" aria-hidden="true" style="height:42px;width:42px;flex-shrink:0;" />
-      <span style="font-family:'Manrope',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:-0.2px;line-height:1;"><span style="color:#3ab54a;">Coach</span><span style="color:#111311;">Cards</span></span>
+      <img class="tp-nav-logo" src="/images/cc-logo.png" alt="" aria-hidden="true" style="height:42px;width:42px;max-height:42px;flex-shrink:0;object-fit:contain;aspect-ratio:1/1;" />
+      <span style="font-family:'Manrope',sans-serif;font-size:1.15rem;font-weight:800;letter-spacing:-0.2px;line-height:1;"><span style="color:var(--cc-wordmark-green);">Coach</span><span style="color:#111311;">Cards</span></span>
     </a>
     <div class="tp-nav-links" style="display:flex;gap:1.25rem;align-items:center;">
       <a href="/#leaderboard" class="tp-nav-text" style="color:#8a8f8a;font-size:0.875rem;font-weight:600;text-decoration:none;transition:color 0.2s;"
@@ -941,7 +941,7 @@ const maskName = (name: string): string => {
 <!-- ── FOOTER ── -->
 <footer class="tp-footer" style="padding:2rem 2.5rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;background:#0a130b;border-top:1px solid rgba(255,255,255,0.06);">
   <div style="display:flex;align-items:center;gap:0.75rem;">
-    <img src="/images/cc-logo.png" alt="CoachCards" style="height:38px;width:38px;" />
+    <img src="/images/cc-logo.png" alt="CoachCards" style="height:38px;width:38px;object-fit:contain;aspect-ratio:1/1;" />
     <p style="font-size:0.8rem;color:rgba(255,255,255,0.3);">© 2026 CoachCards™ · All rights reserved · Built in the UK 🇬🇧</p>
   </div>
   <div style="display:flex;gap:2rem;">

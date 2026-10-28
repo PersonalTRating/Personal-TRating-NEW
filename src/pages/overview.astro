@@ -58,9 +58,9 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   height: 72px;
 }
 .ov-nav-brand { display:flex; align-items:center; gap:0.6rem; text-decoration:none; }
-.ov-logo-img { height:42px; width:42px; flex-shrink:0; }
+.ov-logo-img { height:42px; width:42px; max-height:42px; flex-shrink:0; object-fit:contain; aspect-ratio:1/1; }
 .ov-wordmark { font-family:'Manrope',sans-serif; font-size:1.15rem; font-weight:800; letter-spacing:-0.2px; line-height:1; }
-.ov-wordmark-coach { color:#3ab54a; }
+.ov-wordmark-coach { color:#39e75f; }
 .ov-wordmark-cards { color:#111311; }
 .ov-nav-links {
   display: flex;
@@ -781,7 +781,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   gap: 1rem;
   flex-wrap: wrap;
 }
-.ov-footer-logo { height:38px; width:38px; }
+.ov-footer-logo { height:38px; width:38px; object-fit:contain; aspect-ratio:1/1; }
 .ov-footer-copy { font-size: 0.76rem; color: rgba(255,255,255,0.28); line-height: 1.6; }
 .ov-footer-legal { font-size: 0.68rem; color: rgba(255,255,255,0.16); margin-top: 0.1rem; }
 .ov-footer-links { display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: center; }
