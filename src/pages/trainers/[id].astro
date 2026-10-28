@@ -623,57 +623,10 @@ const maskName = (name: string): string => {
           <div class="bmp-panel-score">{trainer.bmp_score}</div>
           <div class="bmp-panel-sub">out of 100</div>
           <div class="bmp-panel-db">
-            <svg class="bmp-db-svg" viewBox="0 0 100 42" aria-hidden="true">
-              <rect x="10" y="15" width="80" height="12" rx="4" fill="#151515"/>
-              <rect x="10" y="15" width="80" height="4"  rx="2" fill="white" opacity="0.03"/>
-              <rect class="db-fill-main" x="29" y="16" width="0" height="10"  fill="#3ab54a" data-target={(((trainer.bmp_score || 0) / 100) * 42).toFixed(2)}/>
-              <rect class="db-fill-hi"   x="29" y="16" width="0" height="3.5" fill="white"   opacity="0.15"/>
-              <rect class="db-fill-lo"   x="29" y="22" width="0" height="4"   fill="black"   opacity="0.15"/>
-              <circle cx="15" cy="21" r="15"   fill="#0a0a0a"/>
-              <circle cx="15" cy="21" r="13.5" fill="#1e1e1e"/>
-              <circle cx="15" cy="21" r="10.5" fill="#131313"/>
-              <circle cx="15" cy="21" r="4.5"  fill="#0a0a0a"/>
-              <ellipse cx="10" cy="13" rx="5" ry="3" fill="white" opacity="0.06" transform="rotate(-20,10,13)"/>
-              <circle cx="85" cy="21" r="15"   fill="#0a0a0a"/>
-              <circle cx="85" cy="21" r="13.5" fill="#1e1e1e"/>
-              <circle cx="85" cy="21" r="10.5" fill="#131313"/>
-              <circle cx="85" cy="21" r="4.5"  fill="#0a0a0a"/>
-              <ellipse cx="80" cy="13" rx="5" ry="3" fill="white" opacity="0.06" transform="rotate(-20,80,13)"/>
-            </svg>
+            <Fragment set:html={_bmpImg(trainer.bmp_score, 120)} />
           </div>
         </div>
       )}
-
-<script is:inline>
-(function () {
-  var panel = document.getElementById('bmp-panel-hero');
-  if (!panel) return;
-  var fill = panel.querySelector('.db-fill-main');
-  var hi   = panel.querySelector('.db-fill-hi');
-  var lo   = panel.querySelector('.db-fill-lo');
-  if (!fill) return;
-  var target = parseFloat(fill.getAttribute('data-target') || '0');
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    fill.setAttribute('width', String(target));
-    hi && hi.setAttribute('width', String(target));
-    lo && lo.setAttribute('width', String(target));
-    return;
-  }
-  var duration = 700;
-  var startTime = null;
-  function step(ts) {
-    if (!startTime) startTime = ts;
-    var t = Math.min(1, (ts - startTime) / duration);
-    var ease = 1 - Math.pow(1 - t, 3);
-    var w = (target * ease).toFixed(2);
-    fill.setAttribute('width', w);
-    hi && hi.setAttribute('width', w);
-    lo && lo.setAttribute('width', w);
-    if (t < 1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-})();
-</script>
 
     </div>
   </div>
