@@ -112,6 +112,26 @@ const themeAccent = _isHex
   ? _lightenHex(trainer.hero_theme!, 0.55)
   : (themeAccents[trainer.hero_theme ?? 'forest'] ?? themeAccents.forest);
 
+// Two-tone hero: the trainer's primary colour drives the right panel
+const themeBaseColours: Record<string, string> = {
+  forest:   '#2a5a30',
+  midnight: '#2a3a6a',
+  charcoal: '#333333',
+  royal:    '#4a2a7a',
+  slate:    '#2a3e58',
+  rose:     '#8b2252',
+  lavender: '#5c2a8b',
+  sky:      '#2a5a8b',
+};
+const _heroColourRaw: string = _isHex
+  ? trainer.hero_theme!
+  : (themeBaseColours[trainer.hero_theme ?? 'forest'] ?? themeBaseColours.forest);
+// Lift colours too dark to distinguish from the near-black base (#090c09, lum≈0.04)
+const heroColour: string = _luminanceHex(_heroColourRaw) < 0.05
+  ? _lightenHex(_heroColourRaw, 0.38)
+  : _heroColourRaw;
+const heroColourDark: string = _darkenHex(heroColour, 0.22);
+
 // ── Location display ─────────────────────────────────────────────────────────
 // When location_confirmed is true, show the resolved area name (e.g. "Fife, Scotland")
 // instead of the manually-entered city, which may be stale or in a different region.
@@ -226,6 +246,14 @@ const maskName = (name: string): string => {
     justify-content: center;
   }
   .bmp-db-svg { width: 68%; max-width: 150px; }
+
+  /* Two-tone hero — right colour panel */
+  .tp-hero-colour-bg {
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(53% 0%, 100% 0%, 100% 100%, 44% 100%);
+    pointer-events: none;
+  }
 
   .trend-info { position:relative; cursor:default; display:inline-flex; }
   .trend-tooltip {
@@ -398,6 +426,7 @@ const maskName = (name: string): string => {
     .tp-stats-grid   { grid-template-columns:repeat(2,1fr) !important; }
     .tp-rev-grid     { grid-template-columns:1fr !important; }
     .tp-rating-inner { flex-direction:column !important; gap:1.5rem !important; }
+    .tp-hero-colour-bg { clip-path: polygon(0% 72%, 100% 68%, 100% 100%, 0% 100%); }
   }
   @media (max-width:768px) {
     .tp-nav-inner { height:64px !important; padding:0 1rem !important; }
@@ -504,8 +533,9 @@ const maskName = (name: string): string => {
 </div>
 
 <!-- ── PROFILE HERO ── -->
-<section id="tp-hero-section" style={`background:${heroBackground};padding:4rem 0 3.5rem;view-transition-name:tc-${trainer.id};overflow:visible;`}>
-  <div style="max-width:900px;margin:0 auto;padding:0 2.5rem;">
+<section id="tp-hero-section" style={`position:relative;background:#090c09;padding:4rem 0 3.5rem;view-transition-name:tc-${trainer.id};overflow:visible;`}>
+  <div class="tp-hero-colour-bg" style={`background:linear-gradient(160deg,${heroColourDark} 0%,${heroColour} 65%);`} aria-hidden="true"></div>
+  <div style="position:relative;z-index:1;max-width:900px;margin:0 auto;padding:0 2.5rem;">
 
     <a id="back-rankings-btn" href="/find-a-trainer" style="color:rgba(255,255,255,0.7);font-size:0.82rem;font-weight:500;text-decoration:none;display:inline-block;margin-bottom:2.25rem;transition:color 0.2s;"
       onmouseover="this.style.color='white'" onmouseout="this.style.color='rgba(255,255,255,0.7)'">
