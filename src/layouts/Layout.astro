@@ -55,6 +55,48 @@ const {
     </noscript>
 
     <slot name="head" />
+    <style is:global>
+      /* ── Founder badge (shared across all pages) ── */
+      .founder-badge {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        flex-shrink: 0;
+        outline: none;
+        cursor: default;
+      }
+      .founder-badge img { display: block; }
+      .founder-badge-tt {
+        display: none;
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        background: #051a08;
+        color: rgba(255,255,255,0.88);
+        font-family: 'Manrope', sans-serif;
+        font-size: 0.72rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: 8px;
+        pointer-events: none;
+        z-index: 250;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+        border: 1px solid rgba(255,180,0,0.3);
+      }
+      .founder-badge-tt::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 5px solid transparent;
+        border-top-color: #051a08;
+      }
+      .founder-badge:hover .founder-badge-tt,
+      .founder-badge:focus .founder-badge-tt,
+      .founder-badge:focus-within .founder-badge-tt { display: block; }
+    </style>
   </head>
   <body class="font-sans text-brand-text bg-white antialiased">
     <slot />

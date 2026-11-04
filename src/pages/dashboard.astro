@@ -947,6 +947,46 @@
     from { opacity: 0; transform: translateY(-12px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  /* ── Founder badge ── */
+  .founder-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    outline: none;
+    cursor: default;
+  }
+  .founder-badge img { display: block; }
+  .founder-badge-tt {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    background: #051a08;
+    color: rgba(255,255,255,0.88);
+    font-size: 0.72rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 250;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,180,0,0.3);
+  }
+  .founder-badge-tt::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: #051a08;
+  }
+  .founder-badge:hover .founder-badge-tt,
+  .founder-badge:focus .founder-badge-tt,
+  .founder-badge:focus-within .founder-badge-tt { display: block; }
 </style>
 </head>
 <body>
@@ -2249,7 +2289,10 @@
     }
     const sbPtName = document.querySelector('.sb-pt-name') as HTMLElement;
     const isComplete = !!(trainer.avatar_url && (trainer.city?.trim() || (trainer as any).location_confirmed) && trainer.bio?.trim() && trainer.specialty?.trim());
-    sbPtName.innerHTML = trainer.name + (isComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
+    const isFounderSb = !!(trainer as any).is_founder;
+    sbPtName.innerHTML = trainer.name +
+      (isComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '') +
+      (isFounderSb ? ' <span class="founder-badge" tabindex="0" role="img" aria-label="Founder — An early member of the CoachCards trainer community." style="vertical-align:middle;margin-left:2px;"><img src="/assets/coachcards-founder-badge.png" alt="" width="67" height="16" style="height:16px;width:auto;display:block;"><span class="founder-badge-tt" role="tooltip">Founder — An early member of the CoachCards trainer community.</span></span>' : '');
     (document.querySelector('.sb-pt-status') as HTMLElement).textContent =
       `● Active · ${_confirmedLocationStr ?? trainer.location ?? '—'}`;
     const sbBusiness = document.querySelector('.sb-pt-business') as HTMLElement;

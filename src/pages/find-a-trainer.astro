@@ -6,7 +6,7 @@ import { RANKING_AREAS, getLocalAreaLabel, getVerifiedLocationLabel, getVisibili
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, cc_country, cc_local_area, location_confirmed, distinct_reviewer_count')
+  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, is_founder, cc_country, cc_local_area, location_confirmed, distinct_reviewer_count')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
@@ -49,6 +49,7 @@ const allTrainers = raw.map((t: any, i: number) => ({
   avatarBg:           t.avatar_bg || '#0d1a0e',
   avatarColor:        t.avatar_color || '#3ab54a',
   isTrending:         t.is_trending === true,
+  isFounder:          !!(t as any).is_founder,
   coachingType:       t.coaching_type || '',
   ccCountry:          (t as any).cc_country || '',
   ccLocalArea:        (t as any).cc_local_area || '',
@@ -349,6 +350,7 @@ const participationState: 'empty' | 'growing' | 'full' =
             verifiedLocation={t.verifiedLocation}
             rankingVisibility={t.rankingVisibility}
             distinctReviewerCount={t.distinctReviewerCount}
+            isFounder={t.isFounder}
           />
         ))}
       </Fragment>

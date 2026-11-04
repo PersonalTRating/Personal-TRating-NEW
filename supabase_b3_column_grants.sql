@@ -222,7 +222,7 @@ DECLARE
   _trig_present BOOLEAN;
   _rls_on       BOOLEAN;
   _required     TEXT[] := ARRAY[
-    -- 31 columns for anon whitelist
+    -- 32 columns for anon whitelist
     'id',              'name',            'username',         'business_name',
     'city',            'location',        'bio',              'intro_message',
     'specialty',       'coaching_type',   'cert',
@@ -232,11 +232,12 @@ DECLARE
     'social_facebook', 'social_instagram','social_whatsapp',  'social_email',
     'accepts_bookings','booking_url',
     'location_confirmed','cc_country',    'cc_local_area',    'is_active',
-    -- + user_id for authenticated WHERE clauses (32nd column)
+    'is_founder',
+    -- + user_id for authenticated WHERE clauses (33rd column)
     'user_id'
   ];
 BEGIN
-  -- Check all 32 required columns exist.
+  -- Check all 33 required columns exist.
   SELECT ARRAY_AGG(r ORDER BY r) INTO _missing
   FROM   UNNEST(_required) AS r
   WHERE  NOT EXISTS (
@@ -387,11 +388,12 @@ $revoke_all_column_selects$;
 
 
 -- ────────────────────────────────────────────────────────────────
--- 1d. Grant approved display columns to anon (31 columns)
+-- 1d. Grant approved display columns to anon (32 columns)
 --
 -- Confirmed against every client-side anon query [SRC]:
 --   trainers/[id].astro client: bmp_score, star_rating, avatar_url,
---     avatar_color, city, bio, specialty, hero_theme, location_confirmed
+--     avatar_color, city, bio, specialty, hero_theme, location_confirmed,
+--     is_founder (Founder badge on public profile)
 --   account.astro reviews join: name, avatar_initials, avatar_bg,
 --     avatar_color, bmp_score, review_count
 --   account.astro conversations join: name, avatar_initials,
@@ -400,37 +402,10 @@ $revoke_all_column_selects$;
 --     specialty, bmp_score, review_count, avatar_initials, avatar_bg,
 --     avatar_color, avatar_url, cc_country, cc_local_area,
 --     location_confirmed
+--   index.astro / find-a-trainer.astro: is_founder (badge display)
 --   admin.astro reviews join: name, city
 -- is_active is required for WHERE is_active = TRUE filters.
--- All 31 columns confirmed present by the pre-flight assertion.
--- ────────────────────────────────────────────────────────────────
-GRANT SELECT (
-  id,              name,              username,          business_name,
-  city,            location,          bio,               intro_message,
-  specialty,       coaching_type,     cert,
-  bmp_score,       star_rating,       review_count,
-  avatar_url,      avatar_initials,   avatar_bg,         avatar_color,
-  is_trending,     gyms,              hero_theme,
-  social_facebook, social_instagram,  social_whatsapp,   social_email,
-  accepts_bookings,booking_url,
-  location_confirmed, cc_country,     cc_local_area,     is_active
-) ON public.trainers TO anon;
-
-
--- ────────────────────────────────────────────────────────────────
--- 1e. Grant approved display columns to authenticated (32 columns)
---
--- Identical to anon plus user_id. user_id is required because
--- authenticated queries filter trainers by user_id in WHERE clauses
--- (see architecture note D). PostgreSQL requires SELECT privilege
--- on a column to reference it in WHERE. All such queries run as
--- authenticated (inside if(session) guards) — anon never uses
--- user_id in a WHERE clause.
---
--- Private fields (postcode, location_cooldown_until) are not
--- granted here. The dashboard reads them exclusively via
--- get_own_trainer_profile() (SECURITY DEFINER, runs as postgres,
--- bypasses column-level grants).
+-- All 32 columns confirmed present by the pre-flight assertion.
 -- ────────────────────────────────────────────────────────────────
 GRANT SELECT (
   id,              name,              username,          business_name,
@@ -442,7 +417,37 @@ GRANT SELECT (
   social_facebook, social_instagram,  social_whatsapp,   social_email,
   accepts_bookings,booking_url,
   location_confirmed, cc_country,     cc_local_area,     is_active,
-  user_id
+  is_founder
+) ON public.trainers TO anon;
+
+
+-- ────────────────────────────────────────────────────────────────
+-- 1e. Grant approved display columns to authenticated (33 columns)
+--
+-- Identical to anon plus user_id and is_founder (already in anon list).
+-- user_id is required because authenticated queries filter trainers by
+-- user_id in WHERE clauses (see architecture note D). PostgreSQL
+-- requires SELECT privilege on a column to reference it in WHERE. All
+-- such queries run as authenticated (inside if(session) guards) — anon
+-- never uses user_id in a WHERE clause.
+--
+-- Private fields (postcode, location_cooldown_until) are not
+-- granted here. The dashboard reads them exclusively via
+-- get_own_trainer_profile() (SECURITY DEFINER, runs as postgres,
+-- bypasses column-level grants). is_founder is also returned by that
+-- RPC; the column grant here covers direct table queries.
+-- ────────────────────────────────────────────────────────────────
+GRANT SELECT (
+  id,              name,              username,          business_name,
+  city,            location,          bio,               intro_message,
+  specialty,       coaching_type,     cert,
+  bmp_score,       star_rating,       review_count,
+  avatar_url,      avatar_initials,   avatar_bg,         avatar_color,
+  is_trending,     gyms,              hero_theme,
+  social_facebook, social_instagram,  social_whatsapp,   social_email,
+  accepts_bookings,booking_url,
+  location_confirmed, cc_country,     cc_local_area,     is_active,
+  is_founder,      user_id
 ) ON public.trainers TO authenticated;
 
 
@@ -465,7 +470,8 @@ DECLARE
     'is_trending',     'gyms',            'hero_theme',
     'social_facebook', 'social_instagram','social_whatsapp',  'social_email',
     'accepts_bookings','booking_url',
-    'location_confirmed','cc_country',    'cc_local_area',    'is_active'
+    'location_confirmed','cc_country',    'cc_local_area',    'is_active',
+    'is_founder'
   ];
   _approved_auth TEXT[] := ARRAY[
     'id',              'name',            'username',         'business_name',
@@ -477,7 +483,7 @@ DECLARE
     'social_facebook', 'social_instagram','social_whatsapp',  'social_email',
     'accepts_bookings','booking_url',
     'location_confirmed','cc_country',    'cc_local_area',    'is_active',
-    'user_id'
+    'is_founder',      'user_id'
   ];
   _private_cols TEXT[] := ARRAY[
     'postcode', 'email', 'location_cooldown_until',
@@ -635,7 +641,7 @@ WHERE  table_schema = 'public'
   AND  table_name   = 'trainers'
   AND  privilege_type = 'SELECT'
 ORDER  BY column_name, grantee;
--- EXPECTED: exactly 31 rows for anon (no user_id) and 32 rows for
+-- EXPECTED: exactly 32 rows for anon (no user_id) and 33 rows for
 -- authenticated (includes user_id). No rows for any private column
 -- (postcode, email, location_cooldown_until, etc.) for any grantee.
 
@@ -778,7 +784,8 @@ SELECT
 --   is_trending,     gyms,              hero_theme,
 --   social_facebook, social_instagram,  social_whatsapp,   social_email,
 --   accepts_bookings,booking_url,
---   location_confirmed, cc_country,     cc_local_area,     is_active
+--   location_confirmed, cc_country,     cc_local_area,     is_active,
+--   is_founder
 -- ) ON public.trainers FROM anon;
 --
 -- REVOKE SELECT (
@@ -791,7 +798,7 @@ SELECT
 --   social_facebook, social_instagram,  social_whatsapp,   social_email,
 --   accepts_bookings,booking_url,
 --   location_confirmed, cc_country,     cc_local_area,     is_active,
---   user_id
+--   is_founder,      user_id
 -- ) ON public.trainers FROM authenticated;
 --
 -- -- Restore table-level SELECT.

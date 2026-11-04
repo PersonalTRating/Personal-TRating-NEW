@@ -159,6 +159,7 @@
       <span class="sb-badge green" id="sb-approved-count">0</span>
     </button>
     <div class="sb-label">Platform</div>
+    <button class="sb-item" onclick="showPage('founder')"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> Founder Programme</button>
     <a class="sb-item" href="/" target="_blank"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> View Site</a>
   </nav>
   <div class="sb-footer">
@@ -209,6 +210,54 @@
             <div class="empty-icon"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
             <div class="empty-title">Loading…</div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOUNDER PROGRAMME PAGE -->
+    <div class="page" id="page-founder">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Founder Programme</div>
+            <div class="card-sub">Control whether new signups receive Founder status automatically</div>
+          </div>
+        </div>
+        <div style="padding:1.5rem 1.75rem;">
+
+          <!-- Toggle -->
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;background:var(--off);border:1px solid var(--border);border-radius:12px;margin-bottom:1.5rem;">
+            <div>
+              <div style="font-weight:700;font-size:0.95rem;margin-bottom:0.25rem;">Programme Status</div>
+              <div style="font-size:0.82rem;color:var(--muted);max-width:380px;line-height:1.5;">When ON, every new trainer who signs up is automatically awarded Founder status. When OFF, new signups are not awarded — but all previously awarded Founder badges remain permanently.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;margin-left:1.5rem;">
+              <span id="founder-status-label" style="font-size:0.82rem;font-weight:700;color:var(--muted);">Loading…</span>
+              <label style="position:relative;display:inline-block;width:52px;height:28px;cursor:pointer;">
+                <input type="checkbox" id="founder-toggle" style="opacity:0;width:0;height:0;position:absolute;" />
+                <span id="founder-toggle-track" style="position:absolute;inset:0;background:#ccc;border-radius:28px;transition:background 0.2s;"></span>
+                <span id="founder-toggle-thumb" style="position:absolute;top:3px;left:3px;width:22px;height:22px;background:white;border-radius:50%;transition:transform 0.2s;box-shadow:0 1px 4px rgba(0,0,0,0.2);"></span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div style="display:flex;gap:1rem;margin-bottom:1.5rem;">
+            <div style="flex:1;padding:1rem 1.25rem;background:var(--green-light);border:1px solid var(--green-mid);border-radius:10px;text-align:center;">
+              <div id="founder-count" style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--green-dark);">—</div>
+              <div style="font-size:0.78rem;color:var(--muted);margin-top:0.25rem;">Active Founders</div>
+            </div>
+            <div style="flex:1;padding:1rem 1.25rem;background:var(--off);border:1px solid var(--border);border-radius:10px;">
+              <div style="font-size:0.82rem;font-weight:700;margin-bottom:0.5rem;">What this controls</div>
+              <ul style="font-size:0.78rem;color:var(--muted);line-height:1.75;padding-left:1.1rem;margin:0;">
+                <li>New trainer signups auto-awarded Founder badge when ON</li>
+                <li>Existing Founder badges are never removed by this toggle</li>
+                <li>Founder status has no effect on BMP, rankings or Trending</li>
+              </ul>
+            </div>
+          </div>
+
+          <div id="founder-save-msg" style="display:none;padding:0.75rem 1rem;border-radius:8px;font-size:0.82rem;font-weight:600;"></div>
         </div>
       </div>
     </div>
@@ -459,8 +508,9 @@
     const match = [...document.querySelectorAll('.sb-item')].find(el => el.getAttribute('onclick')?.includes(id));
     if (match) match.classList.add('active');
     const titles: Record<string, [string, string]> = {
-      pending:  ['Pending Reviews',  'Reviews awaiting your approval before going live'],
-      approved: ['Approved Reviews', 'All reviews that are live on trainer profiles'],
+      pending:  ['Pending Reviews',    'Reviews awaiting your approval before going live'],
+      approved: ['Approved Reviews',   'All reviews that are live on trainer profiles'],
+      founder:  ['Founder Programme',  'Control whether new signups receive Founder status automatically'],
     };
     const [title, sub] = titles[id] || ['Admin', ''];
     (document.getElementById('page-title') as HTMLElement).textContent = title;
@@ -474,6 +524,69 @@
     t.classList.add('show');
     setTimeout(() => t.classList.remove('show'), 3000);
   }
+
+  // ── Founder Programme toggle ──────────────────────────────────────────────
+  async function loadFounderState() {
+    const { data, error } = await supabase
+      .from('app_settings')
+      .select('value')
+      .eq('key', 'founder_programme_enabled')
+      .single();
+
+    const enabled = !error && data?.value === 'true';
+    _applyFounderUI(enabled);
+
+    // Founder count
+    const { count } = await supabase
+      .from('trainers')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_founder', true)
+      .eq('is_active', true);
+    const countEl = document.getElementById('founder-count') as HTMLElement;
+    if (countEl) countEl.textContent = String(count ?? '—');
+  }
+
+  function _applyFounderUI(enabled: boolean) {
+    const toggle = document.getElementById('founder-toggle') as HTMLInputElement;
+    const track  = document.getElementById('founder-toggle-track') as HTMLElement;
+    const thumb  = document.getElementById('founder-toggle-thumb') as HTMLElement;
+    const label  = document.getElementById('founder-status-label') as HTMLElement;
+    if (!toggle) return;
+    toggle.checked = enabled;
+    track.style.background = enabled ? 'var(--green)' : '#ccc';
+    thumb.style.transform  = enabled ? 'translateX(24px)' : 'translateX(0)';
+    label.textContent      = enabled ? 'ON' : 'OFF';
+    label.style.color      = enabled ? 'var(--green-dark)' : 'var(--muted)';
+  }
+
+  document.getElementById('founder-toggle')?.addEventListener('change', async (e) => {
+    const enabled = (e.target as HTMLInputElement).checked;
+    _applyFounderUI(enabled);
+    const saveMsg = document.getElementById('founder-save-msg') as HTMLElement;
+    saveMsg.style.display = 'none';
+
+    const { error } = await supabase
+      .from('app_settings')
+      .upsert({ key: 'founder_programme_enabled', value: enabled ? 'true' : 'false', updated_at: new Date().toISOString() });
+
+    if (error) {
+      _applyFounderUI(!enabled); // revert
+      saveMsg.textContent = 'Error saving — ' + (error.message || 'unknown error');
+      saveMsg.style.background = 'var(--red-light)';
+      saveMsg.style.color      = 'var(--red)';
+    } else {
+      saveMsg.textContent = enabled ? 'Programme enabled — new signups will receive Founder status.' : 'Programme disabled — new signups will not receive Founder status.';
+      saveMsg.style.background = enabled ? 'var(--green-light)' : '#fff3cd';
+      saveMsg.style.color      = enabled ? 'var(--green-dark)' : '#856404';
+    }
+    saveMsg.style.display = 'block';
+    setTimeout(() => { saveMsg.style.display = 'none'; }, 4000);
+  });
+
+  // Load founder state when the page is first opened
+  document.getElementById('page-founder')?.addEventListener('click', () => {}, { once: false });
+  // Load immediately in case user navigates directly
+  loadFounderState();
 
   // ── Sign out ──────────────────────────────────────────────────────────────
   document.getElementById('sign-out-btn')?.addEventListener('click', async () => {

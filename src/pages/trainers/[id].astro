@@ -18,7 +18,7 @@ const { id } = Astro.params;
 
 const { data: trainer } = await supabase
   .from('trainers')
-  .select('id, name, username, city, location, bio, specialty, cert, coaching_type, bmp_score, star_rating, review_count, is_trending, is_active, avatar_url, avatar_initials, avatar_bg, avatar_color, business_name, hero_theme, gyms, cc_country, cc_local_area, location_confirmed, distinct_reviewer_count')
+  .select('id, name, username, city, location, bio, specialty, cert, coaching_type, bmp_score, star_rating, review_count, is_trending, is_active, is_founder, avatar_url, avatar_initials, avatar_bg, avatar_color, business_name, hero_theme, gyms, cc_country, cc_local_area, location_confirmed, distinct_reviewer_count')
   .eq('id', id)
   .single();
 
@@ -597,6 +597,12 @@ const maskName = (name: string): string => {
                 <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
                 <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
+            </span>
+          )}
+          {(trainer as any).is_founder && (
+            <span id="tp-founder-badge" class="founder-badge" tabindex="0" role="img" aria-label="Founder — An early member of the CoachCards trainer community.">
+              <img src="/assets/coachcards-founder-badge.png" alt="" width="101" height="24" style="height:24px;width:auto;" />
+              <span class="founder-badge-tt" role="tooltip">Founder — An early member of the CoachCards trainer community.</span>
             </span>
           )}
         </h1>
@@ -1454,7 +1460,7 @@ const maskName = (name: string): string => {
 
     // Fetch live trainer row and approved review count in parallel
     const [trainerRes, reviewsRes] = await Promise.all([
-      supabase.from('trainers').select('bmp_score, star_rating, avatar_url, avatar_color, city, bio, specialty, hero_theme, location_confirmed').eq('id', trainerId).single(),
+      supabase.from('trainers').select('bmp_score, star_rating, avatar_url, avatar_color, city, bio, specialty, hero_theme, location_confirmed, is_founder').eq('id', trainerId).single(),
       supabase.from('reviews').select('id', { count: 'exact', head: true }).eq('trainer_id', trainerId).eq('is_verified', true),
     ]);
 
@@ -1491,6 +1497,13 @@ const maskName = (name: string): string => {
         heroEl.style.setProperty('--hero-c', liveHeroColour);
         heroEl.style.setProperty('--hero-cd', liveHeroColourDark);
       }
+    }
+
+    // Patch founder badge — SSG bakes build-time value; show/hide based on live data
+    const liveFounder = trainerRes.data?.is_founder as boolean | null;
+    if (liveFounder != null) {
+      const founderEl = document.getElementById('tp-founder-badge');
+      if (founderEl) founderEl.style.display = liveFounder ? 'inline-flex' : 'none';
     }
 
     // Patch avatar — replace initials div with photo if one exists

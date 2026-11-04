@@ -26,6 +26,7 @@ interface Props {
   verifiedLocation?: string | null;
   rankingVisibility?: string;
   distinctReviewerCount?: number | null;
+  isFounder?: boolean;
 }
 
 const {
@@ -53,6 +54,7 @@ const {
   verifiedLocation,
   rankingVisibility = 'all',
   distinctReviewerCount = null,
+  isFounder = false,
 } = Astro.props;
 
 // Use the confirmed area name for confirmed trainers; fall back to the
@@ -138,6 +140,12 @@ const bmpFrameUrl = bmpDisplay != null ? bmpFrameSrc(bmpScore) : null;
               <circle cx="8" cy="8" r="8" fill="#3ab54a"/>
               <path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
+          </span>
+        )}
+        {isFounder && (
+          <span class="founder-badge" tabindex="0" role="img" aria-label="Founder — An early member of the CoachCards trainer community.">
+            <img src="/assets/coachcards-founder-badge.png" alt="" width="76" height="18" style="height:18px;width:auto;" />
+            <span class="founder-badge-tt" role="tooltip">Founder — An early member of the CoachCards trainer community.</span>
           </span>
         )}
         {isTrending && (
