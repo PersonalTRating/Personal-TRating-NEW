@@ -182,6 +182,20 @@
   .card-title { font-weight:800; font-size:0.92rem; }
   .card-sub   { font-size:0.75rem; color:var(--muted); margin-top:0.15rem; }
   .card-body  { padding:1.5rem; }
+  /* ── ADVERT CARD ── */
+  .advert-card { display:flex; align-items:flex-start; gap:0.75rem; padding:1.25rem 1.5rem; }
+  .advert-card[hidden] { display:none; }
+  .advert-card-text { flex:1; min-width:0; }
+  .advert-card .card-sub { font-size:0.82rem; line-height:1.5; margin-top:0.3rem; }
+  .advert-card-link { display:inline-block; margin-top:0.9rem; text-decoration:none; }
+  .advert-card-dismiss {
+    flex-shrink:0; width:36px; height:36px; margin:-0.4rem -0.6rem 0 0;
+    display:flex; align-items:center; justify-content:center;
+    background:none; border:none; border-radius:8px; color:var(--muted); cursor:pointer;
+  }
+  .advert-card-dismiss:hover { background:var(--off); color:var(--text); }
+  .advert-card-link:focus-visible,
+  .advert-card-dismiss:focus-visible { outline:3px solid var(--green-dark); outline-offset:2px; }
   .card-link  { font-size:0.78rem; color:var(--green); font-weight:700; text-decoration:none; cursor:pointer; background:none; border:none; font-family:'Manrope',sans-serif; }
 
   /* ── CHART BARS ── */
@@ -1151,6 +1165,18 @@
           <div class="stat-change up" id="stat-views-change"></div>
         </div>
       </div>
+
+      <!-- Advert card — trainers only, shown by JS once the trainer and user ID are known -->
+      <section class="card advert-card" id="trainer-advert-card" aria-labelledby="trainer-advert-title" hidden>
+        <div class="advert-card-text">
+          <h2 class="card-title" id="trainer-advert-title">See what potential clients see</h2>
+          <p class="card-sub">A 30-second look at how people find and compare trainers on CoachCards.</p>
+          <a class="btn btn-green advert-card-link" href="/overview/#ov-advert">Watch the 30-second video</a>
+        </div>
+        <button type="button" class="advert-card-dismiss" id="trainer-advert-dismiss" aria-label="Dismiss video card">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </section>
 
       <div class="three-col">
         <!-- Reviews chart -->
@@ -2226,6 +2252,26 @@
   (window as any).__ptUserId    = session.user.id;
   (window as any).__ptSupabase  = supabase;
   (window as any).__ptTrainer   = trainer;
+
+  // ── Advert card ─────────────────────────────────────────────────────────
+  // Runs only after the trainer profile and signed-in user ID are known (non-trainers
+  // are redirected above). Dismissal is stored per user; if storage is unavailable
+  // the card still hides for this page visit.
+  (() => {
+    const card = document.getElementById('trainer-advert-card');
+    const dismissBtn = document.getElementById('trainer-advert-dismiss');
+    const userId: string | undefined = session?.user?.id;
+    if (!card || !dismissBtn || !trainer || !userId) return;
+    const key = `coachcards:trainer-advert:v1:dismissed:${userId}`;
+    let dismissed = false;
+    try { dismissed = localStorage.getItem(key) === '1'; } catch (_) {}
+    if (dismissed) return;
+    card.hidden = false;
+    dismissBtn.addEventListener('click', () => {
+      card.hidden = true;
+      try { localStorage.setItem(key, '1'); } catch (_) {}
+    });
+  })();
 
   // ── Gyms ────────────────────────────────────────────────────────────────────
   let trainerGyms: { name: string; location: string }[] = [];
