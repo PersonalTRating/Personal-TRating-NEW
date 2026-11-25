@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
 import TrustBar from '../components/TrustBar.astro';
+import AdvertPlayer from '../components/AdvertPlayer.astro';
 import { getLocalAreaLabel, getVerifiedLocationLabel, getVisibilityLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
 import { BMP_BRACKET_TIERS } from '../lib/bmpConfig';
 
@@ -769,6 +770,35 @@ const reviews = [
 
   </div>
 </section>
+
+<!-- ── ADVERT ── -->
+<section id="home-advert" class="home-advert" aria-labelledby="home-advert-h2">
+  <div class="home-advert-inner">
+    <h2 id="home-advert-h2" class="home-advert-h2">Lift the burden of uncertainty weighing you down</h2>
+    <AdvertPlayer />
+    <div style="text-align:center;margin-top:2.25rem;">
+      <a href="/find-a-trainer/" style="background:#3ab54a;color:white;padding:0.9rem 2.25rem;border-radius:8px;font-weight:700;font-size:0.9rem;text-decoration:none;display:inline-block;box-shadow:0 4px 16px rgba(58,181,74,0.3);"
+        onmouseover="this.style.background='#2a9438'" onmouseout="this.style.background='#3ab54a'">
+        Find a personal trainer
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .home-advert { padding: 5rem 0; background: white; border-top: 3px solid #3ab54a; }
+  .home-advert-inner { max-width: 1200px; margin: 0 auto; padding: 0 2.5rem; }
+  .home-advert-h2 {
+    font-family: 'Playfair Display', serif; font-size: 2.5rem; font-weight: 900;
+    color: #111311; line-height: 1.15; text-align: center; margin: 0 auto 2.25rem; max-width: 640px;
+  }
+  /* ≤900px: the page's global `section` rule supplies the 1.25rem side padding */
+  @media (max-width: 900px) { .home-advert-inner { padding: 0; } }
+  @media (max-width: 640px) {
+    .home-advert { padding-top: 3rem; padding-bottom: 3rem; }
+    .home-advert-h2 { font-size: 1.85rem; margin-bottom: 1.5rem; }
+  }
+</style>
 
 <!-- ── FOR CLIENTS ── -->
 <section style="padding:6rem 0;background:white;border-top:3px solid #3ab54a;">

@@ -1,5 +1,6 @@
 ---
 import TrainerCard from '../components/TrainerCard.astro';
+import AdvertPlayer from '../components/AdvertPlayer.astro';
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -279,70 +280,6 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   border-top: 1px solid rgba(58,181,74,0.1);
 }
 #ov-advert .ov-h2 { margin-bottom: 2rem; }
-.ov-advert-player {
-  position: relative;
-  max-width: 616px;
-  margin: 0 auto;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 0 0 1px rgba(58,181,74,0.25), 0 18px 48px rgba(0,0,0,0.45);
-}
-.ov-advert-video {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.ov-advert-play {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0) 55%, rgba(0,0,0,0.35) 100%);
-  border: 0;
-  border-radius: inherit;
-  cursor: pointer;
-  font: inherit;
-  color: #fff;
-}
-.ov-advert-play[hidden] { display: none; }
-.ov-advert-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.94);
-  color: #0d1a0e;
-  box-shadow: 0 0 0 6px rgba(0,0,0,0.25), 0 10px 30px rgba(0,0,0,0.45);
-  transition: transform 0.2s, background 0.15s;
-}
-.ov-advert-icon svg { margin-left: 6px; }
-.ov-advert-play:hover .ov-advert-icon { transform: scale(1.08); background: #fff; }
-.ov-advert-badge {
-  position: absolute;
-  right: 0.9rem;
-  bottom: 0.9rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-  background: rgba(0,0,0,0.78);
-  color: #fff;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.3px;
-  font-variant-numeric: tabular-nums;
-}
-.ov-advert-play:focus-visible {
-  outline: 3px solid #3ab54a;
-  outline-offset: -3px;
-  box-shadow: inset 0 0 0 6px #fff;
-}
 .ov-advert-cta { text-align: center; margin-top: 2rem; }
 
 /* ── Section 2: 53% ──────────────────────────────────────────────────────── */
@@ -945,10 +882,6 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
   .ov-stat-big { font-size: 5.5rem; }
   #ov-stat, #ov-easy, #ov-why, #ov-grow { padding: 4.5rem 0; }
   #ov-advert { padding: 3rem 0; }
-  .ov-advert-player { border-radius: 8px; }
-  .ov-advert-icon { width: 64px; height: 64px; box-shadow: 0 0 0 4px rgba(0,0,0,0.25), 0 6px 18px rgba(0,0,0,0.45); }
-  .ov-advert-icon svg { width: 20px; height: 24px; margin-left: 4px; }
-  .ov-advert-badge { right: 0.5rem; bottom: 0.5rem; font-size: 0.72rem; }
   #ov-how { padding: 2.5rem 0; }
   .ov-grow-outcome-text { font-size: 1.35rem; }
   #ov-early { padding: 4.5rem 0; }
@@ -1028,28 +961,7 @@ a:focus-visible { outline: 2px solid #3ab54a; outline-offset: 3px; }
     <h2 id="ov-advert-h2" class="ov-h2 ov-h2--center">
       How it Works
     </h2>
-    <div class="ov-advert-player">
-      <button type="button" id="ov-advert-play" class="ov-advert-play" aria-label="Play CoachCards advert (30 seconds)" hidden>
-        <span class="ov-advert-icon" aria-hidden="true">
-          <svg width="28" height="32" viewBox="0 0 14 16"><path d="M0 0v16l14-8z" fill="currentColor"/></svg>
-        </span>
-        <span class="ov-advert-badge" aria-hidden="true">0:30</span>
-      </button>
-      <video
-        id="ov-advert-video"
-        class="ov-advert-video"
-        controls
-        playsinline
-        preload="none"
-        width="1280"
-        height="720"
-        poster="/images/coachcards-advert-poster.webp"
-        aria-label="CoachCards 30-second advert"
-      >
-        <source src="/videos/coachcards-advert-30s.mp4" type="video/mp4" />
-        <track kind="captions" src="/videos/coachcards-advert-30s.en.vtt" srclang="en" label="English" />
-      </video>
-    </div>
+    <AdvertPlayer />
     <div class="ov-advert-cta">
       <a href="/signup" class="ov-btn">CREATE YOUR COACHCARD →</a>
     </div>
@@ -1350,21 +1262,6 @@ const demoLink = document.querySelector<HTMLAnchorElement>('#ov-card-demo .trc')
 if (demoLink) {
   demoLink.setAttribute('tabindex', '-1');
   demoLink.removeAttribute('href');
-}
-
-// ── Advert: play overlay (native controls remain the fallback without JS) ──
-const advertVideo = document.getElementById('ov-advert-video') as HTMLVideoElement | null;
-const advertPlay  = document.getElementById('ov-advert-play') as HTMLButtonElement | null;
-if (advertVideo && advertPlay) {
-  const showControls = () => { advertPlay.hidden = true; advertVideo.controls = true; };
-  advertVideo.controls = false;
-  advertPlay.hidden = false;
-  advertPlay.addEventListener('click', () => {
-    showControls();
-    advertVideo.play().catch(() => {});
-    advertVideo.focus();
-  });
-  advertVideo.addEventListener('play', showControls);
 }
 
 // ── Reduced motion flag ───────────────────────────────────────────────────
