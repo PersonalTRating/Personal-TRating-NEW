@@ -1,0 +1,78 @@
+{
+ "search_uk.png": {
+  "cards": [
+   "01 Tracy Gibson Scotland Weight Loss Online & In Person 10 verified reviews BMP 82.3",
+   "02 Paul Davies London Weight Loss 6 verified reviews BMP 76.7",
+   "03 Joe Wilson Fife, Scotland Strength & Conditioning 6 verified reviews BMP 76.1",
+   "04 Joseph Mitchell London Weight Loss 4 verified reviews BMP 71.5",
+   "05 Mike Wilson London Functional Fitness 6 verified reviews BMP 71.1"
+  ],
+  "sub": "UK Leaderboard \u00b7 Ranked by Body Muscle Percentage (BMP)",
+  "tabs_y": 125.953125
+ },
+ "search_country.png": {
+  "cards": [
+   "Tracy Gibson Scotland Weight Loss Online & In Person 10 verified reviews BMP 82.3",
+   "Joe Wilson Fife, Scotland Strength & Conditioning 6 verified reviews BMP 76.1"
+  ],
+  "sub": "Scotland Leaderboard \u00b7 Ranked by Body Muscle Percentage (BMP)",
+  "tabs_y": 125.953125
+ },
+ "search_local.png": {
+  "cards": [
+   "Paul Davies London Weight Loss 6 verified reviews BMP 76.7",
+   "Joseph Mitchell London Weight Loss 4 verified reviews BMP 71.5",
+   "Mike Wilson London Functional Fitness 6 verified reviews BMP 71.1"
+  ],
+  "sub": "London Leaderboard \u00b7 Ranked by Body Muscle Percentage (BMP)",
+  "tabs_y": 125.953125
+ },
+ "map": {
+  "x": 0,
+  "y": 112,
+  "w": 390,
+  "h": 732
+ },
+ "bmp_panel": {
+  "x": 20,
+  "y": 694.9375,
+  "w": 350,
+  "h": 207.90625,
+  "text": "BMP SCORE \u24be 82.3 out of 100"
+ },
+ "tiers": {
+  "x": 310,
+  "y": 4541.578125,
+  "w": 820,
+  "h": 119.3125,
+  "tiers": [
+   "0\u201369 DEVELOPING Growing history \u2014 every review counts",
+   "70\u201379 ESTABLISHED Solid review base, reliable rating",
+   "80\u201389 STRONG Trusted, consistent, well-reviewed",
+   "90\u201394 ADVANCED Outstanding quality & sustained engagement",
+   "95\u2013100 ELITE Pinnacle of verified reputation"
+  ],
+  "each": [
+   {
+    "x": 0,
+    "w": 154.390625
+   },
+   {
+    "x": 166.390625,
+    "w": 154.40625
+   },
+   {
+    "x": 332.796875,
+    "w": 154.390625
+   },
+   {
+    "x": 499.1875,
+    "w": 154.40625
+   },
+   {
+    "x": 665.59375,
+    "w": 154.40625
+   }
+  ]
+ }
+}

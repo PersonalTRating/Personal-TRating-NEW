@@ -1,0 +1,167 @@
+{
+  "model": "kling-4.0",
+  "mode": "multi_shot",
+  "duration_seconds": 15,
+  "aspect_ratio": "9:16",
+  "orientation": "vertical / portrait",
+  "resolution": "1080x1920",
+  "fps": 30,
+  "native_audio": true,
+
+  "reference_images": [
+    {
+      "id": "ref_1",
+      "file": "1 - full body in gym (shaker, duffel bag, lifting straps)",
+      "use_for": ["character_identity", "wardrobe", "props", "environment"],
+      "applies_to_shots": [1, 2, 3, 5],
+      "notes": "Match his body, outfit, bag, shaker, straps, watch and trainers exactly. Match the gym: black power racks with plates, benches, dark rubber floor, black ceiling beams, warm strip lights and the orange accent wall."
+    },
+    {
+      "id": "ref_2",
+      "file": "2 - face close-up",
+      "use_for": ["face_identity", "skin_detail"],
+      "applies_to_shots": [2, 3, 5],
+      "notes": "Lock his face to this image: dark-brown hair with a loose forward fringe, short full beard, ruddy cheeks, brown eyes, light sweat on forehead. Use it as the target framing for the extreme close-up at the end of shot 2."
+    },
+    {
+      "id": "ref_3",
+      "file": "3 - CoachCards leaderboard, no card selected",
+      "use_for": ["phone_screen_start_state"],
+      "applies_to_shots": [4],
+      "notes": "Exact screen layout and text for shot 4 BEFORE the tap. All three trainer cards have the same faint, even green edge glow; none is highlighted."
+    },
+    {
+      "id": "ref_4",
+      "file": "4 - CoachCards leaderboard, Tracy Gibson card selected",
+      "use_for": ["phone_screen_end_state"],
+      "applies_to_shots": [4],
+      "notes": "Exact look of the selected state AFTER the tap: Tracy Gibson's #01 card has a bright neon-green halo and is slightly raised, while the cards below dim. Copy only the card highlight effect; keep the scroll position and layout of ref_3 and do not show the browser toolbar from this image."
+    }
+  ],
+
+  "style": {
+    "look": "photorealistic, cinematic UGC ad, shot on a full-frame cinema camera, shallow depth of field, creamy bokeh, natural skin texture with visible pores and light sweat",
+    "color_grade": "warm tungsten highlights, glowing orange accent wall, deep blacks, slightly desaturated shadows, high contrast; phone screen glows saturated neon green",
+    "lighting": "overhead fluorescent strip lights and warm wall wash, soft key from above-front, gentle rim light on hair and shoulders",
+    "camera_feel": "handheld-stabilised gimbal, subtle natural micro-movement, no shaky cam",
+    "pacing": "five hard cuts, no transitions, no on-screen captions, no subtitles, no watermarks"
+  },
+
+  "character": {
+    "id": "gym_newbie",
+    "reference": ["ref_1", "ref_2"],
+    "description": "White man in his late 20s, heavy-set and overweight with a rounded belly, short dark-brown hair with a loose forward fringe, short full beard, ruddy cheeks, brown eyes",
+    "wardrobe": "plain fitted black crew-neck t-shirt, heathered charcoal athletic shorts above the knee, white crew socks, grey mesh running trainers with white soles, black square smartwatch on left wrist",
+    "props": "black gym duffel bag on a shoulder strap over his right shoulder hanging at his hip, clear shaker bottle with black flip lid half-full of a pink-red drink, black lifting straps with red stitching, black smartphone",
+    "voice": "male, British accent, natural conversational tone",
+    "consistency": "identical face, hair, beard, body, outfit and props in every shot"
+  },
+
+  "environment": {
+    "location": "large industrial warehouse-style commercial gym",
+    "reference": "ref_1",
+    "details": "black power racks loaded with plates, flat benches, cable machines and dumbbell racks, dark speckled rubber floor, exposed black steel ceiling beams with fluorescent strip lights, cream walls with a bright orange accent wall, several blurred gym-goers training in the background, glass entrance door with black frame",
+    "ambient_audio": "busy gym atmosphere: clanking plates, distant chatter, muffled background music, footsteps on rubber flooring"
+  },
+
+  "shots": [
+    {
+      "shot": 1,
+      "time": "0.0s - 3.0s",
+      "duration_seconds": 3.0,
+      "framing": "vertical medium-wide, rear view from behind at waist height",
+      "camera": "follow shot tracking behind him as he pushes through the glass gym door and walks forward into the gym; steady distance, slight push forward",
+      "action": "He pushes the black-framed glass door open and strides confidently into the gym, duffel bag bouncing at his hip, lifting straps in one hand; gym-goers near the benches glance up",
+      "dialogue": {
+        "speaker": "gym_newbie",
+        "line": "Day one, let's do this!",
+        "timing": "0.0s - 2.5s",
+        "delivery": "upbeat, pumped, self-motivating"
+      },
+      "audio": "door swing, footsteps, gym ambience rising"
+    },
+    {
+      "shot": 2,
+      "time": "3.0s - 8.1s",
+      "duration_seconds": 5.1,
+      "framing": "starts as a vertical full-body front shot matching ref_1, ends as an extreme close-up of his face matching ref_2",
+      "camera": "slow continuous dolly push-in from full body to extreme close-up across the whole shot",
+      "action": "He stands still in the middle of the gym floor beside a power rack, shaker held at chest height and straps at his side, glancing around at the equipment; his confidence drains, brow furrows, sweat beads on his forehead, he looks lost and overwhelmed, finishing with a confused frown",
+      "dialogue": {
+        "speaker": "gym_newbie",
+        "line": "What do you even do?",
+        "timing": "6.8s - 8.0s overall",
+        "delivery": "quiet, bewildered, half to himself"
+      },
+      "audio": "gym ambience: heavy plate clank and chatter before the line"
+    },
+    {
+      "shot": 3,
+      "time": "8.1s - 10.2s",
+      "duration_seconds": 2.1,
+      "framing": "vertical medium shot, chest-up, slightly low angle, power racks and orange wall softly blurred behind",
+      "camera": "static with subtle handheld drift",
+      "action": "Bag strap over his shoulder, shaker tucked in one hand, he looks down and types on his phone with his thumbs, focused",
+      "dialogue": {
+        "speaker": "gym_newbie",
+        "line": "PTs near me.",
+        "timing": "8.8s - 10.2s overall",
+        "delivery": "muttered as he types it, like reading his search out loud"
+      },
+      "audio": "soft phone keyboard taps"
+    },
+    {
+      "shot": 4,
+      "time": "10.2s - 13.1s",
+      "duration_seconds": 2.9,
+      "framing": "vertical POV insert: his left hand holds the smartphone upright, screen fills most of the frame, dark blurred background",
+      "camera": "static POV with slight natural hand movement, screen stays sharp and readable",
+      "screen_reference": { "before_tap": "ref_3", "after_tap": "ref_4" },
+      "screen_content": {
+        "status_bar": "6:55, signal, wifi, battery 76",
+        "app_header": "white bar with green circular 'CC' logo, wordmark 'CoachCards' (Coach in green, Cards in black), hamburger menu",
+        "section_title": "gold trophy icon, 'Top Trainers — UK', green 'LIVE' pill",
+        "cards": [
+          { "rank": "01", "name": "Tracy Gibson", "badge": "FOUNDER", "location": "Scotland", "tags": ["Weight Loss", "ONLINE & IN PERSON"], "reviews": "10 verified reviews", "score_label": "BMP", "score": "82.3" },
+          { "rank": "02", "name": "Paul Davies", "badge": "FOUNDER", "location": "London", "tags": ["Weight Loss"], "reviews": "6 verified reviews", "score_label": "BMP", "score": "76.7" },
+          { "rank": "03", "name": "Joe Wilson", "badge": "FOUNDER", "location": "Fife, Scotland", "tags": ["Strength & Conditioning"], "reviews": "6 verified reviews", "score_label": "BMP", "score": "76.1" }
+        ],
+        "palette": "near-black cards, neon green accents, white serif names, green verified ticks, green dumbbell icons"
+      },
+      "action": "His right index finger scrolls the leaderboard up into view until it rests exactly like ref_3, with all three cards equally lit by only a faint green edge and none highlighted. His index finger then moves in and firmly presses down on Tracy Gibson's #01 card. Only at the instant his fingertip makes contact does the card react: a bright neon-green glow blooms outward from the exact point under his fingertip and spreads to a full halo around the card, the card lifts slightly, and the cards below dim, matching ref_4. His finger stays pressed for a moment while the glow builds, then lifts and moves out of frame; Tracy's card stays glowing.",
+      "beats": [
+        { "time": "10.2s - 11.2s", "beat": "Finger scrolls; screen settles on ref_3 layout; no card highlighted" },
+        { "time": "11.2s", "beat": "Fingertip presses Tracy Gibson's #01 card; the card is still unlit at the moment of contact" },
+        { "time": "11.2s - 11.8s", "beat": "Finger held on the card; green glow ripples out from under the fingertip into a full bright halo; Paul Davies and Joe Wilson cards dim" },
+        { "time": "11.8s - 13.1s", "beat": "Finger lifts away and leaves frame; Tracy's card stays fully glowing as in ref_4" }
+      ],
+      "cause_and_effect": "The glow is caused by his touch and nothing else: no highlight before the press, the glow starts at the fingertip on contact, and it never appears on its own or after the finger has already left",
+      "dialogue": null,
+      "audio": "no speech; soft scroll swish, then a crisp tap and gentle chime exactly as the fingertip presses Tracy's card"
+    },
+    {
+      "shot": 5,
+      "time": "13.1s - 15.0s",
+      "duration_seconds": 1.9,
+      "framing": "vertical medium close-up, chest-up, three-quarter angle, gym and orange wall softly blurred",
+      "camera": "static, very slight push-in",
+      "action": "He looks down at the phone in his hand, shaker tucked in the other hand, and breaks into a relieved smile, then lifts his head and looks up and off to the side, eyebrows raised, hopeful and reassured",
+      "dialogue": {
+        "speaker": "gym_newbie",
+        "line": "Sorted.",
+        "timing": "14.05s - 14.7s overall",
+        "delivery": "satisfied, relieved, quietly confident"
+      },
+      "audio": "gym ambience softens under the line"
+    }
+  ],
+
+  "full_script": [
+    { "time": "0.0s", "line": "Day one, let's do this!" },
+    { "time": "6.8s", "line": "What do you even do?" },
+    { "time": "8.8s", "line": "PTs near me." },
+    { "time": "14.05s", "line": "Sorted." }
+  ],
+
+  "negative_prompt": "landscape, horizontal, 16:9, letterboxing, subtitles, captions, on-screen text overlays, watermark, visible brand logos on clothing or shoes, distorted hands, extra fingers, warped phone screen, garbled or misspelled app text, face changing between shots, different outfit, cartoon, CGI look, oversaturated skin, shaky camera, slow motion, crossfade transitions, music drowning out dialogue, Tracy's card glowing before it is pressed, glow appearing after the finger has moved away, glow appearing on its own without a touch, every card glowing at once, browser toolbar on the phone screen"
+}

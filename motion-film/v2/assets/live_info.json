@@ -1,0 +1,98 @@
+{
+ "cards": [
+  {
+   "x": 32,
+   "y": 937.6875,
+   "w": 326,
+   "h": 129.953125,
+   "text": "Paul Davies London Weight Loss 6 verified reviews BMP 76.7",
+   "href": "/trainers/639b7020-9f0a-4ff4-b352-8169d1d65068"
+  },
+  {
+   "x": 32,
+   "y": 1083.640625,
+   "w": 326,
+   "h": 155.140625,
+   "text": "Joseph Mitchell London Weight Loss 4 verified reviews BMP 71.5",
+   "href": "/trainers/5010cb9f-aa00-4fcc-8c91-739312e2df4e"
+  },
+  {
+   "x": 32,
+   "y": 1254.78125,
+   "w": 326,
+   "h": 155.140625,
+   "text": "Mike Wilson London Functional Fitness 6 verified reviews BMP 71.1",
+   "href": "/trainers/9a280750-b10e-4de5-8f7b-264b378b6bfa"
+  }
+ ],
+ "heading": {
+  "y": 856.890625,
+  "h": 28.796875
+ },
+ "sub": "London Leaderboard \u00b7 Ranked by Body Muscle Percentage (BMP)",
+ "rank_marks": [],
+ "paul_href": "/trainers/639b7020-9f0a-4ff4-b352-8169d1d65068",
+ "profile_title": "Paul Davies \u2014 Personal Trainer in London \u00b7 CoachCards",
+ "profile_hero_fields": "\u2190 Back to Rankings ESTABLISHED WEIGHT LOSS REPs Level 3 Paul Davies @pauldavies Paul PT London 76.7 BMP \u00b7 6 verified reviews Leave a Verified Review Speak to Paul Davies to find out more BMP SCORE \u24be 76.7 out of 100",
+ "profile_gate_visible": true,
+ "reviews": [
+  {
+   "x": 20,
+   "y": 3308.25,
+   "w": 350,
+   "h": 224.375,
+   "text": "J J. M. October 2026 \"Amazing trainer, been using him for over 2 years.\" BMP 100% Verified \u00b7 Anonymous",
+   "href": null
+  },
+  {
+   "x": 20,
+   "y": 3552.625,
+   "w": 350,
+   "h": 302.046875,
+   "text": "S S. D. September 2026 \"I came in with a pretty specific goal of improving my mobility and overall fitness. The programme has been spot on so far. I\u2019m moving better, feeling stronger and noticing improvements in everyday life as well.\" BMP 100% Verified \u00b7 Anonymous",
+   "href": null
+  },
+  {
+   "x": 20,
+   "y": 3874.671875,
+   "w": 350,
+   "h": 302.046875,
+   "text": "R R. D. September 2026 \"Every session is different which keeps training interesting. There\u2019s a good balance between pushing you and understanding your limits. I always leave feeling like I\u2019ve worked hard without being completely destroyed.\" BMP 95% Verified \u00b7 Anonymous",
+   "href": null
+  },
+  {
+   "x": 20,
+   "y": 4196.71875,
+   "w": 350,
+   "h": 302.046875,
+   "text": "L L. M. September 2026 \"Really friendly and approachable trainer who makes you feel comfortable from the first session. I never feel judged or out of place, and I\u2019ve become much more confident using different equipment in the gym.\" BMP 95% Verified \u00b7 Anonymous",
+   "href": null
+  },
+  {
+   "x": 20,
+   "y": 4518.765625,
+   "w": 350,
+   "h": 224.375,
+   "text": "AR Adam Robinson September 2026 \"Really supportive and motivating. I've made great progress since starting.\" BMP 100% Verified Client",
+   "href": null
+  },
+  {
+   "x": 20,
+   "y": 4763.140625,
+   "w": 350,
+   "h": 224.375,
+   "text": "J J. D. September 2026 \"Worked with Paul for three weeks now, can\u2019t recommend enough.\" BMP 95% Verified \u00b7 Anonymous",
+   "href": null
+  }
+ ],
+ "name_el": [
+  {
+   "x": 20,
+   "y": 372.59375,
+   "w": 350,
+   "h": 31.953125,
+   "text": "Paul Davies",
+   "href": null
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+CoachCards advert, continuation footage: 4 separate generations (Shot 1-4), each 5 seconds, 16:9 landscape, 1280x720, 24 fps, to cut directly after an existing 12.8-second live-action opener. Generate each shot separately, attaching the reference images listed for that shot.
+
+CHARACTER (identical in Shots 1-3, matching the opener):
+A white British man in his mid-to-late twenties with a stocky, heavier build and broad shoulders. Short dark-brown hair, slightly lifted at the front and shorter at the sides. Short, even dark stubble along the jaw and upper lip. Fair skin with natural texture and a slight flush on the cheeks. He wears a plain black crew-neck cotton t-shirt, loose dark-grey athletic shorts, white trainers with white ankle socks, and a smartwatch with a silver-grey face and black strap on his left wrist. He wears a black backpack with straps over both shoulders. He carries a red-and-pink shaker bottle with a black lid in his right hand whenever his right hand is not touching the phone; when he uses the phone with both hands, the shaker stays gripped in his right hand against the side of the phone. His phone is a black, modern edge-to-edge smartphone with a thin black bezel.
+
+SETTING (identical in Shots 1-3, matching the opener):
+A busy commercial UK gym. Black steel power racks, plate-loaded machines and rows of black dumbbells. A warm orange-lit accent wall at the back, long white fluorescent strip lights in a dark ceiling, and a dark rubber floor. Other gym-goers move in the far background, softly out of focus. Light comes from the overhead fluorescent strips, with warm orange spill from the back wall rimming the right side of his face and shoulders. Shallow depth of field, like a 35-50 mm lens, background softly blurred.
+
+PHONE SCREEN (all shots where visible):
+The CoachCards mobile site. A white header bar at the top with a small round black-and-green "CC" mark. Below it, a near-black page with dark rounded cards, each with a thin glowing green border, a small circular trainer photo on the left and short lines of white and green text. All text and numbers on the screen stay soft, slightly out of focus and unreadable. The screen gives off a gentle green glow onto his fingers.
+
+[SHOT 1 - 0:00-0:05 | final edit 0:12.8-0:17.8 | references: ref-character-phone_11.0s.png, ref-gym-wide_3.5s.png]
+Over-the-shoulder shot from behind his right shoulder, slightly above eye level, handheld with gentle natural sway. The black backpack strap is visible over his right shoulder in the foreground. He holds the phone upright in his left hand at chest height, screen facing him and angled towards camera, while his right hand holds the shaker low at his side. At 0:01 he brings his right hand up, still holding the shaker by its body, and swipes upwards twice on the screen with his right index finger, scrolling the list of green-bordered cards. At 0:03 he taps once with the same finger on a small rounded pill-shaped button near the top of the screen, and the list refreshes. The camera pushes in slowly by about 10% towards the screen. Expression (glimpsed in partial profile): concentrating, brow slightly furrowed, curious.
+
+[SHOT 2 - 0:00-0:05 | final edit 0:17.8-0:22.8 | references: ref-character-face_12.5s.png, ref-character-phone_11.0s.png]
+0:00-0:02.5: close-up of the phone in his left hand, filling the centre of the frame, screen facing camera at a slight angle. The silver-grey smartwatch face with its black strap is visible on his left wrist. His right thumb, with the shaker held in the same hand, swipes left once, sliding from one green-bordered trainer card to a second card, then pauses. The cards stay soft and unreadable.
+0:02.5-0:05: the camera tilts up smoothly from the phone to a medium close-up of his face and shoulders, with the black backpack straps visible over both shoulders. He is lit from below by the soft green screen glow and from camera-right by warm orange spill. His eyes move left to right across the screen as if comparing, his eyebrows lift slightly, and he gives one small nod.
+
+[SHOT 3 - 0:00-0:05 | final edit 0:22.8-0:27.0, trim to 4.2 s | references: ref-opener-last-frame_12.75s.png, trainer-portrait.webp, trainer-reference-sheet.webp]
+0:00-0:01.5: close-up over his right shoulder, backpack strap in the foreground. The phone screen now shows a white page with a rounded review card: a small pale-lilac circle with initials on the left and two short lines of grey italic text, soft and unreadable.
+0:01.5-0:03.5: cut to a medium shot of him from the front at chest height, stationary camera. He reads, his shoulders drop as he relaxes, and a genuine closed-mouth smile spreads across his face. He lowers the phone to waist height in his left hand, with the red-and-pink shaker in his right hand at his side.
+0:03.5-0:05: he looks up and slightly camera-right. Behind him on the right, softly out of focus, the TRAINER walks towards him and raises his right hand in a friendly wave. The TRAINER matches the reference images exactly: an athletic man in his late twenties, short tousled light-brown hair, light stubble, blue eyes, a fitted black t-shirt with a small round green-and-white "CC" logo on the left chest, black shorts and black trainers, with a warm, easy smile.
+
+[SHOT 4 - 0:00-0:05 | final edit 0:27.0-0:30.0, trim to 3 s | start frame: shot4-endcard-start-frame.png]
+A completely static end card that holds the start frame unchanged: a dark green-black background with a soft green glow in the centre, the round black-and-green "CC" logo at top centre, "Find your trainer" in large white serif type, and "coachcards.co.uk" in green below it. No camera movement, no zoom, no particles, no animation and no changes to the logo or text.
+
+AUDIO (Shots 1-3): continuous gym ambience matching the opener: distant clanking plates, muffled footsteps, a faint air-conditioning hum. A soft, short phone tap sound on each tap. No music, no speech, no voiceover. Shot 4: silent, or ambience fading to silence.
+
+STRICT RULES:
+- The same man throughout Shots 1-3, matching the opener exactly: same face, build, hair, stubble, black t-shirt, grey shorts, white trainers, black backpack with straps over both shoulders
+- The shaker (red-and-pink with a black lid) stays in his right hand only; it never switches hands, disappears or duplicates
+- The smartwatch (silver-grey face, black strap) stays on his left wrist only
+- The trainer in Shot 3 matches the supplied reference images exactly, including the small CC logo on his left chest
+- Only two hands per person, five fingers per hand, natural grip on the phone and shaker, no extra limbs, no warped anatomy
+- The phone stays the same black smartphone; no morphing, no extra phones, no floating objects
+- Phone screen text, names, numbers and reviews must stay soft and unreadable: no legible fabricated names, scores, rankings or review wording
+- The CC logo must not change shape, colour or proportion; no other brand logos anywhere
+- Same gym, lighting direction and warm orange/fluorescent colour balance as the opener
+- No subtitles, captions or on-screen text in Shots 1-3 (text is added after generation)
+- No dialogue, no voiceover, no music
+- 16:9 landscape, 1280x720, 24 fps, natural handheld motion only where stated
+- Shot 4 must stay completely static and unchanged from its start frame

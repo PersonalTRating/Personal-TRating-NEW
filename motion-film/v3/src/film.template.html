@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoachCards Features Overview</title>
+<style>
+@font-face{font-family:'Disp';font-weight:800;src:url({{FONT:Manrope-800.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:500;src:url({{FONT:Inter-500.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:600;src:url({{FONT:Inter-600.ttf}}) format('truetype')}
+@font-face{font-family:'Mono';font-weight:500;src:url({{FONT:IBMPlexMono-500.ttf}}) format('truetype')}
+:root{--green:#3AB54A;--text:#121212;--grey:#83858D;--ctl:#1b1d1c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0d0c;color:#fff;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;background:#fff;transform-origin:0 0;color:var(--text)}
+.abs{position:absolute;left:0;top:0}
+.disp{font-family:Disp,sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.mask{display:inline-block;overflow:hidden;vertical-align:top;padding:0.06em 0.02em 0.14em}
+.wi{display:inline-block;will-change:transform}
+.line{white-space:nowrap}
+#controls{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--ctl);border-top:1px solid #2a2d2b}
+#controls button{background:#2a2d2b;color:#fff;border:0;border-radius:10px;height:40px;min-width:44px;padding:0 14px;font:600 14px Inter,sans-serif;cursor:pointer}
+#controls button:hover{background:#353936}
+#controls button:focus-visible,#scrub:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+#scrub{flex:1;accent-color:var(--green);height:40px}
+#time{font:500 13px Mono,monospace;color:#c9ccca;min-width:96px;text-align:right}
+body.capture #controls{display:none}
+@media (max-width:600px){#controls{gap:6px;padding:0 8px}#controls button{padding:0 10px;min-width:40px}#time{min-width:0;font-size:11px}}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="controls">
+  <button id="play" aria-label="Play">Play</button>
+  <button id="restart" aria-label="Restart">Restart</button>
+  <input id="scrub" type="range" min="0" max="15" step="0.001" value="0" aria-label="Scrub timeline">
+  <span id="time">0.00 / 15.00</span>
+  <button id="sound" aria-label="Turn sound on" aria-pressed="false">Sound off</button>
+</div>
+<audio id="aud" preload="auto" src="{{AUDIO}}"></audio>
+<script>
+// Second half of the advert: starts at 15.000 s, straight after the opener's last frame. Advert time = 15 + t.
+const DUR = 360 / 24;
+const IMG = {{IMAGES}};
+const DATA = {{DATA}};
+const GREEN = '#3AB54A', TEXT = '#121212', GREY = '#83858D';
+const stage = document.getElementById('stage');
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+const expo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * clamp(x));
+const inOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const inCubic = x => Math.pow(clamp(x), 3);
+const outCubic = x => 1 - Math.pow(1 - clamp(x), 3);
+const back = x => { x = clamp(x); const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+function el(tag, css = {}, parent = stage, html) { const e = document.createElement(tag); e.className = 'abs'; Object.assign(e.style, css); if (html !== undefined) e.innerHTML = html; parent.appendChild(e); return e; }
+function S(e, o) { for (const k in o) e.style[k] = o[k]; }
+function img(src, css, parent) { const i = el('img', css, parent); i.src = src; i.alt = ''; i.draggable = false; return i; }
+function headline(lines, css, parent = stage) {
+  const node = el('div', css, parent); node.classList.add('disp'); const words = [];
+  lines.forEach(ln => { const row = document.createElement('div'); row.className = 'line'; node.appendChild(row);
+    ln.text.split(' ').forEach((w, wi, arr) => { const m = document.createElement('span'); m.className = 'mask'; const s = document.createElement('span'); s.className = 'wi'; s.textContent = w; if (ln.color) s.style.color = ln.color; m.appendChild(s); row.appendChild(m); words.push(s); if (wi < arr.length - 1) row.appendChild(document.createTextNode(' ')); }); });
+  return { node, words };
+}
+function reveal(h, t, t0, exitA = null, exitB = null, stagger = 0.07, dur = 0.5) {
+  h.words.forEach((w, i) => { const p = expo(seg(t, t0 + i * stagger, t0 + i * stagger + dur)); let y = (1 - p) * 115;
+    if (exitA !== null) y -= inOut(seg(t, exitA + i * 0.03, exitB + i * 0.03)) * 115; w.style.transform = `translateY(${y}%)`; });
+}
+
+// ---------- geometry (live capture: 3 px per css px; 390 css wide) ----------
+const K1 = 2.147, CARD_X = 1000, HEAD_Y = 70;
+const TOP = { head: 777.3, tracy: 874.1, paul: 1070.8, joe: 1216.8 };          // crop tops on the live page (css)
+const rkY = k => HEAD_Y + (TOP[k] - TOP.head) * K1;
+const viewX = CARD_X - 18 * K1;
+const PHONE = { x: 1178, y: 840 };    // glowing phone in the opener's last frame (stage px)
+
+// ---------- layers ----------
+const bgFrame = img(IMG.opener_last, { width: '1920px', height: '1080px', transformOrigin: `${PHONE.x}px ${PHONE.y}px` });
+const glow = el('div', { width: '1920px', height: '1080px', background: GREEN });
+const white = el('div', { width: '1920px', height: '1080px', background: '#fff' });
+const rk = el('div', { width: '1920px', height: '1080px', transformOrigin: `${PHONE.x}px ${PHONE.y}px` });
+const rkPanel = el('div', { left: viewX + 'px', top: (HEAD_Y - 10) + 'px', width: (390 * K1) + 'px', height: '1500px', background: '#0a120b', borderRadius: '22px 22px 0 0' }, rk);
+const rkHead = img(IMG.heading, { left: viewX + 'px', top: HEAD_Y + 'px', width: (390 * K1) + 'px' }, rk);
+const rkCards = ['tracy', 'paul', 'joe'].map(k => ({ key: k, e: img(IMG['card_' + { tracy: 'tracy_gibson', paul: 'paul_davies', joe: 'joe_wilson' }[k]], { left: CARD_X + 'px', top: rkY(k) + 'px', width: (354 * K1) + 'px' }, rk) }));
+const RANK = [52, 40];   // printed rank number inside each card crop (css)
+const rankRing = el('div', { width: '104px', height: '104px', marginLeft: '-52px', marginTop: '-52px', borderRadius: '50%', border: '5px solid ' + GREEN, opacity: 0 }, rk);
+// coach cards
+const K2 = 860 / 354;
+const cmp = el('div', { width: '1920px', height: '1080px', transformOrigin: '0 0' });
+const CMP = { tracy: { x: 940, y: 70 }, paul: { x: 940, y: 70 + 208.7 * K2 + 26 } };
+const cTracy = img(IMG.card_tracy_gibson, { width: (354 * K2) + 'px' }, cmp);
+const cPaul = img(IMG.card_paul_davies, { width: (354 * K2) + 'px' }, cmp);
+const FIELDS = { tracy: [76, 76, 216, 150], paul: [76, 76, 192, 124] };   // location + specialty (+ coaching type), css within crop
+const fieldBox = el('div', { borderRadius: '16px', border: '4px solid ' + GREEN, opacity: 0 }, cmp);
+// profile + review
+const prof = img(IMG.profile, { left: '1000px', top: '70px', width: '760px', borderRadius: '18px', boxShadow: '0 30px 70px rgba(18,18,18,.18)' });
+const morph = img(IMG.card_tracy_gibson, { borderRadius: '14px' });
+const rev = el('div', { borderRadius: '28px', overflow: 'hidden', background: '#fff', boxShadow: '0 30px 80px rgba(18,18,18,.22)' });
+img(IMG.review_card, { width: '100%', height: '100%' }, rev);
+const revRing = el('div', { borderRadius: '32px', border: '4px solid ' + GREEN, opacity: 0 });
+const REV_AR = DATA.review_h / DATA.review_w;
+// copy
+const COPY_X = 96;
+const kick = el('div', { left: COPY_X + 'px', top: '250px', font: '600 42px Inter,sans-serif', color: GREY, whiteSpace: 'nowrap' }, stage, 'UK leaderboard');
+const H1 = headline([{ text: 'Explore' }, { text: 'trainer' }, { text: 'rankings', color: GREEN }], { left: COPY_X + 'px', top: '312px', fontSize: '116px' });
+const H2 = headline([{ text: 'Compare' }, { text: 'coach' }, { text: 'cards', color: GREEN }], { left: COPY_X + 'px', top: '312px', fontSize: '116px' });
+const H3 = headline([{ text: 'Read' }, { text: 'client' }, { text: 'reviews', color: GREEN }], { left: COPY_X + 'px', top: '312px', fontSize: '116px' });
+const facts = ['tracy', 'paul'].map(k => el('div', { left: COPY_X + 'px', top: '716px', whiteSpace: 'nowrap' }, stage,
+  `<div style="font:800 56px Disp,sans-serif;letter-spacing:-0.02em;color:${TEXT}">${DATA[k].name}</div>` +
+  DATA[k].fields.map((f, i) => `<div style="margin-top:${i ? 6 : 12}px;font:600 43px Inter,sans-serif;color:${['#E85D4A', GREEN, '#3C78DC'][i]}">${['●', '■', '◆'][i]} <span style="color:${i ? (i === 1 ? GREEN : '#3C78DC') : GREY}">${f}</span></div>`).join('')));
+// end card
+const green = el('div', { width: '1920px', height: '1080px', background: GREEN });
+const endWhite = el('div', { width: '1920px', height: '1080px', background: '#fff' });
+const mark = el('div', { background: '#0d1a0e', overflow: 'hidden' });
+img(IMG['cc-logo'], { left: '6%', top: '6%', width: '88%', height: '88%' }, mark);
+const E1 = headline([{ text: 'Find your trainer' }], { width: '1920px', top: '470px', textAlign: 'center', fontSize: '132px' });
+const E0 = el('div', { width: '1920px', top: '650px', textAlign: 'center', font: '600 40px Inter,sans-serif', color: GREY }, stage, 'Rankings &nbsp;·&nbsp; Coach cards &nbsp;·&nbsp; Client reviews');
+const E2 = headline([{ text: 'coachcards.co.uk' }], { width: '1920px', top: '736px', textAlign: 'center', font: '600 60px Inter,sans-serif', color: GREEN });
+E2.node.classList.remove('disp');
+
+// ---------- timeline (segment seconds) ----------
+const T = { cmp: 4.2, rev: 8.0, end: 12.5 };
+
+function render(t) {
+  t = clamp(t, 0, DUR);
+  // HANDOFF 0 - 0.7: push into the glowing phone, green fills the frame, leaderboard opens out of the green
+  const push = inCubic(seg(t, 0, 0.42));
+  S(bgFrame, { display: t < 0.45 ? '' : 'none', transform: `scale(${1 + 5 * push})` });
+  const gr = outCubic(seg(t, 0.06, 0.42)) * 1400;
+  const iris = outCubic(seg(t, 0.42, 0.78)) * 1500;
+  S(glow, { display: t < 0.8 ? '' : 'none', clipPath: `circle(${gr}px at ${PHONE.x}px ${PHONE.y}px)` });
+  S(white, { display: t >= 0.4 ? '' : 'none', clipPath: `circle(${iris}px at ${PHONE.x}px ${PHONE.y}px)` });
+  // RANKINGS 0.4 - 4.2
+  rk.style.display = (t >= 0.4 && t < T.cmp + 0.9) ? '' : 'none';
+  const open = expo(seg(t, 0.42, 1.0));
+  rk.style.clipPath = `circle(${iris}px at ${PHONE.x}px ${PHONE.y}px)`;
+  rk.style.transform = `scale(${lerp(0.55, 1, open)})`;
+  const scroll = inOut(seg(t, 2.2, 2.8)) * 110 * K1;
+  S(rkPanel, { transform: `translateY(${-scroll}px)`, opacity: 1 - seg(t, T.cmp, T.cmp + 0.4) });
+  S(rkHead, { transform: `translateY(${-scroll}px)`, opacity: 1 - seg(t, 2.25, 2.6) });
+  rkCards.forEach((c, i) => {
+    const t0 = 0.55 + i * 0.12, p = expo(seg(t, t0, t0 + 0.55));
+    let x = 0, op = seg(t, t0, t0 + 0.15);
+    if (c.key === 'joe') { const q = inOut(seg(t, T.cmp, T.cmp + 0.45)); x = q * 900; op *= 1 - q; }
+    else op *= t < T.cmp + 0.05 ? 1 : 0;   // handed to the coach-cards layer on the first frame of the move
+    const tf = [1.45, 1.95, 2.95][i], pulse = Math.max(0, 1 - Math.abs(t - tf - 0.12) / 0.22);
+    S(c.e, { transform: `translate(${x}px, ${(1 - p) * 80 - scroll}px) scale(${1 + 0.025 * pulse})`, opacity: op, filter: pulse > 0 ? `drop-shadow(0 0 ${18 * pulse}px rgba(58,181,74,.6))` : 'none' });
+  });
+  const RT = [1.45, 1.95, 2.95]; let ri = -1; RT.forEach((r, i) => { if (t >= r && t < r + 0.5) ri = i; });
+  if (ri >= 0) { const c = rkCards[ri], rr = seg(t, RT[ri], RT[ri] + 0.5);
+    S(rankRing, { left: (CARD_X + RANK[0] * K1) + 'px', top: (rkY(c.key) + RANK[1] * K1 - scroll) + 'px', opacity: 1 - rr, transform: `scale(${0.7 + 0.6 * outCubic(rr)})` }); }
+  else rankRing.style.opacity = 0;
+
+  // COACH CARDS 4.2 - 8.0 : Tracy and Paul in an editorial two-card layout; location, specialty and coaching type in focus
+  cmp.style.display = (t >= T.cmp + 0.05 && t < T.rev + 0.7) ? '' : 'none';
+  const mv = inOut(seg(t, T.cmp + 0.05, T.cmp + 0.65));
+  const from = k => ({ x: CARD_X, y: rkY(k) - 110 * K1, w: 354 * K1 });
+  [['tracy', cTracy], ['paul', cPaul]].forEach(([k, e]) => { const f = from(k); S(e, { left: lerp(f.x, CMP[k].x, mv) + 'px', top: lerp(f.y, CMP[k].y, mv) + 'px', width: lerp(f.w, 354 * K2, mv) + 'px' }); });
+  cTracy.style.opacity = t < T.rev + 0.1 ? 1 : 0;
+  cPaul.style.opacity = 1 - seg(t, T.rev, T.rev + 0.3); cPaul.style.transform = `translateX(${inOut(seg(t, T.rev, T.rev + 0.4)) * 700}px)`;
+  const zIn = inOut(seg(t, 4.9, 5.3)), pan = inOut(seg(t, 6.3, 6.65)), zOut = inOut(seg(t, 7.55, 7.95));
+  const fT = FIELDS.tracy, fP = FIELDS.paul;
+  const fc = [CMP.tracy.x + lerp((fT[0] + fT[2]) / 2, (fP[0] + fP[2]) / 2, pan) * K2, lerp(CMP.tracy.y + (fT[1] + fT[3]) / 2 * K2, CMP.paul.y + (fP[1] + fP[3]) / 2 * K2, pan)];
+  const k = zIn * (1 - zOut), Z = 1 + 0.7 * k, tx = (1290 - fc[0] * Z) * k, ty = (545 - fc[1] * Z) * k;
+  cmp.style.transform = `translate(${tx}px, ${ty}px) scale(${Z})`;
+  cmp.style.clipPath = t < T.cmp + 0.7 ? 'none' : `inset(-3000px -3000px -3000px ${(900 - tx) / Z}px)`;
+  const f = pan < 0.5 ? fT : fP, base = pan < 0.5 ? CMP.tracy : CMP.paul;
+  S(fieldBox, { left: (base.x + f[0] * K2 - 10) + 'px', top: (base.y + f[1] * K2 - 8) + 'px', width: ((f[2] - f[0]) * K2 + 20) + 'px', height: ((f[3] - f[1]) * K2 + 16) + 'px',
+    opacity: seg(t, 5.25, 5.4) * (1 - seg(t, 6.3, 6.42) + seg(t, 6.62, 6.75)) * (1 - seg(t, 7.5, 7.62)) });
+  cTracy.style.filter = `brightness(${1 - 0.45 * k * pan})`; cPaul.style.filter = `brightness(${1 - 0.45 * k * (1 - pan)})`;
+  facts.forEach((fa, i) => { const a = i ? 6.65 : 5.3, b = i ? 7.55 : 6.3, p = expo(seg(t, a, a + 0.35));
+    S(fa, { display: (t > a - 0.05 && t < b + 0.3) ? '' : 'none', opacity: p * (1 - seg(t, b, b + 0.2)), transform: `translateY(${(1 - p) * 24}px)` }); });
+
+  // CLIENT REVIEWS 8.0 - 12.5 : Tracy's card carried into her profile, Carole Taylor's verified review enlarged and held
+  const pr = inOut(seg(t, T.rev + 0.05, T.rev + 0.6));
+  const mFrom = { x: CMP.tracy.x, y: CMP.tracy.y, w: 354 * K2, h: 208.7 * K2 }, mTo = { x: 1020, y: 70 + 395 * 1.949, w: 640, h: 100 };
+  S(morph, { display: (t >= T.rev + 0.05 && t < T.rev + 0.65) ? '' : 'none', left: lerp(mFrom.x, mTo.x, pr) + 'px', top: lerp(mFrom.y, mTo.y, pr) + 'px', width: lerp(mFrom.w, mTo.w, pr) + 'px', height: lerp(mFrom.h, mTo.h, pr) + 'px', opacity: 1 - seg(t, T.rev + 0.35, T.rev + 0.62) });
+  const big = inOut(seg(t, 9.4, 9.9));
+  S(prof, { display: (t >= T.rev + 0.25 && t < 10.0) ? '' : 'none', opacity: seg(t, T.rev + 0.28, T.rev + 0.55) * (1 - big), transform: `scale(${lerp(0.96, 1, expo(seg(t, T.rev + 0.28, T.rev + 0.8)))})` });
+  const rIn = expo(seg(t, 8.75, 9.2)), rw = lerp(820, 1500, big), rh = rw * REV_AR;
+  const rcx = lerp(1380, 960, big), rcy = lerp(690 + 110 * (1 - rIn), 540, big);
+  S(rev, { display: (t >= 8.7 && t < T.end + 0.45) ? '' : 'none', left: (rcx - rw / 2) + 'px', top: (rcy - rh / 2) + 'px', width: rw + 'px', height: rh + 'px', opacity: rIn });
+  S(revRing, { display: (t >= 9.9 && t < T.end + 0.3) ? '' : 'none', left: (rcx - rw / 2 - 12) + 'px', top: (rcy - rh / 2 - 12) + 'px', width: (rw + 24) + 'px', height: (rh + 24) + 'px', opacity: seg(t, 9.9, 10.1) });
+
+  // COPY
+  const kp = expo(seg(t, 0.8, 1.2));
+  S(kick, { display: t < T.cmp + 0.3 ? '' : 'none', opacity: kp * (1 - seg(t, T.cmp - 0.05, T.cmp + 0.2)), transform: `translateY(${(1 - kp) * 20}px)` });
+  H1.node.style.display = (t > 0.8 && t < T.cmp + 0.45) ? '' : 'none'; reveal(H1, t, 0.85, T.cmp - 0.05, T.cmp + 0.28);
+  H2.node.style.display = (t > T.cmp + 0.5 && t < T.rev + 0.45) ? '' : 'none'; reveal(H2, t, T.cmp + 0.6, T.rev - 0.05, T.rev + 0.28);
+  H3.node.style.display = (t > T.rev + 0.15 && t < 9.8) ? '' : 'none'; reveal(H3, t, T.rev + 0.2, 9.3, 9.65);
+
+  // END 12.5 - 15.0 : green wipe, push up, CC logo travels to centre, copy, steady hold
+  const wipe = outCubic(seg(t, T.end, T.end + 0.32)) * 1200, up = inOut(seg(t, T.end + 0.36, T.end + 0.62));
+  S(green, { display: t >= T.end ? '' : 'none', clipPath: `circle(${wipe}px at 960px 540px)`, transform: `translateY(${-up * 1080}px)` });
+  endWhite.style.display = t >= T.end + 0.36 ? '' : 'none';
+  const mIn = expo(seg(t, 0.8, 1.15)), me = inOut(seg(t, T.end + 0.36, T.end + 0.85));
+  const ms = lerp(56, 150, me), mx = lerp(40, 960 - 75, me), my = lerp(40, 270, me);
+  S(mark, { display: t >= 0.8 ? '' : 'none', left: mx + 'px', top: my + 'px', width: ms + 'px', height: ms + 'px', borderRadius: lerp(14, 34, me) + 'px',
+    transform: `scale(${t < 1.15 ? mIn : (me > 0 && me < 1 ? 0.9 + 0.1 * back(me) : 1)}) rotate(${me > 0 ? (1 - me) * -8 : 0}deg)`, boxShadow: me > 0.5 ? '0 18px 40px rgba(18,18,18,.18)' : 'none' });
+  E1.node.style.display = t >= T.end + 0.5 ? '' : 'none'; reveal(E1, t, T.end + 0.55, null, null, 0.07, 0.5);
+  const e0 = expo(seg(t, T.end + 0.85, T.end + 1.25));
+  S(E0, { display: t >= T.end + 0.8 ? '' : 'none', opacity: e0, transform: `translateY(${(1 - e0) * 18}px)` });
+  E2.node.style.display = t >= T.end + 0.95 ? '' : 'none'; reveal(E2, t, T.end + 1.0, null, null, 0.05, 0.5);
+}
+
+// ---------- player ----------
+let t = 0, playing = false, last = 0, soundOn = false;
+const aud = document.getElementById('aud'), playBtn = document.getElementById('play'), scrub = document.getElementById('scrub'), timeEl = document.getElementById('time'), soundBtn = document.getElementById('sound');
+aud.muted = true;
+function show(tt) { t = tt; render(t); scrub.value = t.toFixed(3); timeEl.textContent = t.toFixed(2) + ' / ' + DUR.toFixed(2); }
+window.seek = tt => { show(clamp(tt, 0, DUR)); return true; };
+function tick(now) { if (!playing) return; if (soundOn && !aud.paused) t = aud.currentTime; else t += (now - last) / 1000; last = now;
+  if (t >= DUR) { t = 0; aud.currentTime = 0; if (soundOn) aud.play().catch(() => {}); } show(t); requestAnimationFrame(tick); }
+function play() { playing = true; playBtn.textContent = 'Pause'; playBtn.setAttribute('aria-label', 'Pause'); last = performance.now(); aud.currentTime = t; if (soundOn) aud.play().catch(() => {}); requestAnimationFrame(tick); }
+function pause() { playing = false; playBtn.textContent = 'Play'; playBtn.setAttribute('aria-label', 'Play'); aud.pause(); }
+playBtn.onclick = () => playing ? pause() : play();
+document.getElementById('restart').onclick = () => { show(0); aud.currentTime = 0; if (!playing) play(); };
+scrub.oninput = () => { show(parseFloat(scrub.value)); if (Math.abs(aud.currentTime - t) > 0.06) aud.currentTime = t; };
+soundBtn.onclick = () => { soundOn = !soundOn; aud.muted = !soundOn; soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off'; soundBtn.setAttribute('aria-pressed', soundOn); soundBtn.setAttribute('aria-label', soundOn ? 'Turn sound off' : 'Turn sound on'); aud.currentTime = t; if (soundOn && playing) aud.play().catch(() => {}); else aud.pause(); };
+document.addEventListener('keydown', e => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); playBtn.click(); } });
+function fit() { const cap = document.body.classList.contains('capture'); const W = innerWidth, Hh = innerHeight - (cap ? 0 : 64); const kk = cap ? 1 : Math.min(W / 1920, Hh / 1080);
+  stage.style.transform = `scale(${kk})`; stage.style.left = (cap ? 0 : (W - 1920 * kk) / 2) + 'px'; stage.style.top = (cap ? 0 : (Hh - 1080 * kk) / 2) + 'px'; }
+if (new URLSearchParams(location.search).has('capture')) document.body.classList.add('capture');
+addEventListener('resize', fit); fit();
+const FACES = ['800 100px Disp', '500 20px Inter', '600 20px Inter', '500 20px Mono'];
+window.ready = Promise.all([...FACES.map(f => document.fonts.load(f)), ...[...document.images].map(i => i.decode().catch(() => {}))]).then(() => document.fonts.ready);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+window.ready.then(() => { if (reduce && !document.body.classList.contains('capture')) { show(DUR); playBtn.disabled = true; } else show(0); });
+</script>
+</body>
+</html>

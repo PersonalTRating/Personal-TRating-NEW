@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoachCards Overview</title>
+<style>
+@font-face{font-family:'Disp';font-weight:800;src:url({{FONT:Manrope-800.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:500;src:url({{FONT:Inter-500.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:600;src:url({{FONT:Inter-600.ttf}}) format('truetype')}
+@font-face{font-family:'Mono';font-weight:500;src:url({{FONT:IBMPlexMono-500.ttf}}) format('truetype')}
+:root{--green:#3AB54A;--text:#121212;--grey:#83858D;--ctl:#1b1d1c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0d0c;color:#fff;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;background:#fff;transform-origin:0 0;color:var(--text)}
+.abs{position:absolute;left:0;top:0}
+.disp{font-family:Disp,sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1.04}
+/* reveal masks: generous padding (cancelled by negative margins) so ascenders, descenders and
+   letter overhang are never clipped; words travel 140% so nothing lingers at the mask edge */
+.mask{display:inline-block;overflow:hidden;vertical-align:top;padding:0.16em 0.08em 0.28em;margin:-0.16em -0.08em -0.28em}
+.wi{display:inline-block;will-change:transform}
+.line{white-space:nowrap}
+#controls{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--ctl);border-top:1px solid #2a2d2b}
+#controls button{background:#2a2d2b;color:#fff;border:0;border-radius:10px;height:40px;min-width:44px;padding:0 14px;font:600 14px Inter,sans-serif;cursor:pointer}
+#controls button:hover{background:#353936}
+#controls button:focus-visible,#scrub:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+#scrub{flex:1;accent-color:var(--green);height:40px}
+#time{font:500 13px Mono,monospace;color:#c9ccca;min-width:96px;text-align:right}
+body.capture #controls{display:none}
+@media (max-width:600px){#controls{gap:6px;padding:0 8px}#controls button{padding:0 10px;min-width:40px}#time{min-width:0;font-size:11px}}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<div id="controls">
+  <button id="play" aria-label="Play">Play</button>
+  <button id="restart" aria-label="Restart">Restart</button>
+  <input id="scrub" type="range" min="0" max="15" step="0.001" value="0" aria-label="Scrub timeline">
+  <span id="time">0.00 / 15.00</span>
+  <button id="sound" aria-label="Turn sound on" aria-pressed="false">Sound off</button>
+</div>
+<audio id="aud" preload="auto" src="{{AUDIO}}"></audio>
+<script>
+// Second half of the advert (advert time = 15 + t): three feature beats and an end card.
+const DUR = 15;
+const IMG = {{IMAGES}};
+const GREEN = '#3AB54A', TEXT = '#121212', GREY = '#83858D', RED = '#E8463A', OFF = '#C9CBCF';
+const stage = document.getElementById('stage');
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+const expo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * clamp(x));
+const inOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const inCubic = x => Math.pow(clamp(x), 3);
+const outCubic = x => 1 - Math.pow(1 - clamp(x), 3);
+const back = (x, c = 1.7) => { x = clamp(x); return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+function el(tag, css = {}, parent = stage, html) { const e = document.createElement(tag); e.className = 'abs'; Object.assign(e.style, css); if (html !== undefined) e.innerHTML = html; parent.appendChild(e); return e; }
+function S(e, o) { for (const k in o) e.style[k] = o[k]; }
+function img(src, css, parent) { const i = el('img', css, parent); i.src = src; i.alt = ''; i.draggable = false; return i; }
+function headline(lines, css, parent = stage) {
+  const node = el('div', css, parent); node.classList.add('disp'); const words = [];
+  lines.forEach(ln => { const row = document.createElement('div'); row.className = 'line'; node.appendChild(row);
+    ln.text.split(' ').forEach((w, wi, arr) => { const m = document.createElement('span'); m.className = 'mask'; const s = document.createElement('span'); s.className = 'wi'; s.textContent = w; if (ln.color) s.style.color = ln.color; m.appendChild(s); row.appendChild(m); words.push(s); if (wi < arr.length - 1) row.appendChild(document.createTextNode(' ')); }); });
+  return { node, words };
+}
+// word-by-word masked reveal; whole words only, nothing left at the mask edge on entry or exit
+function reveal(h, t, t0, exitA = null, exitB = null, stagger = 0.07, dur = 0.5) {
+  const n = h.words.length, done = exitB === null ? Infinity : exitB + n * 0.03 + 0.02;
+  h.node.style.display = (t >= t0 - 0.02 && t < done) ? '' : 'none';
+  h.words.forEach((w, i) => { const p = expo(seg(t, t0 + i * stagger, t0 + i * stagger + dur)); let y = (1 - p) * 140;
+    if (exitA !== null) y -= inOut(seg(t, exitA + i * 0.03, exitB + i * 0.03)) * 140; w.style.transform = `translateY(${y}%)`; });
+}
+const COPY_X = 96;
+
+// ---------- handoff (unchanged from the approved version) ----------
+const PHONE = { x: 1178, y: 840 };
+const bgFrame = img(IMG.opener_last, { width: '1920px', height: '1080px', transformOrigin: `${PHONE.x}px ${PHONE.y}px` });
+const glow = el('div', { width: '1920px', height: '1080px', background: GREEN });
+const scene = el('div', { width: '1920px', height: '1080px', background: '#fff' });
+
+// ---------- BEAT 1  0.45 - 5.2  "Find trainers near you": one stable rankings view, UK -> Country -> Local -> Map ----------
+const P = { x: 1000, y: 150, w: 780, tabsH: 106, listH: 611 };          // panel sized so the full first card always fits
+P.h = P.tabsH + P.listH + 28;
+const panel = el('div', { left: P.x + 'px', top: P.y + 'px', width: P.w + 'px', height: P.h + 'px', borderRadius: '28px', overflow: 'hidden', background: '#0a120b', boxShadow: '0 30px 80px rgba(18,18,18,.22)' }, scene);
+const STATES = ['uk', 'country', 'local'];
+const tabsI = STATES.map((s, i) => img(IMG['tabs_' + s], { left: '0px', top: '10px', width: P.w + 'px', opacity: i ? 0 : 1 }, panel));
+const listI = STATES.map((s, i) => img(IMG['list_' + s], { left: '0px', top: (10 + P.tabsH) + 'px', width: P.w + 'px', opacity: i ? 0 : 1 }, panel));
+const TAB_X = [[16, 58], [63, 137], [142, 200]], K = P.w / 390;          // tab buttons (css) -> panel px
+const MAP_H = 867;                                                       // live UK map view, both trainer pins in frame
+const mapI = img(IMG.map_view, { left: '0px', top: '0px', width: P.w + 'px', opacity: 0 }, panel);
+const PINS = [[328, 52], [606, 778]];                                    // Edinburgh 76.1, London 76.7 (panel px)
+const pinRings = PINS.map(() => el('div', { width: '96px', height: '96px', marginLeft: '-48px', marginTop: '-48px', borderRadius: '50%', border: '5px solid ' + GREEN, opacity: 0 }, panel));
+const tap = el('div', { width: '72px', height: '72px', marginLeft: '-36px', marginTop: '-36px', borderRadius: '50%', border: '4px solid #fff', boxShadow: '0 0 0 3px rgba(58,181,74,.7)', opacity: 0 }, scene);
+const H1 = headline([{ text: 'Find trainers' }, { text: 'near you', color: GREEN }], { left: COPY_X + 'px', top: '300px', fontSize: '124px' }, scene);
+const lvRow = el('div', { left: COPY_X + 'px', top: '600px', display: 'flex', alignItems: 'center', gap: '22px', whiteSpace: 'nowrap' }, scene);
+const LV = [], ARR = [];
+['UK', 'Country', 'Local', 'Map'].forEach((w, i) => {
+  if (i) { const a = document.createElement('span'); a.textContent = '→'; Object.assign(a.style, { font: '600 42px Inter,sans-serif', color: OFF }); lvRow.appendChild(a); ARR.push(a); }
+  const s = document.createElement('span'); s.textContent = w; Object.assign(s.style, { font: '800 56px Disp,sans-serif', letterSpacing: '-0.02em', color: OFF, display: 'inline-block' }); lvRow.appendChild(s); LV.push(s);
+});
+lvRow.style.gap = '18px';
+const LIST_H = { uk: 611, country: 611, local: 509 };
+const ST = [0.95, 1.95, 2.85, 3.85];                                     // UK, Country, Local, Map
+
+// ---------- BEAT 2  5.2 - 8.1  "Compare BMP scores and verified reviews": one score + one review, held together ----------
+const bmp = img(IMG.bmp_panel, { left: '1090px', top: '86px', width: '660px', borderRadius: '24px', boxShadow: '0 24px 60px rgba(18,18,18,.18)' }, scene);
+const REV_W = 780, REV_H = REV_W * 513 / 832;
+const rev = el('div', { left: '1030px', top: '512px', width: REV_W + 'px', height: REV_H + 'px', borderRadius: '30px', overflow: 'hidden', background: '#fff', boxShadow: '0 24px 60px rgba(18,18,18,.18)' }, scene);
+img(IMG.review_card, { width: '100%', height: '100%' }, rev);
+const revRing = el('div', { left: '1018px', top: '500px', width: (REV_W + 24) + 'px', height: (REV_H + 24) + 'px', borderRadius: '36px', border: '4px solid ' + GREEN, opacity: 0 }, scene);
+const H2 = headline([{ text: 'Compare' }, { text: 'BMP scores', color: GREEN }, { text: '& verified' }, { text: 'reviews', color: GREEN }], { left: COPY_X + 'px', top: '250px', fontSize: '110px' }, scene);
+
+// ---------- BEAT 3  8.1 - 12.05  "See who's trending": one card climbs, settles, holds ----------
+const board = el('div', { left: '900px', top: '0px', width: '1020px', height: '1080px', background: '#0a120b', overflow: 'hidden' }, scene);
+const CW = 900, CH = CW * 564 / 1096, CX = (1020 - CW) / 2, SETTLE = (1080 - CH) / 2;
+const rows = []; for (let i = 0; i < 9; i++) rows.push(el('div', { left: CX + 'px', width: CW + 'px', height: '150px', borderRadius: '24px', background: 'rgba(58,181,74,.06)', border: '2px solid rgba(58,181,74,.14)' }, board));
+const trail = el('div', { left: ((1020 - 360) / 2) + 'px', width: '360px', borderRadius: '180px 180px 40px 40px', background: 'linear-gradient(to bottom, rgba(255,120,60,.9), rgba(232,70,58,.5) 35%, rgba(232,70,58,0))', filter: 'blur(16px)' }, board);
+const card = img(IMG.trending_mike, { left: CX + 'px', width: CW + 'px', borderRadius: '28px' }, board);
+const H3 = headline([{ text: "See who's" }, { text: 'trending', color: RED }, { text: 'and climbing' }, { text: 'the ranks', color: GREEN }], { left: COPY_X + 'px', top: '300px', fontSize: '104px' }, scene);
+
+// ---------- END  12.05 - 15  centred logo + link, held to the final frame ----------
+const greenEnd = el('div', { width: '1920px', height: '1080px', background: GREEN }, scene);
+const endWhite = el('div', { width: '1920px', height: '1080px', background: '#fff' }, scene);
+const mark = el('div', { background: '#0d1a0e', overflow: 'hidden' }, scene);
+img(IMG['cc-logo'], { left: '6%', top: '6%', width: '88%', height: '88%' }, mark);
+const LOGO = 240, LOGO_Y = 330;
+const URL = headline([{ text: 'www.coachcards.co.uk' }], { width: '1920px', top: (LOGO_Y + LOGO + 64) + 'px', textAlign: 'center', font: '600 76px Inter,sans-serif', color: TEXT }, scene);
+URL.node.classList.remove('disp');
+
+function render(t) {
+  t = clamp(t, 0, DUR);
+  // HANDOFF 0 - 0.75 (unchanged)
+  const push = inCubic(seg(t, 0, 0.42));
+  S(bgFrame, { display: t < 0.45 ? '' : 'none', transform: `scale(${1 + 5 * push})` });
+  S(glow, { display: t < 0.8 ? '' : 'none', clipPath: `circle(${outCubic(seg(t, 0.06, 0.42)) * 1400}px at ${PHONE.x}px ${PHONE.y}px)` });
+  const iris = outCubic(seg(t, 0.4, 0.75)) * 1500;
+  S(scene, { display: t >= 0.38 ? '' : 'none', clipPath: t < 0.76 ? `circle(${iris}px at ${PHONE.x}px ${PHONE.y}px)` : 'none' });
+
+  // BEAT 1
+  const b1 = t < 5.35, pin = expo(seg(t, 0.45, 1.0)), pout = inOut(seg(t, 5.0, 5.3));
+  S(panel, { display: b1 ? '' : 'none', transform: `translateY(${(1 - pin) * 90 - pout * 50}px) scale(${lerp(0.94, 1, pin)})`, opacity: 1 - pout });
+  const si = t >= ST[3] ? 3 : t >= ST[2] ? 2 : t >= ST[1] ? 1 : 0;
+  const inA = STATES.map((s, i) => i === 0 ? 1 : seg(t, ST[i] + 0.04, ST[i] + 0.18));
+  const mapIn = inOut(seg(t, ST[3], ST[3] + 0.35));
+  STATES.forEach((s, i) => { const o = inA[i] * (i < 2 ? 1 - inA[i + 1] : 1) * (1 - mapIn); tabsI[i].style.opacity = o; listI[i].style.opacity = o; });   // earlier state fully gone once the next is in
+  mapI.style.opacity = mapIn;
+  const lh = lerp(LIST_H.country, LIST_H.local, inOut(seg(t, ST[2] + 0.1, ST[2] + 0.45)));
+  panel.style.height = lerp(P.tabsH + lh + 28, MAP_H, mapIn) + 'px';      // hugs the London list (card fully framed), then the full map
+  pinRings.forEach((r, i) => { const a = ST[3] + 0.45 + i * 0.35, q = seg(t, a, a + 0.6);
+    S(r, { left: PINS[i][0] + 'px', top: PINS[i][1] + 'px', opacity: (t >= a && t < a + 0.6) ? 1 - q : 0, transform: `scale(${0.5 + 0.9 * outCubic(q)})` }); });
+  const tp = [ST[1], ST[2]].findIndex(a => t >= a - 0.02 && t < a + 0.42);
+  if (tp >= 0 && b1) { const a = [ST[1], ST[2]][tp], r = seg(t, a, a + 0.42), tb = TAB_X[tp + 1];
+    S(tap, { display: '', left: (P.x + (tb[0] + tb[1]) / 2 * K) + 'px', top: (P.y + 10 + P.tabsH / 2) + 'px', opacity: 1 - r, transform: `scale(${0.6 + 0.9 * outCubic(r)})` }); }
+  else tap.style.display = 'none';
+  reveal(H1, t, 0.6, 5.0, 5.25);
+  lvRow.style.display = b1 ? 'flex' : 'none';
+  LV.forEach((l, i) => { const p = expo(seg(t, 0.95 + i * 0.08, 1.4 + i * 0.08)), on = i === si;
+    S(l, { opacity: p * (1 - pout), transform: `translateY(${(1 - p) * 24}px)`, color: on ? GREEN : OFF }); });
+  ARR.forEach((a, i) => { const p = expo(seg(t, 1.0 + i * 0.08, 1.45 + i * 0.08)); a.style.opacity = p * (1 - pout); });
+
+  // BEAT 2
+  const b2 = t >= 5.1 && t < 8.35, b2out = inOut(seg(t, 7.95, 8.25));
+  const bi = expo(seg(t, 5.2, 5.7)), ri = expo(seg(t, 5.55, 6.1));
+  S(bmp, { display: b2 ? '' : 'none', opacity: bi * (1 - b2out), transform: `translateY(${(1 - bi) * 70 - b2out * 40}px) scale(${lerp(0.94, 1, bi)})`,
+    filter: `drop-shadow(0 0 ${28 * Math.max(0, 1 - Math.abs(t - 5.8) / 0.45)}px rgba(58,181,74,.55))` });
+  S(rev, { display: b2 ? '' : 'none', opacity: ri * (1 - b2out), transform: `translateY(${(1 - ri) * 90 - b2out * 40}px) scale(${lerp(0.94, 1, ri)})` });
+  S(revRing, { display: b2 ? '' : 'none', opacity: seg(t, 6.2, 6.4) * (1 - b2out), transform: `translateY(${-b2out * 40}px)` });
+  reveal(H2, t, 5.3, 7.95, 8.2);
+
+  // BEAT 3: single card climbs a plain track, settles with its Trending badge, holds
+  const b3 = t >= 8.05 && t < 12.3, bin = inOut(seg(t, 8.05, 8.45)), bout = inOut(seg(t, 11.95, 12.25));
+  S(board, { display: b3 ? '' : 'none', transform: `translateX(${(1 - bin) * 1100}px)`, opacity: 1 - bout });
+  const fly = seg(t, 8.5, 9.5), fp = inOut(fly), vel = fly > 0 && fly < 1 ? Math.sin(Math.PI * fly) : 0;
+  const land = back(seg(t, 9.5, 9.9), 2.0);
+  const cy = t < 9.5 ? lerp(1180, SETTLE, fp) : SETTLE + (1 - land) * -30;
+  const scroll = fp * 1400;                                                // track rows stream past while climbing
+  rows.forEach((r, i) => { let y = ((i * 190 + scroll) % 1710) - 210; S(r, { top: y + 'px', opacity: 0.9 - 0.6 * seg(t, 9.6, 10.0), filter: `blur(${vel * 6}px)` }); });
+  S(card, { top: cy + 'px', transform: `scale(${1 + 0.05 * Math.max(0, 1 - Math.abs(t - 9.55) / 0.25)})`, filter: `drop-shadow(0 0 ${22 + 26 * Math.max(0, 1 - Math.abs(t - 9.6) / 0.5)}px rgba(232,70,58,.5))` });
+  S(trail, { top: (cy + CH - 50) + 'px', height: (60 + vel * 640) + 'px', opacity: Math.min(1, vel * 1.3) });
+  reveal(H3, t, 8.25, 11.95, 12.2);
+
+  // END
+  const wipe = outCubic(seg(t, 12.05, 12.4)) * 1200, up = inOut(seg(t, 12.42, 12.7));
+  S(greenEnd, { display: t >= 12.05 ? '' : 'none', clipPath: `circle(${wipe}px at 960px 540px)`, transform: `translateY(${-up * 1080}px)` });
+  endWhite.style.display = t >= 12.42 ? '' : 'none';
+  const me = inOut(seg(t, 12.42, 12.98)), mIn = expo(seg(t, 0.8, 1.15));
+  const ms = lerp(56, LOGO, me), mx = lerp(40, 960 - LOGO / 2, me), my = lerp(40, LOGO_Y, me);
+  S(mark, { display: t >= 0.8 ? '' : 'none', left: mx + 'px', top: my + 'px', width: ms + 'px', height: ms + 'px', borderRadius: lerp(14, 54, me) + 'px',
+    transform: `scale(${t < 1.15 ? mIn : (me > 0 && me < 1 ? 0.9 + 0.1 * back(me) : 1)}) rotate(${me > 0 ? (1 - me) * -8 : 0}deg)`, boxShadow: me > 0.5 ? '0 24px 50px rgba(18,18,18,.18)' : 'none' });
+  reveal(URL, t, 12.85, null, null, 0.05, 0.5);
+}
+
+// ---------- player ----------
+let t = 0, playing = false, last = 0, soundOn = false;
+const aud = document.getElementById('aud'), playBtn = document.getElementById('play'), scrub = document.getElementById('scrub'), timeEl = document.getElementById('time'), soundBtn = document.getElementById('sound');
+aud.muted = true;
+function show(tt) { t = tt; render(t); scrub.value = t.toFixed(3); timeEl.textContent = t.toFixed(2) + ' / ' + DUR.toFixed(2); }
+window.seek = tt => { show(clamp(tt, 0, DUR)); return true; };
+function tick(now) { if (!playing) return; if (soundOn && !aud.paused) t = aud.currentTime; else t += (now - last) / 1000; last = now;
+  if (t >= DUR) { t = 0; aud.currentTime = 0; if (soundOn) aud.play().catch(() => {}); } show(t); requestAnimationFrame(tick); }
+function play() { playing = true; playBtn.textContent = 'Pause'; playBtn.setAttribute('aria-label', 'Pause'); last = performance.now(); aud.currentTime = t; if (soundOn) aud.play().catch(() => {}); requestAnimationFrame(tick); }
+function pause() { playing = false; playBtn.textContent = 'Play'; playBtn.setAttribute('aria-label', 'Play'); aud.pause(); }
+playBtn.onclick = () => playing ? pause() : play();
+document.getElementById('restart').onclick = () => { show(0); aud.currentTime = 0; if (!playing) play(); };
+scrub.oninput = () => { show(parseFloat(scrub.value)); if (Math.abs(aud.currentTime - t) > 0.06) aud.currentTime = t; };
+soundBtn.onclick = () => { soundOn = !soundOn; aud.muted = !soundOn; soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off'; soundBtn.setAttribute('aria-pressed', soundOn); soundBtn.setAttribute('aria-label', soundOn ? 'Turn sound off' : 'Turn sound on'); aud.currentTime = t; if (soundOn && playing) aud.play().catch(() => {}); else aud.pause(); };
+document.addEventListener('keydown', e => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); playBtn.click(); } });
+function fit() { const cap = document.body.classList.contains('capture'); const W = innerWidth, Hh = innerHeight - (cap ? 0 : 64); const kk = cap ? 1 : Math.min(W / 1920, Hh / 1080);
+  stage.style.transform = `scale(${kk})`; stage.style.left = (cap ? 0 : (W - 1920 * kk) / 2) + 'px'; stage.style.top = (cap ? 0 : (Hh - 1080 * kk) / 2) + 'px'; }
+if (new URLSearchParams(location.search).has('capture')) document.body.classList.add('capture');
+addEventListener('resize', fit); fit();
+const FACES = ['800 100px Disp', '500 20px Inter', '600 20px Inter', '500 20px Mono'];
+window.ready = Promise.all([...FACES.map(f => document.fonts.load(f)), ...[...document.images].map(i => i.decode().catch(() => {}))]).then(() => document.fonts.ready);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+window.ready.then(() => { if (reduce && !document.body.classList.contains('capture')) { show(DUR); playBtn.disabled = true; } else show(0); });
+</script>
+</body>
+</html>

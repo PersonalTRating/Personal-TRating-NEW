@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoachCards Motion Film</title>
+<style>
+@font-face{font-family:'Disp';font-weight:800;src:url({{FONT:Manrope-800.ttf}}) format('truetype')}
+@font-face{font-family:'Disp';font-weight:500;src:url({{FONT:Manrope-500.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:400;src:url({{FONT:Inter-400.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:500;src:url({{FONT:Inter-500.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:600;src:url({{FONT:Inter-600.ttf}}) format('truetype')}
+@font-face{font-family:'Inter';font-weight:700;src:url({{FONT:Inter-700.ttf}}) format('truetype')}
+@font-face{font-family:'Mono';font-weight:500;src:url({{FONT:IBMPlexMono-500.ttf}}) format('truetype')}
+@font-face{font-family:'Serif';font-weight:400;src:url({{FONT:PlayfairDisplay-400.ttf}}) format('truetype')}
+:root{--green:#3AB54A;--text:#121212;--grey:#83858D;--bg2:#F2F2F2;--ui-bg:#0b0d0c;--ctl:#1b1d1c}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#0b0d0c;color:#fff;font-family:Inter,system-ui,sans-serif;overflow:hidden}
+#wrap{position:absolute;inset:0 0 64px 0;display:flex;align-items:center;justify-content:center}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;background:#fff;transform-origin:0 0;color:var(--text)}
+.abs{position:absolute;left:0;top:0}
+.disp{font-family:Disp,sans-serif;font-weight:800;letter-spacing:-0.03em;line-height:1}
+.mask{display:inline-block;overflow:hidden;vertical-align:top;padding:0.06em 0.02em 0.12em}
+.wi{display:inline-block;will-change:transform}
+.line{white-space:nowrap}
+#controls{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;gap:12px;padding:0 16px;background:var(--ctl);border-top:1px solid #2a2d2b}
+#controls button{background:#2a2d2b;color:#fff;border:0;border-radius:10px;height:40px;min-width:44px;padding:0 14px;font:600 14px Inter,sans-serif;cursor:pointer}
+#controls button:hover{background:#353936}
+#controls button:focus-visible,#scrub:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+#scrub{flex:1;accent-color:var(--green);height:40px}
+#time{font:500 13px Mono,monospace;color:#c9ccca;min-width:96px;text-align:right}
+body.capture #controls{display:none}
+body.capture #wrap{inset:0}
+@media (max-width:600px){#controls{gap:6px;padding:0 8px}#controls button{padding:0 10px;min-width:40px}#time{min-width:0;font-size:11px}}
+</style>
+</head>
+<body>
+<div id="wrap"><div id="stage"></div></div>
+<div id="controls">
+  <button id="play" aria-label="Play">Play</button>
+  <button id="restart" aria-label="Restart">Restart</button>
+  <input id="scrub" type="range" min="0" max="17.2" step="0.001" value="0" aria-label="Scrub timeline">
+  <span id="time">0.00 / 17.20</span>
+  <button id="sound" aria-label="Turn sound on" aria-pressed="false">Sound off</button>
+</div>
+<audio id="aud" preload="auto" src="{{AUDIO}}"></audio>
+<script>
+const DUR = 17.2, FPS = 30;
+const IMG = {{IMAGES}};
+const GREEN = '#3AB54A', TEXT = '#121212', GREY = '#83858D', LIGHT = '#D9DADD';
+const stage = document.getElementById('stage');
+
+// ---------- helpers ----------
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+const lerp = (a, b, p) => a + (b - a) * p;
+const expo = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * clamp(x));
+const inOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const outCubic = x => 1 - Math.pow(1 - clamp(x), 3);
+const back = x => { x = clamp(x); const c = 1.9; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
+function el(tag, css = {}, parent = stage, html) { const e = document.createElement(tag); e.className = 'abs'; Object.assign(e.style, css); if (html !== undefined) e.innerHTML = html; parent.appendChild(e); return e; }
+function S(e, o) { for (const k in o) e.style[k] = o[k]; }
+function img(src, css, parent) { const i = el('img', css, parent); i.src = src; i.alt = ''; i.draggable = false; return i; }
+// headline builder: returns {node, words:[inner spans]}
+function headline(lines, css, parent = stage) {
+  const node = el('div', css, parent); const words = [];
+  lines.forEach((ln, li) => {
+    const row = document.createElement('div'); row.className = 'line'; node.appendChild(row);
+    ln.text.split(' ').forEach((w, wi) => {
+      const m = document.createElement('span'); m.className = 'mask';
+      const s = document.createElement('span'); s.className = 'wi'; s.textContent = w; if (ln.color) s.style.color = ln.color;
+      m.appendChild(s); row.appendChild(m); words.push(s);
+      if (wi < ln.text.split(' ').length - 1) row.appendChild(document.createTextNode(' '));
+    });
+  });
+  return { node, words };
+}
+// word-by-word masked reveal (exponential ease-out, 0.55 s, 0.08 s stagger) and optional upward exit
+function reveal(h, t, t0, exitA = null, exitB = null, stagger = 0.08, dur = 0.55) {
+  h.words.forEach((w, i) => {
+    const p = expo(seg(t, t0 + i * stagger, t0 + i * stagger + dur));
+    let y = (1 - p) * 115;
+    if (exitA !== null) { const q = inOut(seg(t, exitA + i * 0.02, exitB + i * 0.02)); y -= q * 115; }
+    w.style.transform = `translateY(${y}%)`;
+  });
+}
+
+// ---------- background ----------
+const bg = el('div', { width: '1920px', height: '1080px', background: '#fff' });
+
+// ---------- HOOK 0.00-2.40 ----------
+const hook = headline([{ text: 'Finding a good PT' }, { text: 'is pure guesswork.' }],
+  { width: '1920px', top: '250px', textAlign: 'center', fontSize: '150px', lineHeight: '1.02' });
+hook.node.classList.add('disp'); hook.node.style.letterSpacing = '-0.035em';
+const SQ = 21, SQS = 30, SQG = 14, SQX0 = (1920 - (SQ * SQS + (SQ - 1) * SQG)) / 2, SQY = 690;
+const squares = [];
+for (let i = 0; i < SQ; i++) squares.push(el('div', { width: SQS + 'px', height: SQS + 'px', borderRadius: '8px', background: '#E7E8EA', left: (SQX0 + i * (SQS + SQG)) + 'px', top: SQY + 'px' }));
+const counter = el('div', { width: '1920px', top: (SQY + 58) + 'px', textAlign: 'center', font: '500 26px Mono,monospace', color: GREY, letterSpacing: '0.04em' });
+const fillT = i => 0.95 + Math.sqrt(i / (SQ - 1)) * 1.0; // accelerating left-to-right fill
+
+// ---------- INTRO 2.40-4.68 ----------
+const tile = el('div', { borderRadius: '22px', overflow: 'hidden', background: GREEN });
+const tileImg = img(IMG.trainer, { width: '100%', height: '100%', objectFit: 'cover', objectPosition: '50% 18%' }, tile);
+const introKick = el('div', { width: '1920px', top: '452px', textAlign: 'center', font: '500 36px Inter,sans-serif', color: GREY }, stage, 'Meet CoachCards');
+const intro = headline([{ text: 'Every PT, ranked' }, { text: 'and reviewed.', color: GREEN }],
+  { width: '1920px', top: '512px', textAlign: 'center', fontSize: '124px', lineHeight: '1.04' });
+intro.node.classList.add('disp');
+
+// ---------- DEMO 4.64-10.25 ----------
+const colWords = ['Find,', 'Compare,', 'Trust.'].map((w, i) => {
+  const h = headline([{ text: w }], { left: '96px', top: (300 + i * 124) + 'px', fontSize: '112px' }); h.node.classList.add('disp'); return h; });
+const capTexts = ['Search UK trainers', 'Compare coach cards', 'Read verified reviews'];
+const caps = capTexts.map(c => el('div', { left: '100px', top: '700px', font: '500 32px Inter,sans-serif', color: GREY, whiteSpace: 'nowrap' }, stage, c));
+const WX = 760, WY = 96, WW = 1104, WH = 888, CH = 52, CS = 1104 / 1440; // window + chrome, css->display scale
+const win = el('div', { left: WX + 'px', top: WY + 'px', width: WW + 'px', height: WH + 'px', borderRadius: '18px', overflow: 'hidden', background: '#0a130b', boxShadow: '0 30px 80px rgba(18,18,18,.18), 0 6px 18px rgba(18,18,18,.10)', transformOrigin: '50% 50%' });
+const chrome = el('div', { width: WW + 'px', height: CH + 'px', background: '#F2F2F2', borderBottom: '1px solid #E2E3E5' }, win);
+['#FF5F57', '#FEBC2E', '#28C840'].forEach((c, i) => el('div', { left: (20 + i * 22) + 'px', top: '19px', width: '13px', height: '13px', borderRadius: '50%', background: c }, chrome));
+const url = el('div', { left: '312px', top: '11px', width: '480px', height: '30px', borderRadius: '9px', background: '#fff', border: '1px solid #E2E3E5', font: '500 15px Inter,sans-serif', color: '#5d6066', textAlign: 'center', lineHeight: '28px' }, chrome, 'coachcards.co.uk/find-a-trainer');
+const content = el('div', { top: CH + 'px', width: WW + 'px', height: (WH - CH) + 'px', overflow: 'hidden' }, win);
+// scene A: live Find a Trainer (css y from 520)
+const sceneA = el('div', { width: WW + 'px', height: (WH - CH) + 'px' }, content);
+const aAny = img(IMG.fatA_any, { width: WW + 'px' }, sceneA);
+const aWL = img(IMG.fatA_wl, { width: WW + 'px', opacity: 0 }, sceneA);
+// scene B: two real coach cards on the site's dark list background
+const sceneB = el('div', { width: WW + 'px', height: (WH - CH) + 'px', background: '#0a130b' }, content);
+const bHead = el('div', { left: '52px', top: '64px', font: '600 18px Inter,sans-serif', color: '#9aa39b', letterSpacing: '.08em' }, sceneB, 'WEIGHT LOSS · 3 TRAINERS');
+const CB = { x: 52, w: 1000 }; const CK = 1000 / 1036;
+const cTracy = img(IMG.card_tracy, { left: CB.x + 'px', top: '170px', width: CB.w + 'px' }, sceneB);
+const cPaul = img(IMG.card_paul, { left: CB.x + 'px', top: (170 + 148 + 44) + 'px', width: CB.w + 'px' }, sceneB);
+const hlA = el('div', { borderRadius: '14px', border: '3px solid ' + GREEN, boxShadow: '0 0 0 6px rgba(58,181,74,.18)' }, sceneB);
+// scene C: Tracy Gibson profile header + verified review card
+const sceneC = el('div', { width: WW + 'px', height: (WH - CH) + 'px', background: '#F4F6F4' }, content);
+const cHero = img(IMG.profile_hero, { width: WW + 'px' }, sceneC);
+const cRevWrap = el('div', { left: ((WW - 470) / 2) + 'px', top: '532px', width: '470px', height: '290px', borderRadius: '20px', overflow: 'hidden', boxShadow: '0 18px 40px rgba(18,18,18,.14)', background: '#fff' }, sceneC);
+img(IMG.review_card, { width: '470px' }, cRevWrap);
+const hlC = el('div', { left: ((WW - 470) / 2 - 6) + 'px', top: '526px', width: '482px', height: '302px', borderRadius: '24px', border: '3px solid ' + GREEN }, sceneC);
+// flying card for match cuts (A->B morph, B->C grab)
+const fly = img(IMG.card_tracy, { borderRadius: '10px', opacity: 0 });
+
+// ---------- WALL 10.20-12.05 ----------
+const wall = el('div', { width: '1920px', height: '1080px', background: GREEN, overflow: 'hidden' });
+const wallHead = el('div', { width: '1920px', top: '118px', textAlign: 'center', fontSize: '72px', color: '#fff' }, wall, 'Trainers for every goal'); wallHead.classList.add('disp');
+const SPEC = ['Weight Loss', 'Muscle Building', 'Strength & Conditioning', 'HIIT', 'Rehabilitation', 'Nutrition', 'Sports Performance', 'Hyrox', 'Yoga & Pilates', 'Boxing', 'Running', 'Functional Fitness'];
+const ICON = '<svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#3AB54A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3.5 9v6M20.5 9v6M6.5 12h11"/></svg>';
+const rows = [0, 1, 2].map(r => {
+  const row = el('div', { top: (300 + r * 214) + 'px', left: '0px', width: '1920px', height: '176px' }, wall);
+  const tiles = [];
+  for (let i = 0; i < 12; i++) {
+    const label = SPEC[(i + r * 4) % SPEC.length];
+    const x = -150 + i * 204 + r * 68;
+    const tl = el('div', { left: x + 'px', top: '0px', width: '176px', height: '176px', borderRadius: '28px', background: '#fff', boxShadow: '0 14px 34px rgba(0,0,0,.18)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '10px', textAlign: 'center', padding: '0 14px' }, row,
+      ICON + `<div style="font:700 19px/1.15 Inter,sans-serif;color:${TEXT}">${label.replace('&', '&amp;')}</div>`);
+    tl.style.position = 'absolute'; tiles.push({ e: tl, x });
+  }
+  return { row, tiles };
+});
+
+// ---------- OUTPUTS 12.05-15.50 ----------
+const outKick = el('div', { left: '96px', top: '330px', font: '500 48px Inter,sans-serif', color: GREY, whiteSpace: 'nowrap' }, stage, 'CoachCards lets you');
+const PHR = [['find', 'trainers,'], ['compare', 'coaches,'], ['read real', 'reviews,'], ['prove your', 'credibility.']];
+const PT = [12.15, 13.0, 13.85, 14.7, 15.48];
+const phrases = PHR.map(p => { const h = headline([{ text: p[0] }, { text: p[1], color: GREEN }], { left: '96px', top: '410px', fontSize: '120px', lineHeight: '1.02' }); h.node.classList.add('disp'); return h; });
+const G = []; // graphics, one per phrase
+// g1: tilted 9:16 story card stepping through live mobile screens
+G[0] = el('div', { left: '1290px', top: '170px', width: '360px', height: '740px' });
+const g1card = el('div', { width: '360px', height: '740px', borderRadius: '44px', background: '#111', padding: '12px', boxShadow: '0 30px 70px rgba(18,18,18,.22)', transform: 'rotate(-6deg)' }, G[0]);
+const g1scr = el('div', { left: '12px', top: '12px', width: '336px', height: '716px', borderRadius: '34px', overflow: 'hidden', background: '#000' }, g1card);
+const g1imgs = [IMG.mob_fat, IMG.mob_cards, IMG.mob_reviews].map((s, i) => img(s, { width: '336px', opacity: i ? 0 : 1 }, g1scr));
+// g2: three workflow nodes joined by connectors that draw on
+G[1] = el('div', { left: '1180px', top: '230px', width: '620px', height: '620px' });
+G[1].innerHTML = `<svg class="abs" width="620" height="620" viewBox="0 0 620 620" fill="none"><path id="cn1" d="M310 152 V 258" stroke="${GREEN}" stroke-width="6" stroke-linecap="round"/><path id="cn2" d="M310 362 V 468" stroke="${GREEN}" stroke-width="6" stroke-linecap="round"/></svg>`;
+const NODES = ['Search', 'Compare', 'Speak to a trainer'];
+const g2nodes = NODES.map((n, i) => el('div', { left: '110px', top: (48 + i * 210) + 'px', width: '400px', height: '104px', borderRadius: '26px', background: '#fff', boxShadow: '0 16px 36px rgba(18,18,18,.10)', display: 'flex', alignItems: 'center', gap: '20px', padding: '0 30px', font: '600 32px Inter,sans-serif', color: TEXT },
+  G[1], `<span style="font:500 20px Mono,monospace;color:${GREEN}">0${i + 1}</span>${n}`));
+const cn = [G[1].querySelector('#cn1'), G[1].querySelector('#cn2')];
+cn.forEach(p => { p.style.strokeDasharray = '106'; });
+// g3: verbatim review, set in serif, with a filling progress bar
+G[2] = el('div', { left: '1130px', top: '330px', width: '680px', height: '383px', borderRadius: '26px', background: '#fff', boxShadow: '0 24px 60px rgba(18,18,18,.14)', padding: '48px 52px' });
+G[2].innerHTML = `<div style="font:400 38px/1.32 Serif,serif;color:${TEXT}">“Been really enjoying my sessions, makes me feel welcome as a newcomer to the gym!”</div>
+<div style="margin-top:28px;font:600 20px Inter,sans-serif;color:${TEXT}">Carole Taylor <span style="font-weight:500;color:${GREY}">· October 2026</span></div>
+<div style="margin-top:6px;font:600 18px Inter,sans-serif;color:${GREEN}">✓ Verified Client</div>`;
+const g3barBg = el('div', { left: '52px', top: '351px', width: '576px', height: '6px', borderRadius: '3px', background: '#E7E8EA' }, G[2]);
+const g3bar = el('div', { left: '0px', top: '0px', height: '6px', borderRadius: '3px', background: GREEN }, g3barBg);
+// g4: three credibility cards whose icons fill green
+G[3] = el('div', { left: '1170px', top: '268px', width: '640px', height: '560px' });
+const CRED = [['Verified client reviews', 'M5 12.5l4.2 4.2L19 7'], ['Qualifications on show', 'M12 3l7 3v5c0 5-3.4 8.6-7 10-3.6-1.4-7-5-7-10V6z'], ['Ranked UK, country & local', 'M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z']];
+const g4 = CRED.map((c, i) => {
+  const card = el('div', { left: '0px', top: (i * 186) + 'px', width: '640px', height: '150px', borderRadius: '26px', background: '#fff', boxShadow: '0 16px 36px rgba(18,18,18,.10)', display: 'flex', alignItems: 'center', gap: '28px', padding: '0 34px' }, G[3],
+    `<div class="ic" style="width:78px;height:78px;border-radius:22px;border:3px solid ${GREEN};display:flex;align-items:center;justify-content:center"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="${GREEN}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${c[1]}"/></svg></div><div style="font:600 30px Inter,sans-serif;color:${TEXT}">${c[0].replace('&', '&amp;')}</div>`);
+  return card.querySelector('.ic');
+});
+
+// ---------- END CARD + BRAND MARK ----------
+const mark = el('div', { background: '#0d1a0e', overflow: 'hidden' });
+img(IMG['cc-logo'], { left: '6%', top: '6%', width: '88%', height: '88%' }, mark);
+const endName = headline([{ text: 'CoachCards' }], { width: '1920px', top: '492px', textAlign: 'center', fontSize: '196px' });
+endName.node.classList.add('disp'); endName.node.style.fontWeight = '500'; endName.node.style.letterSpacing = '-0.04em';
+const endTag = headline([{ text: 'Find your trainer · coachcards.co.uk' }], { width: '1920px', top: '740px', textAlign: 'center', font: '500 54px Inter,sans-serif', color: GREY });
+
+// ---------- CURSOR (visible 3.55-10.4) ----------
+const ring = el('div', { width: '60px', height: '60px', marginLeft: '-30px', marginTop: '-30px', borderRadius: '50%', border: '3px solid ' + GREEN, opacity: 0 });
+const cur = el('div', { width: '260px', height: '80px', transformOrigin: '0 0' });
+cur.innerHTML = `<svg class="abs" width="34" height="44" viewBox="0 0 34 44" style="filter:drop-shadow(0 3px 5px rgba(0,0,0,.25))"><path d="M3 2 L3 36 L11.5 28 L17.5 41.5 L23.5 39 L17.6 25.8 L29 25.8 Z" fill="${GREEN}" stroke="#fff" stroke-width="2" stroke-linejoin="round"/></svg>
+<div class="abs" style="left:30px;top:40px;background:${GREEN};color:#fff;font:600 16px Inter,sans-serif;padding:6px 12px;border-radius:999px;white-space:nowrap;box-shadow:0 3px 8px rgba(0,0,0,.18)">coachcards.co.uk</div>`;
+// keyframes [t, x, y] for the arrow tip; presses [t]
+const CK_ = [[3.55, 1560, 1140], [4.0, 960, 268], [4.05, 960, 268], [4.68, 1300, 560], [5.25, 1023, 226], [5.32, 1023, 226], [6.05, 1312, 442], [6.25, 1312, 442],
+  [6.95, 1110, 396], [7.45, 1110, 396], [7.85, 1092, 574], [8.1, 1092, 574], [8.3, 1240, 402], [8.33, 1240, 402], [8.62, 1270, 340], [9.3, 1312, 790], [9.55, 1312, 790], [10.4, 1780, 1120]];
+const PRESS = [4.05, 5.32, 6.22, 8.33, 9.48];
+function cursorXY(t) {
+  if (t <= CK_[0][0]) return [CK_[0][1], CK_[0][2]];
+  for (let i = 0; i < CK_.length - 1; i++) { const a = CK_[i], b = CK_[i + 1]; if (t <= b[0]) { const p = inOut(seg(t, a[0], b[0])); return [lerp(a[1], b[1], p), lerp(a[2], b[2], p)]; } }
+  const l = CK_[CK_.length - 1]; return [l[1], l[2]];
+}
+
+// ---------- render(t): sets every element from t ----------
+function render(t) {
+  t = clamp(t, 0, DUR);
+  // background colour per section
+  bg.style.background = (t >= 12.05 && t < 15.48) ? '#F2F2F2' : '#fff';
+
+  // HOOK
+  const hookOn = t < 2.45;
+  hook.node.style.display = hookOn ? '' : 'none';
+  reveal(hook, t, 0.08, 1.98, 2.30, 0.08, 0.55);
+  squares.forEach((s, i) => {
+    const d = Math.abs(i - 10);
+    const tin = i === 10 ? 0.28 : 0.42 + d * 0.022;
+    let sc = back(seg(t, tin, tin + 0.3));
+    const ft = fillT(i);
+    const filled = t >= ft || (i === 10 && t >= 0.28);
+    const pop = Math.max(0, 1 - Math.abs(t - ft - 0.06) / 0.12);
+    sc *= 1 + 0.32 * (t >= ft - 0.06 ? pop : 0);
+    // merge into centre 2.02-2.40
+    const m = inOut(seg(t, 2.02, 2.40));
+    const x0 = SQX0 + i * (SQS + SQG), xc = SQX0 + 10 * (SQS + SQG);
+    S(s, { display: t < 2.42 ? '' : 'none', left: lerp(x0, xc, m) + 'px', transform: `scale(${sc})`, background: filled ? GREEN : '#E7E8EA',
+      boxShadow: (t >= ft && t < ft + 0.35) ? `0 0 0 ${4 + 10 * seg(t, ft, ft + 0.35)}px rgba(58,181,74,${0.35 * (1 - seg(t, ft, ft + 0.35))})` : 'none',
+      opacity: i === 10 ? 1 : 1 - seg(t, 2.25, 2.40) });
+  });
+  const nFilled = squares.filter((_, i) => t >= fillT(i)).length;
+  counter.textContent = 'Trainer ' + String(Math.max(1, nFilled)).padStart(2, '0');
+  S(counter, { opacity: Math.min(seg(t, 0.5, 0.8), 1 - seg(t, 1.98, 2.2)), display: hookOn ? '' : 'none' });
+
+  // INTRO: square -> portrait tile
+  const g = inOut(seg(t, 2.40, 2.82));
+  const sqx = SQX0 + 10 * (SQS + SQG), sqy = SQY;
+  let tx = lerp(sqx, 850, g), ty = lerp(sqy, 120, g), tw = lerp(30, 220, g), th = lerp(30, 286, g);
+  // drag into the window 4.05-4.68 (follows the cursor)
+  if (t > 4.05) { const [cx, cy] = cursorXY(t), [c0x, c0y] = cursorXY(4.05); tx += cx - c0x; ty += cy - c0y; const sh = 1 - 0.35 * seg(t, 4.05, 4.68); tw *= sh; th *= sh; tx += (220 - tw) / 2; ty += (286 - th) / 2; }
+  const press1 = Math.max(0, 1 - Math.abs(t - 4.08) / 0.1);
+  S(tile, { display: (t >= 2.40 && t < 4.72) ? '' : 'none', left: tx + 'px', top: ty + 'px', width: tw + 'px', height: th + 'px', borderRadius: lerp(8, 22, g) + 'px',
+    transform: `scale(${1 - 0.05 * press1})`, opacity: 1 - seg(t, 4.56, 4.70), boxShadow: t > 4.05 ? '0 24px 50px rgba(18,18,18,.25)' : 'none' });
+  tileImg.style.opacity = seg(t, 2.6, 2.9);
+  const introFade = 1 - seg(t, 4.10, 4.45);
+  S(introKick, { display: (t > 2.8 && t < 4.5) ? '' : 'none', opacity: expo(seg(t, 2.85, 3.3)) * introFade, transform: `translateY(${(1 - expo(seg(t, 2.85, 3.3))) * 24}px)` });
+  intro.node.style.display = (t > 2.9 && t < 4.5) ? '' : 'none'; intro.node.style.opacity = introFade;
+  reveal(intro, t, 2.95);
+
+  // DEMO
+  const demoOn = t >= 4.60 && t < 10.5;
+  const scenes = [4.64, 6.71, 8.60];
+  colWords.forEach((h, i) => {
+    h.node.style.display = demoOn ? '' : 'none';
+    reveal(h, t, scenes[i], null, null, 0.08, 0.55);
+    const later = scenes[i + 1] !== undefined && t >= scenes[i + 1];
+    h.words.forEach(w => { w.style.color = later ? LIGHT : TEXT; w.style.transition = 'none'; });
+    h.node.style.opacity = 1 - seg(t, 10.25, 10.45);
+  });
+  caps.forEach((c, i) => {
+    const a = scenes[i], b = scenes[i + 1] || 10.25;
+    const on = expo(seg(t, a + 0.1, a + 0.5)) * (1 - seg(t, b - 0.12, b));
+    S(c, { display: demoOn ? '' : 'none', opacity: on, transform: `translateY(${(1 - expo(seg(t, a + 0.1, a + 0.5))) * 20}px)` });
+  });
+  const wIn = expo(seg(t, 4.62, 4.98)), wOut = inOut(seg(t, 10.25, 10.47));
+  S(win, { display: demoOn ? '' : 'none', opacity: Math.min(wIn, 1 - wOut), transform: `scale(${lerp(0.9, 1, wIn) * lerp(1, 0.86, wOut)})` });
+  url.textContent = t < 8.47 ? 'coachcards.co.uk/find-a-trainer' : 'coachcards.co.uk/trainers/tracy-gibson';
+  // scene A
+  const aOn = t < 6.74; sceneA.style.display = aOn ? '' : 'none';
+  aWL.style.opacity = seg(t, 5.36, 5.52);
+  sceneA.style.opacity = 1 - seg(t, 6.50, 6.72);
+  // scene B
+  sceneB.style.display = (t >= 6.45 && t < 8.66) ? '' : 'none';
+  sceneB.style.opacity = seg(t, 6.50, 6.72);
+  const tr = { x: CB.x + 145 * CK, y: 170 + 38 * CK, w: 190 * CK, h: 74 * CK }, pa = { x: CB.x + 145 * CK, y: 362 + 38 * CK, w: 165 * CK, h: 58 * CK };
+  const hm = inOut(seg(t, 7.45, 7.85)), hb = inOut(seg(t, 8.10, 8.30));
+  const hr = { x: lerp(lerp(tr.x, pa.x, hm), tr.x - 145 * CK + 6, hb), y: lerp(lerp(tr.y, pa.y, hm), 170 + 6, hb), w: lerp(lerp(tr.w, pa.w, hm), 1000 - 12, hb), h: lerp(lerp(tr.h, pa.h, hm), 148 - 12, hb) };
+  S(hlA, { left: (hr.x - 8) + 'px', top: (hr.y - 6) + 'px', width: (hr.w + 16) + 'px', height: (hr.h + 12) + 'px', opacity: seg(t, 6.95, 7.12) * (1 - seg(t, 8.30, 8.38)) });
+  cTracy.style.opacity = t < 8.33 ? 1 : 0;
+  // scene C
+  sceneC.style.display = t >= 8.47 ? '' : 'none';
+  sceneC.style.opacity = seg(t, 8.47, 8.66);
+  const rv = expo(seg(t, 8.85, 9.3));
+  S(cRevWrap, { transform: `translateY(${(1 - rv) * 80}px)`, opacity: rv });
+  hlC.style.opacity = seg(t, 9.48, 9.62);
+  // flying card: A->B morph (6.45-6.74) and B->C grab (8.33-8.62)
+  const aRect = { x: WX + 202 * CS, y: WY + CH + (828.1 - 520) * CS, w: 1036 * CS, h: 152.6 * CS };
+  const bRect = { x: WX + CB.x, y: WY + CH + 170, w: 1000, h: 148 };
+  const cRect = { x: WX + 318, y: WY + CH + 150, w: 300, h: 44 };
+  if (t >= 6.40 && t < 6.76) { const p = inOut(seg(t, 6.45, 6.74)); S(fly, { opacity: 1, left: lerp(aRect.x, bRect.x, p) + 'px', top: lerp(aRect.y, bRect.y, p) + 'px', width: lerp(aRect.w, bRect.w, p) + 'px', height: lerp(aRect.h, bRect.h, p) + 'px', boxShadow: `0 ${20 * Math.sin(p * Math.PI)}px 50px rgba(0,0,0,${0.35 * Math.sin(p * Math.PI)})` }); }
+  else if (t >= 8.33 && t < 8.66) { const p = inOut(seg(t, 8.33, 8.62)); S(fly, { opacity: 1 - seg(t, 8.52, 8.64), left: lerp(bRect.x, cRect.x, p) + 'px', top: lerp(bRect.y, cRect.y, p) + 'px', width: lerp(bRect.w, cRect.w, p) + 'px', height: lerp(bRect.h, cRect.h, p) + 'px', boxShadow: '0 24px 50px rgba(0,0,0,.35)' }); }
+  else fly.style.opacity = 0;
+
+  // WALL
+  const wallOn = t >= 10.18 && t < 12.08;
+  wall.style.display = wallOn ? '' : 'none';
+  const wipe = outCubic(seg(t, 10.20, 10.55)) * 1150;
+  const push = inOut(seg(t, 11.80, 12.05));
+  S(wall, { clipPath: `circle(${wipe}px at 960px 540px)`, transform: `translateY(${-push * 1080}px)` });
+  S(wallHead, { opacity: expo(seg(t, 10.40, 10.75)), transform: `translateY(${(1 - expo(seg(t, 10.40, 10.75))) * 30}px)` });
+  rows.forEach((r, ri) => {
+    const dir = ri % 2 ? 1 : -1;
+    const drift = dir * 60 * seg(t, 10.45, 11.65);
+    const whip = inOut(seg(t, 11.62, 11.92)) * dir * 2600;
+    const blur = Math.sin(Math.PI * seg(t, 11.62, 11.92)) * 14;
+    S(r.row, { transform: `translateX(${drift + whip}px)`, filter: blur > 0.2 ? `blur(${blur}px)` : 'none' });
+    r.tiles.forEach(tl => {
+      const cx = tl.x + 88 + r.row.offsetLeft, dist = Math.hypot(cx - 960, (300 + ri * 214 + 88) - 540);
+      const t0 = 10.42 + dist / 2400;
+      const p = back(seg(t, t0, t0 + 0.42));
+      const fromX = 960 - (tl.x + 88), fromY = 540 - (300 + ri * 214 + 88);
+      const rot = (1 - clamp(seg(t, t0, t0 + 0.42))) * ((tl.x % 3) - 1) * 9;
+      const wave = Math.max(0, 1 - Math.abs((t - 11.05) * 2200 - (tl.x + 300)) / 260);
+      S(tl.e, { transform: `translate(${(1 - p) * fromX}px, ${(1 - p) * fromY}px) rotate(${rot}deg) scale(${Math.max(0, p) * (1 + 0.07 * wave)})`, opacity: seg(t, t0, t0 + 0.08) });
+    });
+  });
+
+  // OUTPUTS
+  const outOn = t >= 12.0 && t < 15.6;
+  S(outKick, { display: outOn ? '' : 'none', opacity: expo(seg(t, 12.08, 12.45)) * (1 - seg(t, 15.40, 15.55)), transform: `translateY(${(1 - expo(seg(t, 12.08, 12.45))) * 24}px)` });
+  phrases.forEach((h, i) => {
+    const a = PT[i], b = PT[i + 1];
+    h.node.style.display = (outOn && t >= a - 0.05 && t < b + 0.35) ? '' : 'none';
+    reveal(h, t, a, i < 3 ? b - 0.06 : 15.40, i < 3 ? b + 0.28 : 15.62, 0.06, 0.55);
+  });
+  G.forEach((gEl, i) => {
+    const a = PT[i], b = PT[i + 1];
+    const pin = expo(seg(t, a, a + 0.45)), pout = i < 3 ? inOut(seg(t, b - 0.08, b + 0.25)) : inOut(seg(t, 15.38, 15.58));
+    const x = (1 - pin) * 420 - pout * 520;
+    const blur = (1 - pin) * 10 + Math.sin(Math.PI * pout) * 12;
+    S(gEl, { display: (outOn && t >= a - 0.02 && t < b + 0.3) ? '' : 'none', transform: `translateX(${x}px)`, opacity: Math.min(seg(t, a, a + 0.18), 1 - seg(t, (i < 3 ? b : 15.38) + 0.1, (i < 3 ? b : 15.38) + 0.25)), filter: blur > 0.3 ? `blur(${blur}px)` : 'none' });
+  });
+  g1imgs.forEach((im, k) => { const s0 = PT[0] + 0.2 + k * 0.24; im.style.opacity = k === 0 ? 1 : seg(t, s0, s0 + 0.12); });
+  cn.forEach((p, k) => { p.style.strokeDashoffset = 106 * (1 - inOut(seg(t, PT[1] + 0.25 + k * 0.22, PT[1] + 0.45 + k * 0.22))); });
+  g2nodes.forEach((n, k) => { const s0 = PT[1] + 0.12 + k * 0.22; n.style.transform = `scale(${0.85 + 0.15 * back(seg(t, s0, s0 + 0.3))})`; n.style.opacity = seg(t, s0, s0 + 0.12); });
+  g3bar.style.width = (576 * inOut(seg(t, PT[2] + 0.2, PT[3] - 0.1))) + 'px';
+  g4.forEach((ic, k) => { const s0 = PT[3] + 0.25 + k * 0.2; const f = seg(t, s0, s0 + 0.18); ic.style.background = f > 0.5 ? GREEN : '#fff'; ic.querySelector('svg').setAttribute('stroke', f > 0.5 ? '#fff' : GREEN); ic.style.transform = `scale(${1 + 0.18 * Math.max(0, 1 - Math.abs(t - s0 - 0.1) / 0.12)})`; });
+
+  // BRAND MARK -> END CARD
+  const mIn = expo(seg(t, 2.75, 3.1));
+  const hiddenWall = t >= 10.18 && t < 12.08;
+  const e = inOut(seg(t, 15.48, 15.95));
+  const ms = lerp(56, 140, e), mx = lerp(40, 960 - 70, e), my = lerp(40, 300, e);
+  S(mark, { display: (t >= 2.75 && !hiddenWall) ? '' : 'none', left: mx + 'px', top: my + 'px', width: ms + 'px', height: ms + 'px', borderRadius: lerp(14, 32, e) + 'px', transform: `scale(${t < 3.1 ? mIn : 1})`, opacity: t < 12.2 && t >= 12.08 ? seg(t, 12.08, 12.2) : 1 });
+  endName.node.style.display = t >= 15.7 ? '' : 'none'; reveal(endName, t, 15.75, null, null, 0.08, 0.6);
+  endTag.node.style.display = t >= 16.35 ? '' : 'none'; reveal(endTag, t, 16.4, null, null, 0.05, 0.55);
+
+  // CURSOR
+  const curOn = t >= 3.55 && t <= 10.4;
+  const [cx, cy] = cursorXY(t);
+  let pr = 0, rg = -1;
+  PRESS.forEach(p0 => { pr = Math.max(pr, 1 - Math.abs(t - p0 - 0.04) / 0.08); if (t >= p0 && t < p0 + 0.4) rg = seg(t, p0, p0 + 0.4); });
+  S(cur, { display: curOn ? '' : 'none', left: cx + 'px', top: cy + 'px', transform: `scale(${1 - 0.12 * clamp(pr)})`, opacity: Math.min(seg(t, 3.55, 3.7), 1 - seg(t, 10.25, 10.4)) });
+  S(ring, { display: curOn && rg >= 0 ? '' : 'none', left: (cx + 6) + 'px', top: (cy + 6) + 'px', transform: `scale(${0.4 + 1.2 * outCubic(Math.max(rg, 0))})`, opacity: rg >= 0 ? 1 - rg : 0 });
+}
+
+// ---------- player ----------
+let t = 0, playing = false, last = 0, soundOn = false;
+const aud = document.getElementById('aud'), playBtn = document.getElementById('play'), scrub = document.getElementById('scrub'), timeEl = document.getElementById('time'), soundBtn = document.getElementById('sound');
+aud.muted = true;
+function show(tt) { t = tt; render(t); scrub.value = t.toFixed(3); timeEl.textContent = t.toFixed(2) + ' / ' + DUR.toFixed(2); }
+window.seek = tt => { show(clamp(tt, 0, DUR)); return true; };
+function syncAudio() { if (Math.abs(aud.currentTime - t) > 0.06) aud.currentTime = t; }
+function tick(now) {
+  if (!playing) return;
+  if (soundOn && !aud.paused) t = aud.currentTime; else t += (now - last) / 1000;
+  last = now;
+  if (t >= DUR) { t = 0; aud.currentTime = 0; if (soundOn) aud.play().catch(() => {}); }
+  show(t); requestAnimationFrame(tick);
+}
+function play() { playing = true; playBtn.textContent = 'Pause'; playBtn.setAttribute('aria-label', 'Pause'); last = performance.now(); aud.currentTime = t; if (soundOn) aud.play().catch(() => {}); requestAnimationFrame(tick); }
+function pause() { playing = false; playBtn.textContent = 'Play'; playBtn.setAttribute('aria-label', 'Play'); aud.pause(); }
+playBtn.onclick = () => playing ? pause() : play();
+document.getElementById('restart').onclick = () => { show(0); aud.currentTime = 0; if (!playing) play(); };
+scrub.oninput = () => { show(parseFloat(scrub.value)); syncAudio(); };
+soundBtn.onclick = () => { soundOn = !soundOn; aud.muted = !soundOn; soundBtn.textContent = soundOn ? 'Sound on' : 'Sound off'; soundBtn.setAttribute('aria-pressed', soundOn); soundBtn.setAttribute('aria-label', soundOn ? 'Turn sound off' : 'Turn sound on'); aud.currentTime = t; if (soundOn && playing) aud.play().catch(() => {}); else aud.pause(); };
+document.addEventListener('keydown', e => { if (e.code === 'Space' && e.target === document.body) { e.preventDefault(); playBtn.click(); } });
+function fit() {
+  const cap = document.body.classList.contains('capture');
+  const W = innerWidth, H = innerHeight - (cap ? 0 : 64);
+  const k = cap ? 1 : Math.min(W / 1920, H / 1080);
+  stage.style.transform = `scale(${k})`;
+  stage.style.left = (cap ? 0 : (W - 1920 * k) / 2) + 'px'; stage.style.top = (cap ? 0 : (H - 1080 * k) / 2) + 'px';
+}
+if (new URLSearchParams(location.search).has('capture')) document.body.classList.add('capture');
+addEventListener('resize', fit); fit();
+// load every embedded face explicitly: fonts.ready alone does not wait for faces not yet requested
+const FACES = ['800 100px Disp', '500 100px Disp', '400 20px Inter', '500 20px Inter', '600 20px Inter', '700 20px Inter', '500 20px Mono', '400 20px Serif'];
+window.ready = Promise.all([...FACES.map(f => document.fonts.load(f)), ...[...document.images].map(i => i.decode().catch(() => {}))]).then(() => document.fonts.ready);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+window.ready.then(() => { if (reduce && !document.body.classList.contains('capture')) { show(DUR); playBtn.disabled = true; } else show(0); });
+</script>
+</body>
+</html>
