@@ -151,26 +151,14 @@ const cbg = (id: string): string => {
   return `<svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="${id}" width="480" height="480" patternUnits="userSpaceOnUse" patternTransform="scale(0.18)">${inner}</pattern></defs><rect width="100%" height="100%" fill="url(#${id})"/></svg>`;
 };
 
-// Placeholder reviews (social proof) — will be replaced by real reviews as platform grows
+// Client testimonials (real, consented) — first name only
 const reviews = [
-  { initials: 'TW', bg: '#fdf6e3', color: '#b8860b',
-    name: 'Tom W.', info: 'Verified Client · London', trainer: 'CoachCards',
-    text: '"I\'d tried a few generic PT directories before but they were all the same. CoachCards actually lets you filter by specialism — I found someone focused on powerlifting within minutes. Completely different experience."' },
-  { initials: 'ER', bg: '#e8f7ee', color: '#1a6b3d',
-    name: 'Emma R.', info: 'Verified Client · Manchester', trainer: 'CoachCards',
-    text: '"The location search is brilliant. I could see every highly-rated trainer within a few miles of me, compare their reviews side by side, and reach out directly. Found the perfect match without any back and forth."' },
-  { initials: 'RK', bg: '#eaf7ec', color: '#2a9438',
-    name: 'R. K.', info: 'Verified Client · Birmingham', trainer: 'CoachCards',
-    text: '"What sold me was being able to read verified client reviews before committing to anything. You can actually compare trainers honestly — specialisms, location, ratings — all in one place. Made the decision so easy."' },
-  { initials: 'PJ', bg: '#f5e8f7', color: '#6b1a6b',
-    name: 'Priya J.', info: 'Verified Client · Leeds', trainer: 'CoachCards',
-    text: '"I needed someone who specialised in post-injury rehabilitation — a very specific niche. CoachCards had a filter for exactly that. I found a qualified specialist nearby in under 10 minutes and messaged them straight from the profile."' },
-  { initials: 'CB', bg: '#e8f0f7', color: '#1a4b6b',
-    name: 'C. B.', info: 'Verified Client · Edinburgh', trainer: 'CoachCards',
-    text: '"The site is genuinely simple to use. I searched my area, filtered by goal, read a few reviews and had a trainer booked within the same evening. No confusing sign-up process, no middleman — just direct contact."' },
-  { initials: 'MF', bg: '#f8f7f4', color: '#665544',
-    name: 'Marcus F.', info: 'Verified Client · Bristol', trainer: 'CoachCards',
-    text: '"I\'d never used a PT before and didn\'t know where to start. Being able to compare trainers by reviews, location and specialism gave me the confidence to actually take the first step. Booked within a week and haven\'t looked back."' },
+  { initials: 'L', bg: '#eaf7ec', color: '#2a9438',
+    name: 'Lauren', info: 'Verified client',
+    text: '"The ad on the website is kinda what I was like on my first day at the gym. I had anxiety and everyone around seemed to know what they were doing. CoachCards allowed me to find a trainer who I wasn\'t nervous to meet as I could check their reviews. I met a great trainer and have never looked back."' },
+  { initials: 'J', bg: '#e8f0f7', color: '#1a4b6b',
+    name: 'Josh', info: 'Client',
+    text: '"I came across loads of trainers online when I was trying to find one to level up my fitness game. They all seemed to claim they were great so I didn\'t know how to judge them. I ended up finding one on CoachCards with a good BMP and reviews so went with that one."' },
 ];
 ---
 
@@ -1010,9 +998,9 @@ const reviews = [
   <div style="max-width:1200px;margin:0 auto;padding:0 2.5rem;">
     <div style="margin-bottom:3rem;">
       <div class="eyebrow" style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Client Testimonials</div>
-      <div style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;">What real clients say</div>
+      <div style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;">What clients say</div>
     </div>
-    <div class="rev-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;">
+    <div class="rev-grid" style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5rem;max-width:800px;margin:0 auto;">
       {reviews.map((r) => (
         <div class="rev-card">
           <p style="font-size:0.88rem;line-height:1.78;color:#111311;margin-bottom:1.25rem;font-style:italic;flex:1;">{r.text}</p>
@@ -1025,7 +1013,6 @@ const reviews = [
                 <span style="font-weight:700;font-size:0.83rem;color:#111311;">{r.name}</span>
               </div>
               <div style="font-size:0.7rem;color:#8a8f8a;margin-top:0.1rem;">{r.info}</div>
-              <div style="font-size:0.7rem;color:#3ab54a;margin-top:0.15rem;font-weight:600;">→ {r.trainer}</div>
             </div>
           </div>
         </div>
