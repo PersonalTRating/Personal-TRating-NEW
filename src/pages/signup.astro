@@ -365,8 +365,8 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="t-postcode">Postcode district</label>
-            <input class="form-input" type="text" id="t-postcode" placeholder="SW1" required maxlength="5" autocomplete="off" pattern="\s*[A-Za-z]{1,2}[0-9][A-Za-z0-9]?\s*" title="The first part of your postcode only, e.g. SW1, M4 or EH1">
-            <span class="form-hint">First part of your postcode only, e.g. SW1, M4 or EH1. Used for your country and local rankings.</span>
+            <input class="form-input" type="text" id="t-postcode" placeholder="SW1" required maxlength="10" autocomplete="off">
+            <span class="form-hint">e.g. SW1, M4 or EH1. A full postcode also works — we only keep the first part. Used for your country and local rankings.</span>
           </div>
           <div class="form-group full">
             <label class="form-label" for="t-specialty">Primary Specialty</label>
@@ -537,6 +537,7 @@
 
 <script>
   import { supabase } from '../lib/supabase';
+  import { toPostcodeDistrict, POSTCODE_DISTRICT_ERROR } from '../lib/postcodeDistrict.js';
 
   // ── Review flow params ────────────────────────────────────────────────────
   const _urlParams    = new URLSearchParams(window.location.search);
@@ -659,8 +660,9 @@
     const email        = (document.getElementById('t-email')         as HTMLInputElement).value.trim();
     const password     = (document.getElementById('t-password')      as HTMLInputElement).value;
     const city         = (document.getElementById('t-city')          as HTMLInputElement).value.trim();
-    // Postcode district = outward code only (SW1, M4, EH1). Full postcodes are not accepted or stored.
-    const postcodeDistrict = (document.getElementById('t-postcode')  as HTMLInputElement).value.trim().toUpperCase().replace(/\s+/g, '');
+    // Postcode district = outward code only (SW1, M4, EH1). A full postcode is accepted
+    // but only its outward code is kept (and stored); nothing else is saved.
+    const postcodeDistrict = toPostcodeDistrict((document.getElementById('t-postcode') as HTMLInputElement).value);
     const specialtyRaw = (document.getElementById('t-specialty')     as HTMLSelectElement).value;
     const specialty    = specialtyRaw === 'other'
                           ? (document.getElementById('t-specialty-other') as HTMLInputElement).value.trim()
@@ -671,8 +673,8 @@
                           : certRaw;
     const coachingType = (document.querySelector('#t-coaching-type-wrap .ctype-btn.ctype-active') as HTMLElement | null)?.dataset.value || null;
 
-    if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?$/.test(postcodeDistrict)) {
-      errorMsg.textContent   = 'Please enter your postcode district — the first part of your postcode only, e.g. SW1, M4 or EH1.';
+    if (!postcodeDistrict) {
+      errorMsg.textContent   = POSTCODE_DISTRICT_ERROR;
       errorMsg.style.display = 'block';
       submitBtn.textContent  = 'Create My Free Profile →';
       submitBtn.disabled     = false;

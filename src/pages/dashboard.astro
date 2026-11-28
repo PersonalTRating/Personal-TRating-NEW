@@ -1369,8 +1369,8 @@
             </div>
             <div class="form-group">
               <label class="form-label">Postcode district</label>
-              <input id="profile-postcode" class="form-input" type="text" placeholder="e.g. SW1, M4, EH1" maxlength="5" autocomplete="off">
-              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">First part of your postcode only. Sets your country and local rankings.</div>
+              <input id="profile-postcode" class="form-input" type="text" placeholder="e.g. SW1, M4, EH1" maxlength="10" autocomplete="off">
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">A full postcode also works — we only keep the first part. Sets your country and local rankings.</div>
             </div>
             <div class="form-group full">
               <label class="form-label">Bio</label>
@@ -2163,6 +2163,7 @@
   import { bmpDumbbell as _bmpDumbbell, bmpFrameSrc as _bmpFrameSrc } from '../lib/bmpDumbbell';
   import { getLocalAreaLabel as _getAreaLabel, getVerifiedLocationLabel as _getVerifiedLoc } from '../lib/rankingAreas';
   import { getDashboardBracket as _getDashboardBracket } from '../lib/bmpConfig';
+  import { toPostcodeDistrict as _toDistrict, POSTCODE_DISTRICT_ERROR as _DISTRICT_ERR } from '../lib/postcodeDistrict.js';
 
   // ── Auth guard ──────────────────────────────────────────────────────────
   // Fast path: read from localStorage (persisted across visits).
@@ -3543,9 +3544,7 @@
     fillText('profile-city',      trainer.city     ?? '');
     // Postcode district is always editable. Pre-fill the stored district; for older
     // profiles without one, offer the first part of the legacy postcode/area value.
-    const _legacyDistrict = String(trainer.postcode ?? '').trim().toUpperCase().split(/\s+/)[0];
-    fillText('profile-postcode', (trainer as any).postcode_district
-      ?? (/^[A-Z]{1,2}[0-9][A-Z0-9]?$/.test(_legacyDistrict) ? _legacyDistrict : ''));
+    fillText('profile-postcode', (trainer as any).postcode_district ?? _toDistrict(trainer.postcode) ?? '');
     fillText('profile-bio',       trainer.bio ?? '');
     fillText('profile-intro-msg', (trainer as any).intro_message ?? '');
     fillText('social-facebook',   (trainer as any).social_facebook  ?? '');
@@ -3867,12 +3866,15 @@
     const username     = usernameRaw.replace(/[^a-z0-9_]/g, '') || null;
     const businessName = (document.getElementById('profile-business')  as HTMLInputElement).value.trim();
     const city         = (document.getElementById('profile-city')      as HTMLInputElement).value.trim();
-    // Postcode district = outward code only (SW1, M4, EH1). Required; full postcodes are not accepted.
-    const postcode  = (document.getElementById('profile-postcode')  as HTMLInputElement).value.trim().toUpperCase().replace(/\s+/g, '');
-    if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?$/.test(postcode)) {
-      showToast('❌ Please enter your postcode district — the first part of your postcode only, e.g. SW1, M4 or EH1.');
+    // Postcode district = outward code only (SW1, M4, EH1). Required. A full postcode is
+    // accepted but only its outward code is kept; the field is updated to show that.
+    const _pcInput  = document.getElementById('profile-postcode') as HTMLInputElement;
+    const postcode  = _toDistrict(_pcInput.value);
+    if (!postcode) {
+      showToast('❌ ' + _DISTRICT_ERR);
       return;
     }
+    _pcInput.value = postcode;
     const bio        = (document.getElementById('profile-bio')        as HTMLTextAreaElement).value.trim();
     const introMsg   = (document.getElementById('profile-intro-msg') as HTMLTextAreaElement).value.trim();
 

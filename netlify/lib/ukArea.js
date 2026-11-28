@@ -8,14 +8,26 @@
  * Never handles or stores full postcodes. Never logs inputs.
  */
 
-export const DISTRICT_RE = /^[A-Z]{1,2}[0-9][A-Z0-9]?$/;
+import { cityToAreaId } from '../../src/lib/cityAreas.js';
+import { toPostcodeDistrict } from '../../src/lib/postcodeDistrict.js';
+
 const SUPPORTED_NATIONS = new Set(['England', 'Scotland', 'Wales', 'Northern Ireland']);
 const PCIO = 'https://api.postcodes.io';
+const COUNTRY_BY_PREFIX = { ENG: 'England', SCO: 'Scotland', WLS: 'Wales', NIR: 'Northern Ireland' };
 
-/** "sw1 " → "SW1". Returns null when the value is not an outward code. */
+/** Area from the shared city alias table (same table /find-a-trainer search uses). */
+function areaFromAlias(city) {
+  const id = cityToAreaId(city);
+  return id ? { cc_country: COUNTRY_BY_PREFIX[id.slice(0, 3)], local_area_id: id } : null;
+}
+
+/**
+ * " sw1 " → "SW1"; "SW1A 1AA" → "SW1A" (only the outward code is kept).
+ * Same rule as signup and the dashboard (src/lib/postcodeDistrict.js).
+ * Returns null when the value is not a UK postcode district.
+ */
 export function normaliseDistrict(raw) {
-  const v = String(raw ?? '').trim().toUpperCase().replace(/\s+/g, '');
-  return DISTRICT_RE.test(v) ? v : null;
+  return toPostcodeDistrict(raw);
 }
 
 async function getJson(url) {
@@ -85,6 +97,9 @@ async function candidatesFor(db, countries, counties, districts) {
 export async function resolveCity(db, city) {
   const name = String(city ?? '').trim();
   if (!name) return null;
+  // Known cities/towns first, so assignment matches the /find-a-trainer search exactly.
+  const aliased = areaFromAlias(name);
+  if (aliased) return aliased;
   const json = await getJson(`${PCIO}/places?q=${encodeURIComponent(name)}&limit=10`);
   const places = (json.result || []).filter(p => SUPPORTED_NATIONS.has(p.country));
   if (!places.length) return null;

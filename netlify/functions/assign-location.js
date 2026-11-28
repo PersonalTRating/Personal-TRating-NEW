@@ -16,6 +16,7 @@
 
 import { createClient } from '@supabase/supabase-js';
 import { normaliseDistrict, resolveDistrict, resolveCity } from '../lib/ukArea.js';
+import { POSTCODE_DISTRICT_ERROR } from '../../src/lib/postcodeDistrict.js';
 
 const SUPABASE_URL     = process.env.PUBLIC_SUPABASE_URL;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -42,7 +43,7 @@ export const handler = async (event) => {
   if (body.postcode_district !== undefined) {
     district = normaliseDistrict(body.postcode_district);
     if (!district) {
-      return json(400, { error: 'Enter the first part of your postcode only, e.g. SW1, M4 or EH1.' });
+      return json(400, { error: POSTCODE_DISTRICT_ERROR });
     }
   }
 
