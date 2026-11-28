@@ -3,6 +3,7 @@ import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import ForTrainersTrustBar from '../components/ForTrainersTrustBar.astro';
 import { BMP_BRACKET_TIERS } from '../lib/bmpConfig';
+import { clientTestimonials, trainerTestimonials } from '../lib/testimonials';
 
 const { count: totalTrainers } = await supabase
   .from('trainers')
@@ -388,24 +389,19 @@ const { count: totalReviews } = await supabase
 
     <div style="text-align:center;margin-bottom:3.5rem;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">From the Platform</div>
-      <h2 style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;">What trainers on the platform say</h2>
+      <h2 style="font-family:'Playfair Display',serif;font-size:2.25rem;font-weight:900;color:#111311;">What people say</h2>
     </div>
 
-    <div class="ft-proof-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));max-width:800px;margin:0 auto;">
-      {[
-        { initials:'T', bg:'#eaf7ec', color:'#2a9438', name:'Tracy', info:'Personal Trainer · London',
-          href:'/trainers/ed71661a-2515-4df0-b0fe-0f486968d104',
-          text:'"I\'ve been a personal trainer for 3 years now and have built up a bit of a client base. You do often find however that after you\'ve shown someone the ropes they move on to training themselves. This is natural but CoachCards gave me a platform for them to pass on their experience with me to potential new clients. This has been great for my business."' },
-        { initials:'P', bg:'#e8f0f7', color:'#1a4b6b', name:'Paul', info:'Personal Trainer · London',
-          href:'/trainers/639b7020-9f0a-4ff4-b352-8169d1d65068',
-          text:'"I am always looking for ways to keep myself accountable and through this make my coaching the best it can be. Using CoachCards I\'ve started asking my clients for a review, with no hint that it should be positive. This gives me a great source of feedback, if there\'s something I\'m doing wrong I can address it. I work to make all reviews positive and if they are the public will see what I can offer."' },
-      ].map(p => (
+    <div class="ft-proof-grid" style="grid-template-columns:1fr;gap:1.25rem;max-width:900px;margin:0 auto;">
+      {[...trainerTestimonials, ...clientTestimonials].map(p => (
         <div class="ft-proof">
           <p class="ft-proof-text">{p.text}</p>
           <div class="ft-proof-foot">
             <div class="ft-proof-av" style={`background:${p.bg};color:${p.color};`}>{p.initials}</div>
             <div>
-              <a href={p.href} class="ft-proof-name" style="display:block;text-decoration:underline;text-underline-offset:2px;">{p.name}</a>
+              {p.href
+                ? <a href={p.href} class="ft-proof-name" style="display:block;text-decoration:underline;text-underline-offset:2px;">{p.name}</a>
+                : <div class="ft-proof-name">{p.name}</div>}
               <div class="ft-proof-info">{p.info}</div>
             </div>
           </div>
