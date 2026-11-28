@@ -414,17 +414,15 @@ const { count: totalReviews } = await supabase
 
 <!-- ── OBJECTION BUSTERS ── -->
 <section style="padding:5rem 0;background:white;border-top:3px solid #3ab54a;">
-  <div style="max-width:720px;margin:0 auto;padding:0 2.5rem;">
+  <div style="max-width:960px;margin:0 auto;padding:0 2.5rem;">
 
     <div style="text-align:center;margin-bottom:3rem;">
       <div style="font-size:0.72rem;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#3ab54a;margin-bottom:0.5rem;">Common Questions</div>
       <h2 style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:#111311;">Straight answers</h2>
     </div>
 
-    <div style="display:flex;flex-direction:column;gap:1rem;">
+    <div class="ft-proof-grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;">
       {[
-        { q:'Is it really free?',
-          a:'Yes, completely. There are no subscription tiers, no premium listings, no credit card required. Every PT gets the same profile, the same tools, and the same shot at the top of the leaderboard.' },
         { q:'What is the BMP score?',
           a:'BMP (Body Muscle %) is our 0–100 ranking score. It combines Review Quality (up to 70 pts), Review Confidence based on volume (up to 20 pts), and Activity & Trending (up to 10 pts). Only verified reviews count — unverified submissions never touch your score. It\'s formula-driven, transparent, and cannot be bought or gamed.' },
         { q:'Are reviews verified?',
