@@ -2,7 +2,6 @@
 import Layout from '../../layouts/Layout.astro';
 import { supabase } from '../../lib/supabase';
 import { bmpDumbbell, bmpFrameSrc } from '../../lib/bmpDumbbell';
-import { getLocalAreaLabel } from '../../lib/rankingAreas';
 import { getPublicRankBadge } from '../../lib/bmpConfig';
 
 export async function getStaticPaths() {
@@ -133,12 +132,11 @@ const heroColour: string = _luminanceHex(_heroColourRaw) < 0.05
 const heroColourDark: string = _darkenHex(heroColour, 0.22);
 
 // ── Location display ─────────────────────────────────────────────────────────
-// When location_confirmed is true, show the resolved area name (e.g. "Fife, Scotland")
-// instead of the manually-entered city, which may be stale or in a different region.
-const verifiedLocation = (trainer.location_confirmed && trainer.cc_local_area)
-  ? getLocalAreaLabel(trainer.cc_local_area as string)
-  : null;
-const displayLocation = verifiedLocation ?? trainer.city ?? trainer.location ?? null;
+// Always show the trainer's STATED location. Device location never overrides it.
+// location_confirmed = an opted-in device check matched the stated area; it only
+// adds the small "Location confirmed" indicator next to the location.
+const displayLocation = trainer.city || trainer.location || null;
+const locationConfirmed = trainer.location_confirmed === true;
 
 // ── SEO ──────────────────────────────────────────────────────────────────────
 const trainerCity = displayLocation ?? 'the UK';
@@ -621,7 +619,7 @@ const maskName = (name: string): string => {
 
         <div style="display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.75rem;">
           {displayLocation && (
-            <span style="color:rgba(255,255,255,0.85);font-size:0.88rem;display:inline-flex;align-items:center;gap:0.35rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{displayLocation}</span>
+            <span style="color:rgba(255,255,255,0.85);font-size:0.88rem;display:inline-flex;align-items:center;gap:0.35rem;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#E85D4A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>{displayLocation}{locationConfirmed && (<span title="The trainer's device location matched their stated area" style="display:inline-flex;align-items:center;gap:3px;margin-left:0.35rem;font-size:0.72rem;font-weight:700;color:#3ab54a;"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Location confirmed</span>)}</span>
           )}
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
             <span set:html={_bmpImg(trainer.bmp_score, 52)} />

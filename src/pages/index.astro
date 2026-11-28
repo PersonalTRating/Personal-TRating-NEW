@@ -4,7 +4,7 @@ import { supabase } from '../lib/supabase';
 import { bmpDumbbell } from '../lib/bmpDumbbell';
 import TrustBar from '../components/TrustBar.astro';
 import AdvertPlayer from '../components/AdvertPlayer.astro';
-import { getLocalAreaLabel, getVerifiedLocationLabel, getVisibilityLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
+import { getLocalAreaLabel, getVerifiedLocationLabel, getStatedLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
 import { BMP_BRACKET_TIERS } from '../lib/bmpConfig';
 import { clientTestimonials, trainerTestimonials } from '../lib/testimonials';
 
@@ -17,7 +17,7 @@ const [
 ] = await Promise.all([
   supabase
     .from('trainers')
-    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, is_founder, rank_history, location_confirmed, cc_local_area, cc_country, ranking_visibility, distinct_reviewer_count')
+    .select('id, name, username, location, city, specialty, cert, coaching_type, bmp_score, star_rating, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, is_founder, rank_history, cc_local_area, cc_country, ranking_visibility, distinct_reviewer_count')
     .eq('is_active', true)
     .gt('bmp_score', 0)
     .gt('review_count', 0)
@@ -41,9 +41,12 @@ const [
 const leaderboard = (topTrainers || []).map((t: any) => ({
   ...t,
   is_founder: !!(t as any).is_founder,
-  displayCity: t.location_confirmed
-    ? getVisibilityLocationLabel(t.cc_local_area, t.cc_country, t.ranking_visibility || 'all')
-    : null,
+  // Stated location (city), scaled to ranking visibility — never device location.
+  displayCity: getStatedLocationLabel(
+    t.city || (t.location || '').split(',')[0],
+    t.cc_country,
+    t.ranking_visibility || 'all'
+  ),
 }));
 const heroRankings = leaderboard.slice(0, 4).map((t, i) => ({ ...t, rank: i + 1 }));
 
@@ -1266,7 +1269,7 @@ const reviews = [...clientTestimonials, ...trainerTestimonials];
   trainers.forEach(function (t) {
     var cityRaw = (t.city || t.location || '').toLowerCase().split(',')[0].trim();
     var coords = (window['__resolveCoords'] || function() { return null; })(
-      t.location_confirmed, t.cc_local_area, cityRaw, cityCoords
+      !!t.cc_local_area, t.cc_local_area, cityRaw, cityCoords
     );
     if (!coords) return;
 
@@ -1621,7 +1624,7 @@ const reviews = [...clientTestimonials, ...trainerTestimonials];
         var resolveCoords = window['__resolveCoords'] || function() { return null; };
         var nearby = all.filter(function (t) {
           var cityRaw = (t.city || t.location || '').toLowerCase().split(',')[0].trim();
-          var coords = resolveCoords(t.location_confirmed, t.cc_local_area, cityRaw, cityCoords);
+          var coords = resolveCoords(!!t.cc_local_area, t.cc_local_area, cityRaw, cityCoords);
           return coords && haversine(uLat, uLng, coords[0], coords[1]) <= 50;
         });
         nearby.sort(function (a, b) { return (b.bmp_score || 0) - (a.bmp_score || 0); });

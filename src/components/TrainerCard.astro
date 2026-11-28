@@ -22,8 +22,8 @@ interface Props {
   localRank?: number;
   ccCountry?: string;
   ccLocalArea?: string;
-  locationConfirmed?: boolean;
-  verifiedLocation?: string | null;
+  areaAssigned?: boolean;
+  locationLabel?: string | null;
   rankingVisibility?: string;
   distinctReviewerCount?: number | null;
   isFounder?: boolean;
@@ -50,16 +50,16 @@ const {
   localRank,
   ccCountry = '',
   ccLocalArea = '',
-  locationConfirmed = false,
-  verifiedLocation,
+  areaAssigned = false,
+  locationLabel,
   rankingVisibility = 'all',
   distinctReviewerCount = null,
   isFounder = false,
 } = Astro.props;
 
-// Use the confirmed area name for confirmed trainers; fall back to the
-// manually-entered city for everyone else.
-const displayCity = (locationConfirmed && verifiedLocation) ? verifiedLocation : (city || '');
+// Show the trainer's stated location (scaled to their ranking visibility);
+// fall back to the raw city when no label was supplied.
+const displayCity = locationLabel || city || '';
 
 const coachingLabel = coachingType === 'in_person' ? 'In Person'
   : coachingType === 'online' ? 'Online'
@@ -108,7 +108,7 @@ const bmpFrameUrl = bmpDisplay != null ? bmpFrameSrc(bmpScore) : null;
   data-local-rank={localRank != null ? String(localRank) : undefined}
   data-cc-country={ccCountry || undefined}
   data-cc-local-area={ccLocalArea || undefined}
-  data-location-confirmed={locationConfirmed ? 'true' : undefined}
+  data-area-assigned={areaAssigned ? 'true' : undefined}
   data-ranking-visibility={rankingVisibility !== 'all' ? rankingVisibility : undefined}
 >
   <div class="trc-left">

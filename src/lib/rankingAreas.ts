@@ -176,6 +176,28 @@ export function getVisibilityLocationLabel(
 }
 
 /**
+ * Card / leaderboard label for a trainer's STATED location, scaled to their
+ * ranking_visibility preference. The stated city is what the trainer told us;
+ * the assigned area (cc_country) is derived from it and never overrides it.
+ *
+ *   'all'        → stated city, e.g. "London" (assigned country if no city)
+ *   'uk_country' → assigned country, e.g. "England"
+ *   'uk_only'    → "United Kingdom"
+ *   null / other → same as 'all'
+ *
+ * Returns null when nothing usable is known; callers fall back to `location`.
+ */
+export function getStatedLocationLabel(
+  city:              string | null | undefined,
+  ccCountry:         string | null | undefined,
+  rankingVisibility: string | null | undefined,
+): string | null {
+  if (ccCountry && rankingVisibility === 'uk_only')    return 'United Kingdom';
+  if (ccCountry && rankingVisibility === 'uk_country') return ccCountry;
+  return (city || '').trim() || ccCountry || null;
+}
+
+/**
  * Approximate geographic center coordinates for each ranking area.
  * Used for map pins and Near Me distance filtering.
  * Coordinates are area centroids — never exact trainer postcodes.

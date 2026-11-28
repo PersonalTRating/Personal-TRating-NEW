@@ -2,11 +2,11 @@
 import Layout from '../layouts/Layout.astro';
 import { supabase } from '../lib/supabase';
 import TrainerCard from '../components/TrainerCard.astro';
-import { RANKING_AREAS, getLocalAreaLabel, getVerifiedLocationLabel, getVisibilityLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
+import { RANKING_AREAS, getLocalAreaLabel, getVerifiedLocationLabel, getStatedLocationLabel, RANKING_AREA_COORDS } from '../lib/rankingAreas';
 
 const { data: trainersData } = await supabase
   .from('trainers')
-  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, is_founder, cc_country, cc_local_area, location_confirmed, distinct_reviewer_count')
+  .select('id, name, username, location, city, specialty, coaching_type, bmp_score, review_count, recent_review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, bio, is_trending, is_founder, cc_country, cc_local_area, distinct_reviewer_count')
   .eq('is_active', true)
   .gt('review_count', 0)
   .order('bmp_score', { ascending: false })
@@ -53,25 +53,25 @@ const allTrainers = raw.map((t: any, i: number) => ({
   coachingType:       t.coaching_type || '',
   ccCountry:          (t as any).cc_country || '',
   ccLocalArea:        (t as any).cc_local_area || '',
-  locationConfirmed:  !!(t as any).location_confirmed,
-  verifiedLocation:   (t as any).location_confirmed
-                        ? getVisibilityLocationLabel(
-                            (t as any).cc_local_area,
-                            (t as any).cc_country,
-                            rvMap[t.id] || (rvQueryOk ? 'all' : 'uk_only')
-                          )
-                        : null,
+  // Area assigned from the trainer's stated postcode district (or city).
+  // Device-location confirmation is NOT required to take part in rankings.
+  areaAssigned:       !!(t as any).cc_country,
+  locationLabel:      getStatedLocationLabel(
+                        t.city || (t.location || '').split(',')[0],
+                        (t as any).cc_country,
+                        rvMap[t.id] || (rvQueryOk ? 'all' : 'uk_only')
+                      ),
   rankingVisibility:      rvMap[t.id] || (rvQueryOk ? 'all' : 'uk_only'),
   distinctReviewerCount:  (t as any).distinct_reviewer_count ?? null,
 }));
 
-// Country rank map: rank within confirmed country groups of 10+ trainers, sorted by BMP.
+// Country rank map: rank within assigned-country groups of 10+ trainers, sorted by BMP.
 // Trainers who opted to UK-only are excluded from country ranking.
 const countryRankMap: Record<string, number> = {};
 {
   const groups: Record<string, typeof allTrainers> = {};
   allTrainers.forEach(t => {
-    if (t.locationConfirmed && t.ccCountry && t.rankingVisibility !== 'uk_only') {
+    if (t.areaAssigned && t.ccCountry && t.rankingVisibility !== 'uk_only') {
       (groups[t.ccCountry] = groups[t.ccCountry] || []).push(t);
     }
   });
@@ -81,13 +81,13 @@ const countryRankMap: Record<string, number> = {};
   });
 }
 
-// Local rank map: rank within confirmed local area groups of 10+ trainers, sorted by BMP.
+// Local rank map: rank within assigned local area groups of 10+ trainers, sorted by BMP.
 // Only trainers who opted into all tiers participate in local rankings.
 const localRankMap: Record<string, number> = {};
 {
   const groups: Record<string, typeof allTrainers> = {};
   allTrainers.forEach(t => {
-    if (t.locationConfirmed && t.ccLocalArea && t.rankingVisibility === 'all') {
+    if (t.ccLocalArea && t.rankingVisibility === 'all') {
       (groups[t.ccLocalArea] = groups[t.ccLocalArea] || []).push(t);
     }
   });
@@ -346,8 +346,8 @@ const participationState: 'empty' | 'growing' | 'full' =
             localRank={localRankMap[t.id]}
             ccCountry={t.ccCountry}
             ccLocalArea={t.ccLocalArea}
-            locationConfirmed={t.locationConfirmed}
-            verifiedLocation={t.verifiedLocation}
+            areaAssigned={t.areaAssigned}
+            locationLabel={t.locationLabel}
             rankingVisibility={t.rankingVisibility}
             distinctReviewerCount={t.distinctReviewerCount}
             isFounder={t.isFounder}
@@ -1199,11 +1199,12 @@ const participationState: 'empty' | 'growing' | 'full' =
       if (activeTier === 'uk') {
         geoPass = true;
       } else if (activeTier === 'country') {
-        // Confirmed trainers: use only cc_country — never fall back to city inference.
-        // Unconfirmed trainers: infer country from legacy city field.
-        var isConfirmedCard = card.getAttribute('data-location-confirmed') === 'true';
+        // Trainers with an assigned area (from their stated postcode district or city):
+        // use only cc_country. Trainers not yet assigned: infer country from the city field
+        // so they are not hidden while they add a postcode district.
+        var isAssignedCard = card.getAttribute('data-area-assigned') === 'true';
         var rv = card.getAttribute('data-ranking-visibility') || 'all';
-        if (isConfirmedCard) {
+        if (isAssignedCard) {
           // Opt-out of country tier (uk_only) → exclude from country rankings.
           geoPass = !!activeCountry
             && card.getAttribute('data-cc-country') === activeCountry
@@ -1215,15 +1216,14 @@ const participationState: 'empty' | 'growing' | 'full' =
         // local — handle both ranking_areas UUID and city: prefix
         if (activeLocal.indexOf('city:') === 0) {
           var cityFilter = activeLocal.slice(5);
-          // Confirmed trainers must never match a legacy city search; their verified area is the only valid filter.
-          geoPass = card.getAttribute('data-location-confirmed') !== 'true'
+          // Trainers with an assigned area must never match a legacy city search; their assigned area is the only valid filter.
+          geoPass = card.getAttribute('data-area-assigned') !== 'true'
             && (card.getAttribute('data-city') || '').toLowerCase().trim() === cityFilter;
         } else {
           var rvLocal = card.getAttribute('data-ranking-visibility') || 'all';
           // Only trainers who opted into all tiers participate in local rankings.
           geoPass = !!activeLocal
-            && card.getAttribute('data-cc-local-area')      === activeLocal
-            && card.getAttribute('data-location-confirmed') === 'true'
+            && card.getAttribute('data-cc-local-area') === activeLocal
             && rvLocal === 'all';
         }
       }
@@ -1372,7 +1372,7 @@ const participationState: 'empty' | 'growing' | 'full' =
     var placed = 0;
     var resolveCoords = window['__resolveCoords'] || function() { return null; };
     cards.forEach(function (card) {
-      var confirmed = card.getAttribute('data-location-confirmed') === 'true';
+      var confirmed = card.getAttribute('data-area-assigned') === 'true';
       var ccArea    = card.getAttribute('data-cc-local-area') || '';
       var cityRaw   = (card.getAttribute('data-city') || '').toLowerCase().trim();
       var coords    = resolveCoords(confirmed, ccArea, cityRaw, cityCoords);

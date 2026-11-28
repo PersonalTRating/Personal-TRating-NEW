@@ -1368,8 +1368,9 @@
               <input id="profile-city" class="form-input" type="text" placeholder="Your city">
             </div>
             <div class="form-group">
-              <label class="form-label">Postcode / Area</label>
-              <input id="profile-postcode" class="form-input" type="text" placeholder="e.g. SW1, M1, B1">
+              <label class="form-label">Postcode district</label>
+              <input id="profile-postcode" class="form-input" type="text" placeholder="e.g. SW1, M4, EH1" maxlength="5" autocomplete="off">
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:0.3rem;">First part of your postcode only. Sets your country and local rankings.</div>
             </div>
             <div class="form-group full">
               <label class="form-label">Bio</label>
@@ -1477,18 +1478,19 @@
         <div class="card-head">
           <div>
             <div class="card-title">Your Location &amp; Rankings</div>
-            <div class="card-sub">Confirm your location to appear in country and local rankings</div>
+            <div class="card-sub">Your country and local rankings come from the postcode district in your profile details</div>
           </div>
         </div>
         <div class="card-body">
-          <!-- Confirmed + locked state -->
-          <div id="loc-locked" style="display:none;">
+          <!-- Shown when the trainer has no valid postcode district yet -->
+          <div id="loc-missing-notice" class="loc-notice loc-notice-warn" style="display:none;">Add your postcode district (e.g. SW1, M4 or EH1) in your profile details above and save, so we can place you in the right country and local rankings.</div>
+          <!-- Assigned area (from the stated postcode district, or city as fallback) -->
+          <div id="loc-assigned" style="display:none;">
             <div class="loc-confirmed-badge">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span id="loc-confirmed-display">Location confirmed</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
+              <span>Ranked in: <span id="loc-assigned-display"></span></span>
             </div>
-            <div id="loc-cooldown-msg" class="loc-notice loc-notice-warn" style="display:none;margin-top:0.75rem;"></div>
-            <!-- Ranking visibility preference — only shown once location is confirmed -->
+            <!-- Ranking visibility preference — shown once an area is assigned -->
             <div style="margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
               <label class="form-label" for="ranking-visibility-select" style="display:block;margin-bottom:0.4rem;">Ranking visibility</label>
               <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.65rem;">Choose which ranking tiers you appear in. UK ranking is always included.</p>
@@ -1499,26 +1501,17 @@
               </select>
             </div>
           </div>
-          <!-- Entry form state -->
-          <div id="loc-form">
-            <div id="loc-migrate-notice" class="loc-notice loc-notice-info" style="display:none;"></div>
-            <div style="display:grid;grid-template-columns:1fr auto;gap:0.65rem;align-items:end;margin-bottom:0.75rem;">
-              <div class="form-group" style="margin-bottom:0;">
-                <label class="form-label">Your postcode</label>
-                <input class="form-input" id="loc-postcode-input" type="text" placeholder="e.g. SW1A 1AA" maxlength="8">
-              </div>
-              <button id="loc-validate-btn" onclick="locValidatePostcode()" class="btn btn-outline" style="height:42px;padding:0 1.1rem;white-space:nowrap;">Validate</button>
-            </div>
-            <button id="loc-geo-btn" class="loc-geo-btn" onclick="locUseGeolocation()">
+          <!-- Optional device-location check: only adds a "Location confirmed" indicator -->
+          <div id="loc-device" style="display:none;margin-top:1.25rem;padding-top:1rem;border-top:1px solid var(--border);">
+            <label class="form-label" style="display:block;margin-bottom:0.4rem;">Location confirmed indicator (optional)</label>
+            <p style="font-size:0.78rem;color:var(--muted);margin:0 0 0.65rem;">Check your device location against your stated area. If it matches, a "Location confirmed" indicator appears on your profile. Your rankings never change, and your device location is not stored.</p>
+            <button id="loc-geo-btn" class="loc-geo-btn" onclick="locCheckDevice()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-              Use my current location instead
+              Check my device location
             </button>
-            <div id="loc-result" style="display:none;" class="loc-result-card">
-              <div id="loc-result-text" style="font-size:0.88rem;font-weight:600;color:var(--text);"></div>
-              <button id="loc-confirm-btn" onclick="locConfirmLocation()" class="btn btn-green" style="margin-top:1rem;width:100%;">Confirm My Location</button>
-            </div>
-            <div id="loc-error" style="display:none;font-size:0.82rem;color:var(--red);margin-top:0.5rem;"></div>
+            <div id="loc-device-status" class="loc-notice loc-notice-info" style="display:none;"></div>
           </div>
+          <div id="loc-error" style="display:none;font-size:0.82rem;color:var(--red);margin-top:0.5rem;"></div>
         </div>
       </div>
 
@@ -2209,9 +2202,6 @@
     .rpc('get_own_trainer_profile');
 
   let trainer: any = _trainerData;
-  // Declared at module scope so initLocationCard(), locConfirmLocation() and saveProfile()
-  // can all access it — let inside if(trainer) would be block-scoped and invisible to them.
-  let _confirmedLocationStr: string | null = null;
 
   // Retry once on transient network error (non-null error means network/server issue,
   // not a missing row — missing row returns null data with null error).
@@ -2318,12 +2308,6 @@
   if (trainer) {
     const firstName = trainer.name.split(' ')[0];
 
-    // Initialise the module-level variable (declared above if(trainer) so all functions can access it).
-    // Set to cc_country immediately; updated to "Area, Country" once initLocationCard() resolves.
-    _confirmedLocationStr = (trainer as any).location_confirmed
-      ? ((trainer as any).cc_country ?? 'Verified location unavailable')
-      : null;
-
     // ── Sidebar ─────────────────────────────────────────────────────────
     const sbAvatarEl = document.querySelector('.sb-avatar') as HTMLElement;
     if (sbAvatarEl) {
@@ -2340,7 +2324,7 @@
       (isComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '') +
       (isFounderSb ? ' <span class="founder-badge" tabindex="0" role="img" aria-label="Founder — An early member of the CoachCards trainer community." style="vertical-align:middle;margin-left:2px;"><img src="/assets/coachcards-founder-badge.png" alt="" width="67" height="16" style="height:16px;width:auto;display:block;"><span class="founder-badge-tt" role="tooltip">Founder — An early member of the CoachCards trainer community.</span></span>' : '');
     (document.querySelector('.sb-pt-status') as HTMLElement).textContent =
-      `● Active · ${_confirmedLocationStr ?? trainer.location ?? '—'}`;
+      `● Active · ${trainer.location ?? trainer.city ?? '—'}`;
     const sbBusiness = document.querySelector('.sb-pt-business') as HTMLElement;
     if (sbBusiness) {
       if (trainer.business_name) {
@@ -2363,9 +2347,9 @@
         },
         {
           id: 'location',
-          label: 'Confirm your location',
-          hint: 'Confirm your postcode to appear in country and local rankings',
-          done: !!(trainer as any).location_confirmed,
+          label: 'Add your postcode district',
+          hint: 'Your postcode district places you in country and local rankings',
+          done: !!(trainer as any).postcode_district,
           action: () => showPage('profile'),
         },
         {
@@ -2588,7 +2572,7 @@
       : '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:4px"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Rank unlocks with first review';
 
     const _t = trainer as any;
-    if (hasBmp && _t.location_confirmed) {
+    if (hasBmp && _t.cc_country) {
       if (gaugeSub) gaugeSub.textContent = `Competing with PTs across the UK`;
       if (countryRank && gaugeCtryRank) {
         gaugeCtryRank.textContent = `#${countryRank} in ${_t.cc_country ?? 'your country'}`;
@@ -2602,8 +2586,8 @@
         gaugeLocRank.style.display = 'none';
       }
       if (gaugeGeoRanks && (countryRank || localRank)) gaugeGeoRanks.style.display = 'block';
-    } else if (hasBmp && !_t.location_confirmed) {
-      if (gaugeSub) gaugeSub.textContent = `Confirm your location to unlock country & local rankings`;
+    } else if (hasBmp && !_t.cc_country) {
+      if (gaugeSub) gaugeSub.textContent = `Add your postcode district to unlock country & local rankings`;
     } else {
       if (gaugeSub) gaugeSub.textContent = `Start collecting verified reviews`;
     }
@@ -3008,7 +2992,7 @@
 
       // ── R7: Improve local discoverability ─────────────────────────────
       // Only for confirmed in-person or hybrid trainers (coaching_type must be known).
-      if (isInPersonOrHybrid && !trainer.location_confirmed) {
+      if (isInPersonOrHybrid && !trainer.postcode_district) {
         allCandidates.push({
           id: 'R7',
           conflictGroup: GRP_PROFILE,
@@ -3016,7 +3000,7 @@
           icon: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
           iconBg: 'background:#dc2626',
           title: 'Improve local discoverability',
-          desc: `You offer ${trainer.coaching_type === 'in_person' ? 'in-person' : 'in-person and online'} training but your location is not confirmed. Confirming your location makes you visible in CoachCards\' country and local area leaderboards, where clients search for trainers nearby.`,
+          desc: `You offer ${trainer.coaching_type === 'in_person' ? 'in-person' : 'in-person and online'} training but you haven\'t added a postcode district. Adding it places you in CoachCards\' country and local area leaderboards, where clients search for trainers nearby.`,
           action: 'profile', actionLabel: 'Update location →',
         });
       }
@@ -3557,22 +3541,11 @@
     fillText('profile-username',  (trainer as any).username ?? '');
     fillText('profile-business',  trainer.business_name ?? '');
     fillText('profile-city',      trainer.city     ?? '');
-    fillText('profile-postcode',  trainer.postcode ?? '');
-
-    // For confirmed trainers, hide City/Postcode inputs and show a verified-location banner.
-    if ((trainer as any).location_confirmed) {
-      const _cityGrp     = document.getElementById('profile-city')?.closest('.form-group') as HTMLElement | null;
-      const _postcodeGrp = document.getElementById('profile-postcode')?.closest('.form-group') as HTMLElement | null;
-      if (_cityGrp)     _cityGrp.style.display     = 'none';
-      if (_postcodeGrp) _postcodeGrp.style.display = 'none';
-      if (_cityGrp?.parentElement && !_cityGrp.parentElement.querySelector('#verified-loc-banner')) {
-        const _vlb = document.createElement('div');
-        _vlb.id = 'verified-loc-banner';
-        _vlb.style.cssText = 'grid-column:1/-1;background:rgba(58,181,74,0.08);border:1px solid rgba(58,181,74,0.25);border-radius:8px;padding:0.75rem 1rem;';
-        _vlb.innerHTML = `<div style="display:flex;align-items:flex-start;gap:0.6rem;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-top:2px;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;">Verified location: <span id="vl-display">${_confirmedLocationStr ?? 'Verified location unavailable'}</span></div><div style="font-size:0.74rem;color:var(--muted);">Your location is verified and locked. To change it, use the Confirmed Location section below.</div></div></div>`;
-        _cityGrp.insertAdjacentElement('beforebegin', _vlb);
-      }
-    }
+    // Postcode district is always editable. Pre-fill the stored district; for older
+    // profiles without one, offer the first part of the legacy postcode/area value.
+    const _legacyDistrict = String(trainer.postcode ?? '').trim().toUpperCase().split(/\s+/)[0];
+    fillText('profile-postcode', (trainer as any).postcode_district
+      ?? (/^[A-Z]{1,2}[0-9][A-Z0-9]?$/.test(_legacyDistrict) ? _legacyDistrict : ''));
     fillText('profile-bio',       trainer.bio ?? '');
     fillText('profile-intro-msg', (trainer as any).intro_message ?? '');
     fillText('social-facebook',   (trainer as any).social_facebook  ?? '');
@@ -3732,7 +3705,7 @@
     // ── Rankings table (dynamic) ──────────────────────────────────────────
     const { data: leaderboard } = await supabase
       .from('trainers')
-      .select('id, name, username, city, location, specialty, bmp_score, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, cc_country, cc_local_area, location_confirmed')
+      .select('id, name, username, city, location, specialty, bmp_score, review_count, avatar_initials, avatar_bg, avatar_color, avatar_url, cc_country, cc_local_area')
       .eq('is_active', true)
       .gt('review_count', 0)
       .order('bmp_score', { ascending: false })
@@ -3750,7 +3723,7 @@
               <div class="rank-avatar" style="background:${pt.avatar_bg || '#eaf7ec'};color:${pt.avatar_color || '#2a9438'};">${pt.avatar_initials || '?'}</div>
               <div><div>${pt.name}${isYou ? '<span class="rank-you-tag">YOU</span>' : ''}</div>${pt.username ? '<div style="font-size:0.68rem;color:#7a8f7c;font-weight:600;">@' + pt.username + '</div>' : ''}</div>
             </div></td>
-            <td>${(pt.location_confirmed && pt.cc_country) || pt.city || pt.location || '—'}</td>
+            <td>${pt.city || pt.location || pt.cc_country || '—'}</td>
             <td style="padding-right:1.5rem;"><strong>${pt.bmp_score}</strong></td>
           </tr>`;
         }).join('');
@@ -3776,7 +3749,7 @@
         : `<div style="width:58px;height:58px;border-radius:50%;flex-shrink:0;background:${pt.avatar_bg||'#1a3d1e'};color:${pt.avatar_color||'#3ab54a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:0.95rem;font-family:'Manrope',sans-serif;">${pt.avatar_initials||'?'}</div>`;
       const tick = `<svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:middle;flex-shrink:0;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
       const youPill = isYou ? `<span style="background:#3ab54a;color:white;font-size:0.58rem;font-weight:800;padding:0.15rem 0.5rem;border-radius:20px;letter-spacing:0.5px;font-family:'Manrope',sans-serif;">YOU</span>` : '';
-      const _ptLoc = (pt.location_confirmed && pt.cc_country) || pt.city || pt.location;
+      const _ptLoc = pt.city || pt.location || pt.cc_country;
       const _metaRow = (svg: string, text: string) => `<div style="display:flex;align-items:center;gap:4px;font-size:0.75rem;color:rgba(255,255,255,0.45);margin-top:0.18rem;font-family:'Manrope',sans-serif;">${svg}<span>${text}</span></div>`;
       const _locSvg  = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>`;
       const _specSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="2" y="9" width="4" height="6" rx="1"/><rect x="18" y="9" width="4" height="6" rx="1"/><line x1="6" y1="12" x2="18" y2="12"/></svg>`;
@@ -3894,7 +3867,12 @@
     const username     = usernameRaw.replace(/[^a-z0-9_]/g, '') || null;
     const businessName = (document.getElementById('profile-business')  as HTMLInputElement).value.trim();
     const city         = (document.getElementById('profile-city')      as HTMLInputElement).value.trim();
-    const postcode  = (document.getElementById('profile-postcode')  as HTMLInputElement).value.trim().toUpperCase();
+    // Postcode district = outward code only (SW1, M4, EH1). Required; full postcodes are not accepted.
+    const postcode  = (document.getElementById('profile-postcode')  as HTMLInputElement).value.trim().toUpperCase().replace(/\s+/g, '');
+    if (!/^[A-Z]{1,2}[0-9][A-Z0-9]?$/.test(postcode)) {
+      showToast('❌ Please enter your postcode district — the first part of your postcode only, e.g. SW1, M4 or EH1.');
+      return;
+    }
     const bio        = (document.getElementById('profile-bio')        as HTMLTextAreaElement).value.trim();
     const introMsg   = (document.getElementById('profile-intro-msg') as HTMLTextAreaElement).value.trim();
 
@@ -3915,8 +3893,13 @@
 
     const name     = `${firstName} ${lastName}`.trim();
     const location = postcode ? `${city}, ${postcode}` : city;
-    // For confirmed trainers, never overwrite location/city/postcode — legacy data is preserved as-is.
-    const _locFields = (trainer as any).location_confirmed ? {} : { location, city, postcode };
+    // City and the display "location" string are saved here. The postcode district itself
+    // (and the ranking area derived from it) is saved server-side by assign-location below.
+    // The legacy `postcode` column is kept in step with the district, so no full postcode remains.
+    const _locFields = { location, city, postcode };
+    const _districtChanged = postcode !== ((trainer as any).postcode_district ?? null)
+      || city !== (trainer.city ?? '')
+      || !(trainer as any).cc_country;
     const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase();
 
     const avatarColor = (window as any).cpGetAvatarColor?.() ?? '#2a9438';
@@ -3931,10 +3914,10 @@
     const bookingUrl      = (document.getElementById('booking-url')      as HTMLInputElement).value.trim() || null;
     const coachingType    = (document.querySelector('#coaching-type-wrap .ctype-btn.ctype-active') as HTMLElement | null)?.dataset.value || null;
 
-    // Ranking visibility — only save if the trainer has confirmed their location.
+    // Ranking visibility — only save once the trainer has an assigned ranking area.
     const rvRaw = (document.getElementById('ranking-visibility-select') as HTMLSelectElement | null)?.value;
     const rankingVisibility = rvRaw && ['all','uk_country','uk_only'].includes(rvRaw) ? rvRaw : null;
-    const _rvField = ((trainer as any).location_confirmed && rankingVisibility) ? { ranking_visibility: rankingVisibility } : {};
+    const _rvField = ((trainer as any).cc_country && rankingVisibility) ? { ranking_visibility: rankingVisibility } : {};
 
     const { error } = await supabase
       .from('trainers')
@@ -3948,8 +3931,10 @@
       const sbName = document.querySelector('.sb-pt-name') as HTMLElement;
       const savedComplete = !!(trainer.avatar_url && (city || (trainer as any).location_confirmed) && bio && specialty);
       sbName.innerHTML = name + (savedComplete ? ' <span title="Profile complete" style="display:inline-flex;align-items:center;vertical-align:middle;margin-left:3px;"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>' : '');
-      (document.querySelector('.sb-pt-status') as HTMLElement).textContent =
-        `● Active · ${(trainer as any).location_confirmed && _confirmedLocationStr ? _confirmedLocationStr : location}`;
+      (document.querySelector('.sb-pt-status') as HTMLElement).textContent = `● Active · ${location}`;
+      trainer.city = city;
+      trainer.location = location;
+      trainer.postcode = postcode;
       const sbAv = document.querySelector('.sb-avatar') as HTMLElement;
       if (sbAv && !sbAv.querySelector('img')) {
         sbAv.textContent = initials;
@@ -3968,6 +3953,11 @@
         if (businessName) { sbBiz.textContent = businessName; sbBiz.style.display = 'block'; }
         else { sbBiz.style.display = 'none'; }
       }
+      // Re-derive country / local ranking area from the stated postcode district.
+      if (_districtChanged) {
+        const assignErr = await assignStatedLocation(postcode);
+        if (assignErr) { showToast('⚠️ Profile saved, but your postcode district was not updated: ' + assignErr); return; }
+      }
       showToast('✅ Profile saved successfully!');
     }
     } catch (err: any) {
@@ -3976,212 +3966,32 @@
     }
   };
 
-  // ── Location confirmation (Phase 2) ──────────────────────────────────────
-  let _locResolved: {
-    postcode: string;
-    cc_country: string;
-    local_area_id: string | null;
-    local_name: string;
-    source: 'postcode' | 'geolocation';
-  } | null = null;
+  // ── Location & rankings (stated location) ───────────────────────────────
+  // Country and local ranking area come from the trainer's STATED postcode district
+  // (city as fallback), assigned server-side by assign-location. Device location is
+  // an optional check that only toggles the public "Location confirmed" indicator.
+
+  async function _locAuthHeader(): Promise<string | null> {
+    const { data: { session: s } } = await supabase.auth.getSession();
+    return s?.access_token ? `Bearer ${s.access_token}` : null;
+  }
 
   function _locShowError(msg: string) {
     const el = document.getElementById('loc-error') as HTMLElement;
-    if (el) { el.textContent = msg; el.style.display = 'block'; }
-    const res = document.getElementById('loc-result') as HTMLElement;
-    if (res) res.style.display = 'none';
+    if (el) { el.textContent = msg; el.style.display = msg ? 'block' : 'none'; }
   }
 
-  function _locClearError() {
-    const el = document.getElementById('loc-error') as HTMLElement;
-    if (el) { el.textContent = ''; el.style.display = 'none'; }
-  }
-
-  async function _locResolveFromPostcodesIo(pcObj: any, source: 'postcode' | 'geolocation') {
-    const adminCounty   = pcObj.admin_county   ?? null;
-    const adminDistrict = pcObj.admin_district  ?? null;
-    const country       = pcObj.country         ?? null;
-    const normPostcode  = pcObj.postcode        ?? '';
-
-    if (!country) { _locShowError('Could not determine country from postcode.'); return; }
-
-    const { data: rpcData, error: rpcErr } = await supabase.rpc('resolve_postcode_area', {
-      p_admin_county:   adminCounty,
-      p_admin_district: adminDistrict,
-      p_country:        country,
-    } as any);
-
-    if (rpcErr) { _locShowError('Could not resolve location: ' + ((rpcErr as any).message || 'Unknown error')); return; }
-
-    const row = Array.isArray(rpcData) ? rpcData[0] : rpcData;
-    const ccCountry   = ((row as any)?.cc_country    ?? null) as string | null;
-    const localAreaId = ((row as any)?.local_area_id ?? null) as string | null;
-
-    let localName = (adminCounty || adminDistrict || '') as string;
-    if (localAreaId) {
-      const { data: areaData } = await supabase.rpc('get_ranking_area_display', { p_area_id: localAreaId } as any);
-      const areaRow = Array.isArray(areaData) ? areaData[0] : areaData;
-      if ((areaRow as any)?.display_name) localName = (areaRow as any).display_name as string;
-    }
-
-    _locResolved = { postcode: normPostcode, cc_country: ccCountry ?? country, local_area_id: localAreaId, local_name: localName, source };
-
-    const resultEl = document.getElementById('loc-result') as HTMLElement;
-    const textEl   = document.getElementById('loc-result-text') as HTMLElement;
-    if (textEl) {
-      if (localAreaId) {
-        textEl.innerHTML = `Postcode resolved to: <strong>${localName}</strong>, <strong>${ccCountry ?? country}</strong>`;
-      } else {
-        textEl.innerHTML = `Country: <strong>${ccCountry ?? country}</strong> — local area not found; you'll appear in the country ranking only`;
-      }
-    }
-    if (resultEl) resultEl.style.display = 'block';
-    _locClearError();
-  }
-
-  async function locValidatePostcode() {
-    const input = document.getElementById('loc-postcode-input') as HTMLInputElement;
-    const raw = (input?.value ?? '').trim().toUpperCase().replace(/\s+/g, ' ');
-    if (!raw) { _locShowError('Please enter a postcode.'); return; }
-    const btn = document.getElementById('loc-validate-btn') as HTMLButtonElement;
-    if (btn) { btn.disabled = true; btn.textContent = 'Checking…'; }
-    _locClearError();
-    (document.getElementById('loc-result') as HTMLElement).style.display = 'none';
-    _locResolved = null;
-    try {
-      const resp = await fetch(`https://api.postcodes.io/postcodes/${encodeURIComponent(raw)}`);
-      const json = await resp.json();
-      if (json.status !== 200 || !json.result) { _locShowError('Postcode not found. Please check and try again.'); return; }
-      await _locResolveFromPostcodesIo(json.result, 'postcode');
-    } catch (err: any) {
-      _locShowError('Validation failed — please check your connection and try again.');
-    } finally {
-      if (btn) { btn.disabled = false; btn.textContent = 'Validate'; }
-    }
-  }
-  (window as any).locValidatePostcode = locValidatePostcode;
-
-  function locUseGeolocation() {
-    if (!navigator.geolocation) { _locShowError('Geolocation is not supported by your browser.'); return; }
-    const btn = document.getElementById('loc-geo-btn') as HTMLButtonElement;
-    if (btn) btn.textContent = 'Locating…';
-    _locClearError();
-    (document.getElementById('loc-result') as HTMLElement).style.display = 'none';
-    _locResolved = null;
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        try {
-          const { latitude: lat, longitude: lon } = pos.coords;
-          const resp = await fetch(`https://api.postcodes.io/postcodes?lon=${lon}&lat=${lat}&limit=1`);
-          const json = await resp.json();
-          const pc = json.result?.[0];
-          if (!pc) { _locShowError('No postcode found near your location. Please enter it manually.'); return; }
-          await _locResolveFromPostcodesIo(pc, 'geolocation');
-          const input = document.getElementById('loc-postcode-input') as HTMLInputElement;
-          if (input && pc.postcode) input.value = pc.postcode;
-        } catch (err: any) {
-          _locShowError('Location lookup failed — please enter your postcode instead.');
-        } finally {
-          if (btn) btn.textContent = 'Use my current location instead';
-        }
-      },
-      () => {
-        _locShowError('Location permission denied. Please enter your postcode manually.');
-        if (btn) btn.textContent = 'Use my current location instead';
-      }
-    );
-  }
-  (window as any).locUseGeolocation = locUseGeolocation;
-
-  async function locConfirmLocation() {
-    if (!_locResolved) { _locShowError('Please validate a postcode first.'); return; }
-    const btn = document.getElementById('loc-confirm-btn') as HTMLButtonElement;
-    if (btn) { btn.disabled = true; btn.textContent = 'Saving…'; }
-
-    // Refresh session token in case it expired while the trainer was on the page
-    const { data: { session: currentSession } } = await supabase.auth.getSession();
-    if (!currentSession?.access_token) {
-      _locShowError('Your session has expired. Please refresh the page and try again.');
-      if (btn) { btn.disabled = false; btn.textContent = 'Confirm My Location'; }
-      return;
-    }
-
-    let result: any;
-    try {
-      const resp = await fetch('/.netlify/functions/confirm-location', {
-        method:  'POST',
-        headers: {
-          'Content-Type':  'application/json',
-          'Authorization': `Bearer ${currentSession.access_token}`,
-        },
-        body: JSON.stringify({
-          postcode: _locResolved.postcode,
-          source:   _locResolved.source,
-        }),
-      });
-      result = await resp.json();
-      if (!resp.ok) {
-        _locShowError(result?.error || 'Save failed. Please try again.');
-        if (btn) { btn.disabled = false; btn.textContent = 'Confirm My Location'; }
-        return;
-      }
-    } catch {
-      _locShowError('Network error — please check your connection and try again.');
-      if (btn) { btn.disabled = false; btn.textContent = 'Confirm My Location'; }
-      return;
-    }
-
-    (trainer as any).location_confirmed = true;
-    const cooldownUntil: string = result?.cooldown_until
-      ?? new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
-
-    const formEl   = document.getElementById('loc-form')              as HTMLElement;
-    const lockedEl = document.getElementById('loc-locked')            as HTMLElement;
-    const dispEl   = document.getElementById('loc-confirmed-display') as HTMLElement;
-    const coolEl   = document.getElementById('loc-cooldown-msg')      as HTMLElement;
-    if (dispEl) dispEl.textContent = result?.local_name
-      ? `${result.local_name}, ${result.cc_country}`
-      : (result?.cc_country ?? _locResolved.cc_country);
-    if (coolEl) {
-      const endDate = new Date(cooldownUntil).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-      coolEl.textContent = `Your location is locked for 90 days to protect ranking integrity (until ${endDate}). Contact support if you need to change it sooner.`;
-      coolEl.style.display = 'block';
-    }
-    if (formEl)   formEl.style.display   = 'none';
-    if (lockedEl) lockedEl.style.display = 'block';
-    // Update sidebar and profile form immediately — don't wait for page reload.
-    const _newLocStr = result?.local_name
-      ? `${result.local_name}, ${result.cc_country}`
-      : (result?.cc_country ?? (_locResolved as any).cc_country ?? 'Verified location unavailable');
-    _confirmedLocationStr = _newLocStr;
-    const _sbEl3 = document.querySelector('.sb-pt-status') as HTMLElement;
-    if (_sbEl3) _sbEl3.textContent = `● Active · ${_confirmedLocationStr}`;
-    const _cg     = document.getElementById('profile-city')?.closest('.form-group') as HTMLElement | null;
-    const _pg     = document.getElementById('profile-postcode')?.closest('.form-group') as HTMLElement | null;
-    if (_cg) _cg.style.display = 'none';
-    if (_pg) _pg.style.display = 'none';
-    const _fgrid = _cg?.parentElement as HTMLElement | null;
-    if (_fgrid && !_fgrid.querySelector('#verified-loc-banner')) {
-      const _vlb2 = document.createElement('div');
-      _vlb2.id = 'verified-loc-banner';
-      _vlb2.style.cssText = 'grid-column:1/-1;background:rgba(58,181,74,0.08);border:1px solid rgba(58,181,74,0.25);border-radius:8px;padding:0.75rem 1rem;';
-      _vlb2.innerHTML = `<div style="display:flex;align-items:flex-start;gap:0.6rem;"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;margin-top:2px;"><circle cx="8" cy="8" r="8" fill="#3ab54a"/><path d="M4.5 8.2l2.3 2.3 4.7-4.7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><div><div style="font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:0.2rem;">Verified location: <span id="vl-display">${_confirmedLocationStr}</span></div><div style="font-size:0.74rem;color:var(--muted);">Your location is verified and locked. To change it, use the Confirmed Location section below.</div></div></div>`;
-      if (_cg) _cg.insertAdjacentElement('beforebegin', _vlb2);
-    } else {
-      const _vld = document.getElementById('vl-display') as HTMLElement;
-      if (_vld) _vld.textContent = _confirmedLocationStr;
-    }
-    showToast('✅ Location confirmed! You now appear in country and local rankings.');
-  }
-  (window as any).locConfirmLocation = locConfirmLocation;
-
-  (async function initLocationCard() {
-    const form   = document.getElementById('loc-form')              as HTMLElement;
-    const locked = document.getElementById('loc-locked')            as HTMLElement;
-    const disp   = document.getElementById('loc-confirmed-display') as HTMLElement;
-    const cool   = document.getElementById('loc-cooldown-msg')      as HTMLElement;
+  async function renderLocationCard() {
     const t = trainer as any;
-    if (t.location_confirmed && t.cc_country) {
+    const missing  = document.getElementById('loc-missing-notice')   as HTMLElement;
+    const assigned = document.getElementById('loc-assigned')         as HTMLElement;
+    const disp     = document.getElementById('loc-assigned-display') as HTMLElement;
+    const device   = document.getElementById('loc-device')           as HTMLElement;
+    const status   = document.getElementById('loc-device-status')    as HTMLElement;
+
+    if (missing) missing.style.display = t.postcode_district ? 'none' : 'block';
+
+    if (t.cc_country) {
       let displayStr = t.cc_country as string;
       if (t.cc_local_area) {
         const { data: ad } = await supabase.rpc('get_ranking_area_display', { p_area_id: t.cc_local_area } as any);
@@ -4189,44 +3999,102 @@
         if ((ar as any)?.display_name) displayStr = `${(ar as any).display_name}, ${t.cc_country}`;
       }
       if (disp) disp.textContent = displayStr;
-      // Initialise ranking visibility select.
-      const rvSel = document.getElementById('ranking-visibility-select') as HTMLSelectElement | null;
-      const rvAllOpt = document.getElementById('ranking-vis-all-opt') as HTMLOptionElement | null;
+      const rvSel    = document.getElementById('ranking-visibility-select') as HTMLSelectElement | null;
+      const rvAllOpt = document.getElementById('ranking-vis-all-opt')       as HTMLOptionElement | null;
+      if (rvAllOpt) rvAllOpt.disabled = !t.cc_local_area;
       if (rvSel) {
-        // "UK, Country & Local" option only available when trainer has a local area.
-        if (!t.cc_local_area && rvAllOpt) rvAllOpt.disabled = true;
         rvSel.value = (t.ranking_visibility as string) || 'all';
-        // If value didn't stick (column not yet added / DB default), fall back.
         if (!rvSel.value) rvSel.value = 'all';
       }
-      // Update shared variable, sidebar, and profile-form banner with resolved display name.
-      _confirmedLocationStr = displayStr;
-      const _sbEl = document.querySelector('.sb-pt-status') as HTMLElement;
-      if (_sbEl) _sbEl.textContent = `● Active · ${_confirmedLocationStr}`;
-      const _vlDisp = document.getElementById('vl-display') as HTMLElement;
-      if (_vlDisp) _vlDisp.textContent = _confirmedLocationStr;
-      if (t.location_cooldown_until && new Date(t.location_cooldown_until) > new Date()) {
-        const endDate = new Date(t.location_cooldown_until).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
-        if (cool) { cool.textContent = `Your location is locked for 90 days to protect ranking integrity (until ${endDate}). Contact support if you need to change it sooner.`; cool.style.display = 'block'; }
-      }
-      if (form)   form.style.display   = 'none';
-      if (locked) locked.style.display = 'block';
-    } else if (t.location_confirmed) {
-      // location_confirmed is true but cc_country is missing — show fallback.
-      _confirmedLocationStr = 'Verified location unavailable';
-      const _sbEl2 = document.querySelector('.sb-pt-status') as HTMLElement;
-      if (_sbEl2) _sbEl2.textContent = `● Active · ${_confirmedLocationStr}`;
-      const _vlDisp2 = document.getElementById('vl-display') as HTMLElement;
-      if (_vlDisp2) _vlDisp2.textContent = _confirmedLocationStr;
-      if (disp) disp.textContent = 'Verified location unavailable';
-      if (form)   form.style.display   = 'none';
-      if (locked) locked.style.display = 'block';
-    } else if (trainer.postcode && trainer.postcode.trim()) {
-      const notice = document.getElementById('loc-migrate-notice') as HTMLElement;
-      const input  = document.getElementById('loc-postcode-input') as HTMLInputElement;
-      if (input) input.value = trainer.postcode.trim().toUpperCase();
-      if (notice) { notice.textContent = `We found postcode ${trainer.postcode.trim().toUpperCase()} on your profile — click Validate to confirm it and unlock your local rankings.`; notice.style.display = 'block'; }
+      if (assigned) assigned.style.display = 'block';
+      if (device)   device.style.display   = 'block';
+    } else {
+      if (assigned) assigned.style.display = 'none';
+      if (device)   device.style.display   = 'none';
     }
+
+    if (status) {
+      if (t.location_confirmed) {
+        status.textContent = 'Location confirmed — the indicator shows on your public profile.';
+        status.className = 'loc-notice loc-notice-info';
+        status.style.display = 'block';
+      } else {
+        status.style.display = 'none';
+      }
+    }
+  }
+
+  // Returns null on success, or an error message.
+  async function assignStatedLocation(district?: string): Promise<string | null> {
+    const auth = await _locAuthHeader();
+    if (!auth) return 'Your session has expired. Please refresh the page and try again.';
+    try {
+      const resp = await fetch('/.netlify/functions/assign-location', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': auth },
+        body:    JSON.stringify(district === undefined ? {} : { postcode_district: district }),
+      });
+      const result = await resp.json();
+      if (!resp.ok) return result?.error || 'Location update failed. Please try again.';
+      const t = trainer as any;
+      const areaChanged = t.cc_country !== result.cc_country || (t.cc_local_area ?? null) !== (result.local_area_id ?? null);
+      t.postcode_district = result.postcode_district;
+      t.cc_country        = result.cc_country;
+      t.cc_local_area     = result.local_area_id;
+      if (areaChanged) t.location_confirmed = false;
+      await renderLocationCard();
+      return null;
+    } catch {
+      return 'Network error — please check your connection and try again.';
+    }
+  }
+
+  function locCheckDevice() {
+    if (!navigator.geolocation) { _locShowError('Geolocation is not supported by your browser.'); return; }
+    const btn    = document.getElementById('loc-geo-btn')       as HTMLButtonElement;
+    const status = document.getElementById('loc-device-status') as HTMLElement;
+    const label  = btn?.innerHTML ?? "";
+    if (btn) { btn.disabled = true; btn.textContent = 'Checking…'; }
+    _locShowError('');
+    const done = () => { if (btn) { btn.disabled = false; btn.innerHTML = label; } };
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        try {
+          const auth = await _locAuthHeader();
+          if (!auth) { _locShowError('Your session has expired. Please refresh the page and try again.'); return; }
+          const resp = await fetch('/.netlify/functions/check-device-location', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': auth },
+            body:    JSON.stringify({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
+          });
+          const result = await resp.json();
+          if (!resp.ok) { _locShowError(result?.error || 'Check failed. Please try again.'); return; }
+          (trainer as any).location_confirmed = !!result.matched;
+          if (status) {
+            status.textContent = result.matched
+              ? 'Location confirmed — the indicator now shows on your public profile.'
+              : "Your device location didn't match your stated area, so the indicator isn't shown. Your rankings are not affected.";
+            status.className = result.matched ? 'loc-notice loc-notice-info' : 'loc-notice loc-notice-warn';
+            status.style.display = 'block';
+          }
+        } catch {
+          _locShowError('Network error — please check your connection and try again.');
+        } finally {
+          done();
+        }
+      },
+      () => { _locShowError('Location permission denied. This check is optional — your rankings are not affected.'); done(); },
+      { enableHighAccuracy: false, timeout: 15000, maximumAge: 300000 }
+    );
+  }
+  (window as any).locCheckDevice = locCheckDevice;
+
+  (async function initLocationCard() {
+    await renderLocationCard();
+    // Trainers whose area was never assigned (e.g. signed up without a session, or
+    // older profiles): assign from the stated district, or from the stated city when
+    // there is no district yet. Nobody is hidden from rankings in the meantime.
+    if (!(trainer as any).cc_country) await assignStatedLocation();
   })().catch((err: any) => console.error('[initLocationCard]', err));
 
   // ── Messages ────────────────────────────────────────────────────────────
